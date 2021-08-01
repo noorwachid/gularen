@@ -29,7 +29,7 @@ And the lists:
 - And hyphen for bullet list
 - You can easyly create nested list by adding 4 spaces each levels
     - I hate Python but this is nice
-    - You can have infinite levels of indentations (just kidding it depends on each `__SIZE_T__` implementation on your machine)
+    - You can have infinite levels of indentations
 
 And of course the checklist or todo-list or what ever you name it
 
@@ -37,6 +37,79 @@ And of course the checklist or todo-list or what ever you name it
 [ ] This one is not
 
 ```
+
+Will be parsed as:
+```
+Root:
+    Title:
+        Text: "C++: The Pain, The Pleasure and The Migrane"
+    Section:
+        Text: "Chapter 1: Data Types"
+    Subsection:
+        Text: "Primitive Data Types"
+    Subsubsection:
+        Text: "Integers"
+    Paragraph:
+        Text: "This section talk about integers."
+        Newline:
+        Text: "This is still the same paragraph."
+        Newline:
+        Text: "Now its different paragraph."
+        Newline:
+        Text: "And the most important features. "
+        Newline:
+        Text: "Font formating is a little bit different from Markdown goes like this."
+        FBold:
+            Text: "Asterisks for bold"
+        Text: ", "
+        FItalic:
+            Text: "underlines for italic"
+        Text: " and "
+        FMonospace:
+            Text: "backticks for monospaced"
+        Text: "."
+        FBold:
+            Text: "Combine them "
+            FItalic:
+                Text: "all"
+            Text: " "
+            FMonospace:
+                Text: "together"
+        Text: " with grace."
+        Newline:
+    Paragraph:
+        Text: "And the lists:"
+    NList:
+        Item:
+            Text: "Using numbers"
+        Item:
+            Text: "So on"
+        Item:
+            Text: "And so on"
+        Item:
+            Text: "Or you tired counting you can use two dots"
+        Item:
+            Text: "It automatically counted for you"
+    List:
+        Item:
+            Text: "And hyphen for bullet list"
+        Item:
+            Text: "You can easyly create nested list by adding 4 spaces each levels"
+            Indent:
+                List:
+                    Item:
+                        Text: "I hate Python but this is nice"
+                    Item:
+                        Text: "You can have infinite levels of indentations"
+    Paragraph:
+        Text: "And of course the checklist or todo-list or what ever you name it"
+    CheckList:
+        CheckItem: false
+            Text: "This one is checked"
+        CheckItem: false
+            Text: "This one is not"
+```
+
 
 ### Author Notes
 See the [Design.gr](Design.gr) for the design and the implementation progress.
