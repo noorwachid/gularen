@@ -37,4 +37,4 @@ And of course the checklist or todo-list or what ever you name it
 ```
 
 ### Author Notes
-See the [Design.gr](`Design.gr`) for the design and the implementation progress.
+See the [Design.gr](Design.gr) for the design and the implementation progress.
