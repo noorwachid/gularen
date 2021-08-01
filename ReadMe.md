@@ -13,6 +13,8 @@ This is still the same paragraph.
 
 Now its different paragraph.
 
+And the most important features. ^ Comments, seriously even HTML has one.
+
 Font formating is a little bit different from Markdown goes like this.
 *Asterisks for bold*, _underlines for italic_ and `backticks for monospaced`.
 *Combine them _all_ `together`* with grace.
