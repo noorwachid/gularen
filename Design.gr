@@ -1,0 +1,161 @@
+[+] Comments
+    :: code 'gr'
+    ---
+    This will shown. ^ This will not.
+    ---
+
+[+] Font styles
+    :: code 'gr'
+    ---
+    *bold* _italic_ `monospaced`
+    ---
+
+[ ] Text Layouts
+    [+] Paragraphs
+        :: code 'gr'
+        ---
+        Paragraph is simply just text.
+        Single newline will be translate as space.
+
+        Double newlines will create new paragraph.
+        ---
+
+    [+] Identations
+        :: code 'gr'
+        ---
+            4 spaces create an indentation
+            Still in indentation
+        ---
+
+    [ ] Breaks
+        :: code 'gr'
+        ---
+        This is line < break.
+        This is thematic break.
+        <<
+
+        This is page break.
+        <<<
+        ---
+
+[+] Lists
+    [+] Bullet Lists
+        :: code 'gr'
+        ---
+        - First item
+        - Second item
+        - Third item
+        ---
+
+    [+] Numeric Bullet Lists
+        :: code 'gr'
+        ---
+        1. Number one
+        2. Number two
+        5. Still three
+        .. It uses auto increment
+        .. So you dont have to count
+        ---
+
+    [+] Check Lists
+        :: code 'gr'
+        ---
+        [+] Checked todo item
+        [ ] Inprogress todo item
+        [ ] Todo item
+        [ ] Todo item
+        ---
+
+[ ] Partitions
+    [+] Sectioning
+        :: code 'gr'
+        ---
+        >>> Document Title > 'marker' ^ LArrowTail
+        >> Part                       ^ ArrowTail
+        >>-> Section                  ^ LArrow
+        >-> Subsection                ^ MArrow
+        -> Subsubsection              ^ Arrow
+        > Minisection                 ^ ArrowPoint
+        ---
+
+    [ ] Links
+        :: code 'gr'
+        ---
+        {'google.com'}
+        {'google.com' { this guy can parse markup *nice* }}
+        ---
+
+    [ ] Custom Marker And Local Links
+        :: code 'gr'
+        ---
+        >>-> '#CustomMarker' > The Section
+
+        {'#CustomMarker' {Jump custom marker}}
+        ---
+
+    [ ] File reading
+        :: code 'gr'
+        ---
+        :: file 'Introduction.gr'
+        :: file 'Chapter/01.gr'
+        :: file 'Chapter/02.gr'
+        :: file 'Chapter/03.gr'
+        ---
+
+[ ] Variables
+    [ ] Assignments
+        :: code 'gr'
+        ---
+        :: AuthorName = 'Nora Winchester'
+        :: AsMarkup = { his name is {AuthorName} }
+        ---
+
+    [ ] Printing
+        :: code 'gr'
+        ---
+        My name is {AuthorName}
+        ---
+
+[ ] Table of Contents
+    :: code 'gr'
+    ---
+    :: toc type:compact
+    ---
+
+[ ] Admonitions
+    :: code 'gr'
+    ---
+    :: 'Note' { One line admonitions }
+    ---
+
+    :: code 'gr'
+    ----
+    :: 'Note'
+    ---
+    Multiline admonitions
+    ---
+    ----
+
+[ ] Codes
+    :: code 'gr'
+    ----
+    :: code 'c'
+    ---
+    int main()
+    {
+        return 0;
+    }
+    ---
+    ----
+
+[ ] Tables
+    :: code 'gr'
+    ----
+    :: table type:csv, header:[top, left]
+    ---
+    ID, Name
+    1,  Nora
+    2,  Wright
+    ---
+    ----
+
