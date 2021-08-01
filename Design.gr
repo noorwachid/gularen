@@ -70,12 +70,12 @@
     [+] Sectioning
         :: code 'gr'
         ---
-        >>> Document Title > 'marker' ^ LArrowTail
-        >> Part                       ^ ArrowTail
-        >>-> Section                  ^ LArrow
-        >-> Subsection                ^ MArrow
+        >>> Document Title > 'marker' ^ BigTail
+        >> Part                       ^ Tail
+        >>-> Section                  ^ BigArrow
+        >-> Subsection                ^ MediumArrow
         -> Subsubsection              ^ Arrow
-        > Minisection                 ^ ArrowPoint
+        > Minisection                 ^ Head
         ---
 
     [ ] Links
