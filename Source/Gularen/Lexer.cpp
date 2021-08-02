@@ -168,6 +168,12 @@ void Lexer::ParseNewline()
                     SkipSpaces();
                 }
             }
+            else if (size == 2 && GetCurrent() == '>' && GetNext() == ' ')
+            {
+                Add(Token(TokenType::LongArrow));
+                Skip();
+                SkipSpaces();
+            }
             else
                 Add(Token(TokenType::Line));
             break;
@@ -248,8 +254,14 @@ void Lexer::ParseNewline()
                 }
                 else if (GetCurrent() == '-' && GetNext(1) == '>' && GetNext(2) == ' ')
                 {
-                    Add(Token(TokenType::BigArrow));
+                    Add(Token(TokenType::TailedArrow));
                     Skip(2);
+                    SkipSpaces();
+                }
+                else if (GetCurrent() == '-' && GetNext(1) == '-' && GetNext(2) == '>' && GetNext(3) == ' ')
+                {
+                    Add(Token(TokenType::LongTailedArrow));
+                    Skip(3);
                     SkipSpaces();
                 }
             }
@@ -258,7 +270,7 @@ void Lexer::ParseNewline()
                 Skip();
                 if (GetCurrent() == '>' && GetNext() == ' ')
                 {
-                    Add(Token(TokenType::MediumArrow));
+                    Add(Token(TokenType::LongArrow));
                     Skip();
                     SkipSpaces();
                 }

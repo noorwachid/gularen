@@ -15,7 +15,7 @@ public:
 
     void Parse();
 
-    Node* GetRoot();
+    Node* GetTree();
 
     std::string ToString();
 

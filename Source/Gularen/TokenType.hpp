@@ -37,17 +37,18 @@ enum struct TokenType
     CheckBox,
     Line,
 
-    BigTail,  // >>>
-    Tail,
-    Head,
+    BigTail, // >>>
+    Tail,    // >>
+    Head,    // >
 
-    RevBigTail,
-    RevTail, // <<<
-    RevHead,
+    RevBigTail, // <<<
+    RevTail,    // <<
+    RevHead,    // <
 
-    BigArrow, // >>->
-    MediumArrow, // >->
-    Arrow, // ->
+    LongTailedArrow, // >>-->
+    TailedArrow,     // >>->
+    LongArrow,       // -->
+    Arrow,           // ->
 
 };
 

@@ -30,6 +30,8 @@ sy region gularenFBold start="\*" end="\*"
 sy region gularenFItalic start="_" end="_"
 sy region gularenFMonospace start="`" end="`"
 
+sy region gularenInlineCode start="``" end="``"
+
 hi gularenFBold gui=bold cterm=bold
 hi gularenFItalic gui=italic cterm=italic
 
@@ -42,3 +44,4 @@ hi def link gularenLine Function
 hi def link gularenBox Function
 hi def link gularenRevArrow Function
 hi def link gularenFMonospace Number
+hi def link gularenInlineCode String

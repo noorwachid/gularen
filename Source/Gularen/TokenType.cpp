@@ -40,8 +40,9 @@ std::string ToString(TokenType type)
         case TokenType::RevTail: return "RevTail";
         case TokenType::RevHead: return "RevHead";
 
-        case TokenType::BigArrow: return "BigArrow";
-        case TokenType::MediumArrow: return "MediumArrow";
+        case TokenType::LongTailedArrow: return "LongTailedArrow";
+        case TokenType::TailedArrow: return "TailedArrow";
+        case TokenType::LongArrow: return "LongArrow";
         case TokenType::Arrow: return "Arrow";
 
         default: return "[Unhandled]";

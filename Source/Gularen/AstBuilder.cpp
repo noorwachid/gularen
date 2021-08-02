@@ -83,7 +83,7 @@ void AstBuilder::Parse()
     ParseNewline();
 }
 
-Node* AstBuilder::GetRoot()
+Node* AstBuilder::GetTree()
 {
     return root;
 }
@@ -92,7 +92,7 @@ std::string AstBuilder::ToString()
 {
     std::string buffer;
 
-    TraverseToString(GetRoot(), 0, buffer);
+    TraverseToString(GetTree(), 0, buffer);
 
     return buffer;
 }
@@ -165,11 +165,15 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             ShouldPushHead(NodeType::Part);
             Skip();
             break;
-        case TokenType::BigArrow:
+        case TokenType::TailedArrow:
             ShouldPushHead(NodeType::Section);
             Skip();
             break;
-        case TokenType::MediumArrow:
+        case TokenType::LongTailedArrow:
+            ShouldPushHead(NodeType::Chapter);
+            Skip();
+            break;
+        case TokenType::LongArrow:
             ShouldPushHead(NodeType::Subsection);
             Skip();
             break;

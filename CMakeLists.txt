@@ -12,6 +12,12 @@ add_library(Gularen
     Source/Gularen/NodeType.cpp
     Source/Gularen/Node.cpp
     Source/Gularen/AstBuilder.cpp)
+target_include_directories(Gularen PUBLIC Source)
 
-add_executable(grr Source/Parser.cpp)
-target_link_libraries(grr Gularen)
+add_library(GularenBridge
+    Source/GularenBridge/Html5/Renderer.cpp)
+target_include_directories(GularenBridge PUBLIC Source)
+target_link_libraries(GularenBridge Gularen)
+
+add_executable(grparser Source/Parser.cpp)
+target_link_libraries(grparser GularenBridge)

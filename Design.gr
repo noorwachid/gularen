@@ -73,8 +73,9 @@
         ---
         >>> Document Title > 'marker' ^ BigTail
         >> Part                       ^ Tail
-        >>-> Section                  ^ BigArrow
-        >-> Subsection                ^ MediumArrow
+        >>--> Chapter                 ^ LongTailedArrow
+        >>-> Section                  ^ TailedArrow
+        --> Subsection                ^ LongArrow
         -> Subsubsection              ^ Arrow
         > Minisection                 ^ Head
         ---
@@ -101,6 +102,19 @@
         :: file 'Chapter/01.gr'
         :: file 'Chapter/02.gr'
         :: file 'Chapter/03.gr'
+        ---
+
+    [ ] Images
+        [ ] Block Images
+        :: code 'gr'
+        ---
+        :: image 'SomeImage.jpg'
+        ---
+
+        [ ] Inline Images
+        :: code 'gr'
+        ---
+        ^ Needs to be designed
         ---
 
 [ ] Variables

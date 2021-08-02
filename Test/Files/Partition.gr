@@ -1,8 +1,9 @@
 >>> Document Title
 >> Part
 
+>>--> Chapter
 >>-> Section
->-> Subsection
+--> Subsection
 -> Subsubsection
 
 > Minisection

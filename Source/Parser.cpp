@@ -1,8 +1,10 @@
 #include "Gularen/IO.hpp"
 #include "Gularen/Lexer.hpp"
 #include "Gularen/AstBuilder.hpp"
+#include "GularenBridge/Html5/Renderer.hpp"
 
 using namespace Gularen;
+using namespace GularenBridge::Html5;
 
 int main()
 {
@@ -21,6 +23,11 @@ int main()
     builder.Parse();
 
     IO::WriteLine(builder.ToString());
+
+    Renderer renderer;
+    renderer.SetTree(builder.GetTree());
+    renderer.Parse();
+    IO::WriteLine(renderer.GetBuffer());
 
     return 0;
 }

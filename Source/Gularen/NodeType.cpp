@@ -18,6 +18,7 @@ std::string ToString(NodeType type)
 
         case NodeType::Title: return "Title";
         case NodeType::Part: return "Part";
+        case NodeType::Chapter: return "Chapter";
         case NodeType::Section: return "Section";
         case NodeType::Subsection: return "Subsection";
         case NodeType::Subsubsection: return "Subsubsection";

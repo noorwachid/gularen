@@ -25,6 +25,7 @@ enum struct NodeType
     // Semiabstract types
     Title,
     Part,
+    Chapter,
     Section,
     Subsection,
     Subsubsection,
