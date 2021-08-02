@@ -31,6 +31,7 @@
         :: code 'gr'
         ---
         This is line < break.
+
         This is thematic break.
         <<
 
@@ -137,16 +138,19 @@
     ----
 
 [ ] Codes
-    :: code 'gr'
-    ----
-    :: code 'c'
-    ---
-    int main()
-    {
-        return 0;
-    }
-    ---
-    ----
+    [ ] Multiline Codes
+        :: code 'gr'
+        ----
+        :: code 'c'
+        ---
+        int main()
+        {
+            return 0;
+        }
+        ---
+        ----
+    [ ] Oneline Codes
+        ``the code goes here``
 
 [ ] Tables
     :: code 'gr'
@@ -159,3 +163,8 @@
     ---
     ----
 
+<<
+
+Side tasks:
+[ ] Add group enumerations for faster checking
+[ ] Add escaping reserved chars
