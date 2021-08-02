@@ -5,9 +5,7 @@ Well-thought lightweight markup language that actually make sense
 ``` gr
 >>> C++: The Pain, The Pleasure and The Migrane
 
->>-> Chapter 1: Data Types
->-> Primitive Data Types
--> Integers
+>>--> Chapter 1: Data Types
 This section talk about integers.
 This is still the same paragraph.
 
@@ -43,12 +41,8 @@ Will be parsed as:
 Root:
     Title:
         Text: "C++: The Pain, The Pleasure and The Migrane"
-    Section:
+    Chapter:
         Text: "Chapter 1: Data Types"
-    Subsection:
-        Text: "Primitive Data Types"
-    Subsubsection:
-        Text: "Integers"
     Paragraph:
         Text: "This section talk about integers."
         Newline:
