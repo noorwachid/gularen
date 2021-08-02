@@ -61,6 +61,19 @@ void AstBuilder::Parse()
                 break;
             }
 
+            case TokenType::RevHead:
+                GetHead()->Add(new Node(NodeType::LineBreak));
+                Skip();
+                break;
+            case TokenType::RevTail:
+                GetHead()->Add(new Node(NodeType::ThematicBreak));
+                Skip();
+                break;
+            case TokenType::BigTail:
+                GetHead()->Add(new Node(NodeType::PageBreak));
+                Skip();
+                break;
+
             default:
                 Skip();
                 break;
@@ -166,6 +179,15 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             break;
         case TokenType::Head:
             ShouldPushHead(NodeType::Minisection);
+            Skip();
+            break;
+
+        case TokenType::RevTail:
+            ShouldPushHead(NodeType::ThematicBreak);
+            Skip();
+            break;
+        case TokenType::RevBigTail:
+            ShouldPushHead(NodeType::PageBreak);
             Skip();
             break;
 

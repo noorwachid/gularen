@@ -53,7 +53,11 @@ void Lexer::Parse()
                 if (!tokens.empty() && tokens.back().type == TokenType::Newline)
                     tokens.back().size += size;
                 else
-                    Add(Token(TokenType::Newline));
+                {
+                    Token token(TokenType::Newline);
+                    token.size = size;
+                    Add(std::move(token));
+                }
 
                 ParseNewline();
                 break;
@@ -62,6 +66,11 @@ void Lexer::Parse()
             case '^':
                 while (IsValid() && GetCurrent() != '\n')
                     Skip();
+                break;
+
+            case '<':
+                Add(Token(TokenType::RevHead));
+                Skip();
                 break;
 
             default:
@@ -255,6 +264,20 @@ void Lexer::ParseNewline()
                 }
             }
         }
+
+        case '<':
+            if (GetNext() == '<')
+            {
+                Skip(2);
+                if (GetCurrent() == '<')
+                {
+                    Add(Token(TokenType::RevBigTail));
+                    Skip();
+                }
+                else
+                    Add(Token(TokenType::RevTail));
+            }
+            break;
 
         case ':':
             if (GetNext() == ':')

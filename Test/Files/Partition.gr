@@ -6,3 +6,12 @@
 -> Subsubsection
 
 > Minisection
+
+Line<break
+Multiple line<<<break
+
+Thematic break
+<<
+
+Page break
+<<<

@@ -10,7 +10,7 @@
     *bold* _italic_ `monospaced`
     ---
 
-[ ] Text Layouts
+[+] Text Layouts
     [+] Paragraphs
         :: code 'gr'
         ---
@@ -27,7 +27,7 @@
             Still in indentation
         ---
 
-    [ ] Breaks
+    [+] Breaks
         :: code 'gr'
         ---
         This is line < break.

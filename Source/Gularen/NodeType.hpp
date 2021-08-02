@@ -17,8 +17,10 @@ enum struct NodeType
     // Abstract types
     Newline,
     Indent,
+
     LineBreak,
-    PageBreak,
+    ThematicBreak,
+    PageBreak,     // PDF or paper like only documents
 
     // Semiabstract types
     Title,

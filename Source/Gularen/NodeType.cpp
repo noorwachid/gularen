@@ -12,6 +12,10 @@ std::string ToString(NodeType type)
         case NodeType::Text: return "Text";
         case NodeType::Indent: return "Indent";
 
+        case NodeType::LineBreak: return "LineBreak";
+        case NodeType::ThematicBreak: return "ThematicBreak";
+        case NodeType::PageBreak: return "PageBreak";
+
         case NodeType::Title: return "Title";
         case NodeType::Part: return "Part";
         case NodeType::Section: return "Section";
