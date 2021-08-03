@@ -221,7 +221,8 @@ void Lexer::ParseNewline()
             if ((GetNext(1) == ' ' || GetNext(1) == '+') && GetNext(2) == ']')
             {
                 Token token(TokenType::CheckBox);
-                token.size = GetCurrent() == '+' ? 1 : 0;
+                if (GetNext(1) == '+')
+                    token.size = 1;
 
                 Add(std::move(token));
                 Skip(3);

@@ -30,7 +30,9 @@ std::string Token::ToString()
 
     if (type == TokenType::Newline ||
         type == TokenType::Space ||
-        type == TokenType::Bullet)
+        type == TokenType::Bullet ||
+        type == TokenType::CheckBox)
+
         buffer += "(" + std::to_string(size) + ")";
 
     return buffer;
