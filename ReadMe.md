@@ -35,3 +35,5 @@ And of course the checklist or todo-list or whatever you name it.
 [+] This one is checked
 [ ] This one is not
 ```
+
+Read the [Design.gr](Design.gr) for full design and the implementation progress.
