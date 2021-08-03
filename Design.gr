@@ -90,7 +90,7 @@
     [ ] Custom Marker And Local Links
         :: code 'gr'
         ---
-        >>-> '#CustomMarker' > The Section
+        >>-> The Section > '#CustomMarker'
 
         {'#CustomMarker' {Jump custom marker}}
         ---

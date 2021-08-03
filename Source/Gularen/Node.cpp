@@ -3,11 +3,13 @@
 namespace Gularen {
 
 Node::Node():
-    type(NodeType::Unknown)
+    type(NodeType::Unknown),
+    group(NodeGroup::None)
 {}
 
-Node::Node(NodeType type):
-    type(type)
+Node::Node(NodeType type, NodeGroup group):
+    type(type),
+    group(group)
 {}
 
 Node::~Node()
@@ -29,6 +31,11 @@ std::string Node::ToString()
 ValueNode::ValueNode():
     Node(NodeType::Unknown)
 {}
+
+ValueNode::ValueNode(NodeType type, NodeGroup group):
+    Node(type, group)
+{
+}
 
 Gularen::ValueNode::ValueNode(Gularen::NodeType type, const std::string& value):
     Node(type),
@@ -60,8 +67,8 @@ BooleanNode::BooleanNode():
     state(false)
 {}
 
-BooleanNode::BooleanNode(NodeType type, bool state):
-    Node(type),
+BooleanNode::BooleanNode(NodeType type, NodeGroup group, bool state):
+    Node(type, group),
     state(state)
 {}
 

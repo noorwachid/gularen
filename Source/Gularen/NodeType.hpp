@@ -4,14 +4,9 @@
 
 namespace Gularen {
 
-enum struct NodeGroup
-{
-
-};
-
 enum struct NodeType
 {
-    Unknown,
+    Unknown = -1,
     Root,
 
     // Abstract types

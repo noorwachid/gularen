@@ -28,6 +28,7 @@ private:
     void ParseLSquareBracket();
     void ParseLAngleBracket();
     void ParseRAngleBracket();
+    void ParseRevTail();
     void ParseEqual();
 
 private:
@@ -35,6 +36,7 @@ private:
     void PushHead(Node* node);
     void PopHead();
     bool ShouldPushHead(NodeType type, size_t newlineSize = 0);
+    bool ShouldPushValueHead(NodeType type, NodeGroup group, size_t newlineSize = 0);
     bool ShouldPopHead();
     void PairFHead(NodeType type);
 
@@ -56,6 +58,8 @@ private:
     size_t tokenIndex = 0;
     size_t tokenSize = 0;
     Token emptyToken;
+
+    size_t headerCounter = 0;
 
     std::vector<Token> tokens;
 };

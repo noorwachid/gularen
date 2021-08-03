@@ -10,6 +10,7 @@ add_library(Gularen
     Source/Gularen/Token.cpp
     Source/Gularen/Lexer.cpp
     Source/Gularen/NodeType.cpp
+    Source/Gularen/NodeGroup.cpp
     Source/Gularen/Node.cpp
     Source/Gularen/AstBuilder.cpp)
 target_include_directories(Gularen PUBLIC Source)

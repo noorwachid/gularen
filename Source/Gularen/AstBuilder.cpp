@@ -61,16 +61,18 @@ void AstBuilder::Parse()
                 break;
             }
 
-            case TokenType::RevHead:
-                GetHead()->Add(new Node(NodeType::LineBreak));
+            case TokenType::Anchor:
+            {
+                if (GetHead()->group == NodeGroup::Header)
+                {
+                    static_cast<ValueNode*>(GetHead())->value = GetCurrent().value;
+                }
                 Skip();
                 break;
+            }
+
             case TokenType::RevTail:
-                GetHead()->Add(new Node(NodeType::ThematicBreak));
-                Skip();
-                break;
-            case TokenType::BigTail:
-                GetHead()->Add(new Node(NodeType::PageBreak));
+                GetHead()->Add(new Node(NodeType::LineBreak, NodeGroup::Break));
                 Skip();
                 break;
 
@@ -147,7 +149,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
     // --- END INDENTATIONS ---
 
     // --- POP ITEM NODE HEAD ---
-    if (GetHead()->type == NodeType::Item || GetHead()->type == NodeType::CheckItem)
+    if (GetHead()->group == NodeGroup::Item)
         PopHead();
 
     switch (GetCurrent().type)
@@ -157,59 +159,66 @@ void AstBuilder::ParseNewline(size_t newlineSize)
                 GetHead()->Add(new Node(NodeType::Newline));
             break;
 
-        case TokenType::BigTail:
-            ShouldPushHead(NodeType::Title);
-            Skip();
-            break;
         case TokenType::Tail:
-            ShouldPushHead(NodeType::Part);
+            switch (GetCurrent().size)
+            {
+                case 1:
+                    ShouldPushValueHead(NodeType::Minisection, NodeGroup::Header);
+                    break;
+                case 2:
+                    ShouldPushValueHead(NodeType::Part, NodeGroup::Header);
+                    break;
+                case 3:
+                    ShouldPushValueHead(NodeType::Title, NodeGroup::Header);
+                    break;
+
+                default:
+                    break;
+            }
             Skip();
             break;
-        case TokenType::TailedArrow:
-            ShouldPushHead(NodeType::Section);
-            Skip();
-            break;
-        case TokenType::LongTailedArrow:
-            ShouldPushHead(NodeType::Chapter);
-            Skip();
-            break;
-        case TokenType::LongArrow:
-            ShouldPushHead(NodeType::Subsection);
-            Skip();
-            break;
+
         case TokenType::Arrow:
-            ShouldPushHead(NodeType::Subsubsection);
-            Skip();
-            break;
-        case TokenType::Head:
-            ShouldPushHead(NodeType::Minisection);
+            switch (GetCurrent().size)
+            {
+                case 1:
+                    ShouldPushValueHead(NodeType::Subsubsection, NodeGroup::Header);
+                    break;
+                case 2:
+                    ShouldPushValueHead(NodeType::Subsection, NodeGroup::Header);
+                    break;
+                case 3:
+                    ShouldPushValueHead(NodeType::Section, NodeGroup::Header);
+                    break;
+                case 4:
+                    ShouldPushValueHead(NodeType::Chapter, NodeGroup::Header);
+                    break;
+
+                default:
+                    break;
+            }
             Skip();
             break;
 
         case TokenType::RevTail:
-            ShouldPushHead(NodeType::ThematicBreak);
-            Skip();
-            break;
-        case TokenType::RevBigTail:
-            ShouldPushHead(NodeType::PageBreak);
-            Skip();
+            ParseRevTail();
             break;
 
         case TokenType::Bullet:
             ShouldPushHead(NodeType::List);
-            PushHead(new Node(NodeType::Item));
+            PushHead(new Node(NodeType::Item, NodeGroup::Item));
             Skip();
             break;
 
         case TokenType::NBullet:
             ShouldPushHead(NodeType::NList);
-            PushHead(new Node(NodeType::Item));
+            PushHead(new Node(NodeType::Item, NodeGroup::Item));
             Skip();
             break;
 
         case TokenType::CheckBox:
             ShouldPushHead(NodeType::CheckList);
-            PushHead(new BooleanNode(NodeType::CheckItem, GetCurrent().size));
+            PushHead(new BooleanNode(NodeType::CheckItem, NodeGroup::Item, GetCurrent().size));
             Skip();
             break;
 
@@ -232,6 +241,17 @@ void AstBuilder::ParseLAngleBracket()
 
 void Gularen::AstBuilder::ParseRAngleBracket()
 {
+}
+
+void AstBuilder::ParseRevTail()
+{
+    switch (GetCurrent().size)
+    {
+        case 1: GetHead()->Add(new Node(NodeType::LineBreak, NodeGroup::Break)); break;
+        case 2: GetHead()->Add(new Node(NodeType::ThematicBreak, NodeGroup::Break)); break;
+        case 3: GetHead()->Add(new Node(NodeType::PageBreak, NodeGroup::Break)); break;
+    }
+    Skip();
 }
 
 void AstBuilder::ParseEqual()
@@ -261,6 +281,18 @@ bool AstBuilder::ShouldPushHead(NodeType type, size_t newlineSize)
     {
         ShouldPopHead();
         PushHead(new Node(type));
+
+        return true;
+    }
+    return false;
+}
+
+bool AstBuilder::ShouldPushValueHead(NodeType type, NodeGroup group, size_t newlineSize)
+{
+    if (GetHead()->type != type || newlineSize > 1)
+    {
+        ShouldPopHead();
+        PushHead(new ValueNode(type, group));
 
         return true;
     }

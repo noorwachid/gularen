@@ -5,6 +5,7 @@ namespace Gularen {
 
 Lexer::Lexer()
 {
+    Reset();
 }
 
 void Lexer::SetBuffer(const std::string& buffer)
@@ -68,8 +69,32 @@ void Lexer::Parse()
                     Skip();
                 break;
 
+            case '>':
+                if (inHeaderLine)
+                {
+                    Skip();
+                    SkipSpaces();
+                    if (GetCurrent() == '\'' && GetNext() == '#')
+                    {
+                        Skip(2);
+                        std::string symbol;
+                        while (IsValid() && IsValidSymbol())
+                        {
+                            symbol += GetCurrent();
+                            Skip();
+                        }
+                        if (GetCurrent() == '\'')
+                        {
+                            Add(Token(TokenType::Anchor, symbol));
+                            Skip();
+                        }
+                    }
+                }
+                Skip();
+                break;
+
             case '<':
-                Add(Token(TokenType::RevHead));
+                Add(Token(TokenType::RevTail, 1));
                 Skip();
                 break;
 
@@ -87,6 +112,7 @@ void Lexer::Parse()
 
 void Lexer::Reset()
 {
+    inHeaderLine = false;
     bufferIndex = 0;
     tokens.clear();
 }
@@ -137,6 +163,9 @@ void Lexer::ParseRepeat(char c, TokenType type)
 
 void Lexer::ParseNewline()
 {
+    // State variables
+    inHeaderLine = false;
+
     switch (GetCurrent())
     {
         case ' ':
@@ -158,7 +187,7 @@ void Lexer::ParseNewline()
             {
                 if (GetCurrent() == '>' && GetNext() == ' ')
                 {
-                    Add(Token(TokenType::Arrow));
+                    Add(Token(TokenType::Arrow, 1));
                     Skip();
                     SkipSpaces();
                 }
@@ -170,7 +199,7 @@ void Lexer::ParseNewline()
             }
             else if (size == 2 && GetCurrent() == '>' && GetNext() == ' ')
             {
-                Add(Token(TokenType::LongArrow));
+                Add(Token(TokenType::Arrow, 2));
                 Skip();
                 SkipSpaces();
             }
@@ -232,10 +261,12 @@ void Lexer::ParseNewline()
 
         case '>':
         {
+            inHeaderLine = true;
+
             Skip();
             if (GetCurrent() == ' ')
             {
-                Add(Token(TokenType::Head));
+                Add(Token(TokenType::Tail, 1));
                 SkipSpaces();
                 break;
             }
@@ -244,24 +275,24 @@ void Lexer::ParseNewline()
                 Skip();
                 if (GetCurrent() == ' ')
                 {
-                    Add(Token(TokenType::Tail));
+                    Add(Token(TokenType::Tail, 2));
                     SkipSpaces();
                 }
                 else if (GetCurrent() == '>' && GetNext() == ' ')
                 {
-                    Add(Token(TokenType::BigTail));
+                    Add(Token(TokenType::Tail, 3));
                     Skip();
                     SkipSpaces();
                 }
                 else if (GetCurrent() == '-' && GetNext(1) == '>' && GetNext(2) == ' ')
                 {
-                    Add(Token(TokenType::TailedArrow));
+                    Add(Token(TokenType::Arrow, 3));
                     Skip(2);
                     SkipSpaces();
                 }
                 else if (GetCurrent() == '-' && GetNext(1) == '-' && GetNext(2) == '>' && GetNext(3) == ' ')
                 {
-                    Add(Token(TokenType::LongTailedArrow));
+                    Add(Token(TokenType::Arrow, 4));
                     Skip(3);
                     SkipSpaces();
                 }
@@ -271,7 +302,7 @@ void Lexer::ParseNewline()
                 Skip();
                 if (GetCurrent() == '>' && GetNext() == ' ')
                 {
-                    Add(Token(TokenType::LongArrow));
+                    Add(Token(TokenType::Arrow, 2));
                     Skip();
                     SkipSpaces();
                 }
@@ -284,11 +315,11 @@ void Lexer::ParseNewline()
                 Skip(2);
                 if (GetCurrent() == '<')
                 {
-                    Add(Token(TokenType::RevBigTail));
+                    Add(Token(TokenType::RevTail, 3));
                     Skip();
                 }
                 else
-                    Add(Token(TokenType::RevTail));
+                    Add(Token(TokenType::RevTail, 2));
             }
             break;
 

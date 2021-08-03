@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NodeType.hpp"
+#include "NodeGroup.hpp"
 #include <vector>
 
 namespace Gularen {
@@ -8,7 +9,7 @@ namespace Gularen {
 struct Node
 {
     Node();
-    Node(NodeType type);
+    Node(NodeType type, NodeGroup group = NodeGroup::None);
 
     virtual ~Node();
 
@@ -17,12 +18,14 @@ struct Node
     virtual std::string ToString();
 
     NodeType type;
+    NodeGroup group;
     std::vector<Node*> children;
 };
 
 struct ValueNode: public Node
 {
     ValueNode();
+    ValueNode(NodeType type, NodeGroup group = NodeGroup::None);
     ValueNode(NodeType type, const std::string& value);
 
     std::string ToString() override;
@@ -43,7 +46,7 @@ struct SizeNode: public Node
 struct BooleanNode: public Node
 {
     BooleanNode();
-    BooleanNode(NodeType type, bool state = false);
+    BooleanNode(NodeType type, NodeGroup group = NodeGroup::None, bool state = false);
 
     std::string ToString() override;
 

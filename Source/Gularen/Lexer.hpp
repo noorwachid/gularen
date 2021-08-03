@@ -47,6 +47,8 @@ private:
     size_t bufferIndex;
     size_t bufferSize;
 
+    bool inHeaderLine;
+
 };
 
 }

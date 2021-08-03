@@ -32,17 +32,10 @@ std::string ToString(TokenType type)
         case TokenType::CheckBox: return "CheckBox";
         case TokenType::Line: return "Line";
 
-        case TokenType::BigTail: return "BigTail";
+        case TokenType::Anchor: return "Anchor";
+
         case TokenType::Tail: return "Tail";
-        case TokenType::Head: return "Head";
-
-        case TokenType::RevBigTail: return "RevBigTail";
         case TokenType::RevTail: return "RevTail";
-        case TokenType::RevHead: return "RevHead";
-
-        case TokenType::LongTailedArrow: return "LongTailedArrow";
-        case TokenType::TailedArrow: return "TailedArrow";
-        case TokenType::LongArrow: return "LongArrow";
         case TokenType::Arrow: return "Arrow";
 
         default: return "[Unhandled]";
