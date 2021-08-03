@@ -90,9 +90,9 @@
     [ ] Custom Marker And Local Links
         :: code 'gr'
         ---
-        >>-> The Section > '#CustomMarker'
+        >>-> The Section > 'CustomMarker'
 
-        {'#CustomMarker' {Jump custom marker}}
+        {!'CustomMarker' {Jump custom marker}}
         ---
 
     [ ] File reading
@@ -114,7 +114,7 @@
         [ ] Inline Images
         :: code 'gr'
         ---
-        ^ Needs to be designed
+        {?'image.png'}
         ---
 
 [ ] Variables
