@@ -71,13 +71,13 @@
     [+] Sectioning
         :: code 'gr'
         ---
-        >>> Document Title > 'marker' ^ BigTail
-        >> Part                       ^ Tail
-        >>--> Chapter                 ^ LongTailedArrow
-        >>-> Section                  ^ TailedArrow
-        --> Subsection                ^ LongArrow
-        -> Subsubsection              ^ Arrow
-        > Minisection                 ^ Head
+        >>> Document Title
+        >> Part
+        >>--> Chapter
+        >>-> Section
+        --> Subsection
+        -> Subsubsection
+        > Minisection
         ---
 
     [ ] Links
