@@ -9,6 +9,7 @@ namespace Html5 {
 using Gularen::NodeType;
 using Gularen::Node;
 using Gularen::ValueNode;
+using Gularen::BooleanNode;
 
 class Renderer
 {

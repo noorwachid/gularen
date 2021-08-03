@@ -182,3 +182,17 @@
 Side tasks:
 [ ] Add group enumerations for faster checking
 [ ] Add escaping reserved chars
+
+<<
+
+Supported Output:
+[+] HTML5
+[ ] HTML4
+[ ] Epub3
+[ ] PDF 1.1
+[ ] Docx
+[ ] ODT
+[ ] LaTex
+[ ] GF Markdown
+[ ] Asciidoctor
+[ ] ReStructured Text

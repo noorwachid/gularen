@@ -6,9 +6,28 @@
 using namespace Gularen;
 using namespace GularenBridge::Html5;
 
-int main()
+int main(int argc, char** argv)
 {
-    std::string buffer = IO::ToString("../Test/Files/Partition.gr");
+    if (argc > 1)
+    {
+        Lexer l;
+        l.SetBuffer(IO::ToString(argv[1]));
+        l.Parse();
+
+        AstBuilder b;
+        b.SetTokens(l.GetTokens());
+        b.Parse();
+
+        Renderer r;
+        r.SetTree(b.GetTree());
+        r.Parse();
+
+        IO::Write(r.GetBuffer());
+
+        return 0;
+    }
+
+    std::string buffer = IO::ToString("../Tests/Files/List.gr");
 
     Lexer lexer;
     lexer.SetBuffer(buffer);
@@ -16,7 +35,6 @@ int main()
     std::vector<Token> tokens = lexer.GetTokens();
 
     IO::WriteLine(lexer.ToString());
-
 
     AstBuilder builder;
     builder.SetTokens(std::move(tokens));
