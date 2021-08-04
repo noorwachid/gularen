@@ -74,9 +74,9 @@ void Lexer::Parse()
                 {
                     Skip();
                     SkipSpaces();
-                    if (GetCurrent() == '\'' && GetNext() == '#')
+                    if (GetCurrent() == '\'')
                     {
-                        Skip(2);
+                        Skip();
                         std::string symbol;
                         while (IsValid() && IsValidSymbol())
                         {

@@ -27,7 +27,7 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    std::string buffer = IO::ToString("../Tests/Files/List.gr");
+    std::string buffer = IO::ToString("../Tests/Files/Partition.gr");
 
     Lexer lexer;
     lexer.SetBuffer(buffer);

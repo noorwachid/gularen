@@ -1,1 +1,1 @@
-autocmd BufNewFile,BufRead *.gr,*.gularen set ft=gularen
+autocmd BufNewFile,BufRead *.gr,*.gularen,*.gr.txt,*.gularen.txt set ft=gularen
