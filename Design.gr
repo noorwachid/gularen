@@ -167,7 +167,7 @@
         }
         ---
         ----
-    [ ] Oneline Codes
+    [+] Inline Codes
         ``the code goes here``
 
 [ ] Tables

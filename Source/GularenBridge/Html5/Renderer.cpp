@@ -51,8 +51,12 @@ void Renderer::TraverseBeforeChildren(Node* node)
             buffer += "<i>";
             break;
         case NodeType::FMonospace:
+            buffer += "<code>";
+            break;
+
         case NodeType::InlineCode:
             buffer += "<code>";
+            buffer += static_cast<ValueNode*>(node)->value;
             break;
 
         case NodeType::Paragraph:
