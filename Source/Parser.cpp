@@ -1,51 +1,157 @@
-#include "Gularen/IO.hpp"
-#include "Gularen/Lexer.hpp"
-#include "Gularen/AstBuilder.hpp"
-#include "GularenBridge/Html5/Renderer.hpp"
+#include <Gularen/IO.hpp>
+#include <Gularen/Lexer.hpp>
+#include <Gularen/AstBuilder.hpp>
+#include <GularenBridge/Html5/Renderer.hpp>
 
 using namespace Gularen;
 using namespace GularenBridge::Html5;
 
-int main(int argc, char** argv)
+class ConsoleInterface
 {
-    if (argc > 1)
+public:
+    std::string inputBuffer;
+    std::string input;
+    std::string output;
+
+    bool bTree;
+    bool bTokens;
+    bool bRenderedBuffer;
+
+    void Run(int size, char** args)
     {
-        Lexer l;
-        l.SetBuffer(IO::ToString(argv[1]));
-        l.Parse();
+        for (int i = 1; i < size; ++i)
+        {
+            std::string arg = args[i];
 
-        AstBuilder b;
-        b.SetTokens(l.GetTokens());
-        b.Parse();
+            if (arg[0] == '-')
+            {
+                for (size_t j = 1; j < arg.size(); ++j)
+                {
+                    switch (arg[j])
+                    {
+                        case 'o':
+                            if (i + 2 > size || args[i + 1][0] == '-')
+                            {
+                                IO::WriteLine("-o requires you to specify the file path");
+                                Terminate(1);
+                            }
+                            output = args[i + 1];
+                            ++i;
+                            break;
 
-        Renderer r;
-        r.SetTree(b.GetTree());
-        r.Parse();
+                        case 'i':
+                            if (i + 2 > size || args[i + 1][0] == '-')
+                            {
+                                IO::WriteLine("-i requires you to specify the file path");
+                                Terminate(1);
+                            }
+                            input = args[i + 1];
+                            ++i;
+                            break;
 
-        IO::Write(r.GetBuffer());
+                        case 'e':
+                            if (i + 2 > size || args[i + 1][0] == '-')
+                            {
+                                IO::WriteLine("-o requires you to specify the string buffer");
+                                Terminate(1);
+                            }
+                            inputBuffer = args[i + 1];
+                            ++i;
+                            break;
 
-        return 0;
+                        case 't':
+                            bTree = true;
+                            break;
+
+                        case 'k':
+                            bTokens = true;
+                            break;
+
+                        case 'g':
+                            bRenderedBuffer = true;
+                            break;
+
+                        case 'v':
+                            WriteVersion();
+                            break;
+
+                        case 'h':
+                            WriteHelp();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+            }
+            else
+                input = arg;
+        }
+
+        Parse();
     }
 
-    std::string buffer = IO::ToString("../Tests/Files/Partition.gr");
+    void Parse()
+    {
+        Lexer lexer;
+        lexer.SetBuffer(!inputBuffer.empty() ? inputBuffer : IO::ReadFile(input));
+        lexer.Parse();
 
-    Lexer lexer;
-    lexer.SetBuffer(buffer);
-    lexer.Parse();
-    std::vector<Token> tokens = lexer.GetTokens();
+        AstBuilder builder;
+        builder.SetTokens(lexer.GetTokens());
+        builder.Parse();
 
-    IO::WriteLine(lexer.ToString());
+        Renderer r;
+        r.SetTree(builder.GetTree());
+        r.Parse();
 
-    AstBuilder builder;
-    builder.SetTokens(std::move(tokens));
-    builder.Parse();
+        if (bTokens)
+            IO::Write(lexer.ToString());
 
-    IO::WriteLine(builder.ToString());
+        if (bTree)
+            IO::Write(builder.ToString());
 
-    Renderer renderer;
-    renderer.SetTree(builder.GetTree());
-    renderer.Parse();
-    IO::WriteLine(renderer.GetBuffer());
+        if (bRenderedBuffer)
+            IO::Write(r.GetBuffer());
+
+        if (!output.empty())
+            IO::WriteFile(output, r.GetBuffer());
+    }
+
+    void Terminate(int code = 0)
+    {
+        std::exit(code);
+    }
+
+    void WriteVersion()
+    {
+        IO::WriteLine("0.0.1");
+    }
+
+    void WriteHelp()
+    {
+        IO::WriteLine("    -v version");
+        IO::WriteLine("    -h help");
+        IO::WriteLine("    -e parse string buffer");
+        IO::WriteLine("    -i specify input file path");
+        IO::WriteLine("    -o specify output file path");
+        IO::WriteLine("    -r specify renderer engine");
+        IO::WriteLine("    -k write tokens to console buffer");
+        IO::WriteLine("    -t write tree to console buffer");
+        IO::WriteLine("    -g write generated buffer to console buffer");
+    }
+private:
+};
+
+
+int main(int argc, char** argv)
+{
+    ConsoleInterface ci;
+    if (argc > 1)
+        ci.Run(argc, argv);
+    else
+        ci.WriteHelp();
 
     return 0;
 }

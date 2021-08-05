@@ -38,6 +38,8 @@ std::string ToString(TokenType type)
         case TokenType::RevTail: return "RevTail";
         case TokenType::Arrow: return "Arrow";
 
+        case TokenType::Teeth: return "Teeth";
+
         default: return "[Unhandled]";
     }
 }

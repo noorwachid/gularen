@@ -23,6 +23,8 @@ sy match gularenBullet     "^\ *\.\.\ "
 sy match gularenLine       "^\ *---\+"
 sy match gularenBox        "^\ *\::"
 sy match gularenRevTail    "<"
+sy match gularenCB         "{\(!\|?\)\?"
+sy match gularenCB         "}"
 
 sy region gularenFBold      start="\*" end="\*"
 sy region gularenFItalic    start="_" end="_"
@@ -40,3 +42,4 @@ hi def link gularenBox        Function
 hi def link gularenRevTail    Function
 hi def link gularenFMonospace Number
 hi def link gularenInlineCode String
+hi def link gularenCB         Keyword

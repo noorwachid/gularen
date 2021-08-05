@@ -38,8 +38,27 @@ void Lexer::Parse()
                 break;
 
             case '`':
-                Add(Token(TokenType::Backtick));
                 Skip();
+                if (GetCurrent() == '`')
+                {
+                    Skip();
+                    Add(Token(TokenType::Teeth));
+                    std::string buffer;
+                    while (IsValid())
+                    {
+                        if (GetCurrent() == '`' && GetNext() == '`')
+                        {
+                            Add(Token(TokenType::Text, buffer));
+                            Add(Token(TokenType::Teeth));
+                            Skip(2);
+                            break;
+                        }
+                        buffer += GetCurrent();
+                        Skip();
+                    }
+                }
+                else
+                    Add(Token(TokenType::Backtick));
                 break;
 
             case '\n':

@@ -27,6 +27,8 @@ enum struct NodeType
     Minisection,
     Paragraph,
 
+    InlineCode,
+
     // Value types
     Text,
     Link,

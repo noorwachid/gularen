@@ -25,6 +25,8 @@ std::string ToString(NodeType type)
         case NodeType::Minisection: return "Minisection";
         case NodeType::Paragraph: return "Paragraph";
 
+        case NodeType::InlineCode: return "InlineCode";
+
         case NodeType::FBold: return "FBold";
         case NodeType::FItalic: return "FItalic";
         case NodeType::FMonospace: return "FMonospace";

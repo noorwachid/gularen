@@ -44,6 +44,17 @@ void Renderer::TraverseBeforeChildren(Node* node)
             buffer += static_cast<ValueNode*>(node)->value;
             break;
 
+        case NodeType::FBold:
+            buffer += "<b>";
+            break;
+        case NodeType::FItalic:
+            buffer += "<i>";
+            break;
+        case NodeType::FMonospace:
+        case NodeType::InlineCode:
+            buffer += "<code>";
+            break;
+
         case NodeType::Paragraph:
             buffer += "<p>";
             break;
@@ -116,6 +127,17 @@ void Renderer::TraverseAfterChildren(Node* node)
     {
         case NodeType::Title:
             buffer += "</h1>\n";
+            break;
+
+        case NodeType::FBold:
+            buffer += "</b>";
+            break;
+        case NodeType::FItalic:
+            buffer += "</i>";
+            break;
+        case NodeType::FMonospace:
+        case NodeType::InlineCode:
+            buffer += "</code>";
             break;
 
         case NodeType::Paragraph:

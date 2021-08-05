@@ -87,12 +87,16 @@
         {'google.com' { this guy can parse markup *nice* }}
         ---
 
-    [ ] Custom Marker And Local Links
+    [ ] Local Links
+        :: code 'gr'
+        ---
+        {!'CustomMarker' { Jump custom marker }}
+        ---
+
+    [+] Custom Marker
         :: code 'gr'
         ---
         >>-> The Section > 'CustomMarker'
-
-        {!'CustomMarker' {Jump custom marker}}
         ---
 
     [ ] File reading
@@ -180,7 +184,7 @@
 <<
 
 Side tasks:
-[ ] Add group enumerations for faster checking
+[+] Add group enumerations for faster checking
 [ ] Add escaping reserved chars
 
 <<

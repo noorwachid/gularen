@@ -20,5 +20,8 @@ add_library(GularenBridge
 target_include_directories(GularenBridge PUBLIC Source)
 target_link_libraries(GularenBridge Gularen)
 
-add_executable(grparser Source/Parser.cpp)
-target_link_libraries(grparser GularenBridge)
+add_executable(GularenTest Tests/Parser.cpp)
+target_link_libraries(GularenTest GularenBridge)
+
+add_executable(gularen Source/Parser.cpp)
+target_link_libraries(gularen GularenBridge)

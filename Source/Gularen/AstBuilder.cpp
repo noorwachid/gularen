@@ -76,6 +76,17 @@ void AstBuilder::Parse()
                 Skip();
                 break;
 
+            case TokenType::Teeth:
+            {
+                Skip();
+                if (GetCurrent().type == TokenType::Text && GetNext().type == TokenType::Teeth)
+                {
+                    GetHead()->Add(new ValueNode(NodeType::InlineCode, GetCurrent().value));
+                    Skip(2);
+                }
+                break;
+            }
+
             default:
                 Skip();
                 break;
