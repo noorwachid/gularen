@@ -83,14 +83,14 @@
     [ ] Links
         :: code 'gr'
         ---
-        {'google.com'}
-        {'google.com' { this guy can parse markup *nice* }}
+        {:'google.com'}
+        {:'google.com' {this guy can parse markup *nice*}}
         ---
 
     [ ] Local Links
         :: code 'gr'
         ---
-        {!'CustomMarker' { Jump custom marker }}
+        {!'CustomMarker' {Jump custom marker}}
         ---
 
     [+] Custom Marker
@@ -126,7 +126,7 @@
         :: code 'gr'
         ---
         :: AuthorName = 'Nora Winchester'
-        :: AsMarkup = { his name is {AuthorName} }
+        :: AsMarkup = {his name is {AuthorName}}
         ---
 
     [ ] Printing
@@ -143,15 +143,10 @@
 
 [ ] Admonitions
     :: code 'gr'
-    ---
-    :: 'Note' { One line admonitions }
-    ---
-
-    :: code 'gr'
     ----
-    :: 'Note'
+    :: admon 'Note'
     ---
-    Multiline admonitions
+    Admonitions
     ---
     ----
 
