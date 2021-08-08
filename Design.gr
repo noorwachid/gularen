@@ -114,6 +114,7 @@
         :: code 'gr'
         ---
         :: image 'SomeImage.jpg'
+        :: image 'SomeImage.jpg' {Alternative Title}
         ---
 
         [+] Inline Images
@@ -144,13 +145,20 @@
     ---
 
 [ ] Admonitions
-    :: code 'gr'
-    ----
-    :: admon 'Note'
-    ---
-    Admonitions
-    ---
-    ----
+    [ ] Multiline Admoninitons
+        :: code 'gr'
+        ----
+        :: admon 'Note'
+        ---
+        Admonitions
+        ---
+        ----
+
+    [ ] Oneline Admonitions
+        :: code 'gr'
+        ---
+        :: admon 'Note' {Oneline Admonition}
+        ---
 
 [ ] Codes
     [ ] Multiline Codes
