@@ -28,10 +28,22 @@ enum struct NodeType
     Paragraph,
 
     InlineCode,
+    Code,
+
+    Table,
+
+    Symbol,
+    Curtain,
+    Wrapper,
 
     // Value types
     Text,
+    QuotedText,
     Link,
+    LocalLink,
+
+    InlineImage,
+    Image,
 
     // Font style types
     FBold,

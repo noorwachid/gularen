@@ -12,6 +12,8 @@ enum struct NodeGroup
     List,
     Item,
     Break,
+
+    Link,
 };
 
 }

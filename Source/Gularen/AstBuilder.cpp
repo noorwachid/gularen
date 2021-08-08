@@ -7,36 +7,34 @@ AstBuilder::AstBuilder()
 {
 }
 
-void AstBuilder::SetTokens(std::vector<Token> tokens)
+void AstBuilder::SetBuffer(const std::string &buffer)
 {
-    this->tokens = tokens;
-    tokenIndex = 0;
-    tokenSize = tokens.size();
+    lexer.SetBuffer(buffer);
+    lexer.Parse();
 
-    if (root)
-        delete root;
+    Reset();
+}
 
-    root = new Node(NodeType::Root);
+void AstBuilder::SetTokens(const std::vector<Token> &tokens)
+{
+    lexer.SetTokens(tokens);
 
-    while (!headStack.empty())
-        headStack.pop();
-
-    headStack.push(root);
+    Reset();
 }
 
 void AstBuilder::Parse()
 {
-    if (GetCurrent().type == TokenType::DocumentBegin)
+    if (GetCurrentToken().type == TokenType::DocumentBegin)
         Skip();
 
     ParseNewline();
 
     while (IsValid())
     {
-        switch (GetCurrent().type)
+        switch (GetCurrentToken().type)
         {
             case TokenType::Text:
-                GetHead()->Add(new ValueNode(NodeType::Text, GetCurrent().value));
+                GetHead()->Add(new ValueNode(NodeType::Text, GetCurrentToken().value));
                 Skip();
                 break;
 
@@ -54,7 +52,7 @@ void AstBuilder::Parse()
 
             case TokenType::Newline:
             {
-                size_t newlineSize = GetCurrent().size;
+                size_t newlineSize = GetCurrentToken().size;
                 // GetHead()->Add(new SizeNode(NodeType::Newline, GetCurrent().size));
                 Skip();
                 ParseNewline(newlineSize);
@@ -65,7 +63,7 @@ void AstBuilder::Parse()
             {
                 if (GetHead()->group == NodeGroup::Header)
                 {
-                    static_cast<ValueNode*>(GetHead())->value = GetCurrent().value;
+                    static_cast<ValueNode*>(GetHead())->value = GetCurrentToken().value;
                 }
                 Skip();
                 break;
@@ -79,13 +77,45 @@ void AstBuilder::Parse()
             case TokenType::Teeth:
             {
                 Skip();
-                if (GetCurrent().type == TokenType::Text && GetNext().type == TokenType::Teeth)
+                if (GetCurrentToken().type == TokenType::Text && GetNextToken().type == TokenType::Teeth)
                 {
-                    GetHead()->Add(new ValueNode(NodeType::InlineCode, GetCurrent().value));
+                    GetHead()->Add(new ValueNode(NodeType::InlineCode, GetCurrentToken().value));
                     Skip(2);
                 }
                 break;
             }
+
+            case TokenType::LCurlyBracket:
+                Skip();
+                switch (GetCurrentToken().type)
+                {
+                    case TokenType::Symbol:
+                        GetHead()->Add(new ValueNode(NodeType::Curtain, GetCurrentToken().value));
+                        Skip();
+                        break;
+
+                    case TokenType::Colon:
+                        ParseLink(NodeType::Link);
+                        break;
+
+                    case TokenType::ExclamationMark:
+                        ParseLink(NodeType::LocalLink);
+                        break;
+
+                    case TokenType::QuestionMark:
+                        ParseLink(NodeType::InlineImage);
+                        break;
+
+                    default:
+                        break;
+                }
+
+                break;
+
+            case TokenType::RCurlyBracket:
+                Skip();
+                PopHead();
+                break;
 
             default:
                 Skip();
@@ -96,21 +126,47 @@ void AstBuilder::Parse()
     ParseNewline();
 }
 
+void AstBuilder::Reset()
+{
+    tokenIndex = 0;
+    tokenSize = lexer.GetTokens().size();
+
+    if (root)
+        delete root;
+
+    root = new Node(NodeType::Root);
+
+    while (!headStack.empty())
+        headStack.pop();
+
+    headStack.push(root);
+}
+
+std::string AstBuilder::GetBuffer()
+{
+    return lexer.GetBuffer();
+}
+
 Node* AstBuilder::GetTree()
 {
     return root;
 }
 
-std::string AstBuilder::ToString()
+std::string AstBuilder::GetTokensAsString()
+{
+    return lexer.GetTokensAsString();
+}
+
+std::string AstBuilder::GetTreeAsString()
 {
     std::string buffer;
 
-    TraverseToString(GetTree(), 0, buffer);
+    TraverseAsString(GetTree(), 0, buffer);
 
-    return buffer;
+    return buffer + "\n";
 }
 
-void Gularen::AstBuilder::TraverseToString(Node* node, size_t depth, std::string& buffer)
+void Gularen::AstBuilder::TraverseAsString(Node* node, size_t depth, std::string& buffer)
 {
     for (size_t i = 0; i < depth; ++i)
         buffer += "    ";
@@ -118,7 +174,7 @@ void Gularen::AstBuilder::TraverseToString(Node* node, size_t depth, std::string
     buffer += node->ToString() + "\n";
 
     for (Node* child: node->children)
-        TraverseToString(child, depth + 1, buffer);
+        TraverseAsString(child, depth + 1, buffer);
 }
 
 void AstBuilder::ParseNewline(size_t newlineSize)
@@ -127,9 +183,9 @@ void AstBuilder::ParseNewline(size_t newlineSize)
 
     size_t currentDepth = 0;
 
-    if (GetCurrent().type == TokenType::Space)
+    if (GetCurrentToken().type == TokenType::Space)
     {
-        currentDepth = GetCurrent().size / 4;
+        currentDepth = GetCurrentToken().size / 4;
         Skip();
     }
 
@@ -163,7 +219,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
     if (GetHead()->group == NodeGroup::Item)
         PopHead();
 
-    switch (GetCurrent().type)
+    switch (GetCurrentToken().type)
     {
         case TokenType::Text:
             if (!ShouldPushHead(NodeType::Paragraph, newlineSize))
@@ -171,7 +227,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             break;
 
         case TokenType::Tail:
-            switch (GetCurrent().size)
+            switch (GetCurrentToken().size)
             {
                 case 1:
                     ShouldPushValueHead(NodeType::Minisection, NodeGroup::Header);
@@ -190,7 +246,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             break;
 
         case TokenType::Arrow:
-            switch (GetCurrent().size)
+            switch (GetCurrentToken().size)
             {
                 case 1:
                     ShouldPushValueHead(NodeType::Subsubsection, NodeGroup::Header);
@@ -229,7 +285,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
 
         case TokenType::CheckBox:
             ShouldPushHead(NodeType::CheckList);
-            PushHead(new BooleanNode(NodeType::CheckItem, NodeGroup::Item, GetCurrent().size));
+            PushHead(new BooleanNode(NodeType::CheckItem, NodeGroup::Item, GetCurrentToken().size));
             Skip();
             break;
 
@@ -256,7 +312,7 @@ void Gularen::AstBuilder::ParseRAngleBracket()
 
 void AstBuilder::ParseRevTail()
 {
-    switch (GetCurrent().size)
+    switch (GetCurrentToken().size)
     {
         case 1: GetHead()->Add(new Node(NodeType::LineBreak, NodeGroup::Break)); break;
         case 2: GetHead()->Add(new Node(NodeType::ThematicBreak, NodeGroup::Break)); break;
@@ -267,6 +323,36 @@ void AstBuilder::ParseRevTail()
 
 void AstBuilder::ParseEqual()
 {
+}
+
+void AstBuilder::ParseLink(NodeType type)
+{
+    ContainerNode* container = new ContainerNode(type, NodeGroup::Link);
+    ValueNode* node = new ValueNode();
+    Skip();
+
+    if (GetCurrentToken().type == TokenType::QuotedText)
+    {
+        node->type = NodeType::QuotedText;
+        node->value = GetCurrentToken().value;
+        Skip();
+    }
+    else if (GetCurrentToken().type == TokenType::Symbol)
+    {
+        node->type = NodeType::Symbol;
+        node->value = GetCurrentToken().value;
+        Skip();
+    }
+    container->value = node;
+
+    if (GetCurrentToken().type == TokenType::LCurlyBracket)
+    {
+        PushHead(container);
+        PushHead(new Node(NodeType::Wrapper));
+        Skip();
+    }
+    else
+        PushHead(container);
 }
 
 Node* AstBuilder::GetHead()
@@ -335,14 +421,14 @@ bool AstBuilder::IsValid()
     return tokenIndex < tokenSize;
 }
 
-Token& AstBuilder::GetCurrent()
+Token& AstBuilder::GetCurrentToken()
 {
-    return tokens[tokenIndex];
+    return lexer.GetToken(tokenIndex);
 }
 
-Token& AstBuilder::GetNext(size_t offset)
+Token& AstBuilder::GetNextToken(size_t offset)
 {
-    return tokenIndex + offset < tokenSize ? tokens[tokenIndex + offset] : emptyToken;
+    return tokenIndex + offset < tokenSize ? lexer.GetToken(tokenIndex + offset) : emptyToken;
 }
 
 void AstBuilder::Skip(size_t offset)

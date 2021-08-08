@@ -53,5 +53,15 @@ struct BooleanNode: public Node
     bool state;
 };
 
+struct ContainerNode: public Node
+{
+    ContainerNode();
+    ContainerNode(NodeType type, NodeGroup group = NodeGroup::None, Node* value = nullptr);
+
+    std::string ToString() override;
+
+    Node* value;
+};
+
 }
 

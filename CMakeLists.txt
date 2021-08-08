@@ -4,6 +4,7 @@ project(Gularen)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# MainLibrary
 add_library(Gularen
     Source/Gularen/IO.cpp
     Source/Gularen/TokenType.cpp
@@ -15,13 +16,12 @@ add_library(Gularen
     Source/Gularen/AstBuilder.cpp)
 target_include_directories(Gularen PUBLIC Source)
 
+# BridgeLibrary
 add_library(GularenBridge
     Source/GularenBridge/Html5/Renderer.cpp)
 target_include_directories(GularenBridge PUBLIC Source)
 target_link_libraries(GularenBridge Gularen)
 
-add_executable(GularenTest Tests/Parser.cpp)
-target_link_libraries(GularenTest GularenBridge)
-
-add_executable(gularen Source/Parser.cpp)
+# ConsoleInterface
+add_executable(gularen Source/ConsoleInterface.cpp)
 target_link_libraries(gularen GularenBridge)

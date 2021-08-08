@@ -23,7 +23,7 @@ sy match gularenBullet     "^\ *\.\.\ "
 sy match gularenLine       "^\ *---\+"
 sy match gularenBox        "^\ *\::"
 sy match gularenRevTail    "<"
-sy match gularenCB         "{\(!\|?\)\?"
+sy match gularenCB         "{\(:\|!\|?\)\?"
 sy match gularenCB         "}"
 
 sy region gularenFBold      start="\*" end="\*"

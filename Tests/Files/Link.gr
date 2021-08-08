@@ -1,0 +1,8 @@
+{EchoVariable}
+{:WithVariable}
+{:'duckduckgo.com'}
+{:'duckduckgo.com' {is *here*}}
+{!'ThisSection'}
+{!'ThisSection' {This section}}
+{?'image.png'}
+{?'image.png' {Alternative Title}}

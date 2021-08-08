@@ -77,4 +77,28 @@ std::string BooleanNode::ToString()
     return Gularen::ToString(type) + ": " + (state ? "true" : "false");
 }
 
+ContainerNode::ContainerNode():
+    Node(NodeType::Unknown),
+    value(nullptr)
+{}
+
+ContainerNode::ContainerNode(NodeType type, NodeGroup group, Node *node):
+    Node(type, group),
+    value(node)
+{}
+
+std::string ContainerNode::ToString()
+{
+    std::string buffer = Gularen::ToString(type) + ": ";
+    if (value)
+    {
+        if (value->type == NodeType::Symbol)
+            buffer += "%" + static_cast<ValueNode*>(value)->value;
+
+        if (value->type == NodeType::QuotedText)
+            buffer += "\"" + static_cast<ValueNode*>(value)->value + "\"";
+    }
+    return buffer;
+}
+
 }

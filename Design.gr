@@ -80,16 +80,17 @@
         > Minisection
         ---
 
-    [ ] Links
+    [+] Links
         :: code 'gr'
         ---
         {:'google.com'}
         {:'google.com' {this guy can parse markup *nice*}}
         ---
 
-    [ ] Local Links
+    [+] Local Links
         :: code 'gr'
         ---
+        {!'CustomMarker'}
         {!'CustomMarker' {Jump custom marker}}
         ---
 
@@ -115,10 +116,11 @@
         :: image 'SomeImage.jpg'
         ---
 
-        [ ] Inline Images
+        [+] Inline Images
         :: code 'gr'
         ---
         {?'image.png'}
+        {?'image.png' {Alternative Title}}
         ---
 
 [ ] Variables
@@ -129,7 +131,7 @@
         :: AsMarkup = {his name is {AuthorName}}
         ---
 
-    [ ] Printing
+    [+] Printing
         :: code 'gr'
         ---
         My name is {AuthorName}
@@ -181,6 +183,7 @@
 Side tasks:
 [+] Add group enumerations for faster checking
 [ ] Add escaping reserved chars
+[ ] Fix appropriate paragraph node beside begin with text
 
 <<
 

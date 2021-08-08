@@ -16,6 +16,14 @@ void Lexer::SetBuffer(const std::string& buffer)
     Reset();
 }
 
+void Lexer::SetTokens(const std::vector<Token> &tokens)
+{
+    Reset();
+    buffer.clear();
+
+    this->tokens = tokens;
+}
+
 void Lexer::Parse()
 {
     Reset();
@@ -25,7 +33,7 @@ void Lexer::Parse()
     while (IsValid())
     {
         // Main switchboard
-        switch (GetCurrent())
+        switch (GetCurrentByte())
         {
             case '*':
                 Add(Token(TokenType::Asterisk));
@@ -39,21 +47,21 @@ void Lexer::Parse()
 
             case '`':
                 Skip();
-                if (GetCurrent() == '`')
+                if (GetCurrentByte() == '`')
                 {
                     Skip();
                     Add(Token(TokenType::Teeth));
                     std::string buffer;
                     while (IsValid())
                     {
-                        if (GetCurrent() == '`' && GetNext() == '`')
+                        if (GetCurrentByte() == '`' && GetNextByte() == '`')
                         {
                             Add(Token(TokenType::Text, buffer));
                             Add(Token(TokenType::Teeth));
                             Skip(2);
                             break;
                         }
-                        buffer += GetCurrent();
+                        buffer += GetCurrentByte();
                         Skip();
                     }
                 }
@@ -64,7 +72,7 @@ void Lexer::Parse()
             case '\n':
             {
                 size_t size = 0;
-                while (IsValid() && GetCurrent() == '\n')
+                while (IsValid() && GetCurrentByte() == '\n')
                 {
                     ++size;
                     Skip();
@@ -84,7 +92,7 @@ void Lexer::Parse()
             }
 
             case '^':
-                while (IsValid() && GetCurrent() != '\n')
+                while (IsValid() && GetCurrentByte() != '\n')
                     Skip();
                 break;
 
@@ -93,16 +101,16 @@ void Lexer::Parse()
                 {
                     Skip();
                     SkipSpaces();
-                    if (GetCurrent() == '\'')
+                    if (GetCurrentByte() == '\'')
                     {
                         Skip();
                         std::string symbol;
                         while (IsValid() && IsValidSymbol())
                         {
-                            symbol += GetCurrent();
+                            symbol += GetCurrentByte();
                             Skip();
                         }
-                        if (GetCurrent() == '\'')
+                        if (GetCurrentByte() == '\'')
                         {
                             Add(Token(TokenType::Anchor, symbol));
                             Skip();
@@ -114,6 +122,17 @@ void Lexer::Parse()
 
             case '<':
                 Add(Token(TokenType::RevTail, 1));
+                Skip();
+                break;
+
+            case '{':
+                Add(Token(TokenType::LCurlyBracket));
+                Skip();
+                ParseInlineFunction();
+                break;
+
+            case '}':
+                Add(Token(TokenType::RCurlyBracket));
                 Skip();
                 break;
 
@@ -129,26 +148,37 @@ void Lexer::Parse()
     Add(Token(TokenType::DocumentEnd));
 }
 
+std::string Lexer::GetBuffer()
+{
+    return buffer;
+}
+
+Token &Lexer::GetToken(size_t index)
+{
+    return tokens[index];
+}
+
 void Lexer::Reset()
 {
     inHeaderLine = false;
+    inLink = false;
     bufferIndex = 0;
     tokens.clear();
 }
 
-std::vector<Token> Lexer::GetTokens()
+std::vector<Token>& Lexer::GetTokens()
 {
     return tokens;
 }
 
-std::string Lexer::ToString()
+std::string Lexer::GetTokensAsString()
 {
     std::string buffer;
 
     for (Token& token: tokens)
         buffer += token.ToString() + "\n";
 
-    return buffer;
+    return buffer + "\n";
 }
 
 void Lexer::ParseText()
@@ -158,10 +188,25 @@ void Lexer::ParseText()
 
     while (IsValid() && IsValidText())
     {
-        token.value += GetCurrent();
+        token.value += GetCurrentByte();
         Skip();
     }
 
+    Add(std::move(token));
+}
+
+void Lexer::ParseQuotedText()
+{
+    Token token;
+    token.type = TokenType::QuotedText;
+
+    Skip();
+    while (IsValid() && GetCurrentByte() != '\'')
+    {
+        token.value += GetCurrentByte();
+        Skip();
+    }
+    Skip();
     Add(std::move(token));
 }
 
@@ -171,7 +216,7 @@ void Lexer::ParseRepeat(char c, TokenType type)
     token.size = 1;
     Skip();
 
-    while (IsValid() && GetCurrent() == c)
+    while (IsValid() && GetCurrentByte() == c)
     {
         ++token.size;
         Skip();
@@ -185,7 +230,7 @@ void Lexer::ParseNewline()
     // State variables
     inHeaderLine = false;
 
-    switch (GetCurrent())
+    switch (GetCurrentByte())
     {
         case ' ':
             ParseRepeat(' ', TokenType::Space);
@@ -196,7 +241,7 @@ void Lexer::ParseNewline()
         {
             size_t size = 0;
 
-            while (IsValid() && GetCurrent() == '-')
+            while (IsValid() && GetCurrentByte() == '-')
             {
                 Skip();
                 ++size;
@@ -204,7 +249,7 @@ void Lexer::ParseNewline()
 
             if (size == 1)
             {
-                if (GetCurrent() == '>' && GetNext() == ' ')
+                if (GetCurrentByte() == '>' && GetNextByte() == ' ')
                 {
                     Add(Token(TokenType::Arrow, 1));
                     Skip();
@@ -216,7 +261,7 @@ void Lexer::ParseNewline()
                     SkipSpaces();
                 }
             }
-            else if (size == 2 && GetCurrent() == '>' && GetNext() == ' ')
+            else if (size == 2 && GetCurrentByte() == '>' && GetNextByte() == ' ')
             {
                 Add(Token(TokenType::Arrow, 2));
                 Skip();
@@ -242,11 +287,11 @@ void Lexer::ParseNewline()
 
             while (IsValid() && IsValidNumeric())
             {
-                buffer += GetCurrent();
+                buffer += GetCurrentByte();
                 Skip();
             }
 
-            if (GetCurrent() == '.' && GetNext() == ' ')
+            if (GetCurrentByte() == '.' && GetNextByte() == ' ')
             {
                 Add(Token(TokenType::NBullet));
                 Skip(2);
@@ -258,7 +303,7 @@ void Lexer::ParseNewline()
         }
 
         case '.':
-            if (GetNext(1) == '.' && GetNext(2) == ' ')
+            if (GetNextByte(1) == '.' && GetNextByte(2) == ' ')
             {
                 Add(Token(TokenType::NBullet));
                 Skip(3);
@@ -266,10 +311,10 @@ void Lexer::ParseNewline()
             break;
 
         case '[':
-            if ((GetNext(1) == ' ' || GetNext(1) == '+') && GetNext(2) == ']')
+            if ((GetNextByte(1) == ' ' || GetNextByte(1) == '+') && GetNextByte(2) == ']')
             {
                 Token token(TokenType::CheckBox);
-                if (GetNext(1) == '+')
+                if (GetNextByte(1) == '+')
                     token.size = 1;
 
                 Add(std::move(token));
@@ -283,43 +328,43 @@ void Lexer::ParseNewline()
             inHeaderLine = true;
 
             Skip();
-            if (GetCurrent() == ' ')
+            if (GetCurrentByte() == ' ')
             {
                 Add(Token(TokenType::Tail, 1));
                 SkipSpaces();
                 break;
             }
-            else if (GetCurrent() == '>')
+            else if (GetCurrentByte() == '>')
             {
                 Skip();
-                if (GetCurrent() == ' ')
+                if (GetCurrentByte() == ' ')
                 {
                     Add(Token(TokenType::Tail, 2));
                     SkipSpaces();
                 }
-                else if (GetCurrent() == '>' && GetNext() == ' ')
+                else if (GetCurrentByte() == '>' && GetNextByte() == ' ')
                 {
                     Add(Token(TokenType::Tail, 3));
                     Skip();
                     SkipSpaces();
                 }
-                else if (GetCurrent() == '-' && GetNext(1) == '>' && GetNext(2) == ' ')
+                else if (GetCurrentByte() == '-' && GetNextByte(1) == '>' && GetNextByte(2) == ' ')
                 {
                     Add(Token(TokenType::Arrow, 3));
                     Skip(2);
                     SkipSpaces();
                 }
-                else if (GetCurrent() == '-' && GetNext(1) == '-' && GetNext(2) == '>' && GetNext(3) == ' ')
+                else if (GetCurrentByte() == '-' && GetNextByte(1) == '-' && GetNextByte(2) == '>' && GetNextByte(3) == ' ')
                 {
                     Add(Token(TokenType::Arrow, 4));
                     Skip(3);
                     SkipSpaces();
                 }
             }
-            else if (GetCurrent() == '-')
+            else if (GetCurrentByte() == '-')
             {
                 Skip();
-                if (GetCurrent() == '>' && GetNext() == ' ')
+                if (GetCurrentByte() == '>' && GetNextByte() == ' ')
                 {
                     Add(Token(TokenType::Arrow, 2));
                     Skip();
@@ -329,10 +374,10 @@ void Lexer::ParseNewline()
         }
 
         case '<':
-            if (GetNext() == '<')
+            if (GetNextByte() == '<')
             {
                 Skip(2);
-                if (GetCurrent() == '<')
+                if (GetCurrentByte() == '<')
                 {
                     Add(Token(TokenType::RevTail, 3));
                     Skip();
@@ -343,7 +388,7 @@ void Lexer::ParseNewline()
             break;
 
         case ':':
-            if (GetNext() == ':')
+            if (GetNextByte() == ':')
             {
                 Add(Token(TokenType::Box));
                 Skip(2);
@@ -360,11 +405,56 @@ void Lexer::ParseFunction()
 
     while (IsValid() && IsValidSymbol())
     {
-        symbol += GetCurrent();
+        symbol += GetCurrentByte();
         Skip();
     }
     Add(Token(TokenType::Symbol));
     SkipSpaces();
+}
+
+void Lexer::ParseInlineFunction()
+{
+    switch (GetCurrentByte())
+    {
+        case ':':
+            inLink = true;
+            Add(Token(TokenType::Colon));
+            Skip();
+            break;
+
+        case '!':
+            inLink = true;
+            Add(Token(TokenType::ExclamationMark));
+            Skip();
+            break;
+
+        case '?':
+            inLink = true;
+            Add(Token(TokenType::QuestionMark));
+            Skip();
+            break;
+    }
+
+    if (GetCurrentByte() == '\'')
+        ParseQuotedText();
+    else if (IsValidSymbol())
+    {
+        std::string symbol;
+        while (IsValid() && IsValidSymbol())
+        {
+            symbol += GetCurrentByte();
+            Skip();
+        }
+        Add(Token(TokenType::Symbol, symbol));
+    }
+
+    SkipSpaces();
+
+    if (GetCurrentByte() == '{')
+    {
+        Add(Token(TokenType::LCurlyBracket));
+        Skip();
+    }
 }
 
 bool Lexer::IsValid()
@@ -374,7 +464,7 @@ bool Lexer::IsValid()
 
 bool Lexer::IsValidText()
 {
-    char c = GetCurrent();
+    char c = GetCurrentByte();
 
     return (c >= 'A' && c <= 'Z') ||
            (c >= 'a' && c <= 'z') ||
@@ -388,24 +478,24 @@ bool Lexer::IsValidText()
 
 bool Lexer::IsValidSymbol()
 {
-    char c = GetCurrent();
+    char c = GetCurrentByte();
 
     return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_';
 }
 
 bool Lexer::IsValidNumeric()
 {
-    char c = GetCurrent();
+    char c = GetCurrentByte();
 
     return c >= '0' && c <= '9';
 }
 
-char Lexer::GetCurrent()
+char Lexer::GetCurrentByte()
 {
     return buffer[bufferIndex];
 }
 
-char Lexer::GetNext(size_t offset)
+char Lexer::GetNextByte(size_t offset)
 {
     return bufferIndex + offset < bufferSize ? buffer[bufferIndex + offset] : 0;
     }
@@ -417,7 +507,7 @@ char Lexer::GetNext(size_t offset)
 
 void Lexer::SkipSpaces()
 {
-    while (IsValid() && GetCurrent() == ' ')
+    while (IsValid() && GetCurrentByte() == ' ')
         Skip();
 }
 
@@ -426,4 +516,4 @@ void Lexer::Add(Token&& token)
     tokens.emplace_back(token);
 }
 
-} // namespace Nagasari
+}

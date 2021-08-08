@@ -4,12 +4,19 @@ namespace Gularen {
 
 std::string ToString(NodeType type)
 {
-    switch (type) {
+    switch (type)
+    {
         case NodeType::Unknown: return "Unknown";
         case NodeType::Root: return "Root";
 
         case NodeType::Newline: return "Newline";
+
+        case NodeType::Symbol: return "Symbol";
+        case NodeType::Curtain: return "Curtain";
+        case NodeType::Wrapper: return "Wrapper";
+
         case NodeType::Text: return "Text";
+        case NodeType::QuotedText: return "QuoteText";
         case NodeType::Indent: return "Indent";
 
         case NodeType::LineBreak: return "LineBreak";
@@ -26,6 +33,13 @@ std::string ToString(NodeType type)
         case NodeType::Paragraph: return "Paragraph";
 
         case NodeType::InlineCode: return "InlineCode";
+        case NodeType::Code: return "Code";
+
+        case NodeType::Link: return "Link";
+        case NodeType::LocalLink: return "LocalLink";
+
+        case NodeType::InlineImage: return "InlineImage";
+        case NodeType::Image: return "Image";
 
         case NodeType::FBold: return "FBold";
         case NodeType::FItalic: return "FItalic";

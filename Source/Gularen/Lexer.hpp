@@ -12,19 +12,23 @@ public:
     Lexer();
 
     void SetBuffer(const std::string& buffer);
+    void SetTokens(const std::vector<Token>& tokens);
 
     void Reset();
     void Parse();
 
-    std::vector<Token> GetTokens();
-
-    std::string ToString();
+    std::string GetBuffer();
+    Token& GetToken(size_t index);
+    std::vector<Token>& GetTokens();
+    std::string GetTokensAsString();
 
 private:
     void ParseText();
+    void ParseQuotedText();
     void ParseRepeat(char c, TokenType type);
     void ParseNewline();
     void ParseFunction();
+    void ParseInlineFunction();
 
 
 private:
@@ -33,8 +37,8 @@ private:
     bool IsValidSymbol();
     bool IsValidNumeric();
 
-    char GetCurrent();
-    char GetNext(size_t offset = 1);
+    char GetCurrentByte();
+    char GetNextByte(size_t offset = 1);
 
     void Skip(size_t offset = 1);
     void SkipSpaces();
@@ -48,6 +52,7 @@ private:
     size_t bufferSize;
 
     bool inHeaderLine;
+    bool inLink;
 
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Node.hpp"
-#include "Token.hpp"
+#include "Lexer.hpp"
 #include <stack>
 
 namespace Gularen {
@@ -11,16 +11,21 @@ class AstBuilder
 public:
     AstBuilder();
 
-    void SetTokens(std::vector<Token> tokens);
+    void SetBuffer(const std::string& buffer);
+    void SetTokens(const std::vector<Token>& tokens);
 
     void Parse();
+    void Reset();
 
+    std::string GetBuffer();
+    std::vector<Token> GetTokens();
     Node* GetTree();
 
-    std::string ToString();
+    std::string GetTokensAsString();
+    std::string GetTreeAsString();
 
 private:
-    void TraverseToString(Node* node, size_t depth, std::string& buffer);
+    void TraverseAsString(Node* node, size_t depth, std::string& buffer);
 
 private:
     void ParseNewline(size_t newlineSize = 1);
@@ -30,6 +35,7 @@ private:
     void ParseRAngleBracket();
     void ParseRevTail();
     void ParseEqual();
+    void ParseLink(NodeType type);
 
 private:
     Node* GetHead();
@@ -43,8 +49,8 @@ private:
     // -- Token operations
     bool IsValid();
 
-    Token& GetCurrent();
-    Token& GetNext(size_t offset = 1);
+    Token& GetCurrentToken();
+    Token& GetNextToken(size_t offset = 1);
 
     void Skip(size_t offset = 1);
 
@@ -61,7 +67,7 @@ private:
 
     size_t headerCounter = 0;
 
-    std::vector<Token> tokens;
+    Lexer lexer;
 };
 
 }

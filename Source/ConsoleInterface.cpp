@@ -94,12 +94,8 @@ public:
 
     void Parse()
     {
-        Lexer lexer;
-        lexer.SetBuffer(!inputBuffer.empty() ? inputBuffer : IO::ReadFile(input));
-        lexer.Parse();
-
         AstBuilder builder;
-        builder.SetTokens(lexer.GetTokens());
+        builder.SetBuffer(!inputBuffer.empty() ? inputBuffer : IO::ReadFile(input));
         builder.Parse();
 
         Renderer r;
@@ -107,10 +103,10 @@ public:
         r.Parse();
 
         if (bTokens)
-            IO::Write(lexer.ToString());
+            IO::Write(builder.GetTokensAsString());
 
         if (bTree)
-            IO::Write(builder.ToString());
+            IO::Write(builder.GetTreeAsString());
 
         if (bRenderedBuffer)
             IO::Write(r.GetBuffer());
@@ -148,6 +144,7 @@ private:
 int main(int argc, char** argv)
 {
     ConsoleInterface ci;
+
     if (argc > 1)
         ci.Run(argc, argv);
     else

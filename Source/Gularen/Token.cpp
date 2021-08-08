@@ -33,6 +33,8 @@ std::string Token::ToString()
     std::string buffer = Gularen::ToString(type) + ": ";
 
     if (type == TokenType::Text ||
+        type == TokenType::QuotedText ||
+        type == TokenType::Symbol ||
         type == TokenType::Anchor)
         buffer += "\"" + value + "\"";
 

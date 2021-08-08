@@ -11,8 +11,9 @@ enum struct TokenType
     DocumentBegin,
     DocumentEnd,
 
-    Text,
     Symbol,
+    Text,
+    QuotedText,
 
     KwCode,
     KwTable,
@@ -26,6 +27,9 @@ enum struct TokenType
     Backtick,
 
     Equal,
+    Colon,
+    QuestionMark,
+    ExclamationMark,
 
     LCurlyBracket,
     RCurlyBracket,

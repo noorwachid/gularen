@@ -1,2 +1,7 @@
 ``var a``
 ``My name is $name``
+
+:: code
+---
+int main();
+---
