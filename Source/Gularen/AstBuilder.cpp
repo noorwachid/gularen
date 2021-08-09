@@ -194,9 +194,15 @@ void AstBuilder::TraverseAndDestroyNode(Node *node)
         TraverseAndDestroyNode(child);
 
     if (node->group == NodeGroup::Link)
-        delete static_cast<ContainerNode*>(node)->value;
+    {
+        Node* packageNode = static_cast<ContainerNode*>(node)->value;
+        delete packageNode;
+        packageNode = nullptr;
+
+    }
 
     delete node;
+    node = nullptr;
 }
 
 void AstBuilder::ParseNewline(size_t newlineSize)
