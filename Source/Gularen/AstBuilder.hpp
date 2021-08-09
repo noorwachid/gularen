@@ -10,12 +10,14 @@ class AstBuilder
 {
 public:
     AstBuilder();
+    ~AstBuilder();
 
     void SetBuffer(const std::string& buffer);
     void SetTokens(const std::vector<Token>& tokens);
 
     void Parse();
     void Reset();
+    void DestroyTree();
 
     std::string GetBuffer();
     std::vector<Token> GetTokens();
@@ -25,7 +27,8 @@ public:
     std::string GetTreeAsString();
 
 private:
-    void TraverseAsString(Node* node, size_t depth, std::string& buffer);
+    void TraverseAndGenerateBuffer(Node* node, size_t depth);
+    void TraverseAndDestroyNode(Node* node);
 
 private:
     void ParseNewline(size_t newlineSize = 1);
@@ -53,6 +56,9 @@ private:
     Token& GetNextToken(size_t offset = 1);
 
     void Skip(size_t offset = 1);
+
+    // Buffer definitions
+    std::string buffer;
 
     // Node definitions
     Node* root = nullptr;

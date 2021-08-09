@@ -120,6 +120,13 @@ void Renderer::TraverseBeforeChildren(Node* node)
             buffer += "> ";
             break;
 
+        case NodeType::Link:
+        {
+            Node* packageNode = static_cast<ContainerNode*>(node)->value;
+            buffer += "<a href=\"" + static_cast<ValueNode*>(packageNode)->value + "\">";
+            break;
+        }
+
         default:
             break;
     }
@@ -181,6 +188,10 @@ void Renderer::TraverseAfterChildren(Node* node)
         case NodeType::CheckList:
         case NodeType::CheckItem:
             buffer += "</div>\n";
+            break;
+
+        case NodeType::Link:
+            buffer += "</a>";
             break;
 
         default:

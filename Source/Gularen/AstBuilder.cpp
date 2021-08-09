@@ -7,6 +7,12 @@ AstBuilder::AstBuilder()
 {
 }
 
+AstBuilder::~AstBuilder()
+{
+    if (root)
+        DestroyTree();
+}
+
 void AstBuilder::SetBuffer(const std::string &buffer)
 {
     lexer.SetBuffer(buffer);
@@ -142,6 +148,11 @@ void AstBuilder::Reset()
     headStack.push(root);
 }
 
+void AstBuilder::DestroyTree()
+{
+    TraverseAndDestroyNode(root);
+}
+
 std::string AstBuilder::GetBuffer()
 {
     return lexer.GetBuffer();
@@ -159,14 +170,14 @@ std::string AstBuilder::GetTokensAsString()
 
 std::string AstBuilder::GetTreeAsString()
 {
-    std::string buffer;
+    buffer.clear();
 
-    TraverseAsString(GetTree(), 0, buffer);
+    TraverseAndGenerateBuffer(GetTree(), 0);
 
     return buffer + "\n";
 }
 
-void Gularen::AstBuilder::TraverseAsString(Node* node, size_t depth, std::string& buffer)
+void AstBuilder::TraverseAndGenerateBuffer(Node *node, size_t depth)
 {
     for (size_t i = 0; i < depth; ++i)
         buffer += "    ";
@@ -174,7 +185,18 @@ void Gularen::AstBuilder::TraverseAsString(Node* node, size_t depth, std::string
     buffer += node->ToString() + "\n";
 
     for (Node* child: node->children)
-        TraverseAsString(child, depth + 1, buffer);
+        TraverseAndGenerateBuffer(child, depth + 1);
+}
+
+void AstBuilder::TraverseAndDestroyNode(Node *node)
+{
+    for (Node* child: node->children)
+        TraverseAndDestroyNode(child);
+
+    if (node->group == NodeGroup::Link)
+        delete static_cast<ContainerNode*>(node)->value;
+
+    delete node;
 }
 
 void AstBuilder::ParseNewline(size_t newlineSize)
