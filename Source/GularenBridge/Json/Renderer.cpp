@@ -52,6 +52,7 @@ void Renderer::TraverseBeforeChildren(Node* node)
             break;
 
         case NodeType::Paragraph:
+        case NodeType::Indent:
         case NodeType::FBold:
         case NodeType::FItalic:
         case NodeType::FMonospace:
@@ -101,6 +102,7 @@ void Renderer::TraverseAfterChildren(Gularen::Node *node)
     switch (node->type)
     {
         case NodeType::Paragraph:
+        case NodeType::Indent:
         case NodeType::FBold:
         case NodeType::FItalic:
         case NodeType::FMonospace:
@@ -126,9 +128,24 @@ std::string Renderer::EscapeText(const std::string& text)
 
     for (size_t i = 0; i < text.size(); ++i)
     {
-        if (text[i] == '"') out += '\\';
+        switch (text[i])
+        {
+            case '"':
+                out += "\\\"";
+                break;
 
-        out += text[i];
+            case '\n':
+                out += "\\n";
+                break;
+
+            case '\t':
+                out += "\\t";
+                break;
+
+            default:
+                out += text[i];
+                break;
+        }
     }
 
     return out;
