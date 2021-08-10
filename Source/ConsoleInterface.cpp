@@ -2,9 +2,10 @@
 #include <Gularen/Lexer.hpp>
 #include <Gularen/AstBuilder.hpp>
 #include <GularenBridge/Html5/Renderer.hpp>
+#include <GularenBridge/Json/Renderer.hpp>
 
 using namespace Gularen;
-using namespace GularenBridge::Html5;
+using namespace GularenBridge;
 
 class ConsoleInterface
 {
@@ -12,6 +13,7 @@ public:
     std::string inputBuffer;
     std::string input;
     std::string output;
+    std::string outputRenderer;
 
     bool bTree;
     bool bTokens;
@@ -67,6 +69,16 @@ public:
                             bTokens = true;
                             break;
 
+                        case 'r':
+                            if (i + 2 > size || args[i + 1][0] == '-')
+                            {
+                                IO::WriteLine("-r requires you to specify the rendering engine");
+                                Terminate(1);
+                            }
+                            outputRenderer = args[i + 1];
+                            ++i;
+                            break;
+
                         case 'g':
                             bRenderedBuffer = true;
                             break;
@@ -98,9 +110,7 @@ public:
         builder.SetBuffer(!inputBuffer.empty() ? inputBuffer : IO::ReadFile(input));
         builder.Parse();
 
-        Renderer r;
-        r.SetTree(builder.GetTree());
-        r.Parse();
+        IRenderer* r;
 
         if (bTokens)
             IO::Write(builder.GetTokensAsString());
@@ -108,11 +118,25 @@ public:
         if (bTree)
             IO::Write(builder.GetTreeAsString());
 
-        if (bRenderedBuffer)
-            IO::Write(r.GetBuffer());
+        if (!outputRenderer.empty())
+        {
+            if (outputRenderer == "html5")
+                r = new Html5::Renderer();
+            if (outputRenderer == "json")
+                r = new Json::Renderer();
+            else
+                // TODO: change to Gularen::Renderer as formater
+                r = new Html5::Renderer();
 
-        if (!output.empty())
-            IO::WriteFile(output, r.GetBuffer());
+            r->SetTree(builder.GetTree());
+            r->Parse();
+
+            if (bRenderedBuffer)
+                IO::Write(r->GetBuffer());
+
+            if (!output.empty())
+                IO::WriteFile(output, r->GetBuffer());
+        }
     }
 
     void Terminate(int code = 0)
