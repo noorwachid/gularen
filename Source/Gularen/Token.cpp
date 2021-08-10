@@ -30,20 +30,13 @@ Token::Token(TokenType type, const std::string& value):
 
 std::string Token::ToString()
 {
-    std::string buffer = Gularen::ToString(type) + ": ";
+    std::string buffer = Gularen::ToString(type) + ":";
 
-    if (type == TokenType::Text ||
-        type == TokenType::QuotedText ||
-        type == TokenType::Symbol ||
-        type == TokenType::Anchor)
-        buffer += "\"" + value + "\"";
+    if (size > 0)
+        buffer += " (" + std::to_string(size) + ")";
 
-    if (type == TokenType::Newline ||
-        type == TokenType::Space ||
-        type == TokenType::Bullet ||
-        type == TokenType::CheckBox)
-
-        buffer += "(" + std::to_string(size) + ")";
+    if (!value.empty())
+        buffer += " \"" + value + "\"";
 
     return buffer;
 }

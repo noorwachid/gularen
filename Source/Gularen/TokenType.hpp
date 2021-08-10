@@ -15,9 +15,12 @@ enum struct TokenType
     Text,
     QuotedText,
 
+    KwImage,
+    KwFile,
     KwCode,
     KwTable,
-    KwAd,
+    KwAdmon,
+    KwToc,
 
     Newline,
     Space,

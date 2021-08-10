@@ -56,11 +56,11 @@ struct BooleanNode: public Node
 struct ContainerNode: public Node
 {
     ContainerNode();
-    ContainerNode(NodeType type, NodeGroup group = NodeGroup::None, Node* value = nullptr);
+    ContainerNode(NodeType type, NodeGroup group = NodeGroup::None, Node* package = nullptr);
 
     std::string ToString() override;
 
-    Node* value;
+    Node* package;
 };
 
 }

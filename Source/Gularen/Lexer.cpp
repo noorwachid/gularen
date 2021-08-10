@@ -229,12 +229,14 @@ void Lexer::ParseInlineEscapedByte()
 
     switch (GetCurrentByte())
     {
+        case '^': // Oneline comments
         case '\\':
         case '*':
         case '_':
         case '`':
         case '{':
         case '}':
+        case '<':
             Add(Token(TokenType::Text, std::string(1, GetCurrentByte())));
             Skip();
             break;
@@ -448,8 +450,37 @@ void Lexer::ParseFunction()
         symbol += GetCurrentByte();
         Skip();
     }
-    Add(Token(TokenType::Symbol));
+
+    if (symbol == "image")
+    {
+        SkipSpaces();
+        Add(Token(TokenType::KwImage));
+    }
+    else
+        Add(Token(TokenType::Symbol, symbol));
+
     SkipSpaces();
+
+    if (GetCurrentByte() == '\'')
+        ParseQuotedText();
+    else if (IsValidSymbol())
+    {
+        std::string symbol;
+        while (IsValid() && IsValidSymbol())
+        {
+            symbol += GetCurrentByte();
+            Skip();
+        }
+        Add(Token(TokenType::Symbol, symbol));
+    }
+
+    SkipSpaces();
+
+    if (GetCurrentByte() == '{')
+    {
+        Add(Token(TokenType::LCurlyBracket));
+        Skip();
+    }
 }
 
 void Lexer::ParseInlineFunction()

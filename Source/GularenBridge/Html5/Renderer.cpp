@@ -122,7 +122,7 @@ void Renderer::TraverseBeforeChildren(Node* node)
 
         case NodeType::Link:
         {
-            Node* packageNode = static_cast<ContainerNode*>(node)->value;
+            Node* packageNode = static_cast<ContainerNode*>(node)->package;
             buffer += "<a href=\"" + static_cast<ValueNode*>(packageNode)->value + "\">";
             break;
         }

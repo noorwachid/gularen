@@ -195,7 +195,7 @@ void AstBuilder::TraverseAndDestroyNode(Node *node)
 
     if (node->group == NodeGroup::Link)
     {
-        Node* packageNode = static_cast<ContainerNode*>(node)->value;
+        Node* packageNode = static_cast<ContainerNode*>(node)->package;
         delete packageNode;
         packageNode = nullptr;
 
@@ -371,7 +371,7 @@ void AstBuilder::ParseLink(NodeType type)
         node->value = GetCurrentToken().value;
         Skip();
     }
-    container->value = node;
+    container->package = node;
 
     if (GetCurrentToken().type == TokenType::LCurlyBracket)
     {
