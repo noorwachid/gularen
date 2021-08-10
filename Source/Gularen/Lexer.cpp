@@ -69,6 +69,10 @@ void Lexer::Parse()
                     Add(Token(TokenType::Backtick));
                 break;
 
+            case '\r':
+                Skip();
+                break;
+
             case '\n':
             {
                 size_t size = 0;
@@ -136,11 +140,21 @@ void Lexer::Parse()
                 Skip();
                 break;
 
+            case '\\':
+                ParseInlineEscapedByte();
+                break;
+
             default:
                 if (IsValidText())
                     ParseText();
                 else
-                    Skip(); // Unhandled symbols
+                {
+                    if (!tokens.empty() && tokens.back().type == TokenType::Text)
+                        tokens.back().value += GetCurrentByte();
+                    else
+                        Add(Token(TokenType::Text, std::string(1, GetCurrentByte())));
+                    Skip();
+                }
                 break;
         }
     }
@@ -183,8 +197,7 @@ std::string Lexer::GetTokensAsString()
 
 void Lexer::ParseText()
 {
-    Token token;
-    token.type = TokenType::Text;
+    Token token(TokenType::Text);
 
     while (IsValid() && IsValidText())
     {
@@ -208,6 +221,33 @@ void Lexer::ParseQuotedText()
     }
     Skip();
     Add(std::move(token));
+}
+
+void Lexer::ParseInlineEscapedByte()
+{
+    Skip();
+
+    switch (GetCurrentByte())
+    {
+        case '\\':
+        case '*':
+        case '_':
+        case '`':
+        case '{':
+        case '}':
+            Add(Token(TokenType::Text, std::string(1, GetCurrentByte())));
+            Skip();
+            break;
+
+        default:
+        {
+            std::string buffer(1, '\\');
+            buffer += GetCurrentByte();
+            Add(Token(TokenType::Text, buffer));
+            Skip();
+            break;
+        }
+    }
 }
 
 void Lexer::ParseRepeat(char c, TokenType type)
@@ -472,8 +512,9 @@ bool Lexer::IsValidText()
             c == ' ' || c == '-' ||
             c == ',' || c == '.' ||
             c == '!' || c == '?' ||
-            c == '\'' || c == '"' ||
-            c == ';' || c == ':';
+            c == '"' || c == '\'' ||
+            c == ';' || c == ':' ||
+            c == '#' || c == '@';
 }
 
 bool Lexer::IsValidSymbol()

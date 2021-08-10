@@ -25,6 +25,7 @@ public:
 private:
     void ParseText();
     void ParseQuotedText();
+    void ParseInlineEscapedByte();
     void ParseRepeat(char c, TokenType type);
     void ParseNewline();
     void ParseFunction();

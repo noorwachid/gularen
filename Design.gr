@@ -197,8 +197,9 @@ Side tasks:
 
 Supported Output:
 [+] HTML5
-[ ] HTML4
+[ ] HTML4 / XHTML
 [ ] Epub3
+[ ] JSON
 [ ] PDF 1.1
 [ ] Docx
 [ ] ODT
