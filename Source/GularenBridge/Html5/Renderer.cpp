@@ -115,8 +115,10 @@ void Renderer::TraverseBeforeChildren(Node* node)
         case NodeType::CheckItem:
             buffer += "<div class=\"checkitem\">";
             buffer += "<input type=\"checkbox\"";
-            if (static_cast<BooleanNode*>(node)->state)
+            if (static_cast<TernaryNode*>(node)->state == TernaryState::True)
                 buffer += " checked";
+            if (static_cast<TernaryNode*>(node)->state == TernaryState::InBetween)
+                buffer += " indeterminate";
             buffer += "> ";
             break;
 

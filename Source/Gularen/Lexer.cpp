@@ -353,15 +353,36 @@ void Lexer::ParseNewline()
             break;
 
         case '[':
-            if ((GetNextByte(1) == ' ' || GetNextByte(1) == '+') && GetNextByte(2) == ']')
+            if (GetNextByte(2) == ']')
             {
                 Token token(TokenType::CheckBox);
-                if (GetNextByte(1) == '+')
-                    token.size = 1;
 
-                Add(std::move(token));
-                Skip(3);
-                SkipSpaces();
+                switch (GetNextByte(1))
+                {
+                    case ' ':
+                        token.size = 1;
+                        Add(std::move(token));
+                        Skip(3);
+                        SkipSpaces();
+                        break;
+
+                    case '-':
+                        token.size = 2;
+                        Add(std::move(token));
+                        Skip(3);
+                        SkipSpaces();
+                        break;
+
+                    case '+':
+                        token.size = 3;
+                        Add(std::move(token));
+                        Skip(3);
+                        SkipSpaces();
+                        break;
+
+                    default:
+                        break;
+                }
             }
             break;
 

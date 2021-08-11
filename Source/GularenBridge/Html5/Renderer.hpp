@@ -11,6 +11,8 @@ using Gularen::NodeType;
 using Gularen::Node;
 using Gularen::ValueNode;
 using Gularen::BooleanNode;
+using Gularen::TernaryNode;
+using Gularen::TernaryState;
 using Gularen::ContainerNode;
 using Gularen::IRenderer;
 

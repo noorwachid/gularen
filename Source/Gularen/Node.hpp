@@ -53,6 +53,22 @@ struct BooleanNode: public Node
     bool state;
 };
 
+enum struct TernaryState {
+    False,
+    InBetween,
+    True,
+};
+
+struct TernaryNode: public Node
+{
+    TernaryNode();
+    TernaryNode(NodeType type, NodeGroup group = NodeGroup::None, TernaryState state = TernaryState::False);
+
+    std::string ToString() override;
+
+    TernaryState state;
+};
+
 struct ContainerNode: public Node
 {
     ContainerNode();

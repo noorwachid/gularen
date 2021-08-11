@@ -312,10 +312,27 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             break;
 
         case TokenType::CheckBox:
+        {
+            TernaryNode* ternaryNode = new TernaryNode(NodeType::CheckItem, NodeGroup::Item);
+            switch (GetCurrentToken().size) {
+                case 1:
+                    ternaryNode->state = TernaryState::False;
+                    break;
+                case 2:
+                    ternaryNode->state = TernaryState::InBetween;
+                    break;
+                case 3:
+                    ternaryNode->state = TernaryState::True;
+                    break;
+                default:
+                    break;
+            }
+
             ShouldPushHead(NodeType::CheckList);
-            PushHead(new BooleanNode(NodeType::CheckItem, NodeGroup::Item, GetCurrentToken().size));
+            PushHead(ternaryNode);
             Skip();
             break;
+        }
 
         default:
             break;

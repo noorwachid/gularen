@@ -74,7 +74,38 @@ BooleanNode::BooleanNode(NodeType type, NodeGroup group, bool state):
 
 std::string BooleanNode::ToString()
 {
-    return Gularen::ToString(type) + ": " + (state ? "true" : "false");
+    return Gularen::ToString(type) + ": " + (state ? "True" : "False");
+}
+
+TernaryNode::TernaryNode():
+    Node(NodeType::Unknown),
+    state(TernaryState::False)
+{
+}
+
+TernaryNode::TernaryNode(NodeType type, NodeGroup group, TernaryState state):
+    Node(type, group),
+    state(state)
+{
+}
+
+std::string TernaryNode::ToString()
+{
+    std::string buffer = Gularen::ToString(type) + ": ";
+
+    switch (state) {
+        case TernaryState::False:
+            buffer += "False";
+            break;
+        case TernaryState::True:
+            buffer += "True";
+            break;
+        default:
+            buffer += "InBetween";
+            break;
+    }
+
+    return buffer;
 }
 
 ContainerNode::ContainerNode():
