@@ -178,7 +178,7 @@
 [ ] Tables
     :: code 'gr'
     ----
-    :: table type:csv, header:[top, left]
+    :: table comma v 1 h 1
     ---
     ID, Name
     1,  Nora
