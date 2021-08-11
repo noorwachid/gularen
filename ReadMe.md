@@ -33,6 +33,7 @@ And the lists:
 And of course the checklist or todo-list or whatever you name it.
 
 [+] This one is checked
+[-] This one is inbetween state (in progress or something)
 [ ] This one is not
 ```
 
