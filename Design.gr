@@ -1,3 +1,5 @@
+> Main Tasks
+
 [+] Comments
     :: code 'gr'
     ---
@@ -188,14 +190,16 @@
 
 <<
 
-Side tasks:
+> Side tasks
+
 [+] Add group enumerations for faster checking
 [ ] Add escaping reserved chars
 [ ] Fix appropriate paragraph node beside begin with text
 
 <<
 
-Supported Output:
+> Supported Output
+
 [+] HTML5
 [ ] HTML4 / XHTML
 [ ] Epub3
