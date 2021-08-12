@@ -3,6 +3,7 @@
 #include "Token.hpp"
 #include <string>
 #include <vector>
+#include <stack>
 
 namespace Gularen {
 
@@ -26,7 +27,6 @@ private:
     void ParseText();
     void ParseQuotedText();
     void ParseInlineEscapedByte();
-    void ParseRepeat(char c, TokenType type);
     void ParseNewline();
     void ParseFunction();
     void ParseInlineFunction();
@@ -55,6 +55,9 @@ private:
     bool inHeaderLine;
     bool inLink;
 
+    std::stack<char> tableDelimiters;
+    std::stack<TokenType> blocks;
+    size_t currentDepth;
 };
 
 }

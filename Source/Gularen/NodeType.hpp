@@ -39,6 +39,7 @@ enum struct NodeType
     // Value types
     Text,
     QuotedText,
+    RawText,
     Link,
     LocalLink,
 

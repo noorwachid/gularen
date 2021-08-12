@@ -296,7 +296,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             break;
 
         case TokenType::RevTail:
-            ParseRevTail();
+            ParseBreak();
             break;
 
         case TokenType::Bullet:
@@ -334,28 +334,17 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             break;
         }
 
+        case TokenType::Box:
+            Skip();
+            ParseBlock(GetCurrentToken().type);
+            break;
+
         default:
             break;
     }
 }
 
-void AstBuilder::ParseHyphen()
-{
-}
-
-void AstBuilder::ParseLSquareBracket()
-{
-}
-
-void AstBuilder::ParseLAngleBracket()
-{
-}
-
-void Gularen::AstBuilder::ParseRAngleBracket()
-{
-}
-
-void AstBuilder::ParseRevTail()
+void AstBuilder::ParseBreak()
 {
     switch (GetCurrentToken().size)
     {
@@ -364,10 +353,6 @@ void AstBuilder::ParseRevTail()
         case 3: GetHead()->Add(new Node(NodeType::PageBreak, NodeGroup::Break)); break;
     }
     Skip();
-}
-
-void AstBuilder::ParseEqual()
-{
 }
 
 void AstBuilder::ParseLink(NodeType type)
@@ -398,6 +383,42 @@ void AstBuilder::ParseLink(NodeType type)
     }
     else
         PushHead(container);
+}
+
+void AstBuilder::ParseBlock(TokenType type)
+{
+    switch (type)
+    {
+        case TokenType::KwCode:
+        {
+            ContainerNode* containerNode = new ContainerNode(NodeType::Code);
+            GetHead()->Add(containerNode);
+            Skip();
+            if (GetCurrentToken().type == TokenType::QuotedText)
+            {
+                containerNode->package = new ValueNode(NodeType::QuotedText, GetCurrentToken().value);
+                Skip();
+            }
+
+            // Skip indentations
+            if (GetCurrentToken().type == TokenType::Newline)
+                Skip();
+            if (GetCurrentToken().type == TokenType::Space)
+                Skip();
+
+            if (GetCurrentToken().type == TokenType::Line &&
+                GetNextToken(1).type == TokenType::RawText &&
+                GetNextToken(2).type == TokenType::Line)
+            {
+                containerNode->Add(new ValueNode(NodeType::RawText, GetNextToken(1).value));
+                Skip(3);
+            }
+            break;
+        }
+
+        default:
+            break;
+    }
 }
 
 Node* AstBuilder::GetHead()

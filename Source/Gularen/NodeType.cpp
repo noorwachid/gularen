@@ -17,6 +17,7 @@ std::string ToString(NodeType type)
 
         case NodeType::Text: return "Text";
         case NodeType::QuotedText: return "QuoteText";
+        case NodeType::RawText: return "RawText";
         case NodeType::Indent: return "Indent";
 
         case NodeType::LineBreak: return "LineBreak";

@@ -13,6 +13,7 @@ std::string ToString(TokenType type)
         case TokenType::Symbol: return "Symbol";
         case TokenType::Text: return "Text";
         case TokenType::QuotedText: return "QuotedText";
+        case TokenType::RawText: return "RawText";
 
         case TokenType::KwImage: return "KwImage";
         case TokenType::KwFile: return "KwFile";

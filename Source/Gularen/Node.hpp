@@ -79,5 +79,12 @@ struct ContainerNode: public Node
     Node* package;
 };
 
+struct TableNode: public Node
+{
+    char delimiter;
+    std::vector<ssize_t> hHeaders;
+    std::vector<ssize_t> vHeaders;
+};
+
 }
 

@@ -32,13 +32,9 @@ private:
 
 private:
     void ParseNewline(size_t newlineSize = 1);
-    void ParseHyphen();
-    void ParseLSquareBracket();
-    void ParseLAngleBracket();
-    void ParseRAngleBracket();
-    void ParseRevTail();
-    void ParseEqual();
+    void ParseBreak();
     void ParseLink(NodeType type);
+    void ParseBlock(TokenType type);
 
 private:
     Node* GetHead();

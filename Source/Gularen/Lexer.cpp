@@ -174,10 +174,19 @@ Token &Lexer::GetToken(size_t index)
 
 void Lexer::Reset()
 {
+    while (!blocks.empty())
+        blocks.pop();
+
+    while (!tableDelimiters.empty())
+        blocks.pop();
+
     inHeaderLine = false;
     inLink = false;
+
     bufferIndex = 0;
     tokens.clear();
+
+    currentDepth = 0;
 }
 
 std::vector<Token>& Lexer::GetTokens()
@@ -252,33 +261,31 @@ void Lexer::ParseInlineEscapedByte()
     }
 }
 
-void Lexer::ParseRepeat(char c, TokenType type)
-{
-    Token token(type);
-    token.size = 1;
-    Skip();
-
-    while (IsValid() && GetCurrentByte() == c)
-    {
-        ++token.size;
-        Skip();
-    }
-
-    Add(std::move(token));
-}
-
 void Lexer::ParseNewline()
 {
     // State variables
     inHeaderLine = false;
 
+    if (GetCurrentByte() == ' ')
+    {
+        Token token(TokenType::Space);
+        token.size = 1;
+        Skip();
+
+        while (IsValid() && GetCurrentByte() == ' ')
+        {
+            ++token.size;
+            Skip();
+        }
+
+        currentDepth = token.size;
+        Add(std::move(token));
+    }
+    else
+        currentDepth = 0;
+
     switch (GetCurrentByte())
     {
-        case ' ':
-            ParseRepeat(' ', TokenType::Space);
-            ParseNewline();
-            break;
-
         case '-':
         {
             size_t size = 0;
@@ -310,7 +317,55 @@ void Lexer::ParseNewline()
                 SkipSpaces();
             }
             else
-                Add(Token(TokenType::Line));
+            {
+                Add(Token(TokenType::Line, size));
+                Skip();
+                SkipSpaces();
+
+                if (!blocks.empty() && blocks.top() == TokenType::KwCode)
+                {
+                    std::string buffer;
+
+                    while (IsValid())
+                    {
+                        if (GetCurrentByte() == '\n')
+                        {
+                            Skip();
+                            Skip(currentDepth);
+
+                            if (GetCurrentByte() == '-')
+                            {
+                                size_t laterSize = 0;
+
+                                while (IsValid() && GetCurrentByte() == '-')
+                                {
+                                    ++laterSize;
+                                    Skip();
+                                }
+
+                                if (laterSize == size)
+                                {
+                                    Add(Token(TokenType::RawText, buffer));
+                                    Add(Token(TokenType::Line, size));
+                                    break;
+                                }
+                                else
+                                {
+                                    buffer += '\n';
+                                    buffer += std::string(laterSize, '-');
+                                }
+                            }
+                            else
+                                buffer += '\n';
+                        }
+                        else
+                        {
+                            buffer += GetCurrentByte();
+                            Skip();
+                        }
+                    }
+                }
+            }
             break;
         }
 
@@ -474,8 +529,35 @@ void Lexer::ParseFunction()
 
     if (symbol == "image")
     {
-        SkipSpaces();
         Add(Token(TokenType::KwImage));
+        SkipSpaces();
+    }
+    else if (symbol == "table")
+    {
+        Add(Token(TokenType::KwTable));
+        SkipSpaces();
+
+    }
+    else if (symbol == "code")
+    {
+        Add(Token(TokenType::KwCode));
+        SkipSpaces();
+        blocks.push(TokenType::KwCode);
+    }
+    else if (symbol == "admon")
+    {
+        Add(Token(TokenType::KwAdmon));
+        SkipSpaces();
+    }
+    else if (symbol == "file")
+    {
+        Add(Token(TokenType::KwFile));
+        SkipSpaces();
+    }
+    else if (symbol == "toc")
+    {
+        Add(Token(TokenType::KwToc));
+        SkipSpaces();
     }
     else
         Add(Token(TokenType::Symbol, symbol));

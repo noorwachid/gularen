@@ -1,0 +1,27 @@
+:: code 'cxx'
+---
+Model* LoadModel(const std::string& path) 
+{
+    unsigned char* bytes = IO::LoadBinary(path);
+
+    Model* model = new Model::CreateFromBytes(bytes);
+
+    model->SetParentContext(this);
+    model->SetName("Untitled");
+
+    return model;
+}
+---
+
+    :: code 'shell'
+    ---
+    echo 'hello indent'
+    ---
+
+
+:: code 'gr'
+-----
+---
+*CodeCeption*
+---
+-----
