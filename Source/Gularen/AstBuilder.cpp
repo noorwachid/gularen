@@ -123,6 +123,11 @@ void AstBuilder::Parse()
                 PopHead();
                 break;
 
+            case TokenType::Pipe:
+                while (!headStack.empty() && headStack.top()->type != NodeType::TableRow)
+                    PopHead();
+                PushHead(new Node(NodeType::TableColumn, NodeGroup::Table));
+
             default:
                 Skip();
                 break;
@@ -144,6 +149,9 @@ void AstBuilder::Reset()
 
     while (!headStack.empty())
         headStack.pop();
+
+    while (!blockStack.empty())
+        blockStack.pop();
 
     headStack.push(root);
 }
@@ -243,6 +251,17 @@ void AstBuilder::ParseNewline(size_t newlineSize)
 
     // --- END INDENTATIONS ---
 
+    // -- BEGIN SOME_WEIRD_CONDITIONS ---
+    if (!blockStack.empty() && blockStack.top() == NodeType::Table)
+    {
+        while (!headStack.empty() && headStack.top()->type != NodeType::Table)
+            PopHead();
+
+        PushHead(new Node(NodeType::TableRow, NodeGroup::Table));
+        PushHead(new Node(NodeType::TableColumn, NodeGroup::Table));
+    }
+    // -- END SOME_WEIRD_CONDITIONS ---
+
     // --- POP ITEM NODE HEAD ---
     if (GetHead()->group == NodeGroup::Item)
         PopHead();
@@ -250,8 +269,9 @@ void AstBuilder::ParseNewline(size_t newlineSize)
     switch (GetCurrentToken().type)
     {
         case TokenType::Text:
-            if (!ShouldPushHead(NodeType::Paragraph, newlineSize))
-                GetHead()->Add(new Node(NodeType::Newline));
+            if (blockStack.empty() || blockStack.top() != NodeType::Table)
+                if (!ShouldPushHead(NodeType::Paragraph, newlineSize))
+                    GetHead()->Add(new Node(NodeType::Newline));
             break;
 
         case TokenType::Tail:
@@ -389,6 +409,15 @@ void AstBuilder::ParseBlock(TokenType type)
 {
     switch (type)
     {
+        case TokenType::KwTable:
+            while (IsValid() && GetCurrentToken().type != TokenType::Line)
+            {
+                Skip();
+            }
+            blockStack.push(NodeType::Table);
+            PushHead(new TableNode(NodeType::Table, NodeGroup::Table));
+            break;
+
         case TokenType::KwCode:
         {
             ContainerNode* containerNode = new ContainerNode(NodeType::Code);

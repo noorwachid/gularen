@@ -26,10 +26,8 @@ std::string Node::ToString()
     return Gularen::ToString(type) + ":";
 }
 
-// --- ValueNode ---
-
 ValueNode::ValueNode():
-    Node(NodeType::Unknown)
+    Node()
 {}
 
 ValueNode::ValueNode(NodeType type, NodeGroup group):
@@ -37,7 +35,7 @@ ValueNode::ValueNode(NodeType type, NodeGroup group):
 {
 }
 
-Gularen::ValueNode::ValueNode(Gularen::NodeType type, const std::string& value):
+ValueNode::ValueNode(Gularen::NodeType type, const std::string& value):
     Node(type),
     value(value)
 {}
@@ -47,9 +45,8 @@ std::string ValueNode::ToString()
     return Gularen::ToString(type) + ": \"" + value + "\"";;
 }
 
-// --- SizeNode ---
 SizeNode::SizeNode():
-    Node(NodeType::Unknown)
+    Node()
 {}
 
 SizeNode::SizeNode(NodeType type, const size_t size):
@@ -78,7 +75,7 @@ std::string BooleanNode::ToString()
 }
 
 TernaryNode::TernaryNode():
-    Node(NodeType::Unknown),
+    Node(),
     state(TernaryState::False)
 {
 }
@@ -109,7 +106,7 @@ std::string TernaryNode::ToString()
 }
 
 ContainerNode::ContainerNode():
-    Node(NodeType::Unknown),
+    Node(),
     package(nullptr)
 {}
 
@@ -130,6 +127,16 @@ std::string ContainerNode::ToString()
             buffer += "\"" + static_cast<ValueNode*>(package)->value + "\"";
     }
     return buffer;
+}
+
+TableNode::TableNode():
+    Node()
+{
+}
+
+TableNode::TableNode(NodeType type, NodeGroup group):
+    Node(type, group)
+{
 }
 
 }

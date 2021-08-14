@@ -61,6 +61,7 @@ private:
     size_t depth = 0;
 
     std::stack<Node*> headStack;
+    std::stack<NodeType> blockStack;
 
     // Token definitions
     size_t tokenIndex = 0;

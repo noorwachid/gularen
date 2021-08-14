@@ -55,7 +55,6 @@ private:
     bool inHeaderLine;
     bool inLink;
 
-    std::stack<char> tableDelimiters;
     std::stack<TokenType> blocks;
     size_t currentDepth;
 };

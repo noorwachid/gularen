@@ -32,6 +32,7 @@ enum struct TokenType
 
     Equal,
     Colon,
+    Pipe,
     QuestionMark,
     ExclamationMark,
 

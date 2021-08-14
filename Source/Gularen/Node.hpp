@@ -81,7 +81,9 @@ struct ContainerNode: public Node
 
 struct TableNode: public Node
 {
-    char delimiter;
+    TableNode();
+    TableNode(NodeType type, NodeGroup group = NodeGroup::None);
+
     std::vector<ssize_t> hHeaders;
     std::vector<ssize_t> vHeaders;
 };

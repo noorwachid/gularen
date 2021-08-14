@@ -31,6 +31,7 @@ std::string ToString(TokenType type)
 
         case TokenType::Equal: return "Equal";
         case TokenType::Colon: return "Colon";
+        case TokenType::Pipe: return "Pipe";
         case TokenType::QuestionMark: return "QuestionMark";
         case TokenType::ExclamationMark: return "ExclamationMark";
 

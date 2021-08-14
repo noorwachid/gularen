@@ -143,8 +143,9 @@
 [ ] Table of Contents
     :: code 'gr'
     ---
-    :: toc type:compact
+    :: toc
     ---
+    [ ] Design the options to separate parts, chapters and sections
 
 [ ] Admonitions
     [ ] Multiline Admoninitons
@@ -180,11 +181,11 @@
 [ ] Tables
     :: code 'gr'
     ----
-    :: table comma v 1 h 1
+    :: table v 1 h 1
     ---
-    ID, Name
-    1,  Nora
-    2,  Wright
+    ID | Name
+    1  | Nora
+    2  | Wright
     ---
     ----
 

@@ -144,6 +144,28 @@ void Lexer::Parse()
                 ParseInlineEscapedByte();
                 break;
 
+            case '|':
+                Skip();
+                if (!blocks.empty() && blocks.top() == TokenType::KwTable)
+                {
+                    if (!tokens.empty() && tokens.back().type == TokenType::Text)
+                    {
+                        // remove blankspaces of previous token
+                        for (size_t i = tokens.back().value.size() - 1; i >= 0; --i)
+                        {
+                            if (tokens.back().value[i] != ' ') {
+                                tokens.back().value = tokens.back().value.substr(0, i + 1);
+                                break;
+                            }
+                        }
+                    }
+                    Add(Token(TokenType::Pipe));
+                    SkipSpaces();
+                }
+                else if (!tokens.empty() && tokens.back().type == TokenType::Text)
+                    tokens.back().value += GetCurrentByte();
+                break;
+
             default:
                 if (IsValidText())
                     ParseText();
@@ -177,9 +199,6 @@ void Lexer::Reset()
     while (!blocks.empty())
         blocks.pop();
 
-    while (!tableDelimiters.empty())
-        blocks.pop();
-
     inHeaderLine = false;
     inLink = false;
 
@@ -206,15 +225,18 @@ std::string Lexer::GetTokensAsString()
 
 void Lexer::ParseText()
 {
-    Token token(TokenType::Text);
+    std::string buffer;
 
     while (IsValid() && IsValidText())
     {
-        token.value += GetCurrentByte();
+        buffer += GetCurrentByte();
         Skip();
     }
 
-    Add(std::move(token));
+    if (!tokens.empty() && tokens.back().type == TokenType::Text)
+        tokens.back().value += buffer;
+    else
+        Add(Token(TokenType::Text, buffer));
 }
 
 void Lexer::ParseQuotedText()
@@ -319,7 +341,6 @@ void Lexer::ParseNewline()
             else
             {
                 Add(Token(TokenType::Line, size));
-                Skip();
                 SkipSpaces();
 
                 if (!blocks.empty() && blocks.top() == TokenType::KwCode)
@@ -401,7 +422,12 @@ void Lexer::ParseNewline()
                 Skip(2);
             }
             else
-                Add(Token(TokenType::Text, buffer));
+            {
+                if (!tokens.empty() && tokens.back().type == TokenType::Text)
+                    tokens.back().value += buffer;
+                else
+                    Add(Token(TokenType::Text, buffer));
+            }
 
             break;
         }
@@ -544,6 +570,7 @@ void Lexer::ParseFunction()
         Add(Token(TokenType::KwTable));
         SkipSpaces();
 
+        blocks.push(TokenType::KwTable);
     }
     else if (symbol == "code")
     {
@@ -650,8 +677,7 @@ bool Lexer::IsValidText()
     return (c >= 'A' && c <= 'Z') ||
            (c >= 'a' && c <= 'z') ||
            (c >= '0' && c <= '9') ||
-            c == ' ' || c == '-' ||
-            c == ',' || c == '.' ||
+            c == ' ' || c == '-' || c == '.' ||
             c == '!' || c == '?' ||
             c == '"' || c == '\'' ||
             c == ';' || c == ':' ||

@@ -14,6 +14,7 @@ enum struct NodeGroup
     Break,
 
     Link,
+    Table,
 };
 
 }
