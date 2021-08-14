@@ -18,6 +18,15 @@ Model* LoadModel(const std::string& path)
     echo 'hello indent'
     ---
 
+    :: code 'ruby'
+    ---
+    print 'hello indent'
+    def shit()
+        print 'not shit'
+    end
+prs
+    ---
+
 
 :: code 'gr'
 -----

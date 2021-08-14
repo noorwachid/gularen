@@ -328,10 +328,17 @@ void Lexer::ParseNewline()
 
                     while (IsValid())
                     {
+                        IO::Write(GetCurrentByte());
                         if (GetCurrentByte() == '\n')
                         {
                             Skip();
-                            Skip(currentDepth);
+                            // Skip identations or blank lines
+                            size_t shouldSkipCounter = 0;
+                            while (IsValid() && shouldSkipCounter < currentDepth && GetCurrentByte() != '\n')
+                            {
+                                Skip();
+                                ++shouldSkipCounter;
+                            }
 
                             if (GetCurrentByte() == '-')
                             {
