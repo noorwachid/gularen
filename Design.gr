@@ -151,16 +151,16 @@
     [ ] Multiline Admoninitons
         :: code 'gr'
         ----
-        :: admon 'Note'
+        :::: 'Note'
         ---
-        Admonitions
+        An admonition
         ---
         ----
 
     [ ] Oneline Admonitions
         :: code 'gr'
         ---
-        :: admon 'Note' {Oneline Admonition}
+        :::: 'Note' {Oneline Admonition}
         ---
 
 [+] Codes
