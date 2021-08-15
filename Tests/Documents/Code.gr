@@ -1,5 +1,7 @@
 :: code 'cxx'
 ---
+#include <IO.hpp>
+
 Model* LoadModel(const std::string& path) 
 {
     unsigned char* bytes = IO::LoadBinary(path);

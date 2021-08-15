@@ -139,4 +139,30 @@ TableNode::TableNode(NodeType type, NodeGroup group):
 {
 }
 
+CodeNode::CodeNode():
+    Node(NodeType::Code)
+{
+}
+
+CodeNode::CodeNode(const std::string &value, Node *lang):
+    Node(NodeType::Code),
+    value(value),
+    lang(lang)
+{
+}
+
+std::string CodeNode::ToString()
+{
+    std::string buffer = Gularen::ToString(type) + ": ";
+    if (lang)
+    {
+        if (lang->type == NodeType::Symbol)
+            buffer += "%" + static_cast<ValueNode*>(lang)->value + " ";
+
+        if (lang->type == NodeType::QuotedText)
+            buffer += "\"" + static_cast<ValueNode*>(lang)->value + "\" ";
+    }
+    return buffer + "\"" + value + "\"";
+}
+
 }

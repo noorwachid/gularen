@@ -79,6 +79,17 @@ struct ContainerNode: public Node
     Node* package;
 };
 
+struct CodeNode: public Node
+{
+    CodeNode();
+    CodeNode(const std::string& value, Node* lang = nullptr);
+
+    std::string ToString() override;
+
+    std::string value;
+    Node* lang;
+};
+
 struct TableNode: public Node
 {
     TableNode();
@@ -89,4 +100,3 @@ struct TableNode: public Node
 };
 
 }
-

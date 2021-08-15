@@ -23,6 +23,41 @@ void Renderer::Parse()
 
 std::string Renderer::GetBuffer()
 {
+    return R"(
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+    <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{font-size:62.8%}
+    body{font-size:1.6rem;font-family:sans-serif;color:#232326;line-height:1.4;max-width:80rem;padding:1rem 1.6rem}
+    p,ul,ol,table,pre{margin-bottom:1.1rem}
+    h1{font-size:4rem}
+    h2{font-size:3rem}
+    h3{font-size:2.4rem}
+    h4{font-size:2.0rem}
+    h5{font-size:1.8rem}
+    ul,ol{margin-left:2rem}
+    .checklist{list-style:none outside}
+    .checklist>.item{display:flex;flex-direction:row;align-items:baseline}
+    .checklist>.item>input[type=checkbox]{margin-right:0.5rem}
+    hr{border:0;border-top:0.1rem solid #e4e5e6;margin:2.0rem 0}
+    code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
+    pre>code{display:block;white-space:pre;padding:1rem 1.5rem}
+    </style>
+</head>
+<body>
+)" + buffer + R"(
+</body>
+</html>
+)";
+}
+
+std::string Renderer::GetContentBuffer()
+{
     return buffer;
 }
 
@@ -52,11 +87,6 @@ void Renderer::TraverseBeforeChildren(Node* node)
             break;
         case NodeType::FMonospace:
             buffer += "<code>";
-            break;
-
-        case NodeType::InlineCode:
-            buffer += "<code>";
-            buffer += static_cast<ValueNode*>(node)->value;
             break;
 
         case NodeType::Paragraph:
@@ -113,19 +143,56 @@ void Renderer::TraverseBeforeChildren(Node* node)
             buffer += "<div class=\"checklist\">\n";
             break;
         case NodeType::CheckItem:
-            buffer += "<div class=\"checkitem\">";
+            buffer += "<div class=\"item\">";
             buffer += "<input type=\"checkbox\"";
             if (static_cast<TernaryNode*>(node)->state == TernaryState::True)
                 buffer += " checked";
             if (static_cast<TernaryNode*>(node)->state == TernaryState::InBetween)
                 buffer += " indeterminate";
-            buffer += "> ";
+            buffer += "><label>";
             break;
 
         case NodeType::Link:
         {
             Node* packageNode = static_cast<ContainerNode*>(node)->package;
-            buffer += "<a href=\"" + static_cast<ValueNode*>(packageNode)->value + "\">";
+            ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
+            buffer += "<a href=\"" + valueNode->value + "\">";
+            if (packageNode->children.empty())
+                buffer += valueNode->value;
+            break;
+        }
+        case NodeType::LocalLink:
+        {
+            Node* packageNode = static_cast<ContainerNode*>(node)->package;
+            ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
+            buffer += "<a href=\"#" + valueNode->value + "\">";
+            if (packageNode->children.empty())
+                buffer += valueNode->value;
+            break;
+        }
+
+        case NodeType::Table:
+            buffer += "<table>\n";
+            break;
+        case NodeType::TableRow:
+            buffer += "<tr>\n";
+            break;
+        case NodeType::TableColumn:
+            buffer += "<td>";
+            break;
+
+        case NodeType::InlineCode:
+            buffer += "<code>";
+            buffer += Escape(static_cast<ValueNode*>(node)->value);
+            buffer += "</code>\n";
+            break;
+
+        case NodeType::Code:
+        {
+            CodeNode* codeNode = static_cast<CodeNode*>(node);
+            buffer += "<pre><code>";
+            buffer += Escape(codeNode->value);
+            buffer += "</code></pre>\n";
             break;
         }
 
@@ -149,7 +216,6 @@ void Renderer::TraverseAfterChildren(Node* node)
             buffer += "</i>";
             break;
         case NodeType::FMonospace:
-        case NodeType::InlineCode:
             buffer += "</code>";
             break;
 
@@ -184,21 +250,55 @@ void Renderer::TraverseAfterChildren(Node* node)
             buffer += "</ol>\n";
             break;
         case NodeType::Item:
-            buffer += "</li>\n";
             break;
 
         case NodeType::CheckList:
+            buffer += "</div>";
+            break;
         case NodeType::CheckItem:
-            buffer += "</div>\n";
+            buffer += "</label></div>\n";
             break;
 
+
         case NodeType::Link:
+        case NodeType::LocalLink:
             buffer += "</a>";
+            break;
+
+        case NodeType::Table:
+            buffer += "</table>\n";
+            break;
+        case NodeType::TableRow:
+            buffer += "</tr>\n";
+            break;
+        case NodeType::TableColumn:
+            buffer += "</td>\n";
             break;
 
         default:
             break;
     }
+}
+
+std::string Renderer::Escape(const std::string &raw)
+{
+    std::string escaped;
+
+    for (size_t i = 0; i < raw.size(); ++i)
+    {
+        switch (raw[i]) {
+            case '<':
+                escaped += "&lt;";
+                break;
+            case '>':
+                escaped += "&gt;";
+                break;
+            default:
+                escaped += raw[i];
+        }
+    }
+
+    return escaped;
 }
 
 }

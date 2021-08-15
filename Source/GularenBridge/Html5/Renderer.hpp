@@ -14,6 +14,7 @@ using Gularen::BooleanNode;
 using Gularen::TernaryNode;
 using Gularen::TernaryState;
 using Gularen::ContainerNode;
+using Gularen::CodeNode;
 using Gularen::IRenderer;
 
 class Renderer: public IRenderer
@@ -25,11 +26,14 @@ public:
     void Parse() override;
 
     std::string GetBuffer() override;
+    std::string GetContentBuffer();
 
 private:
     void Traverse(Node* node);
     void TraverseBeforeChildren(Node* node);
     void TraverseAfterChildren(Node* node);
+
+    std::string Escape(const std::string& raw);
 
     Node* tree;
     std::string buffer;

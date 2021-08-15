@@ -1,0 +1,16 @@
+Paragraphs are separated with double newlines.
+
+Single line won't affect it.
+It just don't.
+
+Font styling: *bold*, _italic_, `monospaced`.
+
+Line<break.
+
+Multiple line<<<break.
+
+Thematic break.
+<<
+
+Page break.
+<<<

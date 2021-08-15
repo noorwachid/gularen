@@ -420,12 +420,12 @@ void AstBuilder::ParseBlock(TokenType type)
 
         case TokenType::KwCode:
         {
-            ContainerNode* containerNode = new ContainerNode(NodeType::Code);
-            GetHead()->Add(containerNode);
+            CodeNode* codeNode = new CodeNode();
+            GetHead()->Add(codeNode);
             Skip();
             if (GetCurrentToken().type == TokenType::QuotedText)
             {
-                containerNode->package = new ValueNode(NodeType::QuotedText, GetCurrentToken().value);
+                codeNode->lang = new ValueNode(NodeType::QuotedText, GetCurrentToken().value);
                 Skip();
             }
 
@@ -439,7 +439,7 @@ void AstBuilder::ParseBlock(TokenType type)
                 GetNextToken(1).type == TokenType::RawText &&
                 GetNextToken(2).type == TokenType::Line)
             {
-                containerNode->Add(new ValueNode(NodeType::RawText, GetNextToken(1).value));
+                codeNode->value = GetNextToken(1).value;
                 Skip(3);
             }
             break;

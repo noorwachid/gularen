@@ -349,7 +349,6 @@ void Lexer::ParseNewline()
 
                     while (IsValid())
                     {
-                        IO::Write(GetCurrentByte());
                         if (GetCurrentByte() == '\n')
                         {
                             Skip();
@@ -379,12 +378,14 @@ void Lexer::ParseNewline()
                                 }
                                 else
                                 {
-                                    buffer += '\n';
+                                    if (!buffer.empty())
+                                        buffer += "\n";
                                     buffer += std::string(laterSize, '-');
                                 }
                             }
                             else
-                                buffer += '\n';
+                                if (!buffer.empty())
+                                    buffer += "\n";
                         }
                         else
                         {
