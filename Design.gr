@@ -148,20 +148,13 @@
     [ ] Design the options to separate parts, chapters and sections
 
 [ ] Admonitions
-    [ ] Multiline Admoninitons
-        :: code 'gr'
-        ----
-        :::: 'Note'
-        ---
-        An admonition
-        ---
-        ----
-
-    [ ] Oneline Admonitions
-        :: code 'gr'
-        ---
-        :::: 'Note' {Oneline Admonition}
-        ---
+    :: code 'gr'
+    ----
+    :: 'Note' ::
+    ---
+    An admonition
+    ---
+    ----
 
 [+] Codes
     [+] Multiline Codes
