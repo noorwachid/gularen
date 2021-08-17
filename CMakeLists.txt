@@ -18,7 +18,7 @@ target_include_directories(Gularen PUBLIC Source)
 
 # BridgeLibrary
 add_library(GularenBridge
-    Source/GularenBridge/Html5/Renderer.cpp
+    Source/GularenBridge/Html/Renderer.cpp
     Source/GularenBridge/Json/Renderer.cpp)
 target_include_directories(GularenBridge PUBLIC Source)
 target_link_libraries(GularenBridge Gularen)

@@ -146,24 +146,19 @@ void Lexer::Parse()
 
             case '|':
                 Skip();
-                if (!blocks.empty() && blocks.top() == TokenType::KwTable)
+                if (!tokens.empty() && tokens.back().type == TokenType::Text)
                 {
-                    if (!tokens.empty() && tokens.back().type == TokenType::Text)
+                    // remove blankspaces of previous token
+                    for (size_t i = tokens.back().value.size() - 1; i >= 0; --i)
                     {
-                        // remove blankspaces of previous token
-                        for (size_t i = tokens.back().value.size() - 1; i >= 0; --i)
-                        {
-                            if (tokens.back().value[i] != ' ') {
-                                tokens.back().value = tokens.back().value.substr(0, i + 1);
-                                break;
-                            }
+                        if (tokens.back().value[i] != ' ') {
+                            tokens.back().value = tokens.back().value.substr(0, i + 1);
+                            break;
                         }
                     }
-                    Add(Token(TokenType::Pipe));
-                    SkipSpaces();
                 }
-                else if (!tokens.empty() && tokens.back().type == TokenType::Text)
-                    tokens.back().value += GetCurrentByte();
+                Add(Token(TokenType::Pipe));
+                SkipSpaces();
                 break;
 
             default:
@@ -196,11 +191,9 @@ Token &Lexer::GetToken(size_t index)
 
 void Lexer::Reset()
 {
-    while (!blocks.empty())
-        blocks.pop();
-
     inHeaderLine = false;
     inLink = false;
+    inCodeBlock = false;
 
     bufferIndex = 0;
     tokens.clear();
@@ -343,7 +336,7 @@ void Lexer::ParseNewline()
                 Add(Token(TokenType::Line, size));
                 SkipSpaces();
 
-                if (!blocks.empty() && blocks.top() == TokenType::KwCode)
+                if (inCodeBlock)
                 {
                     std::string buffer;
 
@@ -374,6 +367,7 @@ void Lexer::ParseNewline()
                                 {
                                     Add(Token(TokenType::RawText, buffer));
                                     Add(Token(TokenType::Line, size));
+                                    inCodeBlock = false;
                                     break;
                                 }
                                 else
@@ -570,14 +564,12 @@ void Lexer::ParseFunction()
     {
         Add(Token(TokenType::KwTable));
         SkipSpaces();
-
-        blocks.push(TokenType::KwTable);
     }
     else if (symbol == "code")
     {
         Add(Token(TokenType::KwCode));
         SkipSpaces();
-        blocks.push(TokenType::KwCode);
+        inCodeBlock = true;
     }
     else if (symbol == "admon")
     {

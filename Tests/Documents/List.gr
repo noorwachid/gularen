@@ -1,15 +1,22 @@
+> HEAD
 Here thing you should do:
 - First item
 - Second item
 - Third item
     Paragraph
     Still the same
+    - List inside paragraph
+    - What???
+        - It's getting cooler
+            - Than ever
 
     Different paragraph
 
 - Forth item
 1. One
 2. Two
+    .. Two A
+    .. Two B
 .. Three
 .. Four
 

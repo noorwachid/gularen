@@ -32,6 +32,7 @@ private:
 
 private:
     void ParseNewline(size_t newlineSize = 1);
+    void ParseIndentation();
     void ParseBreak();
     void ParseLink(NodeType type);
     void ParseBlock(TokenType type);
@@ -39,10 +40,9 @@ private:
 private:
     Node* GetHead();
     void PushHead(Node* node);
+    void CompareAndPopHead(NodeType type);
+    void CompareAndPopHead(NodeType type, size_t newlineSize);
     void PopHead();
-    bool ShouldPushHead(NodeType type, size_t newlineSize = 0);
-    bool ShouldPushValueHead(NodeType type, NodeGroup group, size_t newlineSize = 0);
-    bool ShouldPopHead();
     void PairFHead(NodeType type);
 
     // -- Token operations
@@ -60,8 +60,7 @@ private:
     Node* root = nullptr;
     size_t depth = 0;
 
-    std::stack<Node*> headStack;
-    std::stack<NodeType> blockStack;
+    std::stack<Node*> heads;
 
     // Token definitions
     size_t tokenIndex = 0;

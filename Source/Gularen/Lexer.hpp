@@ -54,8 +54,8 @@ private:
 
     bool inHeaderLine;
     bool inLink;
+    bool inCodeBlock;
 
-    std::stack<TokenType> blocks;
     size_t currentDepth;
 };
 

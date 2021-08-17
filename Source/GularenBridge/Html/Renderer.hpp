@@ -5,7 +5,7 @@
 #include <Gularen/IRenderer.hpp>
 
 namespace GularenBridge {
-namespace Html5 {
+namespace Html {
 
 using Gularen::NodeType;
 using Gularen::Node;

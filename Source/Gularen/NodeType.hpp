@@ -61,6 +61,14 @@ enum struct NodeType
 
 };
 
+enum struct NodeShape {
+    Unknown = -1,
+    Line,
+    InBetween,
+    Block,
+    SuperBlock,
+};
+
 std::string ToString(NodeType type);
 
 }

@@ -1,7 +1,7 @@
 #include <Gularen/IO.hpp>
 #include <Gularen/Lexer.hpp>
 #include <Gularen/AstBuilder.hpp>
-#include <GularenBridge/Html5/Renderer.hpp>
+#include <GularenBridge/Html/Renderer.hpp>
 #include <GularenBridge/Json/Renderer.hpp>
 
 using namespace Gularen;
@@ -10,17 +10,21 @@ using namespace GularenBridge;
 class ConsoleInterface
 {
 public:
-    std::string inputBuffer;
     std::string input;
     std::string output;
     std::string outputRenderer;
+    std::string outputRendererTemplate;
+    std::string programExecName;
 
-    bool bTree;
+    bool bAst;
     bool bTokens;
     bool bRenderedBuffer;
 
     void Run(int size, char** args)
     {
+        if (size > 0)
+            programExecName = args[0];
+
         for (int i = 1; i < size; ++i)
         {
             std::string arg = args[i];
@@ -41,34 +45,7 @@ public:
                             ++i;
                             break;
 
-                        case 'i':
-                            if (i + 2 > size || args[i + 1][0] == '-')
-                            {
-                                IO::WriteLine("-i requires you to specify the file path");
-                                Terminate(1);
-                            }
-                            input = args[i + 1];
-                            ++i;
-                            break;
-
-                        case 'e':
-                            if (i + 2 > size || args[i + 1][0] == '-')
-                            {
-                                IO::WriteLine("-o requires you to specify the string buffer");
-                                Terminate(1);
-                            }
-                            inputBuffer = args[i + 1];
-                            ++i;
-                            break;
-
-                        case 't':
-                            bTree = true;
-                            break;
-
-                        case 'k':
-                            bTokens = true;
-                            break;
-
+                        // Renderer's
                         case 'r':
                             if (i + 2 > size || args[i + 1][0] == '-')
                             {
@@ -78,20 +55,38 @@ public:
                             outputRenderer = args[i + 1];
                             ++i;
                             break;
+                        case 't':
+                            if (i + 2 > size || args[i + 1][0] == '-')
+                            {
+                                IO::WriteLine("-t requires you to specify the rendering engine's template");
+                                Terminate(1);
+                            }
+                            outputRendererTemplate = args[i + 1];
+                            ++i;
+                            break;
 
-                        case 'g':
+                        // Representations
+                        case 'k':
+                            bTokens = true;
+                            break;
+                        case 'a':
+                            bAst = true;
+                            break;
+                        case 'b':
                             bRenderedBuffer = true;
                             break;
 
+                        // Informations
                         case 'v':
                             WriteVersion();
                             break;
-
                         case 'h':
                             WriteHelp();
+                            Terminate(0);
                             break;
 
                         default:
+                            IO::WriteLine("Invalid flag: -" + std::string(1, arg[j]));
                             break;
                     }
                 }
@@ -106,36 +101,57 @@ public:
 
     void Parse()
     {
-        AstBuilder builder;
-        builder.SetBuffer(!inputBuffer.empty() ? inputBuffer : IO::ReadFile(input));
-        builder.Parse();
+        std::string inputBuffer;
 
-        IRenderer* r;
+        if (!input.empty())
+            inputBuffer = IO::ReadFile(input);
+        else
+            inputBuffer = IO::Read();
+
+        AstBuilder builder;
+        builder.SetBuffer(inputBuffer);
+        builder.Parse();
 
         if (bTokens)
             IO::Write(builder.GetTokensAsString());
 
-        if (bTree)
+        if (bAst)
             IO::Write(builder.GetTreeAsString());
 
-        if (!outputRenderer.empty())
+        if (bRenderedBuffer || !output.empty())
         {
-            if (outputRenderer == "html5")
-                r = new Html5::Renderer();
-            if (outputRenderer == "json")
-                r = new Json::Renderer();
-            else
-                // TODO: change to Gularen::Renderer as formater
-                r = new Html5::Renderer();
+            std::string outputBuffer;
 
-            r->SetTree(builder.GetTree());
-            r->Parse();
+            if (outputRenderer.substr(0, 4) == "html")
+            {
+                Html::Renderer r;
+                r.SetTree(builder.GetTree());
+                r.Parse();
+
+                if (outputRenderer == "html")
+                    outputBuffer = r.GetBuffer();
+                if (outputRenderer == "html-content")
+                    outputBuffer = r.GetContentBuffer();
+            }
+            else if (outputRenderer == "json")
+            {
+                Json::Renderer r;
+                r.SetTree(builder.GetTree());
+                r.Parse();
+                outputBuffer = r.GetBuffer();
+            }
+            else
+            {
+                // TODO: change to Gularen::Renderer as formater
+                outputBuffer = inputBuffer;
+            }
+
 
             if (bRenderedBuffer)
-                IO::Write(r->GetBuffer());
+                IO::Write(outputBuffer);
 
             if (!output.empty())
-                IO::WriteFile(output, r->GetBuffer());
+                IO::WriteFile(output, outputBuffer);
         }
     }
 
@@ -151,15 +167,24 @@ public:
 
     void WriteHelp()
     {
+        IO::WriteLine("USAGES:");
+        IO::WriteLine("    " + programExecName + " [options] file.gr");
+        IO::WriteLine("    stdin | " + programExecName + " [options]");
+        IO::WriteLine("");
+        IO::WriteLine("OPTIONS:");
         IO::WriteLine("    -v version");
         IO::WriteLine("    -h help");
-        IO::WriteLine("    -e parse string buffer");
-        IO::WriteLine("    -i specify input file path");
         IO::WriteLine("    -o specify output file path");
         IO::WriteLine("    -r specify renderer engine");
-        IO::WriteLine("    -k write tokens to console buffer");
-        IO::WriteLine("    -t write tree to console buffer");
-        IO::WriteLine("    -g write generated buffer to console buffer");
+        IO::WriteLine("    -t specify renderer engine's template");
+        IO::WriteLine("    -k write tokens to stdout");
+        IO::WriteLine("    -a write abstract syntax tree to stdout");
+        IO::WriteLine("    -b write output buffer to stdout");
+        IO::WriteLine("");
+        IO::WriteLine("ENGINES:");
+        IO::WriteLine("    html");
+        IO::WriteLine("    html-content");
+        IO::WriteLine("    json");
     }
 private:
 };
@@ -169,10 +194,7 @@ int main(int argc, char** argv)
 {
     ConsoleInterface ci;
 
-    if (argc > 1)
-        ci.Run(argc, argv);
-    else
-        ci.WriteHelp();
+    ci.Run(argc, argv);
 
     return 0;
 }

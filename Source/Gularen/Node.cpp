@@ -4,12 +4,14 @@ namespace Gularen {
 
 Node::Node():
     type(NodeType::Unknown),
-    group(NodeGroup::None)
+    group(NodeGroup::Unknown),
+    shape(NodeShape::Unknown)
 {}
 
-Node::Node(NodeType type, NodeGroup group):
+Node::Node(NodeType type, NodeGroup group, NodeShape shape):
     type(type),
-    group(group)
+    group(group),
+    shape(shape)
 {}
 
 Node::~Node()
@@ -30,15 +32,11 @@ ValueNode::ValueNode():
     Node()
 {}
 
-ValueNode::ValueNode(NodeType type, NodeGroup group):
-    Node(type, group)
+ValueNode::ValueNode(NodeType type, NodeGroup group, NodeShape shape, const std::string &value):
+    Node(type, group, shape),
+    value(value)
 {
 }
-
-ValueNode::ValueNode(Gularen::NodeType type, const std::string& value):
-    Node(type),
-    value(value)
-{}
 
 std::string ValueNode::ToString()
 {
@@ -49,8 +47,8 @@ SizeNode::SizeNode():
     Node()
 {}
 
-SizeNode::SizeNode(NodeType type, const size_t size):
-    Node(type),
+SizeNode::SizeNode(NodeType type, NodeGroup group, NodeShape shape, const size_t size):
+    Node(type, group, shape),
     size(size)
 {}
 
@@ -64,8 +62,8 @@ BooleanNode::BooleanNode():
     state(false)
 {}
 
-BooleanNode::BooleanNode(NodeType type, NodeGroup group, bool state):
-    Node(type, group),
+BooleanNode::BooleanNode(NodeType type, NodeGroup group, NodeShape shape, bool state):
+    Node(type, group, shape),
     state(state)
 {}
 
@@ -80,8 +78,8 @@ TernaryNode::TernaryNode():
 {
 }
 
-TernaryNode::TernaryNode(NodeType type, NodeGroup group, TernaryState state):
-    Node(type, group),
+TernaryNode::TernaryNode(NodeType type, NodeGroup group, NodeShape shape, TernaryState state):
+    Node(type, group, shape),
     state(state)
 {
 }
@@ -110,8 +108,8 @@ ContainerNode::ContainerNode():
     package(nullptr)
 {}
 
-ContainerNode::ContainerNode(NodeType type, NodeGroup group, Node *node):
-    Node(type, group),
+ContainerNode::ContainerNode(NodeType type, NodeGroup group, NodeShape shape, Node *node):
+    Node(type, group, shape),
     package(node)
 {}
 
@@ -130,22 +128,17 @@ std::string ContainerNode::ToString()
 }
 
 TableNode::TableNode():
-    Node()
-{
-}
-
-TableNode::TableNode(NodeType type, NodeGroup group):
-    Node(type, group)
+    Node(NodeType::Table, NodeGroup::Table, NodeShape::Block)
 {
 }
 
 CodeNode::CodeNode():
-    Node(NodeType::Code)
+    Node(NodeType::Code, NodeGroup::Code, NodeShape::Block)
 {
 }
 
 CodeNode::CodeNode(const std::string &value, Node *lang):
-    Node(NodeType::Code),
+    Node(NodeType::Code, NodeGroup::Code, NodeShape::Block),
     value(value),
     lang(lang)
 {

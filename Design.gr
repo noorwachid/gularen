@@ -188,7 +188,7 @@
 
 [+] Add group enumerations for faster checking
 [ ] Add escaping reserved chars
-[ ] Fix appropriate paragraph node beside begin with text
+[+] Fix appropriate paragraph node beside begin with text
 
 <<
 
@@ -197,7 +197,7 @@
 [+] HTML5
 [ ] HTML4 / XHTML
 [ ] Epub3
-[ ] JSON
+[+] JSON
 [ ] PDF 1.1
 [ ] Docx
 [ ] ODT

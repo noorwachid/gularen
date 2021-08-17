@@ -9,7 +9,7 @@ namespace Gularen {
 struct Node
 {
     Node();
-    Node(NodeType type, NodeGroup group = NodeGroup::None);
+    Node(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown);
 
     virtual ~Node();
 
@@ -19,14 +19,14 @@ struct Node
 
     NodeType type;
     NodeGroup group;
+    NodeShape shape;
     std::vector<Node*> children;
 };
 
 struct ValueNode: public Node
 {
     ValueNode();
-    ValueNode(NodeType type, NodeGroup group = NodeGroup::None);
-    ValueNode(NodeType type, const std::string& value);
+    ValueNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, const std::string& value = std::string());
 
     std::string ToString() override;
 
@@ -36,7 +36,7 @@ struct ValueNode: public Node
 struct SizeNode: public Node
 {
     SizeNode();
-    SizeNode(NodeType type, const size_t size);
+    SizeNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, const size_t size = 0);
 
     std::string ToString() override;
 
@@ -46,7 +46,7 @@ struct SizeNode: public Node
 struct BooleanNode: public Node
 {
     BooleanNode();
-    BooleanNode(NodeType type, NodeGroup group = NodeGroup::None, bool state = false);
+    BooleanNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, bool state = false);
 
     std::string ToString() override;
 
@@ -54,15 +54,15 @@ struct BooleanNode: public Node
 };
 
 enum struct TernaryState {
-    False,
-    InBetween,
-    True,
+    False = 1,
+    InBetween = 2,
+    True = 3,
 };
 
 struct TernaryNode: public Node
 {
     TernaryNode();
-    TernaryNode(NodeType type, NodeGroup group = NodeGroup::None, TernaryState state = TernaryState::False);
+    TernaryNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, TernaryState state = TernaryState::False);
 
     std::string ToString() override;
 
@@ -72,7 +72,7 @@ struct TernaryNode: public Node
 struct ContainerNode: public Node
 {
     ContainerNode();
-    ContainerNode(NodeType type, NodeGroup group = NodeGroup::None, Node* package = nullptr);
+    ContainerNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, Node* package = nullptr);
 
     std::string ToString() override;
 
@@ -93,7 +93,6 @@ struct CodeNode: public Node
 struct TableNode: public Node
 {
     TableNode();
-    TableNode(NodeType type, NodeGroup group = NodeGroup::None);
 
     std::vector<ssize_t> hHeaders;
     std::vector<ssize_t> vHeaders;

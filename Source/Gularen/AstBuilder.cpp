@@ -40,7 +40,7 @@ void AstBuilder::Parse()
         switch (GetCurrentToken().type)
         {
             case TokenType::Text:
-                GetHead()->Add(new ValueNode(NodeType::Text, GetCurrentToken().value));
+                GetHead()->Add(new ValueNode(NodeType::Text, NodeGroup::Text, NodeShape::InBetween, GetCurrentToken().value));
                 Skip();
                 break;
 
@@ -85,7 +85,7 @@ void AstBuilder::Parse()
                 Skip();
                 if (GetCurrentToken().type == TokenType::Text && GetNextToken().type == TokenType::Teeth)
                 {
-                    GetHead()->Add(new ValueNode(NodeType::InlineCode, GetCurrentToken().value));
+                    GetHead()->Add(new ValueNode(NodeType::InlineCode, NodeGroup::Text, NodeShape::InBetween, GetCurrentToken().value));
                     Skip(2);
                 }
                 break;
@@ -96,7 +96,7 @@ void AstBuilder::Parse()
                 switch (GetCurrentToken().type)
                 {
                     case TokenType::Symbol:
-                        GetHead()->Add(new ValueNode(NodeType::Curtain, GetCurrentToken().value));
+                        GetHead()->Add(new ValueNode(NodeType::Curtain, NodeGroup::Text, NodeShape::InBetween, GetCurrentToken().value));
                         Skip();
                         break;
 
@@ -124,9 +124,11 @@ void AstBuilder::Parse()
                 break;
 
             case TokenType::Pipe:
-                while (!headStack.empty() && headStack.top()->type != NodeType::TableRow)
+                while (heads.size() > 1 && heads.top()->type != NodeType::TableRow)
                     PopHead();
                 PushHead(new Node(NodeType::TableColumn, NodeGroup::Table));
+                Skip();
+                break;
 
             default:
                 Skip();
@@ -147,13 +149,10 @@ void AstBuilder::Reset()
 
     root = new Node(NodeType::Root);
 
-    while (!headStack.empty())
-        headStack.pop();
+    while (!heads.empty())
+        heads.pop();
 
-    while (!blockStack.empty())
-        blockStack.pop();
-
-    headStack.push(root);
+    heads.push(root);
 }
 
 void AstBuilder::DestroyTree()
@@ -215,8 +214,143 @@ void AstBuilder::TraverseAndDestroyNode(Node *node)
 
 void AstBuilder::ParseNewline(size_t newlineSize)
 {
-    // --- BEGIN IDENTATIONS ---
+    ParseIndentation();
 
+    switch (GetCurrentToken().type)
+    {
+        case TokenType::Tail:
+            switch (GetCurrentToken().size)
+            {
+                case 1:
+                    CompareAndPopHead(NodeType::Minisection, newlineSize);
+                    PushHead(new ValueNode(NodeType::Minisection, NodeGroup::Header, NodeShape::Line));
+                    break;
+
+                case 2:
+                    CompareAndPopHead(NodeType::Part, newlineSize);
+                    PushHead(new ValueNode(NodeType::Part, NodeGroup::Header, NodeShape::Line));
+                    break;
+
+                case 3:
+                    CompareAndPopHead(NodeType::Title, newlineSize);
+                    PushHead(new ValueNode(NodeType::Title, NodeGroup::Header, NodeShape::Line));
+                    break;
+
+                default:
+                    break;
+            }
+            Skip();
+            break;
+
+        case TokenType::RevTail:
+            if (GetCurrentToken().size == 2)
+            {
+                CompareAndPopHead(NodeType::ThematicBreak);
+                GetHead()->Add(new Node(NodeType::ThematicBreak, NodeGroup::Break, NodeShape::Line));
+                Skip();
+            }
+            else if (GetCurrentToken().size > 2)
+            {
+                CompareAndPopHead(NodeType::PageBreak);
+                GetHead()->Add(new Node(NodeType::PageBreak, NodeGroup::Break, NodeShape::Line));
+                Skip();
+            }
+            break;
+
+        case TokenType::Arrow:
+            switch (GetCurrentToken().size)
+            {
+                case 1:
+                    CompareAndPopHead(NodeType::Subsubsection, newlineSize);
+                    PushHead(new ValueNode(NodeType::Subsubsection, NodeGroup::Header, NodeShape::Line));
+                    break;
+
+                case 2:
+                    CompareAndPopHead(NodeType::Subsection, newlineSize);
+                    PushHead(new ValueNode(NodeType::Subsection, NodeGroup::Header, NodeShape::Line));
+                    break;
+
+                case 3:
+                    CompareAndPopHead(NodeType::Section, newlineSize);
+                    PushHead(new ValueNode(NodeType::Section, NodeGroup::Header, NodeShape::Line));
+                    break;
+
+                case 4:
+                    CompareAndPopHead(NodeType::Chapter, newlineSize);
+                    PushHead(new ValueNode(NodeType::Chapter, NodeGroup::Header, NodeShape::Line));
+                    break;
+
+                default:
+                    break;
+            }
+
+            break;
+
+        case TokenType::Bullet:
+            CompareAndPopHead(NodeType::List);
+
+            if (GetHead()->type != NodeType::List)
+                PushHead(new Node(NodeType::List, NodeGroup::List, NodeShape::Block));
+
+            PushHead(new Node(NodeType::Item, NodeGroup::Item, NodeShape::Block));
+            Skip();
+            break;
+
+        case TokenType::NBullet:
+            CompareAndPopHead(NodeType::NList);
+
+            if (GetHead()->type != NodeType::NList)
+                PushHead(new Node(NodeType::NList, NodeGroup::List, NodeShape::Block));
+
+            PushHead(new Node(NodeType::Item, NodeGroup::Item, NodeShape::Block));
+            Skip();
+            break;
+
+        case TokenType::CheckBox:
+            CompareAndPopHead(NodeType::CheckList);
+
+            if (GetHead()->type != NodeType::CheckList)
+                PushHead(new Node(NodeType::CheckList, NodeGroup::List, NodeShape::Block));
+
+            PushHead(new TernaryNode(NodeType::CheckItem, NodeGroup::Item, NodeShape::Block, static_cast<TernaryState>(GetCurrentToken().size)));
+            Skip();
+            break;
+
+        case TokenType::Box:
+            Skip();
+            ParseBlock(GetCurrentToken().type);
+            break;
+
+        case TokenType::Line:
+            while (heads.size() > 1 && heads.top()->shape != NodeShape::Block)
+                heads.pop();
+
+            PopHead();
+            Skip();
+            break;
+
+        default:
+            if (GetHead()->group != NodeGroup::Table)
+            {
+                CompareAndPopHead(NodeType::Paragraph, newlineSize);
+
+                if (GetHead()->type != NodeType::Paragraph)
+                    PushHead(new Node(NodeType::Paragraph));
+                else
+                    GetHead()->Add(new Node(NodeType::Newline));
+            }
+            else
+            {
+                CompareAndPopHead(NodeType::Table);
+                PushHead(new Node(NodeType::TableRow, NodeGroup::Table, NodeShape::Line));
+                PushHead(new Node(NodeType::TableColumn, NodeGroup::Table, NodeShape::Line));
+            }
+            break;
+    }
+}
+
+void AstBuilder::ParseIndentation()
+{
     size_t currentDepth = 0;
 
     if (GetCurrentToken().type == TokenType::Space)
@@ -227,9 +361,14 @@ void AstBuilder::ParseNewline(size_t newlineSize)
 
     if (currentDepth > depth)
     {
-        size_t distance = currentDepth - depth;
+        size_t distance = currentDepth - depth - 1;
         for (size_t i = 0; i < distance; ++i)
-            PushHead(new Node(NodeType::Indent));
+            PushHead(new Node(NodeType::Indent, NodeGroup::Wrapper, NodeShape::SuperBlock));
+
+        PushHead(new Node(
+            GetHead()->group != NodeGroup::Item ? NodeType::Indent : NodeType::Wrapper,
+            NodeGroup::Wrapper,
+            NodeShape::SuperBlock));
     }
     else if (currentDepth < depth)
     {
@@ -240,7 +379,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             if (GetHead()->type == NodeType::Root)
                 break;
 
-            if (GetHead()->type == NodeType::Indent)
+            if (GetHead()->shape == NodeShape::SuperBlock)
                 ++i;
 
             PopHead();
@@ -248,120 +387,6 @@ void AstBuilder::ParseNewline(size_t newlineSize)
     }
 
     depth = currentDepth;
-
-    // --- END INDENTATIONS ---
-
-    // -- BEGIN SOME_WEIRD_CONDITIONS ---
-    if (!blockStack.empty() && blockStack.top() == NodeType::Table)
-    {
-        while (!headStack.empty() && headStack.top()->type != NodeType::Table)
-            PopHead();
-
-        PushHead(new Node(NodeType::TableRow, NodeGroup::Table));
-        PushHead(new Node(NodeType::TableColumn, NodeGroup::Table));
-    }
-    // -- END SOME_WEIRD_CONDITIONS ---
-
-    // --- POP ITEM NODE HEAD ---
-    if (GetHead()->group == NodeGroup::Item)
-        PopHead();
-
-    switch (GetCurrentToken().type)
-    {
-        case TokenType::Text:
-            if (blockStack.empty() || blockStack.top() != NodeType::Table)
-                if (!ShouldPushHead(NodeType::Paragraph, newlineSize))
-                    GetHead()->Add(new Node(NodeType::Newline));
-            break;
-
-        case TokenType::Tail:
-            switch (GetCurrentToken().size)
-            {
-                case 1:
-                    ShouldPushValueHead(NodeType::Minisection, NodeGroup::Header);
-                    break;
-                case 2:
-                    ShouldPushValueHead(NodeType::Part, NodeGroup::Header);
-                    break;
-                case 3:
-                    ShouldPushValueHead(NodeType::Title, NodeGroup::Header);
-                    break;
-
-                default:
-                    break;
-            }
-            Skip();
-            break;
-
-        case TokenType::Arrow:
-            switch (GetCurrentToken().size)
-            {
-                case 1:
-                    ShouldPushValueHead(NodeType::Subsubsection, NodeGroup::Header);
-                    break;
-                case 2:
-                    ShouldPushValueHead(NodeType::Subsection, NodeGroup::Header);
-                    break;
-                case 3:
-                    ShouldPushValueHead(NodeType::Section, NodeGroup::Header);
-                    break;
-                case 4:
-                    ShouldPushValueHead(NodeType::Chapter, NodeGroup::Header);
-                    break;
-
-                default:
-                    break;
-            }
-            Skip();
-            break;
-
-        case TokenType::RevTail:
-            ParseBreak();
-            break;
-
-        case TokenType::Bullet:
-            ShouldPushHead(NodeType::List);
-            PushHead(new Node(NodeType::Item, NodeGroup::Item));
-            Skip();
-            break;
-
-        case TokenType::NBullet:
-            ShouldPushHead(NodeType::NList);
-            PushHead(new Node(NodeType::Item, NodeGroup::Item));
-            Skip();
-            break;
-
-        case TokenType::CheckBox:
-        {
-            TernaryNode* ternaryNode = new TernaryNode(NodeType::CheckItem, NodeGroup::Item);
-            switch (GetCurrentToken().size) {
-                case 1:
-                    ternaryNode->state = TernaryState::False;
-                    break;
-                case 2:
-                    ternaryNode->state = TernaryState::InBetween;
-                    break;
-                case 3:
-                    ternaryNode->state = TernaryState::True;
-                    break;
-                default:
-                    break;
-            }
-
-            ShouldPushHead(NodeType::CheckList);
-            PushHead(ternaryNode);
-            Skip();
-            break;
-        }
-
-        case TokenType::Box:
-            Skip();
-            ParseBlock(GetCurrentToken().type);
-            break;
-
-        default:
-            break;
-    }
 }
 
 void AstBuilder::ParseBreak()
@@ -410,22 +435,25 @@ void AstBuilder::ParseBlock(TokenType type)
     switch (type)
     {
         case TokenType::KwTable:
+            CompareAndPopHead(NodeType::Table);
+
             while (IsValid() && GetCurrentToken().type != TokenType::Line)
             {
                 Skip();
             }
-            blockStack.push(NodeType::Table);
-            PushHead(new TableNode(NodeType::Table, NodeGroup::Table));
+            PushHead(new TableNode());
             break;
 
         case TokenType::KwCode:
         {
+            CompareAndPopHead(NodeType::Code);
+
             CodeNode* codeNode = new CodeNode();
             GetHead()->Add(codeNode);
             Skip();
             if (GetCurrentToken().type == TokenType::QuotedText)
             {
-                codeNode->lang = new ValueNode(NodeType::QuotedText, GetCurrentToken().value);
+                codeNode->lang = new ValueNode(NodeType::QuotedText, NodeGroup::Text, NodeShape::Block, GetCurrentToken().value);
                 Skip();
             }
 
@@ -452,53 +480,44 @@ void AstBuilder::ParseBlock(TokenType type)
 
 Node* AstBuilder::GetHead()
 {
-    return headStack.top();
+    return heads.top();
 }
 
 void AstBuilder::PushHead(Node* node)
 {
     GetHead()->Add(node);
-    headStack.push(node);
+    heads.push(node);
+}
+
+void AstBuilder::CompareAndPopHead(NodeType type)
+{
+    if (heads.size() > 1)
+    {
+        if (heads.top()->type != type)
+            while (heads.size() > 1 && heads.top()->type != type && heads.top()->shape != NodeShape::SuperBlock)
+                heads.pop();
+        else if (heads.top()->shape == NodeShape::Line)
+            heads.pop();
+    }
+}
+
+void AstBuilder::CompareAndPopHead(NodeType type, size_t newlineSize)
+{
+    if (heads.size() > 1)
+    {
+        if (heads.top()->type != type)
+            while (heads.size() > 1 && heads.top()->type != type && heads.top()->shape != NodeShape::SuperBlock)
+                heads.pop();
+        else if (newlineSize > 1 || heads.top()->shape == NodeShape::Line)
+            heads.pop();
+    }
+
 }
 
 void AstBuilder::PopHead()
 {
-    if (headStack.size() > 1)
-        headStack.pop();
-}
-
-bool AstBuilder::ShouldPushHead(NodeType type, size_t newlineSize)
-{
-    if (GetHead()->type != type || newlineSize > 1)
-    {
-        ShouldPopHead();
-        PushHead(new Node(type));
-
-        return true;
-    }
-    return false;
-}
-
-bool AstBuilder::ShouldPushValueHead(NodeType type, NodeGroup group, size_t newlineSize)
-{
-    if (GetHead()->type != type || newlineSize > 1)
-    {
-        ShouldPopHead();
-        PushHead(new ValueNode(type, group));
-
-        return true;
-    }
-    return false;
-}
-
-bool AstBuilder::ShouldPopHead()
-{
-    if (GetHead()->type != NodeType::Indent)
-    {
-        PopHead();
-        return true;
-    }
-    return false;
+    if (heads.size() > 1)
+        heads.pop();
 }
 
 void AstBuilder::PairFHead(NodeType type)

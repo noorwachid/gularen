@@ -1,38 +1,22 @@
+:: code
+---
+IO.WriteLine("Hello World!")
+---
+
 :: code 'cxx'
 ---
-#include <IO.hpp>
+#include <Cool.hpp>
 
-Model* LoadModel(const std::string& path) 
+int main()  
 {
-    unsigned char* bytes = IO::LoadBinary(path);
-
-    Model* model = new Model::CreateFromBytes(bytes);
-
-    model->SetParentContext(this);
-    model->SetName("Untitled");
-
-    return model;
+    Cool::Run();
 }
 ---
 
-    :: code 'shell'
+    :: code 'js'
     ---
-    echo 'hello indent'
+    console.log('Yes');
+
+    console.log('No');
     ---
 
-    :: code 'ruby'
-    ---
-    print 'hello indent'
-    def shit()
-        print 'not shit'
-    end
-prs
-    ---
-
-
-:: code 'gr'
------
----
-*CodeCeption*
----
------

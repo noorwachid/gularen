@@ -6,7 +6,8 @@ namespace Gularen {
 enum struct NodeGroup
 {
     Unknown = -1,
-    None = 0,
+
+    Text,
 
     Header,
     List,
@@ -15,6 +16,9 @@ enum struct NodeGroup
 
     Link,
     Table,
+    Code,
+
+    Wrapper,
 };
 
 }
