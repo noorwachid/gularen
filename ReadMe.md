@@ -6,6 +6,7 @@ A well-thought lightweight markup language that makes sense
 >>> C++: The Pain, The Pleasure, and The Migraine
 
 >>--> Chapter 1: Data Types
+>>-> Primitives
 
 This section talks about integers.
 This is still the same paragraph.
