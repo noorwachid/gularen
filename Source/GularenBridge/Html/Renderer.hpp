@@ -37,6 +37,8 @@ private:
 
     Node* tree;
     std::string buffer;
+    std::string titleBuffer;
+    bool inTitle;
 };
 
 }

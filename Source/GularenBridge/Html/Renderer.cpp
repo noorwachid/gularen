@@ -18,6 +18,7 @@ void Renderer::SetTree(Node* tree)
 
 void Renderer::Parse()
 {
+    titleBuffer.clear();
     Traverse(tree);
 }
 
@@ -29,7 +30,7 @@ std::string Renderer::GetBuffer()
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Document</title>
+    <title>)" + (!titleBuffer.empty() ? titleBuffer : "Untitled") + R"(</title>
     <style>
     *{margin:0;padding:0;box-sizing:border-box}
     html{font-size:62.8%}
@@ -79,8 +80,14 @@ void Renderer::TraverseBeforeChildren(Node* node)
     switch (node->type)
     {
         case NodeType::Text:
-            buffer += static_cast<ValueNode*>(node)->value;
+        {
+            std::string value = static_cast<ValueNode*>(node)->value;
+            buffer += value;
+
+            if (inTitle)
+                titleBuffer += value;
             break;
+        }
 
         case NodeType::FBold:
             buffer += "<b>";
@@ -114,6 +121,8 @@ void Renderer::TraverseBeforeChildren(Node* node)
 
         case NodeType::Title:
             buffer += "<h1>";
+            if (titleBuffer.empty())
+                inTitle = true;
             break;
 
         case NodeType::Part:
@@ -214,6 +223,7 @@ void Renderer::TraverseAfterChildren(Node* node)
     {
         case NodeType::Title:
             buffer += "</h1>\n";
+            inTitle = false;
             break;
 
         case NodeType::FBold:
