@@ -98,11 +98,25 @@
         {!'CustomMarker' {Jump custom marker}}
         ---
 
-    [+] Custom marker
-        :: code 'gr'
-        ---
-        >>-> The Section > 'CustomMarker'
-        ---
+        [+] Custom marker
+            :: code 'gr'
+            ---
+            >>-> The Section > 'CustomMarker'
+            ---
+
+    [ ] Tag links (custom rendering)
+        [ ] Username links
+            :: code 'gr'
+            ---
+            Hi @Sophia!
+            ---
+
+        [ ] Hashtag links
+            :: code 'gr'
+            ---
+            #Bug #Urgent
+            Missing validation on withdraw
+            ---
 
     [ ] Files
         :: code 'gr'
