@@ -1,6 +1,6 @@
 >>> Tasks
 
-> Main Tasks
+> Main tasks
 
 [+] Comments
     :: code 'gr'
@@ -14,7 +14,7 @@
     *bold* _italic_ `monospaced`
     ---
 
-[+] Text Layouts
+[+] Text layouts
     [+] Paragraphs
         :: code 'gr'
         ---
@@ -44,7 +44,7 @@
         ---
 
 [+] Lists
-    [+] Bullet Lists
+    [+] Bullet lists
         :: code 'gr'
         ---
         - First item
@@ -52,7 +52,7 @@
         - Third item
         ---
 
-    [+] Numeric Bullet Lists
+    [+] Numeric bullet lists
         :: code 'gr'
         ---
         1. Number one
@@ -62,7 +62,7 @@
         .. So you dont have to count
         ---
 
-    [+] Check Lists
+    [+] Check-lists
         :: code 'gr'
         ---
         [+] Checked todo item
@@ -72,7 +72,7 @@
         ---
 
 [ ] Partitions
-    [+] Sectioning
+    [+] Headers
         :: code 'gr'
         ---
         >>> Document Title
@@ -91,20 +91,20 @@
         {:'google.com' {this guy can parse markup *nice*}}
         ---
 
-    [+] Local Links
+    [+] Local links
         :: code 'gr'
         ---
         {!'CustomMarker'}
         {!'CustomMarker' {Jump custom marker}}
         ---
 
-    [+] Custom Marker
+    [+] Custom marker
         :: code 'gr'
         ---
         >>-> The Section > 'CustomMarker'
         ---
 
-    [ ] File reading
+    [ ] Files
         :: code 'gr'
         ---
         :: file 'Introduction.gr'
@@ -113,20 +113,27 @@
         :: file 'Chapter/03.gr'
         ---
 
-    [ ] Images
-        [ ] Block Images
+    [ ] Table of contents
         :: code 'gr'
         ---
-        :: image 'SomeImage.jpg'
-        :: image 'SomeImage.jpg' {Alternative Title}
+        :: toc
         ---
+        [ ] Design the options to separate parts, chapters and sections
 
-        [+] Inline Images
-        :: code 'gr'
-        ---
-        {?'image.png'}
-        {?'image.png' {Alternative Title}}
-        ---
+[ ] Images
+    [ ] Block images
+    :: code 'gr'
+    ---
+    :: image 'SomeImage.jpg'
+    :: image 'SomeImage.jpg' {Alternative Title}
+    ---
+
+    [+] Inline images
+    :: code 'gr'
+    ---
+    {?'image.png'}
+    {?'image.png' {Alternative Title}}
+    ---
 
 [ ] Variables
     [ ] Assignments
@@ -142,13 +149,6 @@
         My name is {AuthorName}
         ---
 
-[ ] Table of Contents
-    :: code 'gr'
-    ---
-    :: toc
-    ---
-    [ ] Design the options to separate parts, chapters and sections
-
 [ ] Admonitions
     :: code 'gr'
     ----
@@ -159,7 +159,7 @@
     ----
 
 [+] Codes
-    [+] Multiline Codes
+    [+] Block codes
         :: code 'gr'
         ----
         :: code 'c'
@@ -170,10 +170,10 @@
         }
         ---
         ----
-    [+] Inline Codes
+    [+] Inline codes
         ``the code goes here``
 
-[ ] Tables
+[-] Tables
     :: code 'gr'
     ----
     :: table v 1 h 1
@@ -194,7 +194,7 @@
 
 <<
 
-> Supported Output
+> Supported output
 
 [+] HTML5
 [ ] HTML4 / XHTML
