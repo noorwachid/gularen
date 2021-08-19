@@ -13,6 +13,8 @@ using Gularen::ValueNode;
 using Gularen::SizeNode;
 using Gularen::BooleanNode;
 using Gularen::ContainerNode;
+using Gularen::CodeNode;
+using Gularen::TableNode;
 using Gularen::IRenderer;
 
 class Renderer: public IRenderer

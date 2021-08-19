@@ -35,9 +35,15 @@ std::string ToString(NodeType type)
 
         case NodeType::InlineCode: return "InlineCode";
         case NodeType::Code: return "Code";
+
         case NodeType::Table: return "Table";
         case NodeType::TableRow: return "TableRow";
         case NodeType::TableColumn: return "TableColumn";
+
+        case NodeType::File: return "File";
+        case NodeType::Toc: return "Toc";
+        case NodeType::Admon: return "Admon";
+        case NodeType::Assignment: return "Assignment";
 
         case NodeType::Link: return "Link";
         case NodeType::LocalLink: return "LocalLink";

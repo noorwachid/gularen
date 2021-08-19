@@ -13,7 +13,7 @@ public:
     std::string input;
     std::string output;
     std::string outputRenderer;
-    std::string outputRendererTemplate;
+    std::string outputRendererStyle;
     std::string programExecName;
 
     bool bAst;
@@ -55,18 +55,18 @@ public:
                             outputRenderer = args[i + 1];
                             ++i;
                             break;
-                        case 't':
+                        case 's':
                             if (i + 2 > size || args[i + 1][0] == '-')
                             {
-                                IO::WriteLine("-t requires you to specify the rendering engine's template");
+                                IO::WriteLine("-t requires you to specify the rendering style");
                                 Terminate(1);
                             }
-                            outputRendererTemplate = args[i + 1];
+                            outputRendererStyle = args[i + 1];
                             ++i;
                             break;
 
                         // Representations
-                        case 'k':
+                        case 't':
                             bTokens = true;
                             break;
                         case 'a':
@@ -126,6 +126,10 @@ public:
             {
                 Html::Renderer r;
                 r.SetTree(builder.GetTree());
+
+                if (!outputRendererStyle.empty())
+                    r.SetStyle(outputRendererStyle);
+
                 r.Parse();
 
                 if (outputRenderer == "html")
@@ -176,8 +180,8 @@ public:
         IO::WriteLine("    -h help");
         IO::WriteLine("    -o specify output file path");
         IO::WriteLine("    -r specify renderer engine");
-        IO::WriteLine("    -t specify renderer engine's template");
-        IO::WriteLine("    -k write tokens to stdout");
+        IO::WriteLine("    -s specify renderer engine's template");
+        IO::WriteLine("    -t write tokens to stdout");
         IO::WriteLine("    -a write abstract syntax tree to stdout");
         IO::WriteLine("    -b write output buffer to stdout");
         IO::WriteLine("");

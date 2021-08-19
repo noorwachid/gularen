@@ -29,9 +29,15 @@ enum struct NodeType
 
     InlineCode,
     Code,
+
     Table,
     TableRow,
     TableColumn,
+
+    File,
+    Toc,
+    Admon,
+    Assignment,
 
     Symbol,
     Curtain,

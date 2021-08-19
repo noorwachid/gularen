@@ -473,6 +473,36 @@ void AstBuilder::ParseBlock(TokenType type)
             break;
         }
 
+        case TokenType::KwToc:
+            while (IsValid() && GetCurrentToken().type != TokenType::Newline)
+                Skip();
+            GetHead()->Add(new Node(NodeType::Toc, NodeGroup::Unknown, NodeShape::Line));
+            break;
+
+        case TokenType::KwFile:
+            while (IsValid() && GetCurrentToken().type != TokenType::Newline)
+                Skip();
+            GetHead()->Add(new Node(NodeType::File, NodeGroup::Unknown, NodeShape::Line));
+            break;
+
+        case TokenType::KwImage:
+            while (IsValid() && GetCurrentToken().type != TokenType::Newline)
+                Skip();
+            GetHead()->Add(new Node(NodeType::Image, NodeGroup::Unknown, NodeShape::Line));
+            break;
+
+        case TokenType::KwAdmon:
+            while (IsValid() && GetCurrentToken().type != TokenType::Line)
+                Skip();
+            GetHead()->Add(new Node(NodeType::Admon, NodeGroup::Unknown, NodeShape::Block));
+            break;
+
+//        case TokenType::Symbol:
+//            while (IsValid() && GetCurrentToken().type != TokenType::Line)
+//                Skip();
+//            GetHead()->Add(new Node(NodeType::Assignment, NodeGroup::Unknown, NodeShape::Line));
+//            break;
+
         default:
             break;
     }

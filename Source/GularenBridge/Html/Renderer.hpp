@@ -28,6 +28,8 @@ public:
     std::string GetBuffer() override;
     std::string GetContentBuffer();
 
+    void SetStyle(const std::string& style);
+
 private:
     void Traverse(Node* node);
     void TraverseBeforeChildren(Node* node);
@@ -38,6 +40,7 @@ private:
     Node* tree;
     std::string buffer;
     std::string titleBuffer;
+    std::string styleBuffer;
     bool inTitle;
 };
 

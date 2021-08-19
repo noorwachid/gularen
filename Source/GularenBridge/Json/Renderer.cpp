@@ -42,22 +42,23 @@ void Renderer::Traverse(Node* node)
 
 void Renderer::TraverseBeforeChildren(Node* node)
 {
-    buffer += "{\"Type\":\"" + Gularen::ToString(node->type) + "\"";
+    buffer += "{\"type\":\"" + Gularen::ToString(node->type) + "\"";
 
     switch (node->type)
     {
         case NodeType::Text:
         case NodeType::InlineCode:
-            buffer += ",\"Value\":\"" + EscapeText(static_cast<ValueNode*>(node)->value) + "\"}";
+            buffer += ",\"value\":\"" + EscapeText(static_cast<ValueNode*>(node)->value) + "\"}";
             break;
 
         case NodeType::Paragraph:
         case NodeType::Indent:
+        case NodeType::Wrapper:
         case NodeType::FBold:
         case NodeType::FItalic:
         case NodeType::FMonospace:
         case NodeType::Root:
-            buffer += ",\"Children\":[";
+            buffer += ",\"children\":[";
             break;
 
         case NodeType::LineBreak:
@@ -67,7 +68,7 @@ void Renderer::TraverseBeforeChildren(Node* node)
             break;
 
         case NodeType::Newline:
-            buffer += ",\"Size\":" + std::to_string(static_cast<SizeNode*>(node)->size) + "}";
+            buffer += ",\"size\":" + std::to_string(static_cast<SizeNode*>(node)->size) + "}";
             break;
 
         case NodeType::Title:
@@ -77,17 +78,26 @@ void Renderer::TraverseBeforeChildren(Node* node)
         case NodeType::Subsection:
         case NodeType::Subsubsection:
         case NodeType::Minisection:
-            buffer += ",\"Children\":[";
-            break;
-
         case NodeType::List:
         case NodeType::NList:
         case NodeType::CheckList:
-            break;
-
         case NodeType::Item:
         case NodeType::CheckItem:
+        case NodeType::Table:
+        case NodeType::TableRow:
+        case NodeType::TableColumn:
+            buffer += ",\"children\":[";
             break;
+
+        case NodeType::Code:
+        {
+            CodeNode* code = static_cast<CodeNode*>(node);
+            if (code->lang)
+                buffer += ",\"lang\":\"" + static_cast<ValueNode*>(code->lang)->value + "\"";
+            buffer += ",\"buffer\":\"" + EscapeText(code->value) + "\"";
+            buffer += "}";
+            break;
+        }
 
         case NodeType::Link:
             break;
@@ -103,6 +113,7 @@ void Renderer::TraverseAfterChildren(Gularen::Node *node)
     {
         case NodeType::Paragraph:
         case NodeType::Indent:
+        case NodeType::Wrapper:
         case NodeType::FBold:
         case NodeType::FItalic:
         case NodeType::FMonospace:
@@ -114,6 +125,14 @@ void Renderer::TraverseAfterChildren(Gularen::Node *node)
         case NodeType::Subsection:
         case NodeType::Subsubsection:
         case NodeType::Minisection:
+        case NodeType::List:
+        case NodeType::NList:
+        case NodeType::CheckList:
+        case NodeType::Item:
+        case NodeType::CheckItem:
+        case NodeType::Table:
+        case NodeType::TableRow:
+        case NodeType::TableColumn:
             buffer += "]}";
             break;
 

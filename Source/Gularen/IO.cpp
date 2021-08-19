@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <array>
 
 namespace Gularen {
 
@@ -12,12 +13,13 @@ IO::IO()
 std::string IO::Read()
 {
     std::string buffer;
-    char partialBuffer[1024 * 2];
+    std::array<char, 1024 * 2> bytes;
 
     while (std::cin)
     {
-        std::cin.read(partialBuffer, 1024 * 2);
-        buffer += partialBuffer;
+        bytes.fill(0x0);
+        std::cin.read(bytes.data(), bytes.size());
+        buffer += bytes.data();
     }
 
     return buffer;

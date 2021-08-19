@@ -9,10 +9,10 @@ Another paragraph
 - list
 - list
 
-^ :: 'Admonition' ::
-^ ---
-^ You cannot do this
-^ ---
+:: 'Admonition' ::
+---
+You cannot do this
+---
 
 :: table
 ---
@@ -24,10 +24,10 @@ Another paragraph
 Console.WriteLine("Hello World!");
 ---
 
-^ :: image 'SomeImage.png'
-^
-^ :: file 'SomeFile.gr'
-^
-^ :: toc
-^
-^ :: Author = 'Noor Wachid'
+:: image 'SomeImage.png'
+
+:: file 'SomeFile.gr'
+
+:: toc
+
+:: Author = 'Noor Wachid'
