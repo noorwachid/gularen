@@ -17,6 +17,7 @@ enum struct NodeGroup
     Link,
     Table,
     Code,
+    Tag,
 
     Wrapper,
 };

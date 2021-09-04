@@ -24,5 +24,6 @@ target_include_directories(GularenBridge PUBLIC Source)
 target_link_libraries(GularenBridge Gularen)
 
 # ConsoleInterface
-add_executable(gularen Source/ConsoleInterface.cpp)
-target_link_libraries(gularen GularenBridge)
+add_executable(GularenConsole Source/ConsoleInterface.cpp)
+target_link_libraries(GularenConsole GularenBridge)
+set_target_properties(GularenConsole PROPERTIES OUTPUT_NAME gularen)

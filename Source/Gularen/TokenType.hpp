@@ -11,6 +11,8 @@ enum struct TokenType
     DocumentBegin,
     DocumentEnd,
 
+    HashSymbol,
+    AtSymbol,
     Symbol,
     Text,
     QuotedText,

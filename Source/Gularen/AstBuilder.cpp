@@ -130,6 +130,15 @@ void AstBuilder::Parse()
                 Skip();
                 break;
 
+            case TokenType::HashSymbol:
+                GetHead()->Add(new ValueNode(NodeType::HashSymbol, NodeGroup::Tag, NodeShape::InBetween, GetCurrentToken().value));
+                Skip();
+                break;
+            case TokenType::AtSymbol:
+                GetHead()->Add(new ValueNode(NodeType::AtSymbol, NodeGroup::Tag, NodeShape::InBetween, GetCurrentToken().value));
+                Skip();
+                break;
+
             default:
                 Skip();
                 break;

@@ -39,6 +39,8 @@ enum struct NodeType
     Admon,
     Assignment,
 
+    HashSymbol,
+    AtSymbol,
     Symbol,
     Curtain,
     Wrapper,

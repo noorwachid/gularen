@@ -54,31 +54,7 @@ void Renderer::SetStyle(const std::string& style)
             <style>
             *{margin:0;padding:0;box-sizing:border-box}
             html{font-size:62.8%}
-            body{font-size:1.6rem;font-family:sans-serif;background-color:#232324;color:#fafafa;line-height:1.3;max-width:80rem;padding:1rem}
-            h1{font-size:4rem}
-            h2{font-size:3rem}
-            h3{font-size:2.4rem}
-            h4{font-size:2.0rem}
-            h5{font-size:1.8rem}
-            p,ul,ol,table,pre>code,hr{margin-bottom:1rem}
-            ul,ol,blockquote{margin-left:2.5rem}
-            table{border-collapse:collapse}
-            table td{border:1px solid #889;padding:0.75rem 1rem}
-            .checklist{list-style:none;margin-left:0}
-            .checklist>.item{display:flex;flex-direction:row;align-items:baseline}
-            .checklist>.item>input[type=checkbox]{margin-right:0.5rem}
-            .checklist>.item>label{flex-grow:1}
-            hr{border:0;border-top:0.1rem solid #e4e5e6}
-            code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
-            pre>code{display:block;white-space:pre;padding:1rem 1.5rem;line-height:1.2}
-            </style>
-        )";
-    else
-        styleBuffer = R"(
-            <style>
-            *{margin:0;padding:0;box-sizing:border-box}
-            html{font-size:62.8%}
-            body{font-size:1.6rem;font-family:sans-serif;color:#232326;line-height:1.3;max-width:80rem;padding:1rem}
+            body{font-size:1.6rem;font-family:sans-serif;background-color:#232324;color:#fafafa;line-height:1.3;max-width:80rem;padding:1rem;margin-left:auto; margin-right:auto;}
             h1{font-size:4rem}
             h2{font-size:3rem}
             h3{font-size:2.4rem}
@@ -95,6 +71,30 @@ void Renderer::SetStyle(const std::string& style)
             hr{border:0;border-top:0.1rem solid #e4e5e6}
             code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
             pre>code{display:block;white-space:pre;padding:1rem 1.5rem;line-height:1.2;background-color:#010102;}
+            </style>
+        )";
+    else
+        styleBuffer = R"(
+            <style>
+            *{margin:0;padding:0;box-sizing:border-box}
+            html{font-size:62.8%}
+            body{font-size:1.6rem;font-family:sans-serif;color:#232326;line-height:1.3;max-width:80rem;padding:1rem;margin-left:auto; margin-right:auto;}
+            h1{font-size:4rem}
+            h2{font-size:3rem}
+            h3{font-size:2.4rem}
+            h4{font-size:2.0rem}
+            h5{font-size:1.8rem}
+            p,ul,ol,table,pre>code,hr{margin-bottom:1rem}
+            ul,ol,blockquote{margin-left:2.5rem}
+            table{border-collapse:collapse}
+            table td{border:1px solid #889;padding:0.75rem 1rem}
+            .checklist{list-style:none;margin-left:0}
+            .checklist>.item{display:flex;flex-direction:row;align-items:baseline}
+            .checklist>.item>input[type=checkbox]{margin-right:0.5rem}
+            .checklist>.item>label{flex-grow:1}
+            hr{border:0;border-top:0.1rem solid #e4e5e6}
+            code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
+            pre>code{display:block;white-space:pre;padding:1rem 1.5rem;line-height:1.2;background-color:#eee;}
             </style>
         )";
 
@@ -231,6 +231,14 @@ void Renderer::TraverseBeforeChildren(Node* node)
         case NodeType::TableColumn:
             buffer += "<td>";
             break;
+
+        case NodeType::InlineImage:
+        case NodeType::Image:
+        {
+            ValueNode* package = static_cast<ValueNode*>(static_cast<ContainerNode*>(node)->package);
+            buffer += "<img src=\"" + package->value + "\">";
+            break;
+        }
 
         case NodeType::InlineCode:
             buffer += "<code>";

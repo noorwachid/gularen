@@ -104,14 +104,14 @@
             >>-> The Section > 'CustomMarker'
             ---
 
-    [ ] Tag links (custom rendering)
-        [ ] Username links
+    [+] Tags (custom rendering)
+        [+] Username
             :: code 'gr'
             ---
             Hi @Sophia!
             ---
 
-        [ ] Hashtag links
+        [+] Hashtag
             :: code 'gr'
             ---
             #Bug #Urgent

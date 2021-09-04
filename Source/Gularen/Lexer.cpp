@@ -161,6 +161,37 @@ void Lexer::Parse()
                 SkipSpaces();
                 break;
 
+            case '#':
+            {
+                Skip();
+                std::string symbol;
+                while (IsValid() && IsValidSymbol())
+                {
+                    symbol += GetCurrentByte();
+                    Skip();
+                }
+                Token token;
+                token.type = TokenType::HashSymbol;
+                token.value = symbol;
+                Add(std::move(token));
+                break;
+            }
+            case '@':
+            {
+                Skip();
+                std::string symbol;
+                while (IsValid() && IsValidSymbol())
+                {
+                    symbol += GetCurrentByte();
+                    Skip();
+                }
+                Token token;
+                token.type = TokenType::AtSymbol;
+                token.value = symbol;
+                Add(std::move(token));
+                break;
+            }
+
             default:
                 if (IsValidText())
                     ParseText();
@@ -673,8 +704,7 @@ bool Lexer::IsValidText()
             c == ' ' || c == '-' || c == '.' ||
             c == '!' || c == '?' ||
             c == '"' || c == '\'' ||
-            c == ';' || c == ':' ||
-            c == '#' || c == '@';
+            c == ';' || c == ':';
 }
 
 bool Lexer::IsValidSymbol()
