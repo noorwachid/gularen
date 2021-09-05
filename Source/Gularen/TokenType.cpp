@@ -40,7 +40,7 @@ std::string ToString(TokenType type)
         case TokenType::LCurlyBracket: return "LCurlyBracket";
         case TokenType::RCurlyBracket: return "RCurlyBracket";
 
-        case TokenType::Box: return "Box";
+        case TokenType::Dollar: return "Dollar";
 
         case TokenType::Bullet: return "Bullet";
         case TokenType::NBullet: return "NBullet";

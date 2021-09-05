@@ -9,25 +9,25 @@ Another paragraph
 - list
 - list
 
-:: 'Admonition' ::
+$ admon 'Admonition'
 ---
 You cannot do this
 ---
 
-:: table
+$ table
 ---
 1 | 2 | 3
 ---
 
-:: code
+$ code
 ---
 Console.WriteLine("Hello World!");
 ---
 
-:: image 'SomeImage.png'
+$ image 'SomeImage.png'
 
-:: file 'SomeFile.gr'
+$ file 'SomeFile.gr'
 
-:: toc
+$ toc
 
-:: Author = 'Noor Wachid'
+$ Author = 'Noor Wachid'

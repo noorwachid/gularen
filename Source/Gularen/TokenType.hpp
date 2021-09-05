@@ -41,7 +41,7 @@ enum struct TokenType
     LCurlyBracket,
     RCurlyBracket,
 
-    Box,
+    Dollar,
 
     Bullet,
     NBullet,

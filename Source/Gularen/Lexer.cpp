@@ -564,14 +564,11 @@ void Lexer::ParseNewline()
             }
             break;
 
-        case ':':
-            if (GetNextByte() == ':')
-            {
-                Add(Token(TokenType::Box));
-                Skip(2);
-                SkipSpaces();
-                ParseFunction();
-            }
+        case '$':
+            Add(Token(TokenType::Dollar));
+            Skip();
+            SkipSpaces();
+            ParseFunction();
             break;
     }
 }

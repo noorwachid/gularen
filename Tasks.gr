@@ -3,20 +3,20 @@
 > Main tasks
 
 [+] Comments
-    :: code 'gr'
+    $ code 'gr'
     ---
     This will shown. ^ This will not.
     ---
 
 [+] Font styles
-    :: code 'gr'
+    $ code 'gr'
     ---
     *bold* _italic_ `monospaced`
     ---
 
 [+] Text layouts
     [+] Paragraphs
-        :: code 'gr'
+        $ code 'gr'
         ---
         Paragraph is simply just text.
         Single newline will be translate as space.
@@ -25,14 +25,14 @@
         ---
 
     [+] Identations
-        :: code 'gr'
+        $ code 'gr'
         ---
             4 spaces create an indentation
             Still in indentation
         ---
 
     [+] Breaks
-        :: code 'gr'
+        $ code 'gr'
         ---
         This is line < break.
 
@@ -45,7 +45,7 @@
 
 [+] Lists
     [+] Bullet lists
-        :: code 'gr'
+        $ code 'gr'
         ---
         - First item
         - Second item
@@ -53,7 +53,7 @@
         ---
 
     [+] Numeric bullet lists
-        :: code 'gr'
+        $ code 'gr'
         ---
         1. Number one
         2. Number two
@@ -63,7 +63,7 @@
         ---
 
     [+] Check-lists
-        :: code 'gr'
+        $ code 'gr'
         ---
         [+] Checked todo item
         [ ] Inprogress todo item
@@ -73,7 +73,7 @@
 
 [ ] Partitions
     [+] Headers
-        :: code 'gr'
+        $ code 'gr'
         ---
         >>> Document Title
         >> Part
@@ -85,65 +85,65 @@
         ---
 
     [+] Links
-        :: code 'gr'
+        $ code 'gr'
         ---
         {:'google.com'}
         {:'google.com' {this guy can parse markup *nice*}}
         ---
 
     [+] Local links
-        :: code 'gr'
+        $ code 'gr'
         ---
         {!'CustomMarker'}
         {!'CustomMarker' {Jump custom marker}}
         ---
 
         [+] Custom marker
-            :: code 'gr'
+            $ code 'gr'
             ---
             >>-> The Section > 'CustomMarker'
             ---
 
     [+] Tags (custom rendering)
         [+] Username
-            :: code 'gr'
+            $ code 'gr'
             ---
             Hi @Sophia!
             ---
 
         [+] Hashtag
-            :: code 'gr'
+            $ code 'gr'
             ---
             #Bug #Urgent
             Missing validation on withdraw
             ---
 
     [ ] Files
-        :: code 'gr'
+        $ code 'gr'
         ---
-        :: file 'Introduction.gr'
-        :: file 'Chapter/01.gr'
-        :: file 'Chapter/02.gr'
-        :: file 'Chapter/03.gr'
+        $ file 'Introduction.gr'
+        $ file 'Chapter/01.gr'
+        $ file 'Chapter/02.gr'
+        $ file 'Chapter/03.gr'
         ---
 
     [ ] Table of contents
-        :: code 'gr'
+        $ code 'gr'
         ---
-        :: toc
+        $ toc
         ---
         [ ] Design the options to separate parts, chapters and sections
 
 [ ] Images
     [ ] Block images
-    :: code 'gr'
+    $ code 'gr'
     ---
-    :: image 'SomeImage.jpg'
-    :: image 'SomeImage.jpg' {Alternative Title}
+    $ image 'SomeImage.jpg'
+    $ image 'SomeImage.jpg' {Alternative Title}
     ---
 
     [+] Inline images
-    :: code 'gr'
+    $ code 'gr'
     ---
     {?'image.png'}
     {?'image.png' {Alternative Title}}
@@ -151,22 +151,22 @@
 
 [ ] Variables
     [ ] Assignments
-        :: code 'gr'
+        $ code 'gr'
         ---
-        :: AuthorName = 'Nora Winchester'
-        :: AsMarkup = {his name is {AuthorName}}
+        $ AuthorName = 'Nora Winchester'
+        $ AsMarkup = {his name is {AuthorName}}
         ---
 
     [+] Printing
-        :: code 'gr'
+        $ code 'gr'
         ---
         My name is {AuthorName}
         ---
 
 [ ] Admonitions
-    :: code 'gr'
+    $ code 'gr'
     ----
-    :: 'Note' ::
+    $ admon 'Note'
     ---
     An admonition
     ---
@@ -174,9 +174,9 @@
 
 [+] Codes
     [+] Block codes
-        :: code 'gr'
+        $ code 'gr'
         ----
-        :: code 'c'
+        $ code 'c'
         ---
         int main()
         {
@@ -188,9 +188,9 @@
         ``the code goes here``
 
 [-] Tables
-    :: code 'gr'
+    $ code 'gr'
     ----
-    :: table v 1 h 1
+    $ table v 1 h 1
     ---
     ID | Name
     1  | Nora

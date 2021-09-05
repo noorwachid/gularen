@@ -1,9 +1,9 @@
-:: code
+$ code
 ---
 IO.WriteLine("Hello World!")
 ---
 
-:: code 'cxx'
+$ code 'cxx'
 ---
 #include <Cool.hpp>
 
@@ -13,7 +13,7 @@ int main()
 }
 ---
 
-    :: code 'js'
+    $ code 'js'
     ---
     console.log('Yes');
 

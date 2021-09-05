@@ -325,7 +325,7 @@ void AstBuilder::ParseNewline(size_t newlineSize)
             Skip();
             break;
 
-        case TokenType::Box:
+        case TokenType::Dollar:
             Skip();
             ParseBlock(GetCurrentToken().type);
             break;
