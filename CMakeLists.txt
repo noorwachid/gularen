@@ -6,24 +6,24 @@ set(CMAKE_CXX_STANDARD 17)
 
 # MainLibrary
 add_library(Gularen
-    Source/Gularen/IO.cpp
-    Source/Gularen/TokenType.cpp
-    Source/Gularen/Token.cpp
-    Source/Gularen/Lexer.cpp
-    Source/Gularen/NodeType.cpp
-    Source/Gularen/NodeGroup.cpp
-    Source/Gularen/Node.cpp
-    Source/Gularen/AstBuilder.cpp)
-target_include_directories(Gularen PUBLIC Source)
+    src/Gularen/IO.cpp
+    src/Gularen/TokenType.cpp
+    src/Gularen/Token.cpp
+    src/Gularen/Lexer.cpp
+    src/Gularen/NodeType.cpp
+    src/Gularen/NodeGroup.cpp
+    src/Gularen/Node.cpp
+    src/Gularen/AstBuilder.cpp)
+target_include_directories(Gularen PUBLIC src)
 
 # BridgeLibrary
 add_library(GularenBridge
-    Source/GularenBridge/Html/Renderer.cpp
-    Source/GularenBridge/Json/Renderer.cpp)
-target_include_directories(GularenBridge PUBLIC Source)
+    src/GularenBridge/Html/Renderer.cpp
+    src/GularenBridge/Json/Renderer.cpp)
+target_include_directories(GularenBridge PUBLIC src)
 target_link_libraries(GularenBridge Gularen)
 
 # ConsoleInterface
-add_executable(GularenConsole Source/ConsoleInterface.cpp)
+add_executable(GularenConsole src/ConsoleInterface.cpp)
 target_link_libraries(GularenConsole GularenBridge)
 set_target_properties(GularenConsole PROPERTIES OUTPUT_NAME gularen)

@@ -1,6 +1,5 @@
 .env
 build*
-Build*
-Tests/MonsterFiles/*
+tests/monster*
 .DS_Store
 CMakeLists.txt.user
