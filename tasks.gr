@@ -104,6 +104,42 @@
             >>-> The Section > 'CustomMarker'
             ---
 
+    [ ] Term-Definitions
+        [ ] Definition
+            $ code 'gr'
+	    ---
+	    {?'see you tomorrow' {*never* meet again}}
+	    ---
+	
+	[ ] Print all definitions
+	    $ code 'gr'
+	    ---
+	    $ term
+	    ---
+
+    [ ] References
+        [ ] Links
+	    $ code 'gr'
+	    ---
+	    {^'book1'}
+	    ---
+
+        [ ] Definitions
+	    $ ref-map
+	    ---
+	    book1 = [
+	        title = 'Avatar Kyoshi'
+		year  = '2018'
+	    ]
+	    ---
+
+        [ ] Print all definitions
+	    $ 
+	    ---
+	    $ ref
+	    ---
+
+
     [+] Tags (custom rendering)
         [+] Username
             $ code 'gr'
@@ -145,8 +181,8 @@
     [+] Inline images
     $ code 'gr'
     ---
-    {?'image.png'}
-    {?'image.png' {Alternative Title}}
+    {%'image.png'}
+    {%'image.png' {Alternative Title}}
     ---
 
 [ ] Variables
@@ -190,7 +226,7 @@
 [-] Tables
     $ code 'gr'
     ----
-    $ table v 1 h 1
+    $ table 
     ---
     ID | Name
     1  | Nora

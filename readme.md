@@ -38,4 +38,4 @@ And of course the checklist or todo-list or whatever you name it.
 [ ] This one is not
 ```
 
-Read the [Tasks.gr](Tasks.gr) for full design and the implementation progress.
+Read the [tasks.gr](tasks.gr) for full design and the implementation progress.
