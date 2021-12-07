@@ -12,9 +12,9 @@ namespace Gularen {
 
         ~AstBuilder();
 
-        void setBuffer(const std::string &buffer);
+        void setBuffer(const std::string& buffer);
 
-        void setTokens(const std::vector<Token> &tokens);
+        void setTokens(const std::vector<Token>& tokens);
 
         void parse();
 
@@ -26,16 +26,16 @@ namespace Gularen {
 
         std::vector<Token> getTokens();
 
-        Node *getTree();
+        Node* getTree();
 
         std::string getTokensAsString();
 
         std::string getTreeAsString();
 
     private:
-        void traverseAndGenerateBuffer(Node *node, size_t depth);
+        void traverseAndGenerateBuffer(Node* node, size_t depth);
 
-        void traverseAndDestroyNode(Node *node);
+        void traverseAndDestroyNode(Node* node);
 
     private:
         void parseNewline(size_t newlineSize = 1);
@@ -49,9 +49,9 @@ namespace Gularen {
         void parseBlock(TokenType type);
 
     private:
-        Node *getHead();
+        Node* getHead();
 
-        void pushHead(Node *node);
+        void pushHead(Node* node);
 
         void compareAndPopHead(NodeType type);
 
@@ -64,9 +64,9 @@ namespace Gularen {
         // -- Token operations
         bool isValid();
 
-        Token &getCurrentToken();
+        Token& getCurrentToken();
 
-        Token &getNextToken(size_t offset = 1);
+        Token& getNextToken(size_t offset = 1);
 
         void skip(size_t offset = 1);
 
@@ -74,10 +74,10 @@ namespace Gularen {
         std::string buffer;
 
         // Node definitions
-        Node *root = nullptr;
+        Node* root = nullptr;
         size_t depth = 0;
 
-        std::stack<Node *> heads;
+        std::stack<Node*> heads;
 
         // Token definitions
         size_t tokenIndex = 0;

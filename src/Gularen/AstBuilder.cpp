@@ -11,14 +11,14 @@ namespace Gularen {
             destroyTree();
     }
 
-    void AstBuilder::setBuffer(const std::string &buffer) {
+    void AstBuilder::setBuffer(const std::string& buffer) {
         lexer.setBuffer(buffer);
         lexer.parse();
 
         reset();
     }
 
-    void AstBuilder::setTokens(const std::vector<Token> &tokens) {
+    void AstBuilder::setTokens(const std::vector<Token>& tokens) {
         lexer.setTokens(tokens);
 
         reset();
@@ -60,7 +60,7 @@ namespace Gularen {
 
                 case TokenType::Anchor: {
                     if (getHead()->group == NodeGroup::Header) {
-                        static_cast<ValueNode *>(getHead())->value = getCurrentToken().value;
+                        static_cast<ValueNode*>(getHead())->value = getCurrentToken().value;
                     }
                     skip();
                     break;
@@ -163,7 +163,7 @@ namespace Gularen {
         return lexer.getBuffer();
     }
 
-    Node *AstBuilder::getTree() {
+    Node* AstBuilder::getTree() {
         return root;
     }
 
@@ -179,22 +179,22 @@ namespace Gularen {
         return buffer + "\n";
     }
 
-    void AstBuilder::traverseAndGenerateBuffer(Node *node, size_t depth) {
+    void AstBuilder::traverseAndGenerateBuffer(Node* node, size_t depth) {
         for (size_t i = 0; i < depth; ++i)
             buffer += "    ";
 
         buffer += node->toString() + "\n";
 
-        for (Node *child: node->children)
+        for (Node* child: node->children)
             traverseAndGenerateBuffer(child, depth + 1);
     }
 
-    void AstBuilder::traverseAndDestroyNode(Node *node) {
-        for (Node *child: node->children)
+    void AstBuilder::traverseAndDestroyNode(Node* node) {
+        for (Node* child: node->children)
             traverseAndDestroyNode(child);
 
         if (node->group == NodeGroup::Link) {
-            Node *packageNode = static_cast<ContainerNode *>(node)->package;
+            Node* packageNode = static_cast<ContainerNode*>(node)->package;
             delete packageNode;
             packageNode = nullptr;
 
@@ -382,8 +382,8 @@ namespace Gularen {
     }
 
     void AstBuilder::parseLink(NodeType type) {
-        ContainerNode *container = new ContainerNode(type, NodeGroup::Link);
-        ValueNode *node = new ValueNode();
+        ContainerNode* container = new ContainerNode(type, NodeGroup::Link);
+        ValueNode* node = new ValueNode();
         skip();
 
         if (getCurrentToken().type == TokenType::QuotedText) {
@@ -419,7 +419,7 @@ namespace Gularen {
             case TokenType::KwCode: {
                 compareAndPopHead(NodeType::Code);
 
-                CodeNode *codeNode = new CodeNode();
+                CodeNode* codeNode = new CodeNode();
                 getHead()->add(codeNode);
                 skip();
                 if (getCurrentToken().type == TokenType::QuotedText) {
@@ -478,11 +478,11 @@ namespace Gularen {
         }
     }
 
-    Node *AstBuilder::getHead() {
+    Node* AstBuilder::getHead() {
         return heads.top();
     }
 
-    void AstBuilder::pushHead(Node *node) {
+    void AstBuilder::pushHead(Node* node) {
         getHead()->add(node);
         heads.push(node);
     }
@@ -526,11 +526,11 @@ namespace Gularen {
         return tokenIndex < tokenSize;
     }
 
-    Token &AstBuilder::getCurrentToken() {
+    Token& AstBuilder::getCurrentToken() {
         return lexer.getToken(tokenIndex);
     }
 
-    Token &AstBuilder::getNextToken(size_t offset) {
+    Token& AstBuilder::getNextToken(size_t offset) {
         return tokenIndex + offset < tokenSize ? lexer.getToken(tokenIndex + offset) : emptyToken;
     }
 

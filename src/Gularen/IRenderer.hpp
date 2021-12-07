@@ -6,7 +6,7 @@ namespace Gularen {
 
     class IRenderer {
     public:
-        virtual void setTree(Node *tree) = 0;
+        virtual void setTree(Node* tree) = 0;
 
         virtual void parse() = 0;
 

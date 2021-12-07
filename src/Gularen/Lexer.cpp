@@ -7,14 +7,14 @@ namespace Gularen {
         reset();
     }
 
-    void Lexer::setBuffer(const std::string &buffer) {
+    void Lexer::setBuffer(const std::string& buffer) {
         this->buffer = buffer;
         bufferSize = buffer.size();
 
         reset();
     }
 
-    void Lexer::setTokens(const std::vector<Token> &tokens) {
+    void Lexer::setTokens(const std::vector<Token>& tokens) {
         reset();
         buffer.clear();
 
@@ -190,7 +190,7 @@ namespace Gularen {
         return buffer;
     }
 
-    Token &Lexer::getToken(size_t index) {
+    Token& Lexer::getToken(size_t index) {
         return tokens[index];
     }
 
@@ -205,14 +205,14 @@ namespace Gularen {
         currentDepth = 0;
     }
 
-    std::vector<Token> &Lexer::getTokens() {
+    std::vector<Token>& Lexer::getTokens() {
         return tokens;
     }
 
     std::string Lexer::getTokensAsString() {
         std::string buffer;
 
-        for (Token &token: tokens)
+        for (Token& token: tokens)
             buffer += token.toString() + "\n";
 
         return buffer + "\n";
@@ -621,7 +621,7 @@ namespace Gularen {
             skip();
     }
 
-    void Lexer::add(Token &&token) {
+    void Lexer::add(Token&& token) {
         tokens.emplace_back(token);
     }
 

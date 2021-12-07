@@ -8,7 +8,7 @@ namespace GularenBridge {
         Renderer::Renderer() {
         }
 
-        void Renderer::setTree(Node *tree) {
+        void Renderer::setTree(Node* tree) {
             this->tree = tree;
             buffer.clear();
         }
@@ -39,7 +39,7 @@ namespace GularenBridge {
             return buffer;
         }
 
-        void Renderer::setStyle(const std::string &style) {
+        void Renderer::setStyle(const std::string& style) {
             if (style == "none")
                 styleBuffer.clear();
             else if (style == "dark")
@@ -93,19 +93,19 @@ namespace GularenBridge {
 
         }
 
-        void Renderer::traverse(Node *node) {
+        void Renderer::traverse(Node* node) {
             preTraverse(node);
 
-            for (Node *child: node->children)
+            for (Node* child: node->children)
                 traverse(child);
 
             postTraverse(node);
         }
 
-        void Renderer::preTraverse(Node *node) {
+        void Renderer::preTraverse(Node* node) {
             switch (node->type) {
                 case NodeType::Text: {
-                    std::string value = static_cast<ValueNode *>(node)->value;
+                    std::string value = static_cast<ValueNode*>(node)->value;
                     buffer += value;
 
                     if (inTitle)
@@ -185,24 +185,24 @@ namespace GularenBridge {
                 case NodeType::CheckItem:
                     buffer += "<li class=\"item\">";
                     buffer += "<input type=\"checkbox\"";
-                    if (static_cast<TernaryNode *>(node)->state == TernaryState::True)
+                    if (static_cast<TernaryNode*>(node)->state == TernaryState::True)
                         buffer += " checked";
-                    if (static_cast<TernaryNode *>(node)->state == TernaryState::InBetween)
+                    if (static_cast<TernaryNode*>(node)->state == TernaryState::InBetween)
                         buffer += " indeterminate";
                     buffer += "><label>";
                     break;
 
                 case NodeType::Link: {
-                    Node *packageNode = static_cast<ContainerNode *>(node)->package;
-                    ValueNode *valueNode = static_cast<ValueNode *>(packageNode);
+                    Node* packageNode = static_cast<ContainerNode*>(node)->package;
+                    ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
                     buffer += "<a href=\"" + valueNode->value + "\">";
                     if (packageNode->children.empty())
                         buffer += valueNode->value;
                     break;
                 }
                 case NodeType::LocalLink: {
-                    Node *packageNode = static_cast<ContainerNode *>(node)->package;
-                    ValueNode *valueNode = static_cast<ValueNode *>(packageNode);
+                    Node* packageNode = static_cast<ContainerNode*>(node)->package;
+                    ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
                     buffer += "<a href=\"#" + valueNode->value + "\">";
                     if (packageNode->children.empty())
                         buffer += valueNode->value;
@@ -221,19 +221,19 @@ namespace GularenBridge {
 
                 case NodeType::InlineImage:
                 case NodeType::Image: {
-                    ValueNode *package = static_cast<ValueNode *>(static_cast<ContainerNode *>(node)->package);
+                    ValueNode* package = static_cast<ValueNode*>(static_cast<ContainerNode*>(node)->package);
                     buffer += "<img src=\"" + package->value + "\">";
                     break;
                 }
 
                 case NodeType::InlineCode:
                     buffer += "<code>";
-                    buffer += escape(static_cast<ValueNode *>(node)->value);
+                    buffer += escape(static_cast<ValueNode*>(node)->value);
                     buffer += "</code>\n";
                     break;
 
                 case NodeType::Code: {
-                    CodeNode *codeNode = static_cast<CodeNode *>(node);
+                    CodeNode* codeNode = static_cast<CodeNode*>(node);
                     buffer += "<pre><code>";
                     buffer += escape(codeNode->value);
                     buffer += "</code></pre>\n";
@@ -245,7 +245,7 @@ namespace GularenBridge {
             }
         }
 
-        void Renderer::postTraverse(Node *node) {
+        void Renderer::postTraverse(Node* node) {
             switch (node->type) {
                 case NodeType::Title:
                     buffer += "</h1>\n";
@@ -324,7 +324,7 @@ namespace GularenBridge {
             }
         }
 
-        std::string Renderer::escape(const std::string &raw) {
+        std::string Renderer::escape(const std::string& raw) {
             std::string escaped;
 
             for (size_t i = 0; i < raw.size(); ++i) {

@@ -11,9 +11,9 @@ namespace Gularen {
     public:
         Lexer();
 
-        void setBuffer(const std::string &buffer);
+        void setBuffer(const std::string& buffer);
 
-        void setTokens(const std::vector<Token> &tokens);
+        void setTokens(const std::vector<Token>& tokens);
 
         void reset();
 
@@ -21,9 +21,9 @@ namespace Gularen {
 
         std::string getBuffer();
 
-        Token &getToken(size_t index);
+        Token& getToken(size_t index);
 
-        std::vector<Token> &getTokens();
+        std::vector<Token>& getTokens();
 
         std::string getTokensAsString();
 
@@ -58,7 +58,7 @@ namespace Gularen {
 
         void skipSpaces();
 
-        void add(Token &&token);
+        void add(Token&& token);
 
     private:
         std::vector<Token> tokens;

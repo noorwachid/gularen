@@ -19,7 +19,7 @@ public:
     bool bTokens;
     bool bRenderedBuffer;
 
-    void run(int size, char **args) {
+    void run(int size, char** args) {
         if (size > 0)
             programExecName = args[0];
 
@@ -174,7 +174,7 @@ public:
 private:
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     ConsoleInterface ci;
 
     ci.run(argc, argv);

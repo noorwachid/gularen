@@ -10,13 +10,13 @@ namespace Gularen {
 
         std::string readLine();
 
-        std::string readFile(const std::string &path);
+        std::string readFile(const std::string& path);
 
-        void write(const std::string &buffer);
+        void write(const std::string& buffer);
 
-        void writeLine(const std::string &buffer);
+        void writeLine(const std::string& buffer);
 
-        void writeFile(const std::string &path, const std::string &buffer = std::string());
+        void writeFile(const std::string& path, const std::string& buffer = std::string());
     };
 }
 

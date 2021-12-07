@@ -8,7 +8,7 @@ namespace GularenBridge {
         Renderer::Renderer() {
         }
 
-        void Renderer::setTree(Node *tree) {
+        void Renderer::setTree(Node* tree) {
             this->tree = tree;
             buffer.clear();
         }
@@ -21,7 +21,7 @@ namespace GularenBridge {
             return buffer;
         }
 
-        void Renderer::traverse(Node *node) {
+        void Renderer::traverse(Node* node) {
             preTraverse(node);
 
             for (size_t i = 0; i < node->children.size(); ++i) {
@@ -33,13 +33,13 @@ namespace GularenBridge {
             postTraverse(node);
         }
 
-        void Renderer::preTraverse(Node *node) {
+        void Renderer::preTraverse(Node* node) {
             buffer += "{\"type\":\"" + Gularen::toString(node->type) + "\"";
 
             switch (node->type) {
                 case NodeType::Text:
                 case NodeType::InlineCode:
-                    buffer += ",\"value\":\"" + escapeText(static_cast<ValueNode *>(node)->value) + "\"}";
+                    buffer += ",\"value\":\"" + escapeText(static_cast<ValueNode*>(node)->value) + "\"}";
                     break;
 
                 case NodeType::Paragraph:
@@ -59,7 +59,7 @@ namespace GularenBridge {
                     break;
 
                 case NodeType::Newline:
-                    buffer += ",\"size\":" + std::to_string(static_cast<SizeNode *>(node)->size) + "}";
+                    buffer += ",\"size\":" + std::to_string(static_cast<SizeNode*>(node)->size) + "}";
                     break;
 
                 case NodeType::Title:
@@ -81,9 +81,9 @@ namespace GularenBridge {
                     break;
 
                 case NodeType::Code: {
-                    CodeNode *code = static_cast<CodeNode *>(node);
+                    CodeNode* code = static_cast<CodeNode*>(node);
                     if (code->lang)
-                        buffer += ",\"lang\":\"" + static_cast<ValueNode *>(code->lang)->value + "\"";
+                        buffer += ",\"lang\":\"" + static_cast<ValueNode*>(code->lang)->value + "\"";
                     buffer += ",\"buffer\":\"" + escapeText(code->value) + "\"";
                     buffer += "}";
                     break;
@@ -97,7 +97,7 @@ namespace GularenBridge {
             }
         }
 
-        void Renderer::postTraverse(Gularen::Node *node) {
+        void Renderer::postTraverse(Gularen::Node* node) {
             switch (node->type) {
                 case NodeType::Paragraph:
                 case NodeType::Indent:
@@ -129,7 +129,7 @@ namespace GularenBridge {
             }
         }
 
-        std::string Renderer::escapeText(const std::string &text) {
+        std::string Renderer::escapeText(const std::string& text) {
             std::string out;
 
             for (size_t i = 0; i < text.size(); ++i) {

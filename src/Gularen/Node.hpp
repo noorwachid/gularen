@@ -13,21 +13,21 @@ namespace Gularen {
 
         virtual ~Node();
 
-        void add(Node *node);
+        void add(Node* node);
 
         virtual std::string toString();
 
         NodeType type;
         NodeGroup group;
         NodeShape shape;
-        std::vector<Node *> children;
+        std::vector<Node*> children;
     };
 
     struct ValueNode : public Node {
         ValueNode();
 
         ValueNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
-                  const std::string &value = std::string());
+                  const std::string& value = std::string());
 
         std::string toString() override;
 
@@ -77,22 +77,22 @@ namespace Gularen {
         ContainerNode();
 
         ContainerNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
-                      Node *package = nullptr);
+                      Node* package = nullptr);
 
         std::string toString() override;
 
-        Node *package;
+        Node* package;
     };
 
     struct CodeNode : public Node {
         CodeNode();
 
-        CodeNode(const std::string &value, Node *lang = nullptr);
+        CodeNode(const std::string& value, Node* lang = nullptr);
 
         std::string toString() override;
 
         std::string value;
-        Node *lang;
+        Node* lang;
     };
 
     struct TableNode : public Node {

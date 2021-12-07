@@ -18,7 +18,7 @@ namespace Gularen {
             size(size) {
     }
 
-    Token::Token(TokenType type, const std::string &value) :
+    Token::Token(TokenType type, const std::string& value) :
             type(type),
             value(value),
             size(0) {

@@ -28,7 +28,7 @@ namespace Gularen {
             return buffer;
         }
 
-        std::string readFile(const std::string &path) {
+        std::string readFile(const std::string& path) {
             std::ifstream fileStream(path);
             std::stringstream bufferStream;
 
@@ -37,16 +37,16 @@ namespace Gularen {
             return bufferStream.str();
         }
 
-        void writeFile(const std::string &path, const std::string &buffer) {
+        void writeFile(const std::string& path, const std::string& buffer) {
             std::ofstream fileStream(path);
             fileStream << buffer;
         }
 
-        void write(const std::string &buffer) {
+        void write(const std::string& buffer) {
             std::cout << buffer;
         }
 
-        void writeLine(const std::string &buffer) {
+        void writeLine(const std::string& buffer) {
             std::cout << buffer << "\r\n";
         }
     }

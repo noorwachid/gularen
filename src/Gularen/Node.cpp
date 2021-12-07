@@ -15,7 +15,7 @@ namespace Gularen {
     Node::~Node() {
     }
 
-    void Node::add(Node *node) {
+    void Node::add(Node* node) {
         children.push_back(node);
     }
 
@@ -26,7 +26,7 @@ namespace Gularen {
     ValueNode::ValueNode() :
             Node() {}
 
-    ValueNode::ValueNode(NodeType type, NodeGroup group, NodeShape shape, const std::string &value) :
+    ValueNode::ValueNode(NodeType type, NodeGroup group, NodeShape shape, const std::string& value) :
             Node(type, group, shape),
             value(value) {
     }
@@ -90,7 +90,7 @@ namespace Gularen {
             Node(),
             package(nullptr) {}
 
-    ContainerNode::ContainerNode(NodeType type, NodeGroup group, NodeShape shape, Node *node) :
+    ContainerNode::ContainerNode(NodeType type, NodeGroup group, NodeShape shape, Node* node) :
             Node(type, group, shape),
             package(node) {}
 
@@ -98,10 +98,10 @@ namespace Gularen {
         std::string buffer = Gularen::toString(type) + ": ";
         if (package) {
             if (package->type == NodeType::Symbol)
-                buffer += "%" + static_cast<ValueNode *>(package)->value;
+                buffer += "%" + static_cast<ValueNode*>(package)->value;
 
             if (package->type == NodeType::QuotedText)
-                buffer += "\"" + static_cast<ValueNode *>(package)->value + "\"";
+                buffer += "\"" + static_cast<ValueNode*>(package)->value + "\"";
         }
         return buffer;
     }
@@ -114,7 +114,7 @@ namespace Gularen {
             Node(NodeType::Code, NodeGroup::Code, NodeShape::Block) {
     }
 
-    CodeNode::CodeNode(const std::string &value, Node *lang) :
+    CodeNode::CodeNode(const std::string& value, Node* lang) :
             Node(NodeType::Code, NodeGroup::Code, NodeShape::Block),
             value(value),
             lang(lang) {
@@ -124,10 +124,10 @@ namespace Gularen {
         std::string buffer = Gularen::toString(type) + ": ";
         if (lang) {
             if (lang->type == NodeType::Symbol)
-                buffer += "%" + static_cast<ValueNode *>(lang)->value + " ";
+                buffer += "%" + static_cast<ValueNode*>(lang)->value + " ";
 
             if (lang->type == NodeType::QuotedText)
-                buffer += "\"" + static_cast<ValueNode *>(lang)->value + "\" ";
+                buffer += "\"" + static_cast<ValueNode*>(lang)->value + "\" ";
         }
         return buffer + "\"" + value + "\"";
     }
