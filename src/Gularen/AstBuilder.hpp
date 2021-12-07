@@ -6,70 +6,86 @@
 
 namespace Gularen {
 
-class AstBuilder
-{
-public:
-    AstBuilder();
-    ~AstBuilder();
+    class AstBuilder {
+    public:
+        AstBuilder();
 
-    void SetBuffer(const std::string& buffer);
-    void SetTokens(const std::vector<Token>& tokens);
+        ~AstBuilder();
 
-    void Parse();
-    void Reset();
-    void DestroyTree();
+        void setBuffer(const std::string &buffer);
 
-    std::string GetBuffer();
-    std::vector<Token> GetTokens();
-    Node* GetTree();
+        void setTokens(const std::vector<Token> &tokens);
 
-    std::string GetTokensAsString();
-    std::string GetTreeAsString();
+        void parse();
 
-private:
-    void TraverseAndGenerateBuffer(Node* node, size_t depth);
-    void TraverseAndDestroyNode(Node* node);
+        void reset();
 
-private:
-    void ParseNewline(size_t newlineSize = 1);
-    void ParseIndentation();
-    void ParseBreak();
-    void ParseLink(NodeType type);
-    void ParseBlock(TokenType type);
+        void destroyTree();
 
-private:
-    Node* GetHead();
-    void PushHead(Node* node);
-    void CompareAndPopHead(NodeType type);
-    void CompareAndPopHead(NodeType type, size_t newlineSize);
-    void PopHead();
-    void PairFHead(NodeType type);
+        std::string getBuffer();
 
-    // -- Token operations
-    bool IsValid();
+        std::vector<Token> getTokens();
 
-    Token& GetCurrentToken();
-    Token& GetNextToken(size_t offset = 1);
+        Node *getTree();
 
-    void Skip(size_t offset = 1);
+        std::string getTokensAsString();
 
-    // Buffer definitions
-    std::string buffer;
+        std::string getTreeAsString();
 
-    // Node definitions
-    Node* root = nullptr;
-    size_t depth = 0;
+    private:
+        void traverseAndGenerateBuffer(Node *node, size_t depth);
 
-    std::stack<Node*> heads;
+        void traverseAndDestroyNode(Node *node);
 
-    // Token definitions
-    size_t tokenIndex = 0;
-    size_t tokenSize = 0;
-    Token emptyToken;
+    private:
+        void parseNewline(size_t newlineSize = 1);
 
-    size_t headerCounter = 0;
+        void parseIndentation();
 
-    Lexer lexer;
-};
+        void parseBreak();
 
+        void parseLink(NodeType type);
+
+        void parseBlock(TokenType type);
+
+    private:
+        Node *getHead();
+
+        void pushHead(Node *node);
+
+        void compareAndPopHead(NodeType type);
+
+        void compareAndPopHead(NodeType type, size_t newlineSize);
+
+        void popHead();
+
+        void pairFHead(NodeType type);
+
+        // -- Token operations
+        bool isValid();
+
+        Token &getCurrentToken();
+
+        Token &getNextToken(size_t offset = 1);
+
+        void skip(size_t offset = 1);
+
+        // Buffer definitions
+        std::string buffer;
+
+        // Node definitions
+        Node *root = nullptr;
+        size_t depth = 0;
+
+        std::stack<Node *> heads;
+
+        // Token definitions
+        size_t tokenIndex = 0;
+        size_t tokenSize = 0;
+        Token emptyToken;
+
+        size_t headerCounter = 0;
+
+        Lexer lexer;
+    };
 }

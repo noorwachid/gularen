@@ -2,22 +2,21 @@
 
 #include <string>
 
-namespace Gularen
-{
+namespace Gularen {
 
-class IO
-{
-public:
-    IO();
+    namespace IO {
 
-    static std::string Read();
-    static std::string ReadLine();
-    static std::string ReadFile(const std::string& path);
+        std::string read();
 
-    static void Write(const std::string& buffer);
-    static void WriteLine(const std::string& buffer);
-    static void WriteFile(const std::string& path, const std::string& buffer = std::string());
-};
+        std::string readLine();
 
+        std::string readFile(const std::string &path);
+
+        void write(const std::string &buffer);
+
+        void writeLine(const std::string &buffer);
+
+        void writeFile(const std::string &path, const std::string &buffer = std::string());
+    };
 }
 

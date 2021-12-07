@@ -1,25 +1,22 @@
 #pragma once
 
-
 namespace Gularen {
 
-enum struct NodeGroup
-{
-    Unknown = -1,
+    enum struct NodeGroup {
+        Unknown = -1,
 
-    Text,
+        Text,
 
-    Header,
-    List,
-    Item,
-    Break,
+        Header,
+        List,
+        Item,
+        Break,
 
-    Link,
-    Table,
-    Code,
-    Tag,
+        Link,
+        Table,
+        Code,
+        Tag,
 
-    Wrapper,
-};
-
+        Wrapper,
+    };
 }

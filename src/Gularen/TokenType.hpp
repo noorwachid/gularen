@@ -4,59 +4,58 @@
 
 namespace Gularen {
 
-enum struct TokenType
-{
-    Unknown,
+    enum struct TokenType {
+        Unknown,
 
-    DocumentBegin,
-    DocumentEnd,
+        DocumentBegin,
+        DocumentEnd,
 
-    HashSymbol,
-    AtSymbol,
-    Symbol,
-    Text,
-    QuotedText,
-    RawText,
+        HashSymbol,
+        AtSymbol,
+        Symbol,
+        Text,
+        QuotedText,
+        RawText,
 
-    KwImage,
-    KwTable,
-    KwCode,
-    KwAdmon,
-    KwFile,
-    KwToc,
+        KwImage,
+        KwTable,
+        KwCode,
+        KwAdmon,
+        KwFile,
+        KwToc,
 
-    Newline,
-    Space,
+        Newline,
+        Space,
 
-    Asterisk,
-    Underline,
-    Backtick,
+        Asterisk,
+        Underline,
+        Backtick,
 
-    Equal,
-    Colon,
-    Pipe,
-    QuestionMark,
-    ExclamationMark,
+        Equal,
+        Colon,
+        Pipe,
+        QuestionMark,
+        ExclamationMark,
 
-    LCurlyBracket,
-    RCurlyBracket,
+        LCurlyBracket,
+        RCurlyBracket,
 
-    Dollar,
+        Dollar,
 
-    Bullet,
-    NBullet,
-    CheckBox,
-    Line,
+        Bullet,
+        NBullet,
+        CheckBox,
+        Line,
 
-    Anchor,
+        Anchor,
 
-    Tail,    // >>
-    RevTail, // <<
-    Arrow,   // ->
+        Tail,    // >>
+        RevTail, // <<
+        Arrow,   // ->
 
-    Teeth,   // ``
-};
+        Teeth,   // ``
+    };
 
-std::string ToString(TokenType type);
+    std::string toString(TokenType type);
 
 }

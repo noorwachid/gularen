@@ -2,7 +2,7 @@
 
 namespace Gularen {
 
-std::string ToString(NodeType type)
+std::string toString(NodeType type)
 {
     switch (type)
     {

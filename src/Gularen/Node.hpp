@@ -6,96 +6,99 @@
 
 namespace Gularen {
 
-struct Node
-{
-    Node();
-    Node(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown);
+    struct Node {
+        Node();
 
-    virtual ~Node();
+        Node(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown);
 
-    void Add(Node* node);
+        virtual ~Node();
 
-    virtual std::string ToString();
+        void add(Node *node);
 
-    NodeType type;
-    NodeGroup group;
-    NodeShape shape;
-    std::vector<Node*> children;
-};
+        virtual std::string toString();
 
-struct ValueNode: public Node
-{
-    ValueNode();
-    ValueNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, const std::string& value = std::string());
+        NodeType type;
+        NodeGroup group;
+        NodeShape shape;
+        std::vector<Node *> children;
+    };
 
-    std::string ToString() override;
+    struct ValueNode : public Node {
+        ValueNode();
 
-    std::string value;
-};
+        ValueNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+                  const std::string &value = std::string());
 
-struct SizeNode: public Node
-{
-    SizeNode();
-    SizeNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, const size_t size = 0);
+        std::string toString() override;
 
-    std::string ToString() override;
+        std::string value;
+    };
 
-    size_t size;
-};
+    struct SizeNode : public Node {
+        SizeNode();
 
-struct BooleanNode: public Node
-{
-    BooleanNode();
-    BooleanNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, bool state = false);
+        SizeNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+                 const size_t size = 0);
 
-    std::string ToString() override;
+        std::string toString() override;
 
-    bool state;
-};
+        size_t size;
+    };
 
-enum struct TernaryState {
-    False = 1,
-    InBetween = 2,
-    True = 3,
-};
+    struct BooleanNode : public Node {
+        BooleanNode();
 
-struct TernaryNode: public Node
-{
-    TernaryNode();
-    TernaryNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, TernaryState state = TernaryState::False);
+        BooleanNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+                    bool state = false);
 
-    std::string ToString() override;
+        std::string toString() override;
 
-    TernaryState state;
-};
+        bool state;
+    };
 
-struct ContainerNode: public Node
-{
-    ContainerNode();
-    ContainerNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown, Node* package = nullptr);
+    enum struct TernaryState {
+        False = 1,
+        InBetween = 2,
+        True = 3,
+    };
 
-    std::string ToString() override;
+    struct TernaryNode : public Node {
+        TernaryNode();
 
-    Node* package;
-};
+        TernaryNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+                    TernaryState state = TernaryState::False);
 
-struct CodeNode: public Node
-{
-    CodeNode();
-    CodeNode(const std::string& value, Node* lang = nullptr);
+        std::string toString() override;
 
-    std::string ToString() override;
+        TernaryState state;
+    };
 
-    std::string value;
-    Node* lang;
-};
+    struct ContainerNode : public Node {
+        ContainerNode();
 
-struct TableNode: public Node
-{
-    TableNode();
+        ContainerNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+                      Node *package = nullptr);
 
-    std::vector<ssize_t> hHeaders;
-    std::vector<ssize_t> vHeaders;
-};
+        std::string toString() override;
 
+        Node *package;
+    };
+
+    struct CodeNode : public Node {
+        CodeNode();
+
+        CodeNode(const std::string &value, Node *lang = nullptr);
+
+        std::string toString() override;
+
+        std::string value;
+        Node *lang;
+    };
+
+    struct TableNode : public Node {
+        TableNode();
+
+        std::vector<ssize_t> hHeaders;
+        std::vector<ssize_t> vHeaders;
+    };
 }

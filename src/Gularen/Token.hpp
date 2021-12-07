@@ -4,19 +4,21 @@
 
 namespace Gularen {
 
-struct Token
-{
-    Token();
-    Token(TokenType type);
-    Token(TokenType type, size_t size);
-    Token(TokenType type, const std::string& value);
+    struct Token {
+        Token();
 
-    std::string ToString();
+        Token(TokenType type);
 
-    TokenType type;
-    std::string value;
-    size_t size;
-};
+        Token(TokenType type, size_t size);
+
+        Token(TokenType type, const std::string &value);
+
+        std::string toString();
+
+        TokenType type;
+        std::string value;
+        size_t size;
+    };
 
 }
 

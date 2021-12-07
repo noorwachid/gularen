@@ -5,45 +5,48 @@
 #include <Gularen/IRenderer.hpp>
 
 namespace GularenBridge {
-namespace Html {
 
-using Gularen::NodeType;
-using Gularen::Node;
-using Gularen::ValueNode;
-using Gularen::BooleanNode;
-using Gularen::TernaryNode;
-using Gularen::TernaryState;
-using Gularen::ContainerNode;
-using Gularen::CodeNode;
-using Gularen::IRenderer;
+    namespace Html {
 
-class Renderer: public IRenderer
-{
-public:
-    Renderer();
+        using Gularen::NodeType;
+        using Gularen::Node;
+        using Gularen::ValueNode;
+        using Gularen::BooleanNode;
+        using Gularen::TernaryNode;
+        using Gularen::TernaryState;
+        using Gularen::ContainerNode;
+        using Gularen::CodeNode;
+        using Gularen::IRenderer;
 
-    void SetTree(Node* tree) override;
-    void Parse() override;
+        class Renderer : public IRenderer {
+        public:
+            Renderer();
 
-    std::string GetBuffer() override;
-    std::string GetContentBuffer();
+            void setTree(Node *tree) override;
 
-    void SetStyle(const std::string& style);
+            void parse() override;
 
-private:
-    void Traverse(Node* node);
-    void TraverseBeforeChildren(Node* node);
-    void TraverseAfterChildren(Node* node);
+            std::string getBuffer() override;
 
-    std::string Escape(const std::string& raw);
+            std::string getContentBuffer();
 
-    Node* tree;
-    std::string buffer;
-    std::string titleBuffer;
-    std::string styleBuffer;
-    bool inTitle;
-};
+            void setStyle(const std::string &style);
 
-}
+        private:
+            void traverse(Node *node);
+
+            void preTraverse(Node *node);
+
+            void postTraverse(Node *node);
+
+            std::string escape(const std::string &raw);
+
+            Node *tree;
+            std::string buffer;
+            std::string titleBuffer;
+            std::string styleBuffer;
+            bool inTitle;
+        };
+    }
 }
 

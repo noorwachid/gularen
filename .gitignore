@@ -1,4 +1,6 @@
 .env
+.idea
+cmake-build*
 build*
 tests/monster*
 .DS_Store

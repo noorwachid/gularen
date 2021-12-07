@@ -7,56 +7,70 @@
 
 namespace Gularen {
 
-class Lexer
-{
-public:
-    Lexer();
+    class Lexer {
+    public:
+        Lexer();
 
-    void SetBuffer(const std::string& buffer);
-    void SetTokens(const std::vector<Token>& tokens);
+        void setBuffer(const std::string &buffer);
 
-    void Reset();
-    void Parse();
+        void setTokens(const std::vector<Token> &tokens);
 
-    std::string GetBuffer();
-    Token& GetToken(size_t index);
-    std::vector<Token>& GetTokens();
-    std::string GetTokensAsString();
+        void reset();
 
-private:
-    void ParseText();
-    void ParseQuotedText();
-    void ParseInlineEscapedByte();
-    void ParseNewline();
-    void ParseFunction();
-    void ParseInlineFunction();
+        void parse();
+
+        std::string getBuffer();
+
+        Token &getToken(size_t index);
+
+        std::vector<Token> &getTokens();
+
+        std::string getTokensAsString();
+
+    private:
+        void parseText();
+
+        void parseQuotedText();
+
+        void parseInlineEscapedByte();
+
+        void parseNewline();
+
+        void parseFunction();
+
+        void parseInlineFunction();
 
 
-private:
-    bool IsValid();
-    bool IsValidText();
-    bool IsValidSymbol();
-    bool IsValidNumeric();
+    private:
+        bool isValid();
 
-    char GetCurrentByte();
-    char GetNextByte(size_t offset = 1);
+        bool isValidText();
 
-    void Skip(size_t offset = 1);
-    void SkipSpaces();
+        bool isValidSymbol();
 
-    void Add(Token&& token);
+        bool isValidNumeric();
 
-private:
-    std::vector<Token> tokens;
-    std::string buffer;
-    size_t bufferIndex;
-    size_t bufferSize;
+        char getCurrentByte();
 
-    bool inHeaderLine;
-    bool inLink;
-    bool inCodeBlock;
+        char getNextByte(size_t offset = 1);
 
-    size_t currentDepth;
-};
+        void skip(size_t offset = 1);
+
+        void skipSpaces();
+
+        void add(Token &&token);
+
+    private:
+        std::vector<Token> tokens;
+        std::string buffer;
+        size_t bufferIndex;
+        size_t bufferSize;
+
+        bool inHeaderLine;
+        bool inLink;
+        bool inCodeBlock;
+
+        size_t currentDepth;
+    };
 
 }

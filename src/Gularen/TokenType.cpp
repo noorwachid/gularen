@@ -2,7 +2,7 @@
 
 namespace Gularen {
 
-std::string ToString(TokenType type)
+std::string toString(TokenType type)
 {
     switch (type) {
         case TokenType::Unknown: return "Unknown";

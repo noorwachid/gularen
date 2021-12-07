@@ -3,745 +3,626 @@
 
 namespace Gularen {
 
-Lexer::Lexer()
-{
-    Reset();
-}
+    Lexer::Lexer() {
+        reset();
+    }
 
-void Lexer::SetBuffer(const std::string& buffer)
-{
-    this->buffer = buffer;
-    bufferSize = buffer.size();
+    void Lexer::setBuffer(const std::string &buffer) {
+        this->buffer = buffer;
+        bufferSize = buffer.size();
 
-    Reset();
-}
+        reset();
+    }
 
-void Lexer::SetTokens(const std::vector<Token> &tokens)
-{
-    Reset();
-    buffer.clear();
+    void Lexer::setTokens(const std::vector<Token> &tokens) {
+        reset();
+        buffer.clear();
 
-    this->tokens = tokens;
-}
+        this->tokens = tokens;
+    }
 
-void Lexer::Parse()
-{
-    Reset();
-    Add(Token(TokenType::DocumentBegin));
-    ParseNewline();
+    void Lexer::parse() {
+        reset();
+        add(Token(TokenType::DocumentBegin));
+        parseNewline();
 
-    while (IsValid())
-    {
-        // Main switchboard
-        switch (GetCurrentByte())
-        {
-            case '*':
-                Add(Token(TokenType::Asterisk));
-                Skip();
-                break;
+        while (isValid()) {
+            // Main switchboard
+            switch (getCurrentByte()) {
+                case '*':
+                    add(Token(TokenType::Asterisk));
+                    skip();
+                    break;
 
-            case '_':
-                Add(Token(TokenType::Underline));
-                Skip();
-                break;
+                case '_':
+                    add(Token(TokenType::Underline));
+                    skip();
+                    break;
 
-            case '`':
-                Skip();
-                if (GetCurrentByte() == '`')
-                {
-                    Skip();
-                    Add(Token(TokenType::Teeth));
-                    std::string buffer;
-                    while (IsValid())
-                    {
-                        if (GetCurrentByte() == '`' && GetNextByte() == '`')
-                        {
-                            Add(Token(TokenType::Text, buffer));
-                            Add(Token(TokenType::Teeth));
-                            Skip(2);
-                            break;
+                case '`':
+                    skip();
+                    if (getCurrentByte() == '`') {
+                        skip();
+                        add(Token(TokenType::Teeth));
+                        std::string buffer;
+                        while (isValid()) {
+                            if (getCurrentByte() == '`' && getNextByte() == '`') {
+                                add(Token(TokenType::Text, buffer));
+                                add(Token(TokenType::Teeth));
+                                skip(2);
+                                break;
+                            }
+                            buffer += getCurrentByte();
+                            skip();
                         }
-                        buffer += GetCurrentByte();
-                        Skip();
+                    } else
+                        add(Token(TokenType::Backtick));
+                    break;
+
+                case '\r':
+                    skip();
+                    break;
+
+                case '\n': {
+                    size_t size = 0;
+                    while (isValid() && getCurrentByte() == '\n') {
+                        ++size;
+                        skip();
+                    }
+
+                    if (!tokens.empty() && tokens.back().type == TokenType::Newline)
+                        tokens.back().size += size;
+                    else {
+                        Token token(TokenType::Newline);
+                        token.size = size;
+                        add(std::move(token));
+                    }
+
+                    parseNewline();
+                    break;
+                }
+
+                case '^':
+                    while (isValid() && getCurrentByte() != '\n')
+                        skip();
+                    break;
+
+                case '>':
+                    if (inHeaderLine) {
+                        skip();
+                        skipSpaces();
+                        if (getCurrentByte() == '\'') {
+                            skip();
+                            std::string symbol;
+                            while (isValid() && isValidSymbol()) {
+                                symbol += getCurrentByte();
+                                skip();
+                            }
+                            if (getCurrentByte() == '\'') {
+                                add(Token(TokenType::Anchor, symbol));
+                                skip();
+                            }
+                        }
+                    }
+                    skip();
+                    break;
+
+                case '<':
+                    add(Token(TokenType::RevTail, 1));
+                    skip();
+                    break;
+
+                case '{':
+                    add(Token(TokenType::LCurlyBracket));
+                    skip();
+                    parseInlineFunction();
+                    break;
+
+                case '}':
+                    add(Token(TokenType::RCurlyBracket));
+                    skip();
+                    break;
+
+                case '\\':
+                    parseInlineEscapedByte();
+                    break;
+
+                case '|':
+                    skip();
+                    if (!tokens.empty() && tokens.back().type == TokenType::Text) {
+                        // remove blankspaces of previous token
+                        for (size_t i = tokens.back().value.size() - 1; i >= 0; --i) {
+                            if (tokens.back().value[i] != ' ') {
+                                tokens.back().value = tokens.back().value.substr(0, i + 1);
+                                break;
+                            }
+                        }
+                    }
+                    add(Token(TokenType::Pipe));
+                    skipSpaces();
+                    break;
+
+                case '#': {
+                    skip();
+                    std::string symbol;
+                    while (isValid() && isValidSymbol()) {
+                        symbol += getCurrentByte();
+                        skip();
+                    }
+                    Token token;
+                    token.type = TokenType::HashSymbol;
+                    token.value = symbol;
+                    add(std::move(token));
+                    break;
+                }
+                case '@': {
+                    skip();
+                    std::string symbol;
+                    while (isValid() && isValidSymbol()) {
+                        symbol += getCurrentByte();
+                        skip();
+                    }
+                    Token token;
+                    token.type = TokenType::AtSymbol;
+                    token.value = symbol;
+                    add(std::move(token));
+                    break;
+                }
+
+                default:
+                    if (isValidText())
+                        parseText();
+                    else {
+                        if (!tokens.empty() && tokens.back().type == TokenType::Text)
+                            tokens.back().value += getCurrentByte();
+                        else
+                            add(Token(TokenType::Text, std::string(1, getCurrentByte())));
+                        skip();
+                    }
+                    break;
+            }
+        }
+
+        add(Token(TokenType::DocumentEnd));
+    }
+
+    std::string Lexer::getBuffer() {
+        return buffer;
+    }
+
+    Token &Lexer::getToken(size_t index) {
+        return tokens[index];
+    }
+
+    void Lexer::reset() {
+        inHeaderLine = false;
+        inLink = false;
+        inCodeBlock = false;
+
+        bufferIndex = 0;
+        tokens.clear();
+
+        currentDepth = 0;
+    }
+
+    std::vector<Token> &Lexer::getTokens() {
+        return tokens;
+    }
+
+    std::string Lexer::getTokensAsString() {
+        std::string buffer;
+
+        for (Token &token: tokens)
+            buffer += token.toString() + "\n";
+
+        return buffer + "\n";
+    }
+
+    void Lexer::parseText() {
+        std::string buffer;
+
+        while (isValid() && isValidText()) {
+            buffer += getCurrentByte();
+            skip();
+        }
+
+        if (!tokens.empty() && tokens.back().type == TokenType::Text)
+            tokens.back().value += buffer;
+        else
+            add(Token(TokenType::Text, buffer));
+    }
+
+    void Lexer::parseQuotedText() {
+        Token token;
+        token.type = TokenType::QuotedText;
+
+        skip();
+        while (isValid() && getCurrentByte() != '\'') {
+            token.value += getCurrentByte();
+            skip();
+        }
+        skip();
+        add(std::move(token));
+    }
+
+    void Lexer::parseInlineEscapedByte() {
+        skip();
+
+        switch (getCurrentByte()) {
+            case '^': // Oneline comments
+            case '\\':
+            case '*':
+            case '_':
+            case '`':
+            case '{':
+            case '}':
+            case '<':
+                add(Token(TokenType::Text, std::string(1, getCurrentByte())));
+                skip();
+                break;
+
+            default: {
+                std::string buffer(1, '\\');
+                buffer += getCurrentByte();
+                add(Token(TokenType::Text, buffer));
+                skip();
+                break;
+            }
+        }
+    }
+
+    void Lexer::parseNewline() {
+        // State variables
+        inHeaderLine = false;
+
+        if (getCurrentByte() == ' ') {
+            Token token(TokenType::Space);
+            token.size = 1;
+            skip();
+
+            while (isValid() && getCurrentByte() == ' ') {
+                ++token.size;
+                skip();
+            }
+
+            currentDepth = token.size;
+            add(std::move(token));
+        } else
+            currentDepth = 0;
+
+        switch (getCurrentByte()) {
+            case '-': {
+                size_t size = 0;
+
+                while (isValid() && getCurrentByte() == '-') {
+                    skip();
+                    ++size;
+                }
+
+                if (size == 1) {
+                    if (getCurrentByte() == '>' && getNextByte() == ' ') {
+                        add(Token(TokenType::Arrow, 1));
+                        skip();
+                        skipSpaces();
+                    } else {
+                        add(Token(TokenType::Bullet));
+                        skipSpaces();
+                    }
+                } else if (size == 2 && getCurrentByte() == '>' && getNextByte() == ' ') {
+                    add(Token(TokenType::Arrow, 2));
+                    skip();
+                    skipSpaces();
+                } else {
+                    add(Token(TokenType::Line, size));
+                    skipSpaces();
+
+                    if (inCodeBlock) {
+                        std::string buffer;
+
+                        while (isValid()) {
+                            if (getCurrentByte() == '\n') {
+                                skip();
+                                // skip identations or blank lines
+                                size_t shouldSkipCounter = 0;
+                                while (isValid() && shouldSkipCounter < currentDepth && getCurrentByte() != '\n') {
+                                    skip();
+                                    ++shouldSkipCounter;
+                                }
+
+                                if (getCurrentByte() == '-') {
+                                    size_t laterSize = 0;
+
+                                    while (isValid() && getCurrentByte() == '-') {
+                                        ++laterSize;
+                                        skip();
+                                    }
+
+                                    if (laterSize == size) {
+                                        add(Token(TokenType::RawText, buffer));
+                                        add(Token(TokenType::Line, size));
+                                        inCodeBlock = false;
+                                        break;
+                                    } else {
+                                        if (!buffer.empty())
+                                            buffer += "\n";
+                                        buffer += std::string(laterSize, '-');
+                                    }
+                                } else if (!buffer.empty())
+                                    buffer += "\n";
+                            } else {
+                                buffer += getCurrentByte();
+                                skip();
+                            }
+                        }
                     }
                 }
-                else
-                    Add(Token(TokenType::Backtick));
-                break;
-
-            case '\r':
-                Skip();
-                break;
-
-            case '\n':
-            {
-                size_t size = 0;
-                while (IsValid() && GetCurrentByte() == '\n')
-                {
-                    ++size;
-                    Skip();
-                }
-
-                if (!tokens.empty() && tokens.back().type == TokenType::Newline)
-                    tokens.back().size += size;
-                else
-                {
-                    Token token(TokenType::Newline);
-                    token.size = size;
-                    Add(std::move(token));
-                }
-
-                ParseNewline();
                 break;
             }
 
-            case '^':
-                while (IsValid() && GetCurrentByte() != '\n')
-                    Skip();
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '0': {
+                std::string buffer;
+
+                while (isValid() && isValidNumeric()) {
+                    buffer += getCurrentByte();
+                    skip();
+                }
+
+                if (getCurrentByte() == '.' && getNextByte() == ' ') {
+                    add(Token(TokenType::NBullet));
+                    skip(2);
+                } else {
+                    if (!tokens.empty() && tokens.back().type == TokenType::Text)
+                        tokens.back().value += buffer;
+                    else
+                        add(Token(TokenType::Text, buffer));
+                }
+
+                break;
+            }
+
+            case '.':
+                if (getNextByte(1) == '.' && getNextByte(2) == ' ') {
+                    add(Token(TokenType::NBullet));
+                    skip(3);
+                }
                 break;
 
-            case '>':
-                if (inHeaderLine)
-                {
-                    Skip();
-                    SkipSpaces();
-                    if (GetCurrentByte() == '\'')
-                    {
-                        Skip();
-                        std::string symbol;
-                        while (IsValid() && IsValidSymbol())
-                        {
-                            symbol += GetCurrentByte();
-                            Skip();
-                        }
-                        if (GetCurrentByte() == '\'')
-                        {
-                            Add(Token(TokenType::Anchor, symbol));
-                            Skip();
-                        }
+            case '[':
+                if (getNextByte(2) == ']') {
+                    Token token(TokenType::CheckBox);
+
+                    switch (getNextByte(1)) {
+                        case ' ':
+                            token.size = 1;
+                            add(std::move(token));
+                            skip(3);
+                            skipSpaces();
+                            break;
+
+                        case '-':
+                            token.size = 2;
+                            add(std::move(token));
+                            skip(3);
+                            skipSpaces();
+                            break;
+
+                        case '+':
+                            token.size = 3;
+                            add(std::move(token));
+                            skip(3);
+                            skipSpaces();
+                            break;
+
+                        default:
+                            break;
                     }
                 }
-                Skip();
                 break;
+
+            case '>': {
+                inHeaderLine = true;
+
+                skip();
+                if (getCurrentByte() == ' ') {
+                    add(Token(TokenType::Tail, 1));
+                    skipSpaces();
+                    break;
+                } else if (getCurrentByte() == '>') {
+                    skip();
+                    if (getCurrentByte() == ' ') {
+                        add(Token(TokenType::Tail, 2));
+                        skipSpaces();
+                    } else if (getCurrentByte() == '>' && getNextByte() == ' ') {
+                        add(Token(TokenType::Tail, 3));
+                        skip();
+                        skipSpaces();
+                    } else if (getCurrentByte() == '-' && getNextByte(1) == '>' && getNextByte(2) == ' ') {
+                        add(Token(TokenType::Arrow, 3));
+                        skip(2);
+                        skipSpaces();
+                    } else if (getCurrentByte() == '-' && getNextByte(1) == '-' && getNextByte(2) == '>' &&
+                               getNextByte(3) == ' ') {
+                        add(Token(TokenType::Arrow, 4));
+                        skip(3);
+                        skipSpaces();
+                    }
+                } else if (getCurrentByte() == '-') {
+                    skip();
+                    if (getCurrentByte() == '>' && getNextByte() == ' ') {
+                        add(Token(TokenType::Arrow, 2));
+                        skip();
+                        skipSpaces();
+                    }
+                }
+            }
 
             case '<':
-                Add(Token(TokenType::RevTail, 1));
-                Skip();
-                break;
-
-            case '{':
-                Add(Token(TokenType::LCurlyBracket));
-                Skip();
-                ParseInlineFunction();
-                break;
-
-            case '}':
-                Add(Token(TokenType::RCurlyBracket));
-                Skip();
-                break;
-
-            case '\\':
-                ParseInlineEscapedByte();
-                break;
-
-            case '|':
-                Skip();
-                if (!tokens.empty() && tokens.back().type == TokenType::Text)
-                {
-                    // remove blankspaces of previous token
-                    for (size_t i = tokens.back().value.size() - 1; i >= 0; --i)
-                    {
-                        if (tokens.back().value[i] != ' ') {
-                            tokens.back().value = tokens.back().value.substr(0, i + 1);
-                            break;
-                        }
-                    }
+                if (getNextByte() == '<') {
+                    skip(2);
+                    if (getCurrentByte() == '<') {
+                        add(Token(TokenType::RevTail, 3));
+                        skip();
+                    } else
+                        add(Token(TokenType::RevTail, 2));
                 }
-                Add(Token(TokenType::Pipe));
-                SkipSpaces();
                 break;
 
-            case '#':
-            {
-                Skip();
-                std::string symbol;
-                while (IsValid() && IsValidSymbol())
-                {
-                    symbol += GetCurrentByte();
-                    Skip();
-                }
-                Token token;
-                token.type = TokenType::HashSymbol;
-                token.value = symbol;
-                Add(std::move(token));
-                break;
-            }
-            case '@':
-            {
-                Skip();
-                std::string symbol;
-                while (IsValid() && IsValidSymbol())
-                {
-                    symbol += GetCurrentByte();
-                    Skip();
-                }
-                Token token;
-                token.type = TokenType::AtSymbol;
-                token.value = symbol;
-                Add(std::move(token));
-                break;
-            }
-
-            default:
-                if (IsValidText())
-                    ParseText();
-                else
-                {
-                    if (!tokens.empty() && tokens.back().type == TokenType::Text)
-                        tokens.back().value += GetCurrentByte();
-                    else
-                        Add(Token(TokenType::Text, std::string(1, GetCurrentByte())));
-                    Skip();
-                }
+            case '$':
+                add(Token(TokenType::Dollar));
+                skip();
+                skipSpaces();
+                parseFunction();
                 break;
         }
     }
 
-    Add(Token(TokenType::DocumentEnd));
-}
-
-std::string Lexer::GetBuffer()
-{
-    return buffer;
-}
-
-Token &Lexer::GetToken(size_t index)
-{
-    return tokens[index];
-}
-
-void Lexer::Reset()
-{
-    inHeaderLine = false;
-    inLink = false;
-    inCodeBlock = false;
-
-    bufferIndex = 0;
-    tokens.clear();
-
-    currentDepth = 0;
-}
-
-std::vector<Token>& Lexer::GetTokens()
-{
-    return tokens;
-}
-
-std::string Lexer::GetTokensAsString()
-{
-    std::string buffer;
-
-    for (Token& token: tokens)
-        buffer += token.ToString() + "\n";
-
-    return buffer + "\n";
-}
-
-void Lexer::ParseText()
-{
-    std::string buffer;
-
-    while (IsValid() && IsValidText())
-    {
-        buffer += GetCurrentByte();
-        Skip();
-    }
-
-    if (!tokens.empty() && tokens.back().type == TokenType::Text)
-        tokens.back().value += buffer;
-    else
-        Add(Token(TokenType::Text, buffer));
-}
-
-void Lexer::ParseQuotedText()
-{
-    Token token;
-    token.type = TokenType::QuotedText;
-
-    Skip();
-    while (IsValid() && GetCurrentByte() != '\'')
-    {
-        token.value += GetCurrentByte();
-        Skip();
-    }
-    Skip();
-    Add(std::move(token));
-}
-
-void Lexer::ParseInlineEscapedByte()
-{
-    Skip();
-
-    switch (GetCurrentByte())
-    {
-        case '^': // Oneline comments
-        case '\\':
-        case '*':
-        case '_':
-        case '`':
-        case '{':
-        case '}':
-        case '<':
-            Add(Token(TokenType::Text, std::string(1, GetCurrentByte())));
-            Skip();
-            break;
-
-        default:
-        {
-            std::string buffer(1, '\\');
-            buffer += GetCurrentByte();
-            Add(Token(TokenType::Text, buffer));
-            Skip();
-            break;
-        }
-    }
-}
-
-void Lexer::ParseNewline()
-{
-    // State variables
-    inHeaderLine = false;
-
-    if (GetCurrentByte() == ' ')
-    {
-        Token token(TokenType::Space);
-        token.size = 1;
-        Skip();
-
-        while (IsValid() && GetCurrentByte() == ' ')
-        {
-            ++token.size;
-            Skip();
-        }
-
-        currentDepth = token.size;
-        Add(std::move(token));
-    }
-    else
-        currentDepth = 0;
-
-    switch (GetCurrentByte())
-    {
-        case '-':
-        {
-            size_t size = 0;
-
-            while (IsValid() && GetCurrentByte() == '-')
-            {
-                Skip();
-                ++size;
-            }
-
-            if (size == 1)
-            {
-                if (GetCurrentByte() == '>' && GetNextByte() == ' ')
-                {
-                    Add(Token(TokenType::Arrow, 1));
-                    Skip();
-                    SkipSpaces();
-                }
-                else
-                {
-                    Add(Token(TokenType::Bullet));
-                    SkipSpaces();
-                }
-            }
-            else if (size == 2 && GetCurrentByte() == '>' && GetNextByte() == ' ')
-            {
-                Add(Token(TokenType::Arrow, 2));
-                Skip();
-                SkipSpaces();
-            }
-            else
-            {
-                Add(Token(TokenType::Line, size));
-                SkipSpaces();
-
-                if (inCodeBlock)
-                {
-                    std::string buffer;
-
-                    while (IsValid())
-                    {
-                        if (GetCurrentByte() == '\n')
-                        {
-                            Skip();
-                            // Skip identations or blank lines
-                            size_t shouldSkipCounter = 0;
-                            while (IsValid() && shouldSkipCounter < currentDepth && GetCurrentByte() != '\n')
-                            {
-                                Skip();
-                                ++shouldSkipCounter;
-                            }
-
-                            if (GetCurrentByte() == '-')
-                            {
-                                size_t laterSize = 0;
-
-                                while (IsValid() && GetCurrentByte() == '-')
-                                {
-                                    ++laterSize;
-                                    Skip();
-                                }
-
-                                if (laterSize == size)
-                                {
-                                    Add(Token(TokenType::RawText, buffer));
-                                    Add(Token(TokenType::Line, size));
-                                    inCodeBlock = false;
-                                    break;
-                                }
-                                else
-                                {
-                                    if (!buffer.empty())
-                                        buffer += "\n";
-                                    buffer += std::string(laterSize, '-');
-                                }
-                            }
-                            else
-                                if (!buffer.empty())
-                                    buffer += "\n";
-                        }
-                        else
-                        {
-                            buffer += GetCurrentByte();
-                            Skip();
-                        }
-                    }
-                }
-            }
-            break;
-        }
-
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '0':
-        {
-            std::string buffer;
-
-            while (IsValid() && IsValidNumeric())
-            {
-                buffer += GetCurrentByte();
-                Skip();
-            }
-
-            if (GetCurrentByte() == '.' && GetNextByte() == ' ')
-            {
-                Add(Token(TokenType::NBullet));
-                Skip(2);
-            }
-            else
-            {
-                if (!tokens.empty() && tokens.back().type == TokenType::Text)
-                    tokens.back().value += buffer;
-                else
-                    Add(Token(TokenType::Text, buffer));
-            }
-
-            break;
-        }
-
-        case '.':
-            if (GetNextByte(1) == '.' && GetNextByte(2) == ' ')
-            {
-                Add(Token(TokenType::NBullet));
-                Skip(3);
-            }
-            break;
-
-        case '[':
-            if (GetNextByte(2) == ']')
-            {
-                Token token(TokenType::CheckBox);
-
-                switch (GetNextByte(1))
-                {
-                    case ' ':
-                        token.size = 1;
-                        Add(std::move(token));
-                        Skip(3);
-                        SkipSpaces();
-                        break;
-
-                    case '-':
-                        token.size = 2;
-                        Add(std::move(token));
-                        Skip(3);
-                        SkipSpaces();
-                        break;
-
-                    case '+':
-                        token.size = 3;
-                        Add(std::move(token));
-                        Skip(3);
-                        SkipSpaces();
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            break;
-
-        case '>':
-        {
-            inHeaderLine = true;
-
-            Skip();
-            if (GetCurrentByte() == ' ')
-            {
-                Add(Token(TokenType::Tail, 1));
-                SkipSpaces();
-                break;
-            }
-            else if (GetCurrentByte() == '>')
-            {
-                Skip();
-                if (GetCurrentByte() == ' ')
-                {
-                    Add(Token(TokenType::Tail, 2));
-                    SkipSpaces();
-                }
-                else if (GetCurrentByte() == '>' && GetNextByte() == ' ')
-                {
-                    Add(Token(TokenType::Tail, 3));
-                    Skip();
-                    SkipSpaces();
-                }
-                else if (GetCurrentByte() == '-' && GetNextByte(1) == '>' && GetNextByte(2) == ' ')
-                {
-                    Add(Token(TokenType::Arrow, 3));
-                    Skip(2);
-                    SkipSpaces();
-                }
-                else if (GetCurrentByte() == '-' && GetNextByte(1) == '-' && GetNextByte(2) == '>' && GetNextByte(3) == ' ')
-                {
-                    Add(Token(TokenType::Arrow, 4));
-                    Skip(3);
-                    SkipSpaces();
-                }
-            }
-            else if (GetCurrentByte() == '-')
-            {
-                Skip();
-                if (GetCurrentByte() == '>' && GetNextByte() == ' ')
-                {
-                    Add(Token(TokenType::Arrow, 2));
-                    Skip();
-                    SkipSpaces();
-                }
-            }
-        }
-
-        case '<':
-            if (GetNextByte() == '<')
-            {
-                Skip(2);
-                if (GetCurrentByte() == '<')
-                {
-                    Add(Token(TokenType::RevTail, 3));
-                    Skip();
-                }
-                else
-                    Add(Token(TokenType::RevTail, 2));
-            }
-            break;
-
-        case '$':
-            Add(Token(TokenType::Dollar));
-            Skip();
-            SkipSpaces();
-            ParseFunction();
-            break;
-    }
-}
-
-void Lexer::ParseFunction()
-{
-    std::string symbol;
-
-    while (IsValid() && IsValidSymbol())
-    {
-        symbol += GetCurrentByte();
-        Skip();
-    }
-
-    if (symbol == "image")
-    {
-        Add(Token(TokenType::KwImage));
-        SkipSpaces();
-    }
-    else if (symbol == "table")
-    {
-        Add(Token(TokenType::KwTable));
-        SkipSpaces();
-    }
-    else if (symbol == "code")
-    {
-        Add(Token(TokenType::KwCode));
-        SkipSpaces();
-        inCodeBlock = true;
-    }
-    else if (symbol == "admon")
-    {
-        Add(Token(TokenType::KwAdmon));
-        SkipSpaces();
-    }
-    else if (symbol == "file")
-    {
-        Add(Token(TokenType::KwFile));
-        SkipSpaces();
-    }
-    else if (symbol == "toc")
-    {
-        Add(Token(TokenType::KwToc));
-        SkipSpaces();
-    }
-    else
-        Add(Token(TokenType::Symbol, symbol));
-
-    SkipSpaces();
-
-    if (GetCurrentByte() == '\'')
-        ParseQuotedText();
-    else if (IsValidSymbol())
-    {
+    void Lexer::parseFunction() {
         std::string symbol;
-        while (IsValid() && IsValidSymbol())
-        {
-            symbol += GetCurrentByte();
-            Skip();
+
+        while (isValid() && isValidSymbol()) {
+            symbol += getCurrentByte();
+            skip();
         }
-        Add(Token(TokenType::Symbol, symbol));
-    }
 
-    SkipSpaces();
+        if (symbol == "image") {
+            add(Token(TokenType::KwImage));
+            skipSpaces();
+        } else if (symbol == "table") {
+            add(Token(TokenType::KwTable));
+            skipSpaces();
+        } else if (symbol == "code") {
+            add(Token(TokenType::KwCode));
+            skipSpaces();
+            inCodeBlock = true;
+        } else if (symbol == "admon") {
+            add(Token(TokenType::KwAdmon));
+            skipSpaces();
+        } else if (symbol == "file") {
+            add(Token(TokenType::KwFile));
+            skipSpaces();
+        } else if (symbol == "toc") {
+            add(Token(TokenType::KwToc));
+            skipSpaces();
+        } else
+            add(Token(TokenType::Symbol, symbol));
 
-    if (GetCurrentByte() == '{')
-    {
-        Add(Token(TokenType::LCurlyBracket));
-        Skip();
-    }
-}
+        skipSpaces();
 
-void Lexer::ParseInlineFunction()
-{
-    switch (GetCurrentByte())
-    {
-        case ':':
-            inLink = true;
-            Add(Token(TokenType::Colon));
-            Skip();
-            break;
-
-        case '!':
-            inLink = true;
-            Add(Token(TokenType::ExclamationMark));
-            Skip();
-            break;
-
-        case '?':
-            inLink = true;
-            Add(Token(TokenType::QuestionMark));
-            Skip();
-            break;
-    }
-
-    if (GetCurrentByte() == '\'')
-        ParseQuotedText();
-    else if (IsValidSymbol())
-    {
-        std::string symbol;
-        while (IsValid() && IsValidSymbol())
-        {
-            symbol += GetCurrentByte();
-            Skip();
+        if (getCurrentByte() == '\'')
+            parseQuotedText();
+        else if (isValidSymbol()) {
+            std::string symbol;
+            while (isValid() && isValidSymbol()) {
+                symbol += getCurrentByte();
+                skip();
+            }
+            add(Token(TokenType::Symbol, symbol));
         }
-        Add(Token(TokenType::Symbol, symbol));
+
+        skipSpaces();
+
+        if (getCurrentByte() == '{') {
+            add(Token(TokenType::LCurlyBracket));
+            skip();
+        }
     }
 
-    SkipSpaces();
+    void Lexer::parseInlineFunction() {
+        switch (getCurrentByte()) {
+            case ':':
+                inLink = true;
+                add(Token(TokenType::Colon));
+                skip();
+                break;
 
-    if (GetCurrentByte() == '{')
-    {
-        Add(Token(TokenType::LCurlyBracket));
-        Skip();
-    }
-}
+            case '!':
+                inLink = true;
+                add(Token(TokenType::ExclamationMark));
+                skip();
+                break;
 
-bool Lexer::IsValid()
-{
-    return bufferIndex < bufferSize;
-}
+            case '?':
+                inLink = true;
+                add(Token(TokenType::QuestionMark));
+                skip();
+                break;
+        }
 
-bool Lexer::IsValidText()
-{
-    char c = GetCurrentByte();
+        if (getCurrentByte() == '\'')
+            parseQuotedText();
+        else if (isValidSymbol()) {
+            std::string symbol;
+            while (isValid() && isValidSymbol()) {
+                symbol += getCurrentByte();
+                skip();
+            }
+            add(Token(TokenType::Symbol, symbol));
+        }
 
-    return (c >= 'A' && c <= 'Z') ||
-           (c >= 'a' && c <= 'z') ||
-           (c >= '0' && c <= '9') ||
-            c == ' ' || c == '-' || c == '.' ||
-            c == '!' || c == '?' ||
-            c == '"' || c == '\'' ||
-            c == ';' || c == ':';
-}
+        skipSpaces();
 
-bool Lexer::IsValidSymbol()
-{
-    char c = GetCurrentByte();
-
-    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_';
-}
-
-bool Lexer::IsValidNumeric()
-{
-    char c = GetCurrentByte();
-
-    return c >= '0' && c <= '9';
-}
-
-char Lexer::GetCurrentByte()
-{
-    return buffer[bufferIndex];
-}
-
-char Lexer::GetNextByte(size_t offset)
-{
-    return bufferIndex + offset < bufferSize ? buffer[bufferIndex + offset] : 0;
+        if (getCurrentByte() == '{') {
+            add(Token(TokenType::LCurlyBracket));
+            skip();
+        }
     }
 
-    void Lexer::Skip(size_t offset)
-    {
-    bufferIndex += offset;
-}
+    bool Lexer::isValid() {
+        return bufferIndex < bufferSize;
+    }
 
-void Lexer::SkipSpaces()
-{
-    while (IsValid() && GetCurrentByte() == ' ')
-        Skip();
-}
+    bool Lexer::isValidText() {
+        char c = getCurrentByte();
 
-void Lexer::Add(Token&& token)
-{
-    tokens.emplace_back(token);
-}
+        return (c >= 'A' && c <= 'Z') ||
+               (c >= 'a' && c <= 'z') ||
+               (c >= '0' && c <= '9') ||
+               c == ' ' || c == '-' || c == '.' ||
+               c == '!' || c == '?' ||
+               c == '"' || c == '\'' ||
+               c == ';' || c == ':';
+    }
+
+    bool Lexer::isValidSymbol() {
+        char c = getCurrentByte();
+
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_';
+    }
+
+    bool Lexer::isValidNumeric() {
+        char c = getCurrentByte();
+
+        return c >= '0' && c <= '9';
+    }
+
+    char Lexer::getCurrentByte() {
+        return buffer[bufferIndex];
+    }
+
+    char Lexer::getNextByte(size_t offset) {
+        return bufferIndex + offset < bufferSize ? buffer[bufferIndex + offset] : 0;
+    }
+
+    void Lexer::skip(size_t offset) {
+        bufferIndex += offset;
+    }
+
+    void Lexer::skipSpaces() {
+        while (isValid() && getCurrentByte() == ' ')
+            skip();
+    }
+
+    void Lexer::add(Token &&token) {
+        tokens.emplace_back(token);
+    }
 
 }
