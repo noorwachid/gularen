@@ -82,7 +82,7 @@ namespace Gularen {
                     break;
                 }
 
-                case '^':
+                case '~':
                     while (isValid() && getCurrentByte() != '\n')
                         skip();
                     break;
@@ -249,7 +249,7 @@ namespace Gularen {
         skip();
 
         switch (getCurrentByte()) {
-            case '^': // Oneline comments
+            case '~': // Oneline comments
             case '\\':
             case '*':
             case '_':

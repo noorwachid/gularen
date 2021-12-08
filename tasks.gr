@@ -5,7 +5,7 @@
 [+] Comments
     $ code 'gr'
     ---
-    This will shown. ^ This will not.
+    This will shown. ~ This will not.
     ---
 
 [+] Font styles
@@ -129,7 +129,7 @@
 	    ---
 	    book1 = [
 	        title = 'Avatar Kyoshi'
-		year  = '2018'
+            year  = '2018'
 	    ]
 	    ---
 
