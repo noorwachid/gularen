@@ -1,15 +1,14 @@
-{EchoVariable}
-
-{:WithVariable}
+{{ variable }}
+{{ 'normal string' }}
 
 {:'duckduckgo.com'}
+{:'duckduckgo.com', `is *here*`}
 
-{:'duckduckgo.com' {is *here*}}
+{!'thisSection'}
+{!'thisSection', `This section`}
 
-{!'ThisSection'}
+{?'word', 'definition'}
 
-{!'ThisSection' {This section}}
+{^'thisDefinition'}
 
-{?'image.png'}
-
-{?'image.png' {Alternative Title}}
+{&'image.png'}

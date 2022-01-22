@@ -1,4 +1,4 @@
-$ table v 1
+$ table vertical = 1
 ---
 ID | Name     | Address
 1  | Nora     | Earth-12

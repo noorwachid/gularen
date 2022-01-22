@@ -9,12 +9,12 @@ Another paragraph
 - list
 - list
 
-$ admon 'Admonition'
+$ block 'important'
 ---
 You cannot do this
 ---
 
-$ table
+$ code
 ---
 1 | 2 | 3
 ---
@@ -24,10 +24,10 @@ $ code
 Console.WriteLine("Hello World!");
 ---
 
-$ image 'SomeImage.png'
+$ image 'someImage.png'
 
 $ file 'SomeFile.gr'
 
 $ toc
 
-$ Author = 'Noor Wachid'
+$ author = 'Noor Wachid'

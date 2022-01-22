@@ -59,14 +59,14 @@
         2. Number two
         5. Still three
         .. It uses auto increment
-        .. So you dont have to count
+        .. So you don't have to count
         ---
 
     [+] Check-lists
         $ code 'gr'
         ---
         [+] Checked todo item
-        [ ] Inprogress todo item
+        [ ] In-progress todo item
         [ ] Todo item
         [ ] Todo item
         ---
@@ -88,27 +88,27 @@
         $ code 'gr'
         ---
         {:'google.com'}
-        {:'google.com' {this guy can Parse markup *nice*}}
+        {:'google.com' `this guy can Parse markup *nice*`}
         ---
 
     [+] Local links
         $ code 'gr'
         ---
-        {!'CustomMarker'}
-        {!'CustomMarker' {Jump custom marker}}
+        {!'customMarker'}
+        {!'customMarker' `Jump custom marker`}
         ---
 
         [+] Custom marker
             $ code 'gr'
             ---
-            >>-> The Section > 'CustomMarker'
+            >>-> The Section > 'customMarker'
             ---
 
     [ ] Term-Definitions
         [ ] Definition
             $ code 'gr'
 	    ---
-	    {?'see you tomorrow' {*never* meet again}}
+	    {?'see you tomorrow' `*never* meet again`}
 	    ---
 	
 	[ ] Print all definitions
@@ -124,43 +124,36 @@
 	    {^'book1'}
 	    ---
 
-        [ ] Definitions
-	    $ ref-map
-	    ---
-	    book1 = [
-	        title = 'Avatar Kyoshi'
-            year  = '2018'
-	    ]
-	    ---
-
-        [ ] Print all definitions
-	    $ 
-	    ---
+        [ ] Definitions and Print
 	    $ ref
 	    ---
-
+	    book1 = [
+	        title = 'Avatar Kyoshi',
+            year  = '2018',
+	    ]
+	    ---
 
     [+] Tags (custom rendering)
         [+] Username
             $ code 'gr'
             ---
-            Hi @Sophia!
+            Hi @sophia!
             ---
 
         [+] Hashtag
             $ code 'gr'
             ---
-            #Bug #Urgent
+            #bug #urgent
             Missing validation on withdraw
             ---
 
     [ ] Files
         $ code 'gr'
         ---
-        $ file 'Introduction.gr'
-        $ file 'Chapter/01.gr'
-        $ file 'Chapter/02.gr'
-        $ file 'Chapter/03.gr'
+        $ file 'introduction.gr'
+        $ file 'chapter/01.gr'
+        $ file 'chapter/02.gr'
+        $ file 'chapter/03.gr'
         ---
 
     [ ] Table of contents
@@ -174,35 +167,35 @@
     [ ] Block images
     $ code 'gr'
     ---
-    $ image 'SomeImage.jpg'
-    $ image 'SomeImage.jpg' {Alternative Title}
+    $ image 'some-image.jpg'
+    $ image 'some-image.jpg' `Alternative Title`
     ---
 
     [+] Inline images
     $ code 'gr'
     ---
-    {%'image.png'}
-    {%'image.png' {Alternative Title}}
+    {&'image.png'}
+    {&'image.png' `Alternative Title`}
     ---
 
 [ ] Variables
     [ ] Assignments
         $ code 'gr'
         ---
-        $ AuthorName = 'Nora Winchester'
-        $ AsMarkup = {his name is {AuthorName}}
+        $ authorName = 'Nora Winchester'
+        $ asMarkup = `his name is {authorName}`
         ---
 
     [+] Printing
         $ code 'gr'
         ---
-        My name is {AuthorName}
+        My name is {authorName}
         ---
 
 [ ] Admonitions
     $ code 'gr'
     ----
-    $ admon 'Note'
+    $ block 'note'
     ---
     An admonition
     ---
@@ -221,7 +214,7 @@
         ---
         ----
     [+] Inline codes
-        ``the code goes here``
+        {@'the code goes here'}
 
 [-] Tables
     $ code 'gr'
