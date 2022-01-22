@@ -188,9 +188,9 @@ private:
 	std::string mOutputRendererStyle;
 	std::string mProgramExecName;
 
-	bool mShownAst = true;
-	bool mShownTokens = true;
-	bool mShownRenderedBuffer = true;
+	bool mShownAst = false;
+	bool mShownTokens = false;
+	bool mShownRenderedBuffer = false;
 };
 
 int main(int argc, char** argv)
