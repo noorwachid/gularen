@@ -10,13 +10,13 @@ namespace Gularen
 	{
 		Node();
 
-		Node(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown);
+		Node(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown);
 
 		virtual ~Node();
 
-		void Add(Node* node);
+		void add(Node* node);
 
-		virtual std::string ToString();
+		virtual std::string toString();
 
 		NodeType type;
 		NodeGroup group;
@@ -28,10 +28,10 @@ namespace Gularen
 	{
 		ValueNode();
 
-		ValueNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+		ValueNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 				const std::string& value = std::string());
 
-		std::string ToString() override;
+		std::string toString() override;
 
 		std::string value;
 	};
@@ -40,10 +40,10 @@ namespace Gularen
 	{
 		SizeNode();
 
-		SizeNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+		SizeNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 				const size_t size = 0);
 
-		std::string ToString() override;
+		std::string toString() override;
 
 		size_t size;
 	};
@@ -52,29 +52,29 @@ namespace Gularen
 	{
 		BooleanNode();
 
-		BooleanNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+		BooleanNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 				bool state = false);
 
-		std::string ToString() override;
+		std::string toString() override;
 
 		bool state;
 	};
 
 	enum struct TernaryState
 	{
-		False = 1,
-		InBetween = 2,
-		True = 3,
+		off = 0,
+		inBetween = 1,
+		on = 2,
 	};
 
 	struct TernaryNode : public Node
 	{
 		TernaryNode();
 
-		TernaryNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
-				TernaryState state = TernaryState::False);
+		TernaryNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
+				TernaryState state = TernaryState::off);
 
-		std::string ToString() override;
+		std::string toString() override;
 
 		TernaryState state;
 	};
@@ -83,12 +83,12 @@ namespace Gularen
 	{
 		ContainerNode();
 
-		ContainerNode(NodeType type, NodeGroup group = NodeGroup::Unknown, NodeShape shape = NodeShape::Unknown,
+		ContainerNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 				Node* package = nullptr);
 
-		std::string ToString() override;
+		std::string toString() override;
 
-		Node* package;
+		Node* value;
 	};
 
 	struct CodeNode : public Node
@@ -97,17 +97,17 @@ namespace Gularen
 
 		CodeNode(const std::string& value, Node* lang = nullptr);
 
-		std::string ToString() override;
+		std::string toString() override;
 
 		std::string value;
-		Node* lang;
+		Node* langCode;
 	};
 
 	struct TableNode : public Node
 	{
 		TableNode();
 
-		std::vector<ssize_t> hHeaders;
-		std::vector<ssize_t> vHeaders;
+		std::vector<ssize_t> horizontalHeaders;
+		std::vector<ssize_t> verticalHeaders;
 	};
 }

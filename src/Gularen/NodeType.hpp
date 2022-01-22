@@ -6,77 +6,77 @@ namespace Gularen
 {
 	enum struct NodeType
 	{
-		Unknown = -1,
-		Root,
+		unknown = -1,
+		root,
 
 		// Abstract types
-		Newline,
-		Indent,
+		newline,
+		indent,
 
-		LineBreak,
-		ThematicBreak,
-		PageBreak,     // PDF or paper like only documents
+		lineBreak,
+		thematicBreak,
+		pageBreak,     // PDF or paper like only documents
 
-		// Semiabstract types
-		Title,
-		Part,
-		Chapter,
-		Section,
-		Subsection,
-		Subsubsection,
-		Minisection,
-		Paragraph,
+		// Semi-abstract types
+		title,
+		part,
+		chapter,
+		section,
+		subsection,
+		subsubsection,
+		minisection,
+		paragraph,
 
-		InlineCode,
-		Code,
+		inlineCode,
+		code,
 
-		Table,
-		TableRow,
-		TableColumn,
+		table,
+		tableRow,
+		tableColumn,
 
-		File,
-		Toc,
-		Admon,
-		Assignment,
+		file,
+		toc,
+		block,
+		assignment,
 
-		HashSymbol,
-		AtSymbol,
-		Symbol,
-		Curtain,
-		Wrapper,
+		hashSymbol,
+		atSymbol,
+		symbol,
+		curtain,
+		wrapper,
 
-		// Value types
-		Text,
-		QuotedText,
-		RawText,
-		Link,
-		LocalLink,
+		// value types
+		text,
+		quotedText,
+		rawText,
+		link,
+		localLink,
 
-		InlineImage,
-		Image,
+		inlineImage,
+		image,
 
 		// Font style types
-		FBold,
-		FItalic,
-		FMonospace,
+		formatBold,
+		formatItalic,
+		formatMonospace,
 
 		// List types
-		List,
-		NList,
-		Item,
-		CheckList,
-		CheckItem,
+		list,
+		numericList,
+		item,
+		checkList,
+		checkItem,
 
 	};
 
 	enum struct NodeShape
 	{
-		Unknown = -1,
-		Line,
-		InBetween,
-		Block,
-		SuperBlock,
+		unknown = 0,
+		line,
+		inBetween,
+		block,
+		superBlock,
 	};
 
-	std::string ToString(NodeType type);
+	std::string toString(NodeType type);
 }

@@ -2,110 +2,110 @@
 
 namespace Gularen
 {
-	std::string ToString(NodeType type)
+	std::string toString(NodeType type)
 	{
 		switch (type)
 		{
-			case NodeType::Unknown:
-				return "Unknown";
-			case NodeType::Root:
-				return "Root";
+			case NodeType::unknown:
+				return "unknown";
+			case NodeType::root:
+				return "rootNode";
 
-			case NodeType::Newline:
-				return "Newline";
+			case NodeType::newline:
+				return "newline";
 
-			case NodeType::Symbol:
-				return "Symbol";
-			case NodeType::Curtain:
-				return "Curtain";
-			case NodeType::Wrapper:
-				return "Wrapper";
+			case NodeType::symbol:
+				return "symbol";
+			case NodeType::curtain:
+				return "curtain";
+			case NodeType::wrapper:
+				return "container";
 
-			case NodeType::Text:
-				return "Text";
-			case NodeType::QuotedText:
-				return "QuoteText";
-			case NodeType::RawText:
-				return "RawText";
-			case NodeType::Indent:
-				return "Indent";
+			case NodeType::text:
+				return "text";
+			case NodeType::quotedText:
+				return "quotedText";
+			case NodeType::rawText:
+				return "rawText";
+			case NodeType::indent:
+				return "indent";
 
-			case NodeType::LineBreak:
-				return "LineBreak";
-			case NodeType::ThematicBreak:
-				return "ThematicBreak";
-			case NodeType::PageBreak:
-				return "PageBreak";
+			case NodeType::lineBreak:
+				return "lineBreak";
+			case NodeType::thematicBreak:
+				return "thematicBreak";
+			case NodeType::pageBreak:
+				return "pageBreak";
 
-			case NodeType::Title:
-				return "Title";
-			case NodeType::Part:
-				return "Part";
-			case NodeType::Chapter:
-				return "Chapter";
-			case NodeType::Section:
-				return "Section";
-			case NodeType::Subsection:
-				return "Subsection";
-			case NodeType::Subsubsection:
-				return "Subsubsection";
-			case NodeType::Minisection:
-				return "Minisection";
-			case NodeType::Paragraph:
+			case NodeType::title:
+				return "title";
+			case NodeType::part:
+				return "part";
+			case NodeType::chapter:
+				return "chapter";
+			case NodeType::section:
+				return "section";
+			case NodeType::subsection:
+				return "subsection";
+			case NodeType::subsubsection:
+				return "subsubsection";
+			case NodeType::minisection:
+				return "minisection";
+			case NodeType::paragraph:
 				return "Paragraph";
 
-			case NodeType::InlineCode:
-				return "InlineCode";
-			case NodeType::Code:
-				return "Code";
+			case NodeType::inlineCode:
+				return "inlineCode";
+			case NodeType::code:
+				return "code";
 
-			case NodeType::Table:
-				return "Table";
-			case NodeType::TableRow:
-				return "TableRow";
-			case NodeType::TableColumn:
-				return "TableColumn";
+			case NodeType::table:
+				return "table";
+			case NodeType::tableRow:
+				return "tableRow";
+			case NodeType::tableColumn:
+				return "tableColumn";
 
-			case NodeType::File:
-				return "File";
-			case NodeType::Toc:
-				return "Toc";
-			case NodeType::Admon:
-				return "Admon";
-			case NodeType::Assignment:
-				return "Assignment";
+			case NodeType::file:
+				return "file";
+			case NodeType::toc:
+				return "toc";
+			case NodeType::block:
+				return "block";
+			case NodeType::assignment:
+				return "assignment";
 
-			case NodeType::Link:
-				return "Link";
-			case NodeType::LocalLink:
-				return "LocalLink";
+			case NodeType::link:
+				return "link";
+			case NodeType::localLink:
+				return "localLink";
 
-			case NodeType::InlineImage:
-				return "InlineImage";
-			case NodeType::Image:
-				return "Image";
+			case NodeType::inlineImage:
+				return "inlineImage";
+			case NodeType::image:
+				return "image";
 
-			case NodeType::FBold:
-				return "FBold";
-			case NodeType::FItalic:
-				return "FItalic";
-			case NodeType::FMonospace:
-				return "FMonospace";
+			case NodeType::formatBold:
+				return "formatBold";
+			case NodeType::formatItalic:
+				return "formatItalic";
+			case NodeType::formatMonospace:
+				return "formatMonospace";
 
-			case NodeType::List:
-				return "List";
-			case NodeType::NList:
-				return "NList";
-			case NodeType::Item:
-				return "Item";
+			case NodeType::list:
+				return "list";
+			case NodeType::numericList:
+				return "numericList";
+			case NodeType::item:
+				return "item";
 
-			case NodeType::CheckList:
-				return "CheckList";
-			case NodeType::CheckItem:
-				return "CheckItem";
+			case NodeType::checkList:
+				return "checkList";
+			case NodeType::checkItem:
+				return "checkItem";
 
 			default:
-				return "[Unhandled]";
+				return "[unhandled]";
 		}
 	}
 }

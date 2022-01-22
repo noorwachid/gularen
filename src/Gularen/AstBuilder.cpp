@@ -9,110 +9,110 @@ namespace Gularen
 
 	AstBuilder::~AstBuilder()
 	{
-		if (mRoot)
-			DestroyTree();
+		if (rootNode)
+			destroyTree();
 	}
 
-	void AstBuilder::SetBuffer(const std::string& buffer)
+	void AstBuilder::setBuffer(const std::string& buffer)
 	{
-		mLexer.SetBuffer(buffer);
-		mLexer.Parse();
+		lexer.setBuffer(buffer);
+		lexer.parse();
 
-		Reset();
+		reset();
 	}
 
-	void AstBuilder::SetTokens(const std::vector<Token>& tokens)
+	void AstBuilder::setTokens(const std::vector<Token>& tokens)
 	{
-		mLexer.SetTokens(tokens);
+		lexer.setTokens(tokens);
 
-		Reset();
+		reset();
 	}
 
-	void AstBuilder::Parse()
+	void AstBuilder::parse()
 	{
-		if (GetCurrentToken().type == TokenType::DocumentBegin)
-			Skip();
+		if (getCurrentToken().Type == TokenType::documentBegin)
+			skip();
 
-		ParseNewline();
+		parseNewline();
 
-		while (IsValid())
+		while (isValid())
 		{
-			switch (GetCurrentToken().type)
+			switch (getCurrentToken().Type)
 			{
-				case TokenType::Text:
-					GetHead()->Add(new ValueNode(NodeType::Text, NodeGroup::Text, NodeShape::InBetween,
-							GetCurrentToken().value));
-					Skip();
+				case TokenType::text:
+					getHead()->add(new ValueNode(NodeType::text, NodeGroup::text, NodeShape::inBetween,
+						getCurrentToken().Value));
+					skip();
 					break;
 
-				case TokenType::Asterisk:
-					PairFHead(NodeType::FBold);
+				case TokenType::asterisk:
+					pairFormatHead(NodeType::formatBold);
 					break;
 
-				case TokenType::Underline:
-					PairFHead(NodeType::FItalic);
+				case TokenType::underline:
+					pairFormatHead(NodeType::formatItalic);
 					break;
 
-				case TokenType::Backtick:
-					PairFHead(NodeType::FMonospace);
+				case TokenType::backtick:
+					pairFormatHead(NodeType::formatMonospace);
 					break;
 
-				case TokenType::Newline:
+				case TokenType::newline:
 				{
-					size_t newlineSize = GetCurrentToken().size;
-					// GetHead()->Add(new SizeNode(NodeType::Newline, GetCurrent().size));
-					Skip();
-					ParseNewline(newlineSize);
+					size_t newlineSize = getCurrentToken().Size;
+					// getHead()->Add(new SizeNode(NodeType::newline, GetCurrent().size));
+					skip();
+					parseNewline(newlineSize);
 					break;
 				}
 
-				case TokenType::Anchor:
+				case TokenType::anchor:
 				{
-					if (GetHead()->group == NodeGroup::Header)
+					if (getHead()->group == NodeGroup::header)
 					{
-						static_cast<ValueNode*>(GetHead())->value = GetCurrentToken().value;
+						static_cast<ValueNode*>(getHead())->value = getCurrentToken().Value;
 					}
-					Skip();
+					skip();
 					break;
 				}
 
-				case TokenType::RevTail:
-					GetHead()->Add(new Node(NodeType::LineBreak, NodeGroup::Break));
-					Skip();
+				case TokenType::reverseTail:
+					getHead()->add(new Node(NodeType::lineBreak, NodeGroup::break_));
+					skip();
 					break;
 
-				case TokenType::Teeth:
+				case TokenType::teeth:
 				{
-					Skip();
-					if (GetCurrentToken().type == TokenType::Text && GetNextToken().type == TokenType::Teeth)
+					skip();
+					if (getCurrentToken().Type == TokenType::text && getNextToken().Type == TokenType::teeth)
 					{
-						GetHead()->Add(new ValueNode(NodeType::InlineCode, NodeGroup::Text, NodeShape::InBetween,
-								GetCurrentToken().value));
-						Skip(2);
+						getHead()->add(new ValueNode(NodeType::inlineCode, NodeGroup::text, NodeShape::inBetween,
+							getCurrentToken().Value));
+						skip(2);
 					}
 					break;
 				}
 
-				case TokenType::LCurlyBracket:
-					Skip();
-					switch (GetCurrentToken().type)
+				case TokenType::leftCurlyBracket:
+					skip();
+					switch (getCurrentToken().Type)
 					{
-						case TokenType::Symbol:
-							GetHead()->Add(new ValueNode(NodeType::Curtain, NodeGroup::Text, NodeShape::InBetween,
-									GetCurrentToken().value));
-							Skip();
+						case TokenType::symbol:
+							getHead()->add(new ValueNode(NodeType::curtain, NodeGroup::text, NodeShape::inBetween,
+								getCurrentToken().Value));
+							skip();
 							break;
 
-						case TokenType::Colon:
-							ParseLink(NodeType::Link);
+						case TokenType::colon:
+							parseLink(NodeType::link);
 							break;
 
-						case TokenType::ExclamationMark:
-							ParseLink(NodeType::LocalLink);
+						case TokenType::exclamationMark:
+							parseLink(NodeType::localLink);
 							break;
 
-						case TokenType::QuestionMark:
-							ParseLink(NodeType::InlineImage);
+						case TokenType::questionMark:
+							parseLink(NodeType::inlineImage);
 							break;
 
 						default:
@@ -121,102 +121,102 @@ namespace Gularen
 
 					break;
 
-				case TokenType::RCurlyBracket:
-					Skip();
-					PopHead();
+				case TokenType::rightCurlyBracket:
+					skip();
+					popHead();
 					break;
 
-				case TokenType::Pipe:
-					while (mHeads.size() > 1 && mHeads.top()->type != NodeType::TableRow)
-						PopHead();
-					PushHead(new Node(NodeType::TableColumn, NodeGroup::Table));
-					Skip();
+				case TokenType::pipe:
+					while (headNodes.size() > 1 && headNodes.top()->type != NodeType::tableRow)
+						popHead();
+					pushHead(new Node(NodeType::tableColumn, NodeGroup::table));
+					skip();
 					break;
 
-				case TokenType::HashSymbol:
-					GetHead()->Add(new ValueNode(NodeType::HashSymbol, NodeGroup::Tag, NodeShape::InBetween,
-							GetCurrentToken().value));
-					Skip();
+				case TokenType::hashSymbol:
+					getHead()->add(new ValueNode(NodeType::hashSymbol, NodeGroup::tag, NodeShape::inBetween,
+						getCurrentToken().Value));
+					skip();
 					break;
-				case TokenType::AtSymbol:
-					GetHead()->Add(new ValueNode(NodeType::AtSymbol, NodeGroup::Tag, NodeShape::InBetween,
-							GetCurrentToken().value));
-					Skip();
+				case TokenType::atSymbol:
+					getHead()->add(new ValueNode(NodeType::atSymbol, NodeGroup::tag, NodeShape::inBetween,
+						getCurrentToken().Value));
+					skip();
 					break;
 
 				default:
-					Skip();
+					skip();
 					break;
 			}
 		}
 
-		ParseNewline();
+		parseNewline();
 	}
 
-	void AstBuilder::Reset()
+	void AstBuilder::reset()
 	{
-		mTokenIndex = 0;
-		mTokenSize = mLexer.GetTokens().size();
+		tokenIndex = 0;
+		tokenSize = lexer.getTokens().size();
 
-		if (mRoot)
-			delete mRoot;
+		if (rootNode)
+			delete rootNode;
 
-		mRoot = new Node(NodeType::Root);
+		rootNode = new Node(NodeType::root);
 
-		while (!mHeads.empty())
-			mHeads.pop();
+		while (!headNodes.empty())
+			headNodes.pop();
 
-		mHeads.push(mRoot);
+		headNodes.push(rootNode);
 	}
 
-	void AstBuilder::DestroyTree()
+	void AstBuilder::destroyTree()
 	{
-		TraverseAndDestroyNode(mRoot);
+		traverseAndDestroyNode(rootNode);
 	}
 
-	std::string AstBuilder::GetBuffer()
+	std::string AstBuilder::getBuffer()
 	{
-		return mLexer.GetBuffer();
+		return lexer.getBuffer();
 	}
 
-	Node* AstBuilder::GetTree()
+	Node* AstBuilder::getTree()
 	{
-		return mRoot;
+		return rootNode;
 	}
 
-	std::string AstBuilder::GetTokensAsString()
+	std::string AstBuilder::getTokensAsString()
 	{
-		return mLexer.GetTokensAsString();
+		return lexer.getTokensAsString();
 	}
 
-	std::string AstBuilder::GetTreeAsString()
+	std::string AstBuilder::getTreeAsString()
 	{
-		mBuffer.clear();
+		buffer.clear();
 
-		TraverseAndGenerateBuffer(GetTree(), 0);
+		traverseAndGenerateBuffer(getTree(), 0);
 
-		return mBuffer + "\n";
+		return buffer + "\n";
 	}
 
-	void AstBuilder::TraverseAndGenerateBuffer(Node* node, size_t depth)
+	void AstBuilder::traverseAndGenerateBuffer(Node* node, size_t depth)
 	{
 		for (size_t i = 0; i < depth; ++i)
-			mBuffer += "    ";
+			buffer += "    ";
 
-		mBuffer += node->ToString() + "\n";
+		buffer += node->toString() + "\n";
 
 		for (Node* child: node->children)
-			TraverseAndGenerateBuffer(child, depth + 1);
+			traverseAndGenerateBuffer(child, depth + 1);
 	}
 
-	void AstBuilder::TraverseAndDestroyNode(Node* node)
+	void AstBuilder::traverseAndDestroyNode(Node* node)
 	{
 		for (Node* child: node->children)
-			TraverseAndDestroyNode(child);
+			traverseAndDestroyNode(child);
 
-		if (node->group == NodeGroup::Link)
+		if (node->group == NodeGroup::link)
 		{
-			Node* packageNode = static_cast<ContainerNode*>(node)->package;
+			Node* packageNode = static_cast<ContainerNode*>(node)->value;
 			delete packageNode;
 			packageNode = nullptr;
 
@@ -226,72 +226,72 @@ namespace Gularen
 		node = nullptr;
 	}
 
-	void AstBuilder::ParseNewline(size_t newlineSize)
+	void AstBuilder::parseNewline(size_t newlineSize)
 	{
-		ParseIndentation();
+		parseIndentation();
 
-		switch (GetCurrentToken().type)
+		switch (getCurrentToken().Type)
 		{
-			case TokenType::Tail:
-				switch (GetCurrentToken().size)
+			case TokenType::tail:
+				switch (getCurrentToken().Size)
 				{
 					case 1:
-						CompareAndPopHead(NodeType::Minisection, newlineSize);
-						PushHead(new ValueNode(NodeType::Minisection, NodeGroup::Header, NodeShape::Line));
+						compareAndPopHead(NodeType::minisection, newlineSize);
+						pushHead(new ValueNode(NodeType::minisection, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 2:
-						CompareAndPopHead(NodeType::Part, newlineSize);
-						PushHead(new ValueNode(NodeType::Part, NodeGroup::Header, NodeShape::Line));
+						compareAndPopHead(NodeType::part, newlineSize);
+						pushHead(new ValueNode(NodeType::part, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 3:
-						CompareAndPopHead(NodeType::Title, newlineSize);
-						PushHead(new ValueNode(NodeType::Title, NodeGroup::Header, NodeShape::Line));
+						compareAndPopHead(NodeType::title, newlineSize);
+						pushHead(new ValueNode(NodeType::title, NodeGroup::header, NodeShape::line));
 						break;
 
 					default:
 						break;
 				}
-				Skip();
+				skip();
 				break;
 
-			case TokenType::RevTail:
-				if (GetCurrentToken().size == 2)
+			case TokenType::reverseTail:
+				if (getCurrentToken().Size == 2)
 				{
-					CompareAndPopHead(NodeType::ThematicBreak);
-					GetHead()->Add(new Node(NodeType::ThematicBreak, NodeGroup::Break, NodeShape::Line));
-					Skip();
+					compareAndPopHead(NodeType::thematicBreak);
+					getHead()->add(new Node(NodeType::thematicBreak, NodeGroup::break_, NodeShape::line));
+					skip();
 				}
-				else if (GetCurrentToken().size > 2)
+				else if (getCurrentToken().Size > 2)
 				{
-					CompareAndPopHead(NodeType::PageBreak);
-					GetHead()->Add(new Node(NodeType::PageBreak, NodeGroup::Break, NodeShape::Line));
-					Skip();
+					compareAndPopHead(NodeType::pageBreak);
+					getHead()->add(new Node(NodeType::pageBreak, NodeGroup::break_, NodeShape::line));
+					skip();
 				}
 				break;
 
-			case TokenType::Arrow:
-				switch (GetCurrentToken().size)
+			case TokenType::arrow:
+				switch (getCurrentToken().Size)
 				{
 					case 1:
-						CompareAndPopHead(NodeType::Subsubsection, newlineSize);
-						PushHead(new ValueNode(NodeType::Subsubsection, NodeGroup::Header, NodeShape::Line));
+						compareAndPopHead(NodeType::subsubsection, newlineSize);
+						pushHead(new ValueNode(NodeType::subsubsection, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 2:
-						CompareAndPopHead(NodeType::Subsection, newlineSize);
-						PushHead(new ValueNode(NodeType::Subsection, NodeGroup::Header, NodeShape::Line));
+						compareAndPopHead(NodeType::subsection, newlineSize);
+						pushHead(new ValueNode(NodeType::subsection, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 3:
-						CompareAndPopHead(NodeType::Section, newlineSize);
-						PushHead(new ValueNode(NodeType::Section, NodeGroup::Header, NodeShape::Line));
+						compareAndPopHead(NodeType::section, newlineSize);
+						pushHead(new ValueNode(NodeType::section, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 4:
-						CompareAndPopHead(NodeType::Chapter, newlineSize);
-						PushHead(new ValueNode(NodeType::Chapter, NodeGroup::Header, NodeShape::Line));
+						compareAndPopHead(NodeType::chapter, newlineSize);
+						pushHead(new ValueNode(NodeType::chapter, NodeGroup::header, NodeShape::line));
 						break;
 
 					default:
@@ -300,229 +300,229 @@ namespace Gularen
 
 				break;
 
-			case TokenType::Bullet:
-				CompareAndPopHead(NodeType::List);
+			case TokenType::bullet:
+				compareAndPopHead(NodeType::list);
 
-				if (GetHead()->type != NodeType::List)
-					PushHead(new Node(NodeType::List, NodeGroup::List, NodeShape::Block));
+				if (getHead()->type != NodeType::list)
+					pushHead(new Node(NodeType::list, NodeGroup::list, NodeShape::block));
 
-				PushHead(new Node(NodeType::Item, NodeGroup::Item, NodeShape::Block));
-				Skip();
+				pushHead(new Node(NodeType::item, NodeGroup::item, NodeShape::block));
+				skip();
 				break;
 
-			case TokenType::NBullet:
-				CompareAndPopHead(NodeType::NList);
+			case TokenType::numericBullet:
+				compareAndPopHead(NodeType::numericList);
 
-				if (GetHead()->type != NodeType::NList)
-					PushHead(new Node(NodeType::NList, NodeGroup::List, NodeShape::Block));
+				if (getHead()->type != NodeType::numericList)
+					pushHead(new Node(NodeType::numericList, NodeGroup::list, NodeShape::block));
 
-				PushHead(new Node(NodeType::Item, NodeGroup::Item, NodeShape::Block));
-				Skip();
+				pushHead(new Node(NodeType::item, NodeGroup::item, NodeShape::block));
+				skip();
 				break;
 
-			case TokenType::CheckBox:
-				CompareAndPopHead(NodeType::CheckList);
+			case TokenType::checkBox:
+				compareAndPopHead(NodeType::checkList);
 
-				if (GetHead()->type != NodeType::CheckList)
-					PushHead(new Node(NodeType::CheckList, NodeGroup::List, NodeShape::Block));
+				if (getHead()->type != NodeType::checkList)
+					pushHead(new Node(NodeType::checkList, NodeGroup::list, NodeShape::block));
 
-				PushHead(new TernaryNode(NodeType::CheckItem, NodeGroup::Item, NodeShape::Block,
-						static_cast<TernaryState>(GetCurrentToken().size)));
-				Skip();
+				pushHead(new TernaryNode(NodeType::checkItem, NodeGroup::item, NodeShape::block,
+					static_cast<TernaryState>(getCurrentToken().Size)));
+				skip();
 				break;
 
-			case TokenType::Dollar:
-				Skip();
-				ParseBlock(GetCurrentToken().type);
+			case TokenType::dollar:
+				skip();
+				parseBlock(getCurrentToken().Type);
 				break;
 
-			case TokenType::Line:
-				while (mHeads.size() > 1 && mHeads.top()->shape != NodeShape::Block)
-					mHeads.pop();
+			case TokenType::line:
+				while (headNodes.size() > 1 && headNodes.top()->shape != NodeShape::block)
+					headNodes.pop();
 
-				PopHead();
-				Skip();
+				popHead();
+				skip();
 				break;
 
 			default:
-				if (GetHead()->group != NodeGroup::Table)
+				if (getHead()->group != NodeGroup::table)
 				{
-					CompareAndPopHead(NodeType::Paragraph, newlineSize);
+					compareAndPopHead(NodeType::paragraph, newlineSize);
 
-					if (GetHead()->type != NodeType::Paragraph)
-						PushHead(new Node(NodeType::Paragraph));
+					if (getHead()->type != NodeType::paragraph)
+						pushHead(new Node(NodeType::paragraph));
 					else
-						GetHead()->Add(new Node(NodeType::Newline));
+						getHead()->add(new Node(NodeType::newline));
 				}
 				else
 				{
-					CompareAndPopHead(NodeType::Table);
-					PushHead(new Node(NodeType::TableRow, NodeGroup::Table, NodeShape::Line));
-					PushHead(new Node(NodeType::TableColumn, NodeGroup::Table, NodeShape::Line));
+					compareAndPopHead(NodeType::table);
+					pushHead(new Node(NodeType::tableRow, NodeGroup::table, NodeShape::line));
+					pushHead(new Node(NodeType::tableColumn, NodeGroup::table, NodeShape::line));
 				}
 				break;
 		}
 	}
 
-	void AstBuilder::ParseIndentation()
+	void AstBuilder::parseIndentation()
 	{
 		size_t currentDepth = 0;
 
-		if (GetCurrentToken().type == TokenType::Space)
+		if (getCurrentToken().Type == TokenType::space)
 		{
-			currentDepth = GetCurrentToken().size / 4;
-			Skip();
+			currentDepth = getCurrentToken().Size / 4;
+			skip();
 		}
 
-		if (currentDepth > mDepth)
+		if (currentDepth > depth)
 		{
-			size_t distance = currentDepth - mDepth - 1;
+			size_t distance = currentDepth - depth - 1;
 			for (size_t i = 0; i < distance; ++i)
-				PushHead(new Node(NodeType::Indent, NodeGroup::Wrapper, NodeShape::SuperBlock));
+				pushHead(new Node(NodeType::indent, NodeGroup::container, NodeShape::superBlock));
 
-			PushHead(new Node(
-					GetHead()->group != NodeGroup::Item ? NodeType::Indent : NodeType::Wrapper,
-					NodeGroup::Wrapper,
-					NodeShape::SuperBlock));
+			pushHead(new Node(
+				getHead()->group != NodeGroup::item ? NodeType::indent : NodeType::wrapper,
+				NodeGroup::container,
+				NodeShape::superBlock));
 		}
-		else if (currentDepth < mDepth)
+		else if (currentDepth < depth)
 		{
-			size_t distance = mDepth - currentDepth;
+			size_t distance = depth - currentDepth;
 			size_t i = 0;
 			while (i < distance)
 			{
-				if (GetHead()->type == NodeType::Root)
+				if (getHead()->type == NodeType::root)
 					break;
 
-				if (GetHead()->shape == NodeShape::SuperBlock)
+				if (getHead()->shape == NodeShape::superBlock)
 					++i;
 
-				PopHead();
+				popHead();
 			}
 		}
 
-		mDepth = currentDepth;
+		depth = currentDepth;
 	}
 
-	void AstBuilder::ParseBreak()
+	void AstBuilder::parseBreak()
 	{
-		switch (GetCurrentToken().size)
+		switch (getCurrentToken().Size)
 		{
 			case 1:
-				GetHead()->Add(new Node(NodeType::LineBreak, NodeGroup::Break));
+				getHead()->add(new Node(NodeType::lineBreak, NodeGroup::break_));
 				break;
 			case 2:
-				GetHead()->Add(new Node(NodeType::ThematicBreak, NodeGroup::Break));
+				getHead()->add(new Node(NodeType::thematicBreak, NodeGroup::break_));
 				break;
 			case 3:
-				GetHead()->Add(new Node(NodeType::PageBreak, NodeGroup::Break));
+				getHead()->add(new Node(NodeType::pageBreak, NodeGroup::break_));
 				break;
 		}
-		Skip();
+		skip();
 	}
 
-	void AstBuilder::ParseLink(NodeType type)
+	void AstBuilder::parseLink(NodeType type)
 	{
-		ContainerNode* container = new ContainerNode(type, NodeGroup::Link);
+		ContainerNode* container = new ContainerNode(type, NodeGroup::link);
 		ValueNode* node = new ValueNode();
-		Skip();
+		skip();
 
-		if (GetCurrentToken().type == TokenType::QuotedText)
+		if (getCurrentToken().Type == TokenType::quotedText)
 		{
-			node->type = NodeType::QuotedText;
-			node->value = GetCurrentToken().value;
-			Skip();
+			node->type = NodeType::quotedText;
+			node->value = getCurrentToken().Value;
+			skip();
 		}
-		else if (GetCurrentToken().type == TokenType::Symbol)
+		else if (getCurrentToken().Type == TokenType::symbol)
 		{
-			node->type = NodeType::Symbol;
-			node->value = GetCurrentToken().value;
-			Skip();
+			node->type = NodeType::symbol;
+			node->value = getCurrentToken().Value;
+			skip();
 		}
-		container->package = node;
+		container->value = node;
 
-		if (GetCurrentToken().type == TokenType::LCurlyBracket)
+		if (getCurrentToken().Type == TokenType::leftCurlyBracket)
 		{
-			PushHead(container);
-			PushHead(new Node(NodeType::Wrapper));
-			Skip();
+			pushHead(container);
+			pushHead(new Node(NodeType::wrapper));
+			skip();
 		}
 		else
-			PushHead(container);
+			pushHead(container);
 	}
 
-	void AstBuilder::ParseBlock(TokenType type)
+	void AstBuilder::parseBlock(TokenType type)
 	{
 		switch (type)
 		{
-			case TokenType::KwTable:
-				CompareAndPopHead(NodeType::Table);
+			case TokenType::keywordTable:
+				compareAndPopHead(NodeType::table);
 
-				while (IsValid() && GetCurrentToken().type != TokenType::Line)
+				while (isValid() && getCurrentToken().Type != TokenType::line)
 				{
-					Skip();
+					skip();
 				}
-				PushHead(new TableNode());
+				pushHead(new TableNode());
 				break;
 
-			case TokenType::KwCode:
+			case TokenType::keywordCode:
 			{
-				CompareAndPopHead(NodeType::Code);
+				compareAndPopHead(NodeType::code);
 
 				CodeNode* codeNode = new CodeNode();
-				GetHead()->Add(codeNode);
-				Skip();
-				if (GetCurrentToken().type == TokenType::QuotedText)
+				getHead()->add(codeNode);
+				skip();
+				if (getCurrentToken().Type == TokenType::quotedText)
 				{
-					codeNode->lang = new ValueNode(NodeType::QuotedText, NodeGroup::Text, NodeShape::Block,
-							GetCurrentToken().value);
-					Skip();
+					codeNode->langCode = new ValueNode(NodeType::quotedText, NodeGroup::text, NodeShape::block,
+						getCurrentToken().Value);
+					skip();
 				}
 
-				// Skip indentations
-				if (GetCurrentToken().type == TokenType::Newline)
-					Skip();
-				if (GetCurrentToken().type == TokenType::Space)
-					Skip();
+				// skip indentations
+				if (getCurrentToken().Type == TokenType::newline)
+					skip();
+				if (getCurrentToken().Type == TokenType::space)
+					skip();
 
-				if (GetCurrentToken().type == TokenType::Line &&
-						GetNextToken(1).type == TokenType::RawText &&
-						GetNextToken(2).type == TokenType::Line)
+				if (getCurrentToken().Type == TokenType::line &&
+					getNextToken(1).Type == TokenType::rawText &&
+					getNextToken(2).Type == TokenType::line)
 				{
-					codeNode->value = GetNextToken(1).value;
-					Skip(3);
+					codeNode->value = getNextToken(1).Value;
+					skip(3);
 				}
 				break;
 			}
 
-			case TokenType::KwToc:
-				while (IsValid() && GetCurrentToken().type != TokenType::Newline)
-					Skip();
-				GetHead()->Add(new Node(NodeType::Toc, NodeGroup::Unknown, NodeShape::Line));
+			case TokenType::KeywordToc:
+				while (isValid() && getCurrentToken().Type != TokenType::newline)
+					skip();
+				getHead()->add(new Node(NodeType::toc, NodeGroup::unknown, NodeShape::line));
 				break;
 
-			case TokenType::KwFile:
-				while (IsValid() && GetCurrentToken().type != TokenType::Newline)
-					Skip();
-				GetHead()->Add(new Node(NodeType::File, NodeGroup::Unknown, NodeShape::Line));
+			case TokenType::KeywordFile:
+				while (isValid() && getCurrentToken().Type != TokenType::newline)
+					skip();
+				getHead()->add(new Node(NodeType::file, NodeGroup::unknown, NodeShape::line));
 				break;
 
-			case TokenType::KwImage:
-				while (IsValid() && GetCurrentToken().type != TokenType::Newline)
-					Skip();
-				GetHead()->Add(new Node(NodeType::Image, NodeGroup::Unknown, NodeShape::Line));
+			case TokenType::keywordImage:
+				while (isValid() && getCurrentToken().Type != TokenType::newline)
+					skip();
+				getHead()->add(new Node(NodeType::image, NodeGroup::unknown, NodeShape::line));
 				break;
 
-			case TokenType::KwAdmon:
-				while (IsValid() && GetCurrentToken().type != TokenType::Line)
-					Skip();
-				GetHead()->Add(new Node(NodeType::Admon, NodeGroup::Unknown, NodeShape::Block));
+			case TokenType::KeywordBlock:
+				while (isValid() && getCurrentToken().Type != TokenType::line)
+					skip();
+				getHead()->add(new Node(NodeType::block, NodeGroup::unknown, NodeShape::block));
 				break;
 
-//        case TokenType::Symbol:
-//            while (IsValid() && GetCurrentToken().type != TokenType::Line)
-//                Skip();
-//            GetHead()->Add(new Node(NodeType::Assignment, NodeGroup::Unknown, NodeShape::Line));
+//        case TokenType::symbol:
+//            while (isValid() && getCurrentToken().type != TokenType::Line)
+//                skip();
+//            getHead()->Add(new Node(NodeType::assignment, NodeGroup::unknown, NodeShape::Line));
 //            break;
 
 			default:
@@ -530,75 +530,75 @@ namespace Gularen
 		}
 	}
 
-	Node* AstBuilder::GetHead()
+	Node* AstBuilder::getHead()
 	{
-		return mHeads.top();
+		return headNodes.top();
 	}
 
-	void AstBuilder::PushHead(Node* node)
+	void AstBuilder::pushHead(Node* node)
 	{
-		GetHead()->Add(node);
-		mHeads.push(node);
+		getHead()->add(node);
+		headNodes.push(node);
 	}
 
-	void AstBuilder::CompareAndPopHead(NodeType type)
+	void AstBuilder::compareAndPopHead(NodeType type)
 	{
-		if (mHeads.size() > 1)
+		if (headNodes.size() > 1)
 		{
-			if (mHeads.top()->type != type)
-				while (mHeads.size() > 1 && mHeads.top()->type != type && mHeads.top()->shape != NodeShape::SuperBlock)
-					mHeads.pop();
-			else if (mHeads.top()->shape == NodeShape::Line)
-				mHeads.pop();
+			if (headNodes.top()->type != type)
+				while (headNodes.size() > 1 && headNodes.top()->type != type && headNodes.top()->shape != NodeShape::superBlock)
+					headNodes.pop();
+			else if (headNodes.top()->shape == NodeShape::line)
+				headNodes.pop();
 		}
 	}
 
-	void AstBuilder::CompareAndPopHead(NodeType type, size_t newlineSize)
+	void AstBuilder::compareAndPopHead(NodeType type, size_t newlineSize)
 	{
-		if (mHeads.size() > 1)
+		if (headNodes.size() > 1)
 		{
-			if (mHeads.top()->type != type)
-				while (mHeads.size() > 1 && mHeads.top()->type != type && mHeads.top()->shape != NodeShape::SuperBlock)
-					mHeads.pop();
-			else if (newlineSize > 1 || mHeads.top()->shape == NodeShape::Line)
-				mHeads.pop();
+			if (headNodes.top()->type != type)
+				while (headNodes.size() > 1 && headNodes.top()->type != type && headNodes.top()->shape != NodeShape::superBlock)
+					headNodes.pop();
+			else if (newlineSize > 1 || headNodes.top()->shape == NodeShape::line)
+				headNodes.pop();
 		}
 
 	}
 
-	void AstBuilder::PopHead()
+	void AstBuilder::popHead()
 	{
-		if (mHeads.size() > 1)
-			mHeads.pop();
+		if (headNodes.size() > 1)
+			headNodes.pop();
 	}
 
-	void AstBuilder::PairFHead(NodeType type)
+	void AstBuilder::pairFormatHead(NodeType type)
 	{
-		if (GetHead()->type == type)
-			PopHead();
+		if (getHead()->type == type)
+			popHead();
 		else
-			PushHead(new Node(type));
+			pushHead(new Node(type));
 
-		Skip();
+		skip();
 	}
 
-	bool AstBuilder::IsValid()
+	bool AstBuilder::isValid()
 	{
-		return mTokenIndex < mTokenSize;
+		return tokenIndex < tokenSize;
 	}
 
-	Token& AstBuilder::GetCurrentToken()
+	Token& AstBuilder::getCurrentToken()
 	{
-		return mLexer.GetToken(mTokenIndex);
+		return lexer.getTokenAt(tokenIndex);
 	}
 
-	Token& AstBuilder::GetNextToken(size_t offset)
+	Token& AstBuilder::getNextToken(size_t offset)
 	{
-		return mTokenIndex + offset < mTokenSize ? mLexer.GetToken(mTokenIndex + offset) : mEmptyToken;
+		return tokenIndex + offset < tokenSize ? lexer.getTokenAt(tokenIndex + offset) : emptyToken;
 	}
 
-	void AstBuilder::Skip(size_t offset)
+	void AstBuilder::skip(size_t offset)
 	{
-		mTokenIndex += offset;
+		tokenIndex += offset;
 	}
 }

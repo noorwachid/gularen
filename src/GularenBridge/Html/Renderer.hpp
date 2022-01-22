@@ -23,31 +23,31 @@ namespace GularenBridge
 		public:
 			Renderer();
 
-			void SetTree(Node* tree) override;
+			void setTree(Node* tree) override;
 
-			void Parse() override;
+			void parse() override;
 
-			std::string GetBuffer() override;
+			std::string getBuffer() override;
 
-			std::string GetContentBuffer();
+			std::string getContentBuffer();
 
-			void SetStyle(const std::string& style);
-
-		private:
-			void Traverse(Node* node);
-
-			void PreTraverse(Node* node);
-
-			void PostTraverse(Node* node);
-
-			std::string EscapeBuffer(const std::string& buffer);
+			void setStyle(const std::string& style);
 
 		private:
-			Node* mTree;
-			std::string mBuffer;
-			std::string mTitleBuffer;
-			std::string mStyleBuffer;
-			bool mInTitle;
+			void traverse(Node* node);
+
+			void preTraverse(Node* node);
+
+			void postTraverse(Node* node);
+
+			std::string escapeBuffer(const std::string& buffer);
+
+		private:
+			Node* rootNode;
+			std::string buffer;
+			std::string titleBuffer;
+			std::string styleBuffer;
+			bool inTitle;
 		};
 	}
 }

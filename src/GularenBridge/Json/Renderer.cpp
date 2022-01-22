@@ -9,96 +9,96 @@ namespace GularenBridge
 		{
 		}
 
-		void Renderer::SetTree(Node* tree)
+		void Renderer::setTree(Node* tree)
 		{
-			this->mTree = tree;
-			mBuffer.clear();
+			this->rootNode = tree;
+			buffer.clear();
 		}
 
-		void Renderer::Parse()
+		void Renderer::parse()
 		{
-			Traverse(mTree);
+			traverse(rootNode);
 		}
 
-		std::string Renderer::GetBuffer()
+		std::string Renderer::getBuffer()
 		{
-			return mBuffer;
+			return buffer;
 		}
 
-		void Renderer::Traverse(Node* node)
+		void Renderer::traverse(Node* node)
 		{
-			PreTraverse(node);
+			preTraverse(node);
 
 			for (size_t i = 0; i < node->children.size(); ++i)
 			{
 				if (i > 0)
-					mBuffer += ",";
-				Traverse(node->children[i]);
+					buffer += ",";
+				traverse(node->children[i]);
 			}
 
-			PostTraverse(node);
+			postTraverse(node);
 		}
 
-		void Renderer::PreTraverse(Node* node)
+		void Renderer::preTraverse(Node* node)
 		{
-			mBuffer += "{\"type\":\"" + Gularen::ToString(node->type) + "\"";
+			buffer += "{\"type\":\"" + Gularen::toString(node->type) + "\"";
 
 			switch (node->type)
 			{
-				case NodeType::Text:
-				case NodeType::InlineCode:
-					mBuffer += ",\"value\":\"" + EscapeBuffer(static_cast<ValueNode*>(node)->value) + "\"}";
+				case NodeType::text:
+				case NodeType::inlineCode:
+					buffer += ",\"value\":\"" + escapeBuffer(static_cast<ValueNode*>(node)->value) + "\"}";
 					break;
 
-				case NodeType::Paragraph:
-				case NodeType::Indent:
-				case NodeType::Wrapper:
-				case NodeType::FBold:
-				case NodeType::FItalic:
-				case NodeType::FMonospace:
-				case NodeType::Root:
-					mBuffer += ",\"children\":[";
+				case NodeType::paragraph:
+				case NodeType::indent:
+				case NodeType::wrapper:
+				case NodeType::formatBold:
+				case NodeType::formatItalic:
+				case NodeType::formatMonospace:
+				case NodeType::root:
+					buffer += ",\"children\":[";
 					break;
 
-				case NodeType::LineBreak:
-				case NodeType::ThematicBreak:
-				case NodeType::PageBreak:
-					mBuffer += "}";
+				case NodeType::lineBreak:
+				case NodeType::thematicBreak:
+				case NodeType::pageBreak:
+					buffer += "}";
 					break;
 
-				case NodeType::Newline:
-					mBuffer += ",\"size\":" + std::to_string(static_cast<SizeNode*>(node)->size) + "}";
+				case NodeType::newline:
+					buffer += ",\"size\":" + std::to_string(static_cast<SizeNode*>(node)->size) + "}";
 					break;
 
-				case NodeType::Title:
-				case NodeType::Part:
-				case NodeType::Chapter:
-				case NodeType::Section:
-				case NodeType::Subsection:
-				case NodeType::Subsubsection:
-				case NodeType::Minisection:
-				case NodeType::List:
-				case NodeType::NList:
-				case NodeType::CheckList:
-				case NodeType::Item:
-				case NodeType::CheckItem:
-				case NodeType::Table:
-				case NodeType::TableRow:
-				case NodeType::TableColumn:
-					mBuffer += ",\"children\":[";
+				case NodeType::title:
+				case NodeType::part:
+				case NodeType::chapter:
+				case NodeType::section:
+				case NodeType::subsection:
+				case NodeType::subsubsection:
+				case NodeType::minisection:
+				case NodeType::list:
+				case NodeType::numericList:
+				case NodeType::checkList:
+				case NodeType::item:
+				case NodeType::checkItem:
+				case NodeType::table:
+				case NodeType::tableRow:
+				case NodeType::tableColumn:
+					buffer += ",\"children\":[";
 					break;
 
-				case NodeType::Code:
+				case NodeType::code:
 				{
 					CodeNode* code = static_cast<CodeNode*>(node);
-					if (code->lang)
-						mBuffer += ",\"lang\":\"" + static_cast<ValueNode*>(code->lang)->value + "\"";
-					mBuffer += ",\"mBuffer\":\"" + EscapeBuffer(code->value) + "\"";
-					mBuffer += "}";
+					if (code->langCode)
+						buffer += ",\"langCode\":\"" + static_cast<ValueNode*>(code->langCode)->value + "\"";
+					buffer += ",\"buffer\":\"" + escapeBuffer(code->value) + "\"";
+					buffer += "}";
 					break;
 				}
 
-				case NodeType::Link:
+				case NodeType::link:
 					break;
 
 				default:
@@ -106,33 +106,33 @@ namespace GularenBridge
 			}
 		}
 
-		void Renderer::PostTraverse(Gularen::Node* node)
+		void Renderer::postTraverse(Gularen::Node* node)
 		{
 			switch (node->type)
 			{
-				case NodeType::Paragraph:
-				case NodeType::Indent:
-				case NodeType::Wrapper:
-				case NodeType::FBold:
-				case NodeType::FItalic:
-				case NodeType::FMonospace:
-				case NodeType::Root:
-				case NodeType::Title:
-				case NodeType::Part:
-				case NodeType::Chapter:
-				case NodeType::Section:
-				case NodeType::Subsection:
-				case NodeType::Subsubsection:
-				case NodeType::Minisection:
-				case NodeType::List:
-				case NodeType::NList:
-				case NodeType::CheckList:
-				case NodeType::Item:
-				case NodeType::CheckItem:
-				case NodeType::Table:
-				case NodeType::TableRow:
-				case NodeType::TableColumn:
-					mBuffer += "]}";
+				case NodeType::paragraph:
+				case NodeType::indent:
+				case NodeType::wrapper:
+				case NodeType::formatBold:
+				case NodeType::formatItalic:
+				case NodeType::formatMonospace:
+				case NodeType::root:
+				case NodeType::title:
+				case NodeType::part:
+				case NodeType::chapter:
+				case NodeType::section:
+				case NodeType::subsection:
+				case NodeType::subsubsection:
+				case NodeType::minisection:
+				case NodeType::list:
+				case NodeType::numericList:
+				case NodeType::checkList:
+				case NodeType::item:
+				case NodeType::checkItem:
+				case NodeType::table:
+				case NodeType::tableRow:
+				case NodeType::tableColumn:
+					buffer += "]}";
 					break;
 
 				default:
@@ -140,7 +140,7 @@ namespace GularenBridge
 			}
 		}
 
-		std::string Renderer::EscapeBuffer(const std::string& buffer)
+		std::string Renderer::escapeBuffer(const std::string& buffer)
 		{
 			std::string out;
 

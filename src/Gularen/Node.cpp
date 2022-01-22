@@ -3,16 +3,16 @@
 namespace Gularen
 {
 	Node::Node() :
-			type(NodeType::Unknown),
-			group(NodeGroup::Unknown),
-			shape(NodeShape::Unknown)
+		type(NodeType::unknown),
+		group(NodeGroup::unknown),
+		shape(NodeShape::unknown)
 	{
 	}
 
 	Node::Node(NodeType type, NodeGroup group, NodeShape shape) :
-			type(type),
-			group(group),
-			shape(shape)
+		type(type),
+		group(group),
+		shape(shape)
 	{
 	}
 
@@ -20,14 +20,14 @@ namespace Gularen
 	{
 	}
 
-	void Node::Add(Node* node)
+	void Node::add(Node* node)
 	{
 		children.push_back(node);
 	}
 
-	std::string Node::ToString()
+	std::string Node::toString()
 	{
-		return Gularen::ToString(type) + ":";
+		return Gularen::toString(type) + ":";
 	}
 
 	ValueNode::ValueNode() :
@@ -36,14 +36,14 @@ namespace Gularen
 	}
 
 	ValueNode::ValueNode(NodeType type, NodeGroup group, NodeShape shape, const std::string& value) :
-			Node(type, group, shape),
-			value(value)
+		Node(type, group, shape),
+		value(value)
 	{
 	}
 
-	std::string ValueNode::ToString()
+	std::string ValueNode::toString()
 	{
-		return Gularen::ToString(type) + ": \"" + value + "\"";;
+		return Gularen::toString(type) + ": \"" + value + "\"";;
 	}
 
 	SizeNode::SizeNode() :
@@ -52,59 +52,59 @@ namespace Gularen
 	}
 
 	SizeNode::SizeNode(NodeType type, NodeGroup group, NodeShape shape, const size_t size) :
-			Node(type, group, shape),
-			size(size)
+		Node(type, group, shape),
+		size(size)
 	{
 	}
 
-	std::string SizeNode::ToString()
+	std::string SizeNode::toString()
 	{
-		return Gularen::ToString(type) + ": " + std::to_string(size);
+		return Gularen::toString(type) + ": " + std::to_string(size);
 	}
 
 	BooleanNode::BooleanNode() :
-			Node(NodeType::Unknown),
-			state(false)
+		Node(NodeType::unknown),
+		state(false)
 	{
 	}
 
 	BooleanNode::BooleanNode(NodeType type, NodeGroup group, NodeShape shape, bool state) :
-			Node(type, group, shape),
-			state(state)
+		Node(type, group, shape),
+		state(state)
 	{
 	}
 
-	std::string BooleanNode::ToString()
+	std::string BooleanNode::toString()
 	{
-		return Gularen::ToString(type) + ": " + (state ? "True" : "False");
+		return Gularen::toString(type) + ": " + (state ? "on" : "off");
 	}
 
 	TernaryNode::TernaryNode() :
-			Node(),
-			state(TernaryState::False)
+		Node(),
+		state(TernaryState::off)
 	{
 	}
 
 	TernaryNode::TernaryNode(NodeType type, NodeGroup group, NodeShape shape, TernaryState state) :
-			Node(type, group, shape),
-			state(state)
+		Node(type, group, shape),
+		state(state)
 	{
 	}
 
-	std::string TernaryNode::ToString()
+	std::string TernaryNode::toString()
 	{
-		std::string buffer = Gularen::ToString(type) + ": ";
+		std::string buffer = Gularen::toString(type) + ": ";
 
 		switch (state)
 		{
-			case TernaryState::False:
-				buffer += "False";
+			case TernaryState::off:
+				buffer += "off";
 				break;
-			case TernaryState::True:
-				buffer += "True";
+			case TernaryState::on:
+				buffer += "on";
 				break;
 			default:
-				buffer += "InBetween";
+				buffer += "inBetween";
 				break;
 		}
 
@@ -112,58 +112,58 @@ namespace Gularen
 	}
 
 	ContainerNode::ContainerNode() :
-			Node(),
-			package(nullptr)
+		Node(),
+		value(nullptr)
 	{
 	}
 
 	ContainerNode::ContainerNode(NodeType type, NodeGroup group, NodeShape shape, Node* node) :
-			Node(type, group, shape),
-			package(node)
+		Node(type, group, shape),
+		value(node)
 	{
 	}
 
-	std::string ContainerNode::ToString()
+	std::string ContainerNode::toString()
 	{
-		std::string buffer = Gularen::ToString(type) + ": ";
-		if (package)
+		std::string buffer = Gularen::toString(type) + ": ";
+		if (value)
 		{
-			if (package->type == NodeType::Symbol)
-				buffer += "%" + static_cast<ValueNode*>(package)->value;
+			if (value->type == NodeType::symbol)
+				buffer += "%" + static_cast<ValueNode*>(value)->value;
 
-			if (package->type == NodeType::QuotedText)
-				buffer += "\"" + static_cast<ValueNode*>(package)->value + "\"";
+			if (value->type == NodeType::quotedText)
+				buffer += "\"" + static_cast<ValueNode*>(value)->value + "\"";
 		}
 		return buffer;
 	}
 
 	TableNode::TableNode() :
-			Node(NodeType::Table, NodeGroup::Table, NodeShape::Block)
+			Node(NodeType::table, NodeGroup::table, NodeShape::block)
 	{
 	}
 
 	CodeNode::CodeNode() :
-			Node(NodeType::Code, NodeGroup::Code, NodeShape::Block)
+			Node(NodeType::code, NodeGroup::code, NodeShape::block)
 	{
 	}
 
 	CodeNode::CodeNode(const std::string& value, Node* lang) :
-			Node(NodeType::Code, NodeGroup::Code, NodeShape::Block),
-			value(value),
-			lang(lang)
+		Node(NodeType::code, NodeGroup::code, NodeShape::block),
+		value(value),
+		langCode(lang)
 	{
 	}
 
-	std::string CodeNode::ToString()
+	std::string CodeNode::toString()
 	{
-		std::string buffer = Gularen::ToString(type) + ": ";
-		if (lang)
+		std::string buffer = Gularen::toString(type) + ": ";
+		if (langCode)
 		{
-			if (lang->type == NodeType::Symbol)
-				buffer += "%" + static_cast<ValueNode*>(lang)->value + " ";
+			if (langCode->type == NodeType::symbol)
+				buffer += "%" + static_cast<ValueNode*>(langCode)->value + " ";
 
-			if (lang->type == NodeType::QuotedText)
-				buffer += "\"" + static_cast<ValueNode*>(lang)->value + "\" ";
+			if (langCode->type == NodeType::quotedText)
+				buffer += "\"" + static_cast<ValueNode*>(langCode)->value + "\" ";
 		}
 		return buffer + "\"" + value + "\"";
 	}

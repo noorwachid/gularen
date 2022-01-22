@@ -2,99 +2,101 @@
 
 namespace Gularen
 {
-	std::string ToString(TokenType type)
+	std::string toString(TokenType type)
 	{
 		switch (type)
 		{
-			case TokenType::Unknown:
-				return "Unknown";
+			case TokenType::unknown:
+				return "unknown";
 
-			case TokenType::DocumentBegin:
-				return "DocumentBegin";
-			case TokenType::DocumentEnd:
-				return "DocumentEnd";
+			case TokenType::documentBegin:
+				return "documentBegin";
+			case TokenType::documentEnd:
+				return "documentEnd";
 
-			case TokenType::HashSymbol:
-				return "HashSymbol";
-			case TokenType::AtSymbol:
-				return "AtSymbol";
-			case TokenType::Symbol:
-				return "Symbol";
-			case TokenType::Text:
-				return "Text";
-			case TokenType::QuotedText:
-				return "QuotedText";
-			case TokenType::RawText:
-				return "RawText";
+			case TokenType::hashSymbol:
+				return "hashSymbol";
+			case TokenType::atSymbol:
+				return "atSymbol";
+			case TokenType::symbol:
+				return "symbol";
+			case TokenType::text:
+				return "text";
+			case TokenType::quotedText:
+				return "quotedText";
+			case TokenType::rawText:
+				return "rawText";
 
-			case TokenType::KwImage:
-				return "KwImage";
-			case TokenType::KwFile:
-				return "KwFile";
-			case TokenType::KwTable:
-				return "KwTable";
-			case TokenType::KwCode:
-				return "KwCode";
-			case TokenType::KwAdmon:
-				return "KwAdmon";
-			case TokenType::KwToc:
-				return "KwToc";
+			case TokenType::keywordImage:
+				return "keywordImage";
+			case TokenType::KeywordFile:
+				return "KeywordFile";
+			case TokenType::keywordTable:
+				return "keywordTable";
+			case TokenType::keywordCode:
+				return "keywordCode";
+			case TokenType::KeywordBlock:
+				return "KeywordBlock";
+			case TokenType::KeywordToc:
+				return "KeywordToc";
+			case TokenType::KeywordRef:
+				return "KeywordRef";
 
-			case TokenType::Asterisk:
-				return "Asterisk";
-			case TokenType::Underline:
-				return "Underline";
-			case TokenType::Backtick:
-				return "Backtick";
+			case TokenType::asterisk:
+				return "asterisk";
+			case TokenType::underline:
+				return "underline";
+			case TokenType::backtick:
+				return "backtick";
 
-			case TokenType::Newline:
-				return "Newline";
-			case TokenType::Space:
-				return "Space";
+			case TokenType::newline:
+				return "newline";
+			case TokenType::space:
+				return "space";
 
-			case TokenType::Equal:
-				return "Equal";
-			case TokenType::Colon:
-				return "Colon";
-			case TokenType::Pipe:
-				return "Pipe";
-			case TokenType::QuestionMark:
-				return "QuestionMark";
-			case TokenType::ExclamationMark:
-				return "ExclamationMark";
+			case TokenType::equal:
+				return "equal";
+			case TokenType::colon:
+				return "colon";
+			case TokenType::pipe:
+				return "pipe";
+			case TokenType::questionMark:
+				return "questionMark";
+			case TokenType::exclamationMark:
+				return "exclamationMark";
 
-			case TokenType::LCurlyBracket:
-				return "LCurlyBracket";
-			case TokenType::RCurlyBracket:
-				return "RCurlyBracket";
+			case TokenType::leftCurlyBracket:
+				return "leftCurlyBracket";
+			case TokenType::rightCurlyBracket:
+				return "rightCurlyBracket";
 
-			case TokenType::Dollar:
-				return "Dollar";
+			case TokenType::dollar:
+				return "dollar";
 
-			case TokenType::Bullet:
+			case TokenType::bullet:
 				return "Bullet";
-			case TokenType::NBullet:
-				return "NBullet";
-			case TokenType::CheckBox:
-				return "CheckBox";
-			case TokenType::Line:
+			case TokenType::numericBullet:
+				return "numericBullet";
+			case TokenType::checkBox:
+				return "checkBox";
+			case TokenType::line:
 				return "Line";
 
-			case TokenType::Anchor:
-				return "Anchor";
+			case TokenType::anchor:
+				return "anchor";
 
-			case TokenType::Tail:
-				return "Tail";
-			case TokenType::RevTail:
-				return "RevTail";
-			case TokenType::Arrow:
-				return "Arrow";
+			case TokenType::tail:
+				return "tail";
+			case TokenType::reverseTail:
+				return "reverseTail";
+			case TokenType::arrow:
+				return "arrow";
 
-			case TokenType::Teeth:
-				return "Teeth";
+			case TokenType::teeth:
+				return "teeth";
 
 			default:
-				return "[Unhandled]";
+				return "[unhandled]";
 		}
 	}
 }

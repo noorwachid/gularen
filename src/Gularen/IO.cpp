@@ -8,7 +8,7 @@ namespace Gularen
 {
 	namespace IO
 	{
-		std::string Read()
+		std::string read()
 		{
 			std::string buffer;
 			std::array<char, 1024 * 2> bytes;
@@ -23,7 +23,7 @@ namespace Gularen
 			return buffer;
 		}
 
-		std::string ReadLine()
+		std::string readLine()
 		{
 			std::string buffer;
 			std::getline(std::cin, buffer);
@@ -31,7 +31,7 @@ namespace Gularen
 			return buffer;
 		}
 
-		std::string ReadFile(const std::string& path)
+		std::string readFile(const std::string& path)
 		{
 			std::ifstream fileStream(path);
 			std::stringstream bufferStream;
@@ -41,18 +41,18 @@ namespace Gularen
 			return bufferStream.str();
 		}
 
-		void WriteFile(const std::string& path, const std::string& buffer)
+		void writeFile(const std::string& path, const std::string& buffer)
 		{
 			std::ofstream fileStream(path);
 			fileStream << buffer;
 		}
 
-		void Write(const std::string& buffer)
+		void write(const std::string& buffer)
 		{
 			std::cout << buffer;
 		}
 
-		void WriteLine(const std::string& buffer)
+		void writeLine(const std::string& buffer)
 		{
 			std::cout << buffer << "\r\n";
 		}

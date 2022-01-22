@@ -6,17 +6,17 @@ namespace Gularen
 {
 	namespace IO
 	{
-		std::string Read();
+		std::string read();
 
-		std::string ReadLine();
+		std::string readLine();
 
-		std::string ReadFile(const std::string& path);
+		std::string readFile(const std::string& path);
 
-		void Write(const std::string& buffer);
+		void write(const std::string& buffer);
 
-		void WriteLine(const std::string& buffer);
+		void writeLine(const std::string& buffer);
 
-		void WriteFile(const std::string& path, const std::string& buffer = std::string());
+		void writeFile(const std::string& path, const std::string& buffer = std::string());
 	};
 }
 

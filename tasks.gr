@@ -24,7 +24,7 @@
         Double newlines will create new paragraph.
         ---
 
-    [+] Identations
+    [+] Indentations
         $ code 'gr'
         ---
             4 spaces create an indentation
@@ -80,22 +80,22 @@
         >>--> Chapter
         >>-> Section
         --> Subsection
-        -> Subsubsection
-        > Minisection
+        -> Sub-subsection
+        > Mini-section
         ---
 
     [+] Links
         $ code 'gr'
         ---
         {:'google.com'}
-        {:'google.com' `this guy can Parse markup *nice*`}
+        {:'google.com' "this guy can Parse markup *nice*"}
         ---
 
     [+] Local links
         $ code 'gr'
         ---
         {!'customMarker'}
-        {!'customMarker' `Jump custom marker`}
+        {!'customMarker' "Jump custom marker"}
         ---
 
         [+] Custom marker
@@ -168,14 +168,14 @@
     $ code 'gr'
     ---
     $ image 'some-image.jpg'
-    $ image 'some-image.jpg' `Alternative Title`
+    $ image 'some-image.jpg' "Alternative Title"
     ---
 
     [+] Inline images
     $ code 'gr'
     ---
     {&'image.png'}
-    {&'image.png' `Alternative Title`}
+    {&'image.png' {Alternative Title}}
     ---
 
 [ ] Variables
@@ -214,7 +214,7 @@
         ---
         ----
     [+] Inline codes
-        {@'the code goes here'}
+        {@ 'js', 'the code goes here'}
 
 [-] Tables
     $ code 'gr'

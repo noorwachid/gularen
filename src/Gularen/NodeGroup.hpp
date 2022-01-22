@@ -4,20 +4,20 @@ namespace Gularen
 {
 	enum struct NodeGroup
 	{
-		Unknown = -1,
+		unknown = 0,
 
-		Text,
+		text,
 
-		Header,
-		List,
-		Item,
-		Break,
+		header,
+		list,
+		item,
+		break_,
 
-		Link,
-		Table,
-		Code,
-		Tag,
+		link,
+		table,
+		code,
+		tag,
 
-		Wrapper,
+		container,
 	};
 }

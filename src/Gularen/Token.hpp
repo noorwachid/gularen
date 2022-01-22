@@ -16,9 +16,9 @@ namespace Gularen
 
 		std::string ToString();
 
-		TokenType type;
-		std::string value;
-		size_t size;
+		TokenType Type;
+		std::string Value;
+		size_t Size;
 	};
 }
 

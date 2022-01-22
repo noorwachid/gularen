@@ -12,65 +12,65 @@ namespace Gularen
 	public:
 		Lexer();
 
-		void SetBuffer(const std::string& buffer);
+		void setBuffer(const std::string& buffer);
 
-		void SetTokens(const std::vector<Token>& tokens);
+		void setTokens(const std::vector<Token>& tokens);
 
-		void Reset();
+		void reset();
 
-		void Parse();
+		void parse();
 
-		std::string GetBuffer();
+		std::string getBuffer();
 
-		Token& GetToken(size_t index);
+		Token& getTokenAt(size_t index);
 
-		std::vector<Token>& GetTokens();
+		std::vector<Token>& getTokens();
 
-		std::string GetTokensAsString();
-
-	private:
-		void ParseText();
-
-		void ParseQuotedText();
-
-		void ParseInlineEscapedByte();
-
-		void ParseNewline();
-
-		void ParseFunction();
-
-		void ParseInlineFunction();
-
+		std::string getTokensAsString();
 
 	private:
-		bool IsValid();
+		void parseText();
 
-		bool IsValidText();
+		void parseQuotedText();
 
-		bool IsValidSymbol();
+		void parseInlineEscapedByte();
 
-		bool IsValidNumeric();
+		void parseNewline();
 
-		char GetCurrentByte();
+		void parseFunction();
 
-		char GetNextByte(size_t offset = 1);
+		void parseInlineFunction();
 
-		void Skip(size_t offset = 1);
-
-		void SkipSpaces();
-
-		void Add(Token&& token);
 
 	private:
-		std::vector<Token> mTokens;
-		std::string mBuffer;
-		size_t mBufferIndex;
-		size_t mBufferSize;
+		bool isValid();
 
-		bool mInHeaderLine;
-		bool mInLink;
-		bool mInCodeBlock;
+		bool isValidText();
 
-		size_t mCurrentDepth;
+		bool isValidSymbol();
+
+		bool isValidNumeric();
+
+		char getCurrentByte();
+
+		char getNextByte(size_t offset = 1);
+
+		void skip(size_t offset = 1);
+
+		void skipSpaces();
+
+		void add(Token&& token);
+
+	private:
+		std::vector<Token> tokens;
+		std::string buffer;
+		size_t bufferIndex;
+		size_t bufferSize;
+
+		bool inHeaderLine;
+		bool inLink;
+		bool inCodeBlock;
+
+		size_t currentDepth;
 	};
 }
