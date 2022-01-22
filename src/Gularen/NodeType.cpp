@@ -4,8 +4,7 @@ namespace Gularen
 {
 	std::string toString(NodeType type)
 	{
-		switch (type)
-		{
+		switch (type) {
 			case NodeType::unknown:
 				return "unknown";
 			case NodeType::root:

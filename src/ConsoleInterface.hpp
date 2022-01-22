@@ -14,19 +14,14 @@ public:
 		if (size > 0)
 			programExecName = args[0];
 
-		for (int i = 1; i < size; ++i)
-		{
+		for (int i = 1; i < size; ++i) {
 			std::string arg = args[i];
 
-			if (arg[0] == '-')
-			{
-				for (size_t j = 1; j < arg.size(); ++j)
-				{
-					switch (arg[j])
-					{
+			if (arg[0] == '-') {
+				for (size_t j = 1; j < arg.size(); ++j) {
+					switch (arg[j]) {
 						case 'o':
-							if (i + 2 > size || args[i + 1][0] == '-')
-							{
+							if (i + 2 > size || args[i + 1][0] == '-') {
 								IO::writeLine("-o requires you to specify the file path");
 								terminate(1);
 							}
@@ -36,8 +31,7 @@ public:
 
 							// Renderer's
 						case 'r':
-							if (i + 2 > size || args[i + 1][0] == '-')
-							{
+							if (i + 2 > size || args[i + 1][0] == '-') {
 								IO::writeLine("-r requires you to specify the rendering engine");
 								terminate(1);
 							}
@@ -45,8 +39,7 @@ public:
 							++i;
 							break;
 						case 's':
-							if (i + 2 > size || args[i + 1][0] == '-')
-							{
+							if (i + 2 > size || args[i + 1][0] == '-') {
 								IO::writeLine("-t requires you to specify the rendering style");
 								terminate(1);
 							}
@@ -80,8 +73,7 @@ public:
 					}
 				}
 
-			}
-			else
+			} else
 				input = arg;
 		}
 
@@ -107,12 +99,10 @@ public:
 		if (shownAst)
 			IO::write(builder.getTreeAsString());
 
-		if (shownRenderedBuffer || !output.empty())
-		{
+		if (shownRenderedBuffer || !output.empty()) {
 			std::string outputBuffer;
 
-			if (outputRenderer.substr(0, 4) == "html")
-			{
+			if (outputRenderer.substr(0, 4) == "html") {
 				Html::Renderer r;
 				r.setTree(builder.getTree());
 
@@ -125,16 +115,12 @@ public:
 					outputBuffer = r.getBuffer();
 				if (outputRenderer == "html-content")
 					outputBuffer = r.getContentBuffer();
-			}
-			else if (outputRenderer == "json")
-			{
+			} else if (outputRenderer == "json") {
 				Json::Renderer r;
 				r.setTree(builder.getTree());
 				r.parse();
 				outputBuffer = r.getBuffer();
-			}
-			else
-			{
+			} else {
 				// TODO: change to Gularen::Renderer as formater
 				outputBuffer = inputBuffer;
 			}

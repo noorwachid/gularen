@@ -111,10 +111,8 @@ namespace GularenBridge
 
 		void Renderer::preTraverse(Node* node)
 		{
-			switch (node->type)
-			{
-				case NodeType::text:
-				{
+			switch (node->type) {
+				case NodeType::text: {
 					std::string value = static_cast<ValueNode*>(node)->value;
 					buffer += value;
 
@@ -202,8 +200,7 @@ namespace GularenBridge
 					buffer += "><label>";
 					break;
 
-				case NodeType::link:
-				{
+				case NodeType::link: {
 					Node* packageNode = static_cast<ContainerNode*>(node)->value;
 					ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
 					buffer += "<a href=\"" + valueNode->value + "\">";
@@ -211,8 +208,7 @@ namespace GularenBridge
 						buffer += valueNode->value;
 					break;
 				}
-				case NodeType::localLink:
-				{
+				case NodeType::localLink: {
 					Node* packageNode = static_cast<ContainerNode*>(node)->value;
 					ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
 					buffer += "<a href=\"#" + valueNode->value + "\">";
@@ -232,8 +228,7 @@ namespace GularenBridge
 					break;
 
 				case NodeType::inlineImage:
-				case NodeType::image:
-				{
+				case NodeType::image: {
 					ValueNode* package = static_cast<ValueNode*>(static_cast<ContainerNode*>(node)->value);
 					buffer += "<img src=\"" + package->value + "\">";
 					break;
@@ -245,8 +240,7 @@ namespace GularenBridge
 					buffer += "</code>\n";
 					break;
 
-				case NodeType::code:
-				{
+				case NodeType::code: {
 					CodeNode* codeNode = static_cast<CodeNode*>(node);
 					buffer += "<pre><code>";
 					buffer += escapeBuffer(codeNode->value);
@@ -261,8 +255,7 @@ namespace GularenBridge
 
 		void Renderer::postTraverse(Node* node)
 		{
-			switch (node->type)
-			{
+			switch (node->type) {
 				case NodeType::title:
 					buffer += "</h1>\n";
 					inTitle = false;
@@ -344,10 +337,8 @@ namespace GularenBridge
 		{
 			std::string escaped;
 
-			for (size_t i = 0; i < buffer.size(); ++i)
-			{
-				switch (buffer[i])
-				{
+			for (size_t i = 0; i < buffer.size(); ++i) {
+				switch (buffer[i]) {
 					case '<':
 						escaped += "&lt;";
 						break;

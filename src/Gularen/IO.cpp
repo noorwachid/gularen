@@ -13,8 +13,7 @@ namespace Gularen
 			std::string buffer;
 			std::array<char, 1024 * 2> bytes;
 
-			while (std::cin)
-			{
+			while (std::cin) {
 				bytes.fill(0x0);
 				std::cin.read(bytes.data(), bytes.size());
 				buffer += bytes.data();

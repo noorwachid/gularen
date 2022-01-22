@@ -35,10 +35,8 @@ namespace Gularen
 
 		parseNewline();
 
-		while (isValid())
-		{
-			switch (getCurrentToken().Type)
-			{
+		while (isValid()) {
+			switch (getCurrentToken().Type) {
 				case TokenType::text:
 					getHead()->add(new ValueNode(NodeType::text, NodeGroup::text, NodeShape::inBetween,
 						getCurrentToken().Value));
@@ -57,8 +55,7 @@ namespace Gularen
 					pairFormatHead(NodeType::formatMonospace);
 					break;
 
-				case TokenType::newline:
-				{
+				case TokenType::newline: {
 					size_t newlineSize = getCurrentToken().Size;
 					// getHead()->Add(new SizeNode(NodeType::newline, GetCurrent().size));
 					skip();
@@ -66,10 +63,8 @@ namespace Gularen
 					break;
 				}
 
-				case TokenType::anchor:
-				{
-					if (getHead()->group == NodeGroup::header)
-					{
+				case TokenType::anchor: {
+					if (getHead()->group == NodeGroup::header) {
 						static_cast<ValueNode*>(getHead())->value = getCurrentToken().Value;
 					}
 					skip();
@@ -81,11 +76,9 @@ namespace Gularen
 					skip();
 					break;
 
-				case TokenType::teeth:
-				{
+				case TokenType::teeth: {
 					skip();
-					if (getCurrentToken().Type == TokenType::text && getNextToken().Type == TokenType::teeth)
-					{
+					if (getCurrentToken().Type == TokenType::text && getNextToken().Type == TokenType::teeth) {
 						getHead()->add(new ValueNode(NodeType::inlineCode, NodeGroup::text, NodeShape::inBetween,
 							getCurrentToken().Value));
 						skip(2);
@@ -95,8 +88,7 @@ namespace Gularen
 
 				case TokenType::leftCurlyBracket:
 					skip();
-					switch (getCurrentToken().Type)
-					{
+					switch (getCurrentToken().Type) {
 						case TokenType::symbol:
 							getHead()->add(new ValueNode(NodeType::curtain, NodeGroup::text, NodeShape::inBetween,
 								getCurrentToken().Value));
@@ -214,8 +206,7 @@ namespace Gularen
 		for (Node* child: node->children)
 			traverseAndDestroyNode(child);
 
-		if (node->group == NodeGroup::link)
-		{
+		if (node->group == NodeGroup::link) {
 			Node* packageNode = static_cast<ContainerNode*>(node)->value;
 			delete packageNode;
 			packageNode = nullptr;
@@ -230,11 +221,9 @@ namespace Gularen
 	{
 		parseIndentation();
 
-		switch (getCurrentToken().Type)
-		{
+		switch (getCurrentToken().Type) {
 			case TokenType::tail:
-				switch (getCurrentToken().Size)
-				{
+				switch (getCurrentToken().Size) {
 					case 1:
 						compareAndPopHead(NodeType::minisection, newlineSize);
 						pushHead(new ValueNode(NodeType::minisection, NodeGroup::header, NodeShape::line));
@@ -257,14 +246,11 @@ namespace Gularen
 				break;
 
 			case TokenType::reverseTail:
-				if (getCurrentToken().Size == 2)
-				{
+				if (getCurrentToken().Size == 2) {
 					compareAndPopHead(NodeType::thematicBreak);
 					getHead()->add(new Node(NodeType::thematicBreak, NodeGroup::break_, NodeShape::line));
 					skip();
-				}
-				else if (getCurrentToken().Size > 2)
-				{
+				} else if (getCurrentToken().Size > 2) {
 					compareAndPopHead(NodeType::pageBreak);
 					getHead()->add(new Node(NodeType::pageBreak, NodeGroup::break_, NodeShape::line));
 					skip();
@@ -272,8 +258,7 @@ namespace Gularen
 				break;
 
 			case TokenType::arrow:
-				switch (getCurrentToken().Size)
-				{
+				switch (getCurrentToken().Size) {
 					case 1:
 						compareAndPopHead(NodeType::subsubsection, newlineSize);
 						pushHead(new ValueNode(NodeType::subsubsection, NodeGroup::header, NodeShape::line));
@@ -345,17 +330,14 @@ namespace Gularen
 				break;
 
 			default:
-				if (getHead()->group != NodeGroup::table)
-				{
+				if (getHead()->group != NodeGroup::table) {
 					compareAndPopHead(NodeType::paragraph, newlineSize);
 
 					if (getHead()->type != NodeType::paragraph)
 						pushHead(new Node(NodeType::paragraph));
 					else
 						getHead()->add(new Node(NodeType::newline));
-				}
-				else
-				{
+				} else {
 					compareAndPopHead(NodeType::table);
 					pushHead(new Node(NodeType::tableRow, NodeGroup::table, NodeShape::line));
 					pushHead(new Node(NodeType::tableColumn, NodeGroup::table, NodeShape::line));
@@ -368,14 +350,12 @@ namespace Gularen
 	{
 		size_t currentDepth = 0;
 
-		if (getCurrentToken().Type == TokenType::space)
-		{
+		if (getCurrentToken().Type == TokenType::space) {
 			currentDepth = getCurrentToken().Size / 4;
 			skip();
 		}
 
-		if (currentDepth > depth)
-		{
+		if (currentDepth > depth) {
 			size_t distance = currentDepth - depth - 1;
 			for (size_t i = 0; i < distance; ++i)
 				pushHead(new Node(NodeType::indent, NodeGroup::container, NodeShape::superBlock));
@@ -384,13 +364,10 @@ namespace Gularen
 				getHead()->group != NodeGroup::item ? NodeType::indent : NodeType::wrapper,
 				NodeGroup::container,
 				NodeShape::superBlock));
-		}
-		else if (currentDepth < depth)
-		{
+		} else if (currentDepth < depth) {
 			size_t distance = depth - currentDepth;
 			size_t i = 0;
-			while (i < distance)
-			{
+			while (i < distance) {
 				if (getHead()->type == NodeType::root)
 					break;
 
@@ -406,8 +383,7 @@ namespace Gularen
 
 	void AstBuilder::parseBreak()
 	{
-		switch (getCurrentToken().Size)
-		{
+		switch (getCurrentToken().Size) {
 			case 1:
 				getHead()->add(new Node(NodeType::lineBreak, NodeGroup::break_));
 				break;
@@ -427,53 +403,44 @@ namespace Gularen
 		ValueNode* node = new ValueNode();
 		skip();
 
-		if (getCurrentToken().Type == TokenType::quotedText)
-		{
+		if (getCurrentToken().Type == TokenType::quotedText) {
 			node->type = NodeType::quotedText;
 			node->value = getCurrentToken().Value;
 			skip();
-		}
-		else if (getCurrentToken().Type == TokenType::symbol)
-		{
+		} else if (getCurrentToken().Type == TokenType::symbol) {
 			node->type = NodeType::symbol;
 			node->value = getCurrentToken().Value;
 			skip();
 		}
 		container->value = node;
 
-		if (getCurrentToken().Type == TokenType::leftCurlyBracket)
-		{
+		if (getCurrentToken().Type == TokenType::leftCurlyBracket) {
 			pushHead(container);
 			pushHead(new Node(NodeType::wrapper));
 			skip();
-		}
-		else
+		} else
 			pushHead(container);
 	}
 
 	void AstBuilder::parseBlock(TokenType type)
 	{
-		switch (type)
-		{
+		switch (type) {
 			case TokenType::keywordTable:
 				compareAndPopHead(NodeType::table);
 
-				while (isValid() && getCurrentToken().Type != TokenType::line)
-				{
+				while (isValid() && getCurrentToken().Type != TokenType::line) {
 					skip();
 				}
 				pushHead(new TableNode());
 				break;
 
-			case TokenType::keywordCode:
-			{
+			case TokenType::keywordCode: {
 				compareAndPopHead(NodeType::code);
 
 				CodeNode* codeNode = new CodeNode();
 				getHead()->add(codeNode);
 				skip();
-				if (getCurrentToken().Type == TokenType::quotedText)
-				{
+				if (getCurrentToken().Type == TokenType::quotedText) {
 					codeNode->langCode = new ValueNode(NodeType::quotedText, NodeGroup::text, NodeShape::block,
 						getCurrentToken().Value);
 					skip();
@@ -487,8 +454,7 @@ namespace Gularen
 
 				if (getCurrentToken().Type == TokenType::line &&
 					getNextToken(1).Type == TokenType::rawText &&
-					getNextToken(2).Type == TokenType::line)
-				{
+					getNextToken(2).Type == TokenType::line) {
 					codeNode->value = getNextToken(1).Value;
 					skip(3);
 				}
@@ -543,10 +509,10 @@ namespace Gularen
 
 	void AstBuilder::compareAndPopHead(NodeType type)
 	{
-		if (headNodes.size() > 1)
-		{
+		if (headNodes.size() > 1) {
 			if (headNodes.top()->type != type)
-				while (headNodes.size() > 1 && headNodes.top()->type != type && headNodes.top()->shape != NodeShape::superBlock)
+				while (headNodes.size() > 1 && headNodes.top()->type != type
+					&& headNodes.top()->shape != NodeShape::superBlock)
 					headNodes.pop();
 			else if (headNodes.top()->shape == NodeShape::line)
 				headNodes.pop();
@@ -555,10 +521,10 @@ namespace Gularen
 
 	void AstBuilder::compareAndPopHead(NodeType type, size_t newlineSize)
 	{
-		if (headNodes.size() > 1)
-		{
+		if (headNodes.size() > 1) {
 			if (headNodes.top()->type != type)
-				while (headNodes.size() > 1 && headNodes.top()->type != type && headNodes.top()->shape != NodeShape::superBlock)
+				while (headNodes.size() > 1 && headNodes.top()->type != type
+					&& headNodes.top()->shape != NodeShape::superBlock)
 					headNodes.pop();
 			else if (newlineSize > 1 || headNodes.top()->shape == NodeShape::line)
 				headNodes.pop();

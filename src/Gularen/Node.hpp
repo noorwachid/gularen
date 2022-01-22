@@ -29,7 +29,7 @@ namespace Gularen
 		ValueNode();
 
 		ValueNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
-				const std::string& value = std::string());
+			const std::string& value = std::string());
 
 		std::string toString() override;
 
@@ -41,7 +41,7 @@ namespace Gularen
 		SizeNode();
 
 		SizeNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
-				const size_t size = 0);
+			const size_t size = 0);
 
 		std::string toString() override;
 
@@ -53,7 +53,7 @@ namespace Gularen
 		BooleanNode();
 
 		BooleanNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
-				bool state = false);
+			bool state = false);
 
 		std::string toString() override;
 
@@ -72,7 +72,7 @@ namespace Gularen
 		TernaryNode();
 
 		TernaryNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
-				TernaryState state = TernaryState::off);
+			TernaryState state = TernaryState::off);
 
 		std::string toString() override;
 
@@ -84,7 +84,7 @@ namespace Gularen
 		ContainerNode();
 
 		ContainerNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
-				Node* package = nullptr);
+			Node* package = nullptr);
 
 		std::string toString() override;
 

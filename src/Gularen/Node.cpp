@@ -2,14 +2,16 @@
 
 namespace Gularen
 {
-	Node::Node() :
+	Node::Node()
+		:
 		type(NodeType::unknown),
 		group(NodeGroup::unknown),
 		shape(NodeShape::unknown)
 	{
 	}
 
-	Node::Node(NodeType type, NodeGroup group, NodeShape shape) :
+	Node::Node(NodeType type, NodeGroup group, NodeShape shape)
+		:
 		type(type),
 		group(group),
 		shape(shape)
@@ -30,12 +32,14 @@ namespace Gularen
 		return Gularen::toString(type) + ":";
 	}
 
-	ValueNode::ValueNode() :
-			Node()
+	ValueNode::ValueNode()
+		:
+		Node()
 	{
 	}
 
-	ValueNode::ValueNode(NodeType type, NodeGroup group, NodeShape shape, const std::string& value) :
+	ValueNode::ValueNode(NodeType type, NodeGroup group, NodeShape shape, const std::string& value)
+		:
 		Node(type, group, shape),
 		value(value)
 	{
@@ -46,12 +50,14 @@ namespace Gularen
 		return Gularen::toString(type) + ": \"" + value + "\"";;
 	}
 
-	SizeNode::SizeNode() :
-			Node()
+	SizeNode::SizeNode()
+		:
+		Node()
 	{
 	}
 
-	SizeNode::SizeNode(NodeType type, NodeGroup group, NodeShape shape, const size_t size) :
+	SizeNode::SizeNode(NodeType type, NodeGroup group, NodeShape shape, const size_t size)
+		:
 		Node(type, group, shape),
 		size(size)
 	{
@@ -62,13 +68,15 @@ namespace Gularen
 		return Gularen::toString(type) + ": " + std::to_string(size);
 	}
 
-	BooleanNode::BooleanNode() :
+	BooleanNode::BooleanNode()
+		:
 		Node(NodeType::unknown),
 		state(false)
 	{
 	}
 
-	BooleanNode::BooleanNode(NodeType type, NodeGroup group, NodeShape shape, bool state) :
+	BooleanNode::BooleanNode(NodeType type, NodeGroup group, NodeShape shape, bool state)
+		:
 		Node(type, group, shape),
 		state(state)
 	{
@@ -79,13 +87,15 @@ namespace Gularen
 		return Gularen::toString(type) + ": " + (state ? "on" : "off");
 	}
 
-	TernaryNode::TernaryNode() :
+	TernaryNode::TernaryNode()
+		:
 		Node(),
 		state(TernaryState::off)
 	{
 	}
 
-	TernaryNode::TernaryNode(NodeType type, NodeGroup group, NodeShape shape, TernaryState state) :
+	TernaryNode::TernaryNode(NodeType type, NodeGroup group, NodeShape shape, TernaryState state)
+		:
 		Node(type, group, shape),
 		state(state)
 	{
@@ -95,8 +105,7 @@ namespace Gularen
 	{
 		std::string buffer = Gularen::toString(type) + ": ";
 
-		switch (state)
-		{
+		switch (state) {
 			case TernaryState::off:
 				buffer += "off";
 				break;
@@ -111,13 +120,15 @@ namespace Gularen
 		return buffer;
 	}
 
-	ContainerNode::ContainerNode() :
+	ContainerNode::ContainerNode()
+		:
 		Node(),
 		value(nullptr)
 	{
 	}
 
-	ContainerNode::ContainerNode(NodeType type, NodeGroup group, NodeShape shape, Node* node) :
+	ContainerNode::ContainerNode(NodeType type, NodeGroup group, NodeShape shape, Node* node)
+		:
 		Node(type, group, shape),
 		value(node)
 	{
@@ -126,8 +137,7 @@ namespace Gularen
 	std::string ContainerNode::toString()
 	{
 		std::string buffer = Gularen::toString(type) + ": ";
-		if (value)
-		{
+		if (value) {
 			if (value->type == NodeType::symbol)
 				buffer += "%" + static_cast<ValueNode*>(value)->value;
 
@@ -137,17 +147,20 @@ namespace Gularen
 		return buffer;
 	}
 
-	TableNode::TableNode() :
-			Node(NodeType::table, NodeGroup::table, NodeShape::block)
+	TableNode::TableNode()
+		:
+		Node(NodeType::table, NodeGroup::table, NodeShape::block)
 	{
 	}
 
-	CodeNode::CodeNode() :
-			Node(NodeType::code, NodeGroup::code, NodeShape::block)
+	CodeNode::CodeNode()
+		:
+		Node(NodeType::code, NodeGroup::code, NodeShape::block)
 	{
 	}
 
-	CodeNode::CodeNode(const std::string& value, Node* lang) :
+	CodeNode::CodeNode(const std::string& value, Node* lang)
+		:
 		Node(NodeType::code, NodeGroup::code, NodeShape::block),
 		value(value),
 		langCode(lang)
@@ -157,8 +170,7 @@ namespace Gularen
 	std::string CodeNode::toString()
 	{
 		std::string buffer = Gularen::toString(type) + ": ";
-		if (langCode)
-		{
+		if (langCode) {
 			if (langCode->type == NodeType::symbol)
 				buffer += "%" + static_cast<ValueNode*>(langCode)->value + " ";
 

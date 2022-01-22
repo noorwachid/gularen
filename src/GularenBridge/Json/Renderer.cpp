@@ -29,8 +29,7 @@ namespace GularenBridge
 		{
 			preTraverse(node);
 
-			for (size_t i = 0; i < node->children.size(); ++i)
-			{
+			for (size_t i = 0; i < node->children.size(); ++i) {
 				if (i > 0)
 					buffer += ",";
 				traverse(node->children[i]);
@@ -43,8 +42,7 @@ namespace GularenBridge
 		{
 			buffer += "{\"type\":\"" + Gularen::toString(node->type) + "\"";
 
-			switch (node->type)
-			{
+			switch (node->type) {
 				case NodeType::text:
 				case NodeType::inlineCode:
 					buffer += ",\"value\":\"" + escapeBuffer(static_cast<ValueNode*>(node)->value) + "\"}";
@@ -88,8 +86,7 @@ namespace GularenBridge
 					buffer += ",\"children\":[";
 					break;
 
-				case NodeType::code:
-				{
+				case NodeType::code: {
 					CodeNode* code = static_cast<CodeNode*>(node);
 					if (code->langCode)
 						buffer += ",\"langCode\":\"" + static_cast<ValueNode*>(code->langCode)->value + "\"";
@@ -108,8 +105,7 @@ namespace GularenBridge
 
 		void Renderer::postTraverse(Gularen::Node* node)
 		{
-			switch (node->type)
-			{
+			switch (node->type) {
 				case NodeType::paragraph:
 				case NodeType::indent:
 				case NodeType::wrapper:
@@ -144,10 +140,8 @@ namespace GularenBridge
 		{
 			std::string out;
 
-			for (size_t i = 0; i < buffer.size(); ++i)
-			{
-				switch (buffer[i])
-				{
+			for (size_t i = 0; i < buffer.size(); ++i) {
+				switch (buffer[i]) {
 					case '"':
 						out += "\\\"";
 						break;

@@ -2,28 +2,32 @@
 
 namespace Gularen
 {
-	Token::Token() :
-			Type(TokenType::unknown),
-			Size(0)
+	Token::Token()
+		:
+		Type(TokenType::unknown),
+		Size(0)
 	{
 	}
 
-	Token::Token(TokenType type) :
-			Type(type),
-			Size(0)
+	Token::Token(TokenType type)
+		:
+		Type(type),
+		Size(0)
 	{
 	}
 
-	Token::Token(TokenType type, size_t size) :
-			Type(type),
-			Size(size)
+	Token::Token(TokenType type, size_t size)
+		:
+		Type(type),
+		Size(size)
 	{
 	}
 
-	Token::Token(TokenType type, const std::string& value) :
-			Type(type),
-			Value(value),
-			Size(0)
+	Token::Token(TokenType type, const std::string& value)
+		:
+		Type(type),
+		Value(value),
+		Size(0)
 	{
 	}
 
