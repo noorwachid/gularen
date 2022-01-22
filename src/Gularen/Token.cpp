@@ -4,42 +4,42 @@ namespace Gularen
 {
 	Token::Token()
 		:
-		Type(TokenType::unknown),
-		Size(0)
+		type(TokenType::unknown),
+		size(0)
 	{
 	}
 
 	Token::Token(TokenType type)
 		:
-		Type(type),
-		Size(0)
+		type(type),
+		size(0)
 	{
 	}
 
 	Token::Token(TokenType type, size_t size)
 		:
-		Type(type),
-		Size(size)
+		type(type),
+		size(size)
 	{
 	}
 
 	Token::Token(TokenType type, const std::string& value)
 		:
-		Type(type),
-		Value(value),
-		Size(0)
+		type(type),
+		value(value),
+		size(0)
 	{
 	}
 
 	std::string Token::ToString()
 	{
-		std::string buffer = Gularen::toString(Type) + ":";
+		std::string buffer = Gularen::toString(type) + ":";
 
-		if (Size > 0)
-			buffer += " (" + std::to_string(Size) + ")";
+		if (size > 0)
+			buffer += " (" + std::to_string(size) + ")";
 
-		if (!Value.empty())
-			buffer += " \"" + Value + "\"";
+		if (!value.empty())
+			buffer += " \"" + value + "\"";
 
 		return buffer;
 	}
