@@ -65,7 +65,7 @@ namespace GularenBridge
             table td{border:1px solid #889;padding:0.75rem 1rem}
             .checklist{list-style:none;margin-left:0}
             .checklist>.item{display:flex;flex-direction:row;align-items:baseline}
-            .checklist>.item>mInput[type=checkbox]{margin-right:0.5rem}
+            .checklist>.item>input[type=checkbox]{margin-right:0.5rem}
             .checklist>.item>label{flex-grow:1}
             hr{border:0;border-top:0.1rem solid #e4e5e6}
             code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
@@ -89,7 +89,7 @@ namespace GularenBridge
             table td{border:1px solid #889;padding:0.75rem 1rem}
             .checklist{list-style:none;margin-left:0}
             .checklist>.item{display:flex;flex-direction:row;align-items:baseline}
-            .checklist>.item>mInput[type=checkbox]{margin-right:0.5rem}
+            .checklist>.item>input[type=checkbox]{margin-right:0.5rem}
             .checklist>.item>label{flex-grow:1}
             hr{border:0;border-top:0.1rem solid #e4e5e6}
             code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
@@ -194,7 +194,7 @@ namespace GularenBridge
 					break;
 				case NodeType::CheckItem:
 					mBuffer += "<li class=\"item\">";
-					mBuffer += "<mInput type=\"checkbox\"";
+					mBuffer += "<input type=\"checkbox\"";
 					if (static_cast<TernaryNode*>(node)->state == TernaryState::True)
 						mBuffer += " checked";
 					if (static_cast<TernaryNode*>(node)->state == TernaryState::InBetween)
