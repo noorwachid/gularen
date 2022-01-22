@@ -4,88 +4,89 @@
 #include "Lexer.hpp"
 #include <stack>
 
-namespace Gularen {
+namespace Gularen
+{
+	class AstBuilder
+	{
+	public:
+		AstBuilder();
 
-    class AstBuilder {
-    public:
-        AstBuilder();
+		~AstBuilder();
 
-        ~AstBuilder();
+		void SetBuffer(const std::string& buffer);
 
-        void setBuffer(const std::string& buffer);
+		void SetTokens(const std::vector<Token>& tokens);
 
-        void setTokens(const std::vector<Token>& tokens);
+		void Parse();
 
-        void parse();
+		void Reset();
 
-        void reset();
+		void DestroyTree();
 
-        void destroyTree();
+		std::string GetBuffer();
 
-        std::string getBuffer();
+		std::vector<Token> GetTokens();
 
-        std::vector<Token> getTokens();
+		Node* GetTree();
 
-        Node* getTree();
+		std::string GetTokensAsString();
 
-        std::string getTokensAsString();
+		std::string GetTreeAsString();
 
-        std::string getTreeAsString();
+	private:
+		void TraverseAndGenerateBuffer(Node* node, size_t depth);
 
-    private:
-        void traverseAndGenerateBuffer(Node* node, size_t depth);
+		void TraverseAndDestroyNode(Node* node);
 
-        void traverseAndDestroyNode(Node* node);
+	private:
+		void ParseNewline(size_t newlineSize = 1);
 
-    private:
-        void parseNewline(size_t newlineSize = 1);
+		void ParseIndentation();
 
-        void parseIndentation();
+		void ParseBreak();
 
-        void parseBreak();
+		void ParseLink(NodeType type);
 
-        void parseLink(NodeType type);
+		void ParseBlock(TokenType type);
 
-        void parseBlock(TokenType type);
+	private:
+		Node* GetHead();
 
-    private:
-        Node* getHead();
+		void PushHead(Node* node);
 
-        void pushHead(Node* node);
+		void CompareAndPopHead(NodeType type);
 
-        void compareAndPopHead(NodeType type);
+		void CompareAndPopHead(NodeType type, size_t newlineSize);
 
-        void compareAndPopHead(NodeType type, size_t newlineSize);
+		void PopHead();
 
-        void popHead();
+		void PairFHead(NodeType type);
 
-        void pairFHead(NodeType type);
+		// -- Token operations
+		bool IsValid();
 
-        // -- Token operations
-        bool isValid();
+		Token& GetCurrentToken();
 
-        Token& getCurrentToken();
+		Token& GetNextToken(size_t offset = 1);
 
-        Token& getNextToken(size_t offset = 1);
+		void Skip(size_t offset = 1);
 
-        void skip(size_t offset = 1);
+		// Buffer definitions
+		std::string mBuffer;
 
-        // Buffer definitions
-        std::string buffer;
+		// Node definitions
+		Node* mRoot = nullptr;
+		size_t mDepth = 0;
 
-        // Node definitions
-        Node* root = nullptr;
-        size_t depth = 0;
+		std::stack<Node*> mHeads;
 
-        std::stack<Node*> heads;
+		// Token definitions
+		size_t mTokenIndex = 0;
+		size_t mTokenSize = 0;
+		Token mEmptyToken;
 
-        // Token definitions
-        size_t tokenIndex = 0;
-        size_t tokenSize = 0;
-        Token emptyToken;
+		size_t mHeaderCounter = 0;
 
-        size_t headerCounter = 0;
-
-        Lexer lexer;
-    };
+		Lexer mLexer;
+	};
 }

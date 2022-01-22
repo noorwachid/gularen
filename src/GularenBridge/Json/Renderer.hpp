@@ -4,42 +4,44 @@
 #include <Gularen/Node.hpp>
 #include <Gularen/IRenderer.hpp>
 
-namespace GularenBridge {
+namespace GularenBridge
+{
+	namespace Json
+	{
+		using Gularen::NodeType;
+		using Gularen::Node;
+		using Gularen::ValueNode;
+		using Gularen::SizeNode;
+		using Gularen::BooleanNode;
+		using Gularen::ContainerNode;
+		using Gularen::CodeNode;
+		using Gularen::TableNode;
+		using Gularen::IRenderer;
 
-    namespace Json {
+		class Renderer : public IRenderer
+		{
+		public:
+			Renderer();
 
-        using Gularen::NodeType;
-        using Gularen::Node;
-        using Gularen::ValueNode;
-        using Gularen::SizeNode;
-        using Gularen::BooleanNode;
-        using Gularen::ContainerNode;
-        using Gularen::CodeNode;
-        using Gularen::TableNode;
-        using Gularen::IRenderer;
+			void SetTree(Node* tree) override;
 
-        class Renderer : public IRenderer {
-        public:
-            Renderer();
+			void Parse() override;
 
-            void setTree(Node* tree) override;
+			std::string GetBuffer() override;
 
-            void parse() override;
+		private:
+			void Traverse(Node* node);
 
-            std::string getBuffer() override;
+			void PreTraverse(Node* node);
 
-        private:
-            void traverse(Node* node);
+			void PostTraverse(Node* node);
 
-            void preTraverse(Node* node);
+			std::string EscapeBuffer(const std::string& buffer);
 
-            void postTraverse(Node* node);
-
-            std::string escapeText(const std::string& text);
-
-            Node* tree;
-            std::string buffer;
-        };
-    }
+		private:
+			Node* mTree;
+			std::string mBuffer;
+		};
+	}
 }
 

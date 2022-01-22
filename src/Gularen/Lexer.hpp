@@ -5,72 +5,72 @@
 #include <vector>
 #include <stack>
 
-namespace Gularen {
+namespace Gularen
+{
+	class Lexer
+	{
+	public:
+		Lexer();
 
-    class Lexer {
-    public:
-        Lexer();
+		void SetBuffer(const std::string& buffer);
 
-        void setBuffer(const std::string& buffer);
+		void SetTokens(const std::vector<Token>& tokens);
 
-        void setTokens(const std::vector<Token>& tokens);
+		void Reset();
 
-        void reset();
+		void Parse();
 
-        void parse();
+		std::string GetBuffer();
 
-        std::string getBuffer();
+		Token& GetToken(size_t index);
 
-        Token& getToken(size_t index);
+		std::vector<Token>& GetTokens();
 
-        std::vector<Token>& getTokens();
+		std::string GetTokensAsString();
 
-        std::string getTokensAsString();
+	private:
+		void ParseText();
 
-    private:
-        void parseText();
+		void ParseQuotedText();
 
-        void parseQuotedText();
+		void ParseInlineEscapedByte();
 
-        void parseInlineEscapedByte();
+		void ParseNewline();
 
-        void parseNewline();
+		void ParseFunction();
 
-        void parseFunction();
-
-        void parseInlineFunction();
+		void ParseInlineFunction();
 
 
-    private:
-        bool isValid();
+	private:
+		bool IsValid();
 
-        bool isValidText();
+		bool IsValidText();
 
-        bool isValidSymbol();
+		bool IsValidSymbol();
 
-        bool isValidNumeric();
+		bool IsValidNumeric();
 
-        char getCurrentByte();
+		char GetCurrentByte();
 
-        char getNextByte(size_t offset = 1);
+		char GetNextByte(size_t offset = 1);
 
-        void skip(size_t offset = 1);
+		void Skip(size_t offset = 1);
 
-        void skipSpaces();
+		void SkipSpaces();
 
-        void add(Token&& token);
+		void Add(Token&& token);
 
-    private:
-        std::vector<Token> tokens;
-        std::string buffer;
-        size_t bufferIndex;
-        size_t bufferSize;
+	private:
+		std::vector<Token> mTokens;
+		std::string mBuffer;
+		size_t mBufferIndex;
+		size_t mBufferSize;
 
-        bool inHeaderLine;
-        bool inLink;
-        bool inCodeBlock;
+		bool mInHeaderLine;
+		bool mInLink;
+		bool mInCodeBlock;
 
-        size_t currentDepth;
-    };
-
+		size_t mCurrentDepth;
+	};
 }

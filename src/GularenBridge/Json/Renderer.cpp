@@ -1,159 +1,172 @@
 #include "Renderer.hpp"
 #include <Gularen/IO.hpp>
 
-namespace GularenBridge {
+namespace GularenBridge
+{
+	namespace Json
+	{
+		Renderer::Renderer()
+		{
+		}
 
-    namespace Json {
+		void Renderer::SetTree(Node* tree)
+		{
+			this->mTree = tree;
+			mBuffer.clear();
+		}
 
-        Renderer::Renderer() {
-        }
+		void Renderer::Parse()
+		{
+			Traverse(mTree);
+		}
 
-        void Renderer::setTree(Node* tree) {
-            this->tree = tree;
-            buffer.clear();
-        }
+		std::string Renderer::GetBuffer()
+		{
+			return mBuffer;
+		}
 
-        void Renderer::parse() {
-            traverse(tree);
-        }
+		void Renderer::Traverse(Node* node)
+		{
+			PreTraverse(node);
 
-        std::string Renderer::getBuffer() {
-            return buffer;
-        }
+			for (size_t i = 0; i < node->children.size(); ++i)
+			{
+				if (i > 0)
+					mBuffer += ",";
+				Traverse(node->children[i]);
+			}
 
-        void Renderer::traverse(Node* node) {
-            preTraverse(node);
+			PostTraverse(node);
+		}
 
-            for (size_t i = 0; i < node->children.size(); ++i) {
-                if (i > 0)
-                    buffer += ",";
-                traverse(node->children[i]);
-            }
+		void Renderer::PreTraverse(Node* node)
+		{
+			mBuffer += "{\"type\":\"" + Gularen::ToString(node->type) + "\"";
 
-            postTraverse(node);
-        }
+			switch (node->type)
+			{
+				case NodeType::Text:
+				case NodeType::InlineCode:
+					mBuffer += ",\"value\":\"" + EscapeBuffer(static_cast<ValueNode*>(node)->value) + "\"}";
+					break;
 
-        void Renderer::preTraverse(Node* node) {
-            buffer += "{\"type\":\"" + Gularen::toString(node->type) + "\"";
+				case NodeType::Paragraph:
+				case NodeType::Indent:
+				case NodeType::Wrapper:
+				case NodeType::FBold:
+				case NodeType::FItalic:
+				case NodeType::FMonospace:
+				case NodeType::Root:
+					mBuffer += ",\"children\":[";
+					break;
 
-            switch (node->type) {
-                case NodeType::Text:
-                case NodeType::InlineCode:
-                    buffer += ",\"value\":\"" + escapeText(static_cast<ValueNode*>(node)->value) + "\"}";
-                    break;
+				case NodeType::LineBreak:
+				case NodeType::ThematicBreak:
+				case NodeType::PageBreak:
+					mBuffer += "}";
+					break;
 
-                case NodeType::Paragraph:
-                case NodeType::Indent:
-                case NodeType::Wrapper:
-                case NodeType::FBold:
-                case NodeType::FItalic:
-                case NodeType::FMonospace:
-                case NodeType::Root:
-                    buffer += ",\"children\":[";
-                    break;
+				case NodeType::Newline:
+					mBuffer += ",\"size\":" + std::to_string(static_cast<SizeNode*>(node)->size) + "}";
+					break;
 
-                case NodeType::LineBreak:
-                case NodeType::ThematicBreak:
-                case NodeType::PageBreak:
-                    buffer += "}";
-                    break;
+				case NodeType::Title:
+				case NodeType::Part:
+				case NodeType::Chapter:
+				case NodeType::Section:
+				case NodeType::Subsection:
+				case NodeType::Subsubsection:
+				case NodeType::Minisection:
+				case NodeType::List:
+				case NodeType::NList:
+				case NodeType::CheckList:
+				case NodeType::Item:
+				case NodeType::CheckItem:
+				case NodeType::Table:
+				case NodeType::TableRow:
+				case NodeType::TableColumn:
+					mBuffer += ",\"children\":[";
+					break;
 
-                case NodeType::Newline:
-                    buffer += ",\"size\":" + std::to_string(static_cast<SizeNode*>(node)->size) + "}";
-                    break;
+				case NodeType::Code:
+				{
+					CodeNode* code = static_cast<CodeNode*>(node);
+					if (code->lang)
+						mBuffer += ",\"lang\":\"" + static_cast<ValueNode*>(code->lang)->value + "\"";
+					mBuffer += ",\"mBuffer\":\"" + EscapeBuffer(code->value) + "\"";
+					mBuffer += "}";
+					break;
+				}
 
-                case NodeType::Title:
-                case NodeType::Part:
-                case NodeType::Chapter:
-                case NodeType::Section:
-                case NodeType::Subsection:
-                case NodeType::Subsubsection:
-                case NodeType::Minisection:
-                case NodeType::List:
-                case NodeType::NList:
-                case NodeType::CheckList:
-                case NodeType::Item:
-                case NodeType::CheckItem:
-                case NodeType::Table:
-                case NodeType::TableRow:
-                case NodeType::TableColumn:
-                    buffer += ",\"children\":[";
-                    break;
+				case NodeType::Link:
+					break;
 
-                case NodeType::Code: {
-                    CodeNode* code = static_cast<CodeNode*>(node);
-                    if (code->lang)
-                        buffer += ",\"lang\":\"" + static_cast<ValueNode*>(code->lang)->value + "\"";
-                    buffer += ",\"buffer\":\"" + escapeText(code->value) + "\"";
-                    buffer += "}";
-                    break;
-                }
+				default:
+					break;
+			}
+		}
 
-                case NodeType::Link:
-                    break;
+		void Renderer::PostTraverse(Gularen::Node* node)
+		{
+			switch (node->type)
+			{
+				case NodeType::Paragraph:
+				case NodeType::Indent:
+				case NodeType::Wrapper:
+				case NodeType::FBold:
+				case NodeType::FItalic:
+				case NodeType::FMonospace:
+				case NodeType::Root:
+				case NodeType::Title:
+				case NodeType::Part:
+				case NodeType::Chapter:
+				case NodeType::Section:
+				case NodeType::Subsection:
+				case NodeType::Subsubsection:
+				case NodeType::Minisection:
+				case NodeType::List:
+				case NodeType::NList:
+				case NodeType::CheckList:
+				case NodeType::Item:
+				case NodeType::CheckItem:
+				case NodeType::Table:
+				case NodeType::TableRow:
+				case NodeType::TableColumn:
+					mBuffer += "]}";
+					break;
 
-                default:
-                    break;
-            }
-        }
+				default:
+					break;
+			}
+		}
 
-        void Renderer::postTraverse(Gularen::Node* node) {
-            switch (node->type) {
-                case NodeType::Paragraph:
-                case NodeType::Indent:
-                case NodeType::Wrapper:
-                case NodeType::FBold:
-                case NodeType::FItalic:
-                case NodeType::FMonospace:
-                case NodeType::Root:
-                case NodeType::Title:
-                case NodeType::Part:
-                case NodeType::Chapter:
-                case NodeType::Section:
-                case NodeType::Subsection:
-                case NodeType::Subsubsection:
-                case NodeType::Minisection:
-                case NodeType::List:
-                case NodeType::NList:
-                case NodeType::CheckList:
-                case NodeType::Item:
-                case NodeType::CheckItem:
-                case NodeType::Table:
-                case NodeType::TableRow:
-                case NodeType::TableColumn:
-                    buffer += "]}";
-                    break;
+		std::string Renderer::EscapeBuffer(const std::string& buffer)
+		{
+			std::string out;
 
-                default:
-                    break;
-            }
-        }
+			for (size_t i = 0; i < buffer.size(); ++i)
+			{
+				switch (buffer[i])
+				{
+					case '"':
+						out += "\\\"";
+						break;
 
-        std::string Renderer::escapeText(const std::string& text) {
-            std::string out;
+					case '\n':
+						out += "\\n";
+						break;
 
-            for (size_t i = 0; i < text.size(); ++i) {
-                switch (text[i]) {
-                    case '"':
-                        out += "\\\"";
-                        break;
+					case '\t':
+						out += "\\t";
+						break;
 
-                    case '\n':
-                        out += "\\n";
-                        break;
+					default:
+						out += buffer[i];
+						break;
+				}
+			}
 
-                    case '\t':
-                        out += "\\t";
-                        break;
-
-                    default:
-                        out += text[i];
-                        break;
-                }
-            }
-
-            return out;
-        }
-
-    }
+			return out;
+		}
+	}
 }

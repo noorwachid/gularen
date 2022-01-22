@@ -4,50 +4,57 @@
 #include <sstream>
 #include <array>
 
-namespace Gularen {
+namespace Gularen
+{
+	namespace IO
+	{
+		std::string Read()
+		{
+			std::string buffer;
+			std::array<char, 1024 * 2> bytes;
 
-    namespace IO {
+			while (std::cin)
+			{
+				bytes.fill(0x0);
+				std::cin.read(bytes.data(), bytes.size());
+				buffer += bytes.data();
+			}
 
-        std::string read() {
-            std::string buffer;
-            std::array<char, 1024 * 2> bytes;
+			return buffer;
+		}
 
-            while (std::cin) {
-                bytes.fill(0x0);
-                std::cin.read(bytes.data(), bytes.size());
-                buffer += bytes.data();
-            }
+		std::string ReadLine()
+		{
+			std::string buffer;
+			std::getline(std::cin, buffer);
 
-            return buffer;
-        }
+			return buffer;
+		}
 
-        std::string readLine() {
-            std::string buffer;
-            std::getline(std::cin, buffer);
+		std::string ReadFile(const std::string& path)
+		{
+			std::ifstream fileStream(path);
+			std::stringstream bufferStream;
 
-            return buffer;
-        }
+			bufferStream << fileStream.rdbuf();
 
-        std::string readFile(const std::string& path) {
-            std::ifstream fileStream(path);
-            std::stringstream bufferStream;
+			return bufferStream.str();
+		}
 
-            bufferStream << fileStream.rdbuf();
+		void WriteFile(const std::string& path, const std::string& buffer)
+		{
+			std::ofstream fileStream(path);
+			fileStream << buffer;
+		}
 
-            return bufferStream.str();
-        }
+		void Write(const std::string& buffer)
+		{
+			std::cout << buffer;
+		}
 
-        void writeFile(const std::string& path, const std::string& buffer) {
-            std::ofstream fileStream(path);
-            fileStream << buffer;
-        }
-
-        void write(const std::string& buffer) {
-            std::cout << buffer;
-        }
-
-        void writeLine(const std::string& buffer) {
-            std::cout << buffer << "\r\n";
-        }
-    }
+		void WriteLine(const std::string& buffer)
+		{
+			std::cout << buffer << "\r\n";
+		}
+	}
 }

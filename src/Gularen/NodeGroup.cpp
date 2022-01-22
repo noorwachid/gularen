@@ -1,5 +1,6 @@
 #include "NodeGroup.hpp"
 
-namespace Gularen {
+namespace Gularen
+{
 
 }

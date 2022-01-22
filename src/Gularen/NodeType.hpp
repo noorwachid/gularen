@@ -2,81 +2,81 @@
 
 #include <string>
 
-namespace Gularen {
+namespace Gularen
+{
+	enum struct NodeType
+	{
+		Unknown = -1,
+		Root,
 
-    enum struct NodeType {
-        Unknown = -1,
-        Root,
+		// Abstract types
+		Newline,
+		Indent,
 
-        // Abstract types
-        Newline,
-        Indent,
+		LineBreak,
+		ThematicBreak,
+		PageBreak,     // PDF or paper like only documents
 
-        LineBreak,
-        ThematicBreak,
-        PageBreak,     // PDF or paper like only documents
+		// Semiabstract types
+		Title,
+		Part,
+		Chapter,
+		Section,
+		Subsection,
+		Subsubsection,
+		Minisection,
+		Paragraph,
 
-        // Semiabstract types
-        Title,
-        Part,
-        Chapter,
-        Section,
-        Subsection,
-        Subsubsection,
-        Minisection,
-        Paragraph,
+		InlineCode,
+		Code,
 
-        InlineCode,
-        Code,
+		Table,
+		TableRow,
+		TableColumn,
 
-        Table,
-        TableRow,
-        TableColumn,
+		File,
+		Toc,
+		Admon,
+		Assignment,
 
-        File,
-        Toc,
-        Admon,
-        Assignment,
+		HashSymbol,
+		AtSymbol,
+		Symbol,
+		Curtain,
+		Wrapper,
 
-        HashSymbol,
-        AtSymbol,
-        Symbol,
-        Curtain,
-        Wrapper,
+		// Value types
+		Text,
+		QuotedText,
+		RawText,
+		Link,
+		LocalLink,
 
-        // Value types
-        Text,
-        QuotedText,
-        RawText,
-        Link,
-        LocalLink,
+		InlineImage,
+		Image,
 
-        InlineImage,
-        Image,
+		// Font style types
+		FBold,
+		FItalic,
+		FMonospace,
 
-        // Font style types
-        FBold,
-        FItalic,
-        FMonospace,
+		// List types
+		List,
+		NList,
+		Item,
+		CheckList,
+		CheckItem,
 
-        // List types
-        List,
-        NList,
-        Item,
-        CheckList,
-        CheckItem,
+	};
 
-    };
+	enum struct NodeShape
+	{
+		Unknown = -1,
+		Line,
+		InBetween,
+		Block,
+		SuperBlock,
+	};
 
-    enum struct NodeShape {
-        Unknown = -1,
-        Line,
-        InBetween,
-        Block,
-        SuperBlock,
-    };
-
-    std::string toString(NodeType type);
-
+	std::string ToString(NodeType type);
 }
-

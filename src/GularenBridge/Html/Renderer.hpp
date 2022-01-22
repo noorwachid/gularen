@@ -4,49 +4,50 @@
 #include <Gularen/Node.hpp>
 #include <Gularen/IRenderer.hpp>
 
-namespace GularenBridge {
+namespace GularenBridge
+{
+	namespace Html
+	{
+		using Gularen::NodeType;
+		using Gularen::Node;
+		using Gularen::ValueNode;
+		using Gularen::BooleanNode;
+		using Gularen::TernaryNode;
+		using Gularen::TernaryState;
+		using Gularen::ContainerNode;
+		using Gularen::CodeNode;
+		using Gularen::IRenderer;
 
-    namespace Html {
+		class Renderer : public IRenderer
+		{
+		public:
+			Renderer();
 
-        using Gularen::NodeType;
-        using Gularen::Node;
-        using Gularen::ValueNode;
-        using Gularen::BooleanNode;
-        using Gularen::TernaryNode;
-        using Gularen::TernaryState;
-        using Gularen::ContainerNode;
-        using Gularen::CodeNode;
-        using Gularen::IRenderer;
+			void SetTree(Node* tree) override;
 
-        class Renderer : public IRenderer {
-        public:
-            Renderer();
+			void Parse() override;
 
-            void setTree(Node* tree) override;
+			std::string GetBuffer() override;
 
-            void parse() override;
+			std::string GetContentBuffer();
 
-            std::string getBuffer() override;
+			void SetStyle(const std::string& style);
 
-            std::string getContentBuffer();
+		private:
+			void Traverse(Node* node);
 
-            void setStyle(const std::string& style);
+			void PreTraverse(Node* node);
 
-        private:
-            void traverse(Node* node);
+			void PostTraverse(Node* node);
 
-            void preTraverse(Node* node);
+			std::string EscapeBuffer(const std::string& buffer);
 
-            void postTraverse(Node* node);
-
-            std::string escape(const std::string& raw);
-
-            Node* tree;
-            std::string buffer;
-            std::string titleBuffer;
-            std::string styleBuffer;
-            bool inTitle;
-        };
-    }
+		private:
+			Node* mTree;
+			std::string mBuffer;
+			std::string mTitleBuffer;
+			std::string mStyleBuffer;
+			bool mInTitle;
+		};
+	}
 }
-

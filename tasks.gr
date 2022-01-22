@@ -88,7 +88,7 @@
         $ code 'gr'
         ---
         {:'google.com'}
-        {:'google.com' {this guy can parse markup *nice*}}
+        {:'google.com' {this guy can Parse markup *nice*}}
         ---
 
     [+] Local links
@@ -238,13 +238,13 @@
 
 > Side tasks
 
-[+] add group enumerations for faster checking
-[ ] add escaping reserved chars
+[+] Add group enumerations for faster checking
+[ ] Add escaping reserved chars
 [+] Fix appropriate paragraph node beside begin with text
 
 <<
 
-> Supported output
+> Supported mOutput
 
 [+] HTML5
 [ ] HTML4 / XHTML

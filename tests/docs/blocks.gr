@@ -21,7 +21,7 @@ $ table
 
 $ code
 ---
-Console.writeLine("Hello World!");
+Console.WriteLine("Hello World!");
 ---
 
 $ image 'SomeImage.png'

@@ -2,23 +2,23 @@
 
 #include "TokenType.hpp"
 
-namespace Gularen {
+namespace Gularen
+{
+	struct Token
+	{
+		Token();
 
-    struct Token {
-        Token();
+		Token(TokenType type);
 
-        Token(TokenType type);
+		Token(TokenType type, size_t size);
 
-        Token(TokenType type, size_t size);
+		Token(TokenType type, const std::string& value);
 
-        Token(TokenType type, const std::string& value);
+		std::string ToString();
 
-        std::string toString();
-
-        TokenType type;
-        std::string value;
-        size_t size;
-    };
-
+		TokenType type;
+		std::string value;
+		size_t size;
+	};
 }
 

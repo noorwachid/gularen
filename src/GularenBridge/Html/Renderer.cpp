@@ -1,49 +1,55 @@
 #include "Renderer.hpp"
 #include <Gularen/IO.hpp>
 
-namespace GularenBridge {
+namespace GularenBridge
+{
+	namespace Html
+	{
+		Renderer::Renderer()
+		{
+		}
 
-    namespace Html {
+		void Renderer::SetTree(Node* tree)
+		{
+			this->mTree = tree;
+			mBuffer.clear();
+		}
 
-        Renderer::Renderer() {
-        }
+		void Renderer::Parse()
+		{
+			mTitleBuffer.clear();
+			Traverse(mTree);
+		}
 
-        void Renderer::setTree(Node* tree) {
-            this->tree = tree;
-            buffer.clear();
-        }
-
-        void Renderer::parse() {
-            titleBuffer.clear();
-            traverse(tree);
-        }
-
-        std::string Renderer::getBuffer() {
-            return R"(
+		std::string Renderer::GetBuffer()
+		{
+			return R"(
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>)" + (!titleBuffer.empty() ? titleBuffer : "Untitled") + R"(</title>
-    )" + styleBuffer + R"(
+    <title>)" + (!mTitleBuffer.empty() ? mTitleBuffer : "Untitled") + R"(</title>
+    )" + mStyleBuffer + R"(
 </head>
 <body>
-)" + buffer + R"(
+)" + mBuffer + R"(
 </body>
 </html>
 )";
-        }
+		}
 
-        std::string Renderer::getContentBuffer() {
-            return buffer;
-        }
+		std::string Renderer::GetContentBuffer()
+		{
+			return mBuffer;
+		}
 
-        void Renderer::setStyle(const std::string& style) {
-            if (style == "none")
-                styleBuffer.clear();
-            else if (style == "dark")
-                styleBuffer = R"(
+		void Renderer::SetStyle(const std::string& style)
+		{
+			if (style == "none")
+				mStyleBuffer.clear();
+			else if (style == "dark")
+				mStyleBuffer = R"(
             <style>
             *{margin:0;padding:0;box-sizing:border-box}
             html{font-size:62.8%}
@@ -59,15 +65,15 @@ namespace GularenBridge {
             table td{border:1px solid #889;padding:0.75rem 1rem}
             .checklist{list-style:none;margin-left:0}
             .checklist>.item{display:flex;flex-direction:row;align-items:baseline}
-            .checklist>.item>input[type=checkbox]{margin-right:0.5rem}
+            .checklist>.item>mInput[type=checkbox]{margin-right:0.5rem}
             .checklist>.item>label{flex-grow:1}
             hr{border:0;border-top:0.1rem solid #e4e5e6}
             code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
             pre>code{display:block;white-space:pre;padding:1rem 1.5rem;line-height:1.2;background-color:#010102;}
             </style>
         )";
-            else
-                styleBuffer = R"(
+			else
+				mStyleBuffer = R"(
             <style>
             *{margin:0;padding:0;box-sizing:border-box}
             html{font-size:62.8%}
@@ -83,7 +89,7 @@ namespace GularenBridge {
             table td{border:1px solid #889;padding:0.75rem 1rem}
             .checklist{list-style:none;margin-left:0}
             .checklist>.item{display:flex;flex-direction:row;align-items:baseline}
-            .checklist>.item>input[type=checkbox]{margin-right:0.5rem}
+            .checklist>.item>mInput[type=checkbox]{margin-right:0.5rem}
             .checklist>.item>label{flex-grow:1}
             hr{border:0;border-top:0.1rem solid #e4e5e6}
             code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
@@ -91,257 +97,269 @@ namespace GularenBridge {
             </style>
         )";
 
-        }
+		}
 
-        void Renderer::traverse(Node* node) {
-            preTraverse(node);
+		void Renderer::Traverse(Node* node)
+		{
+			PreTraverse(node);
 
-            for (Node* child: node->children)
-                traverse(child);
+			for (Node* child: node->children)
+				Traverse(child);
 
-            postTraverse(node);
-        }
+			PostTraverse(node);
+		}
 
-        void Renderer::preTraverse(Node* node) {
-            switch (node->type) {
-                case NodeType::Text: {
-                    std::string value = static_cast<ValueNode*>(node)->value;
-                    buffer += value;
+		void Renderer::PreTraverse(Node* node)
+		{
+			switch (node->type)
+			{
+				case NodeType::Text:
+				{
+					std::string value = static_cast<ValueNode*>(node)->value;
+					mBuffer += value;
 
-                    if (inTitle)
-                        titleBuffer += value;
-                    break;
-                }
+					if (mInTitle)
+						mTitleBuffer += value;
+					break;
+				}
 
-                case NodeType::FBold:
-                    buffer += "<b>";
-                    break;
-                case NodeType::FItalic:
-                    buffer += "<i>";
-                    break;
-                case NodeType::FMonospace:
-                    buffer += "<code>";
-                    break;
+				case NodeType::FBold:
+					mBuffer += "<b>";
+					break;
+				case NodeType::FItalic:
+					mBuffer += "<i>";
+					break;
+				case NodeType::FMonospace:
+					mBuffer += "<code>";
+					break;
 
-                case NodeType::Paragraph:
-                    buffer += "<p>";
-                    break;
+				case NodeType::Paragraph:
+					mBuffer += "<p>";
+					break;
 
-                case NodeType::Indent:
-                    buffer += "<blockquote>";
-                    break;
+				case NodeType::Indent:
+					mBuffer += "<blockquote>";
+					break;
 
-                case NodeType::LineBreak:
-                    buffer += "<br>";
-                    break;
-                case NodeType::ThematicBreak:
-                    buffer += "<hr>\n";
-                    break;
-                case NodeType::PageBreak:
-                    break;
-                case NodeType::Newline:
-                    buffer += " ";
-                    break;
+				case NodeType::LineBreak:
+					mBuffer += "<br>";
+					break;
+				case NodeType::ThematicBreak:
+					mBuffer += "<hr>\n";
+					break;
+				case NodeType::PageBreak:
+					break;
+				case NodeType::Newline:
+					mBuffer += " ";
+					break;
 
-                case NodeType::Title:
-                    buffer += "<h1>";
-                    if (titleBuffer.empty())
-                        inTitle = true;
-                    break;
+				case NodeType::Title:
+					mBuffer += "<h1>";
+					if (mTitleBuffer.empty())
+						mInTitle = true;
+					break;
 
-                case NodeType::Part:
-                    buffer += "<div class=\"part\">";
-                    break;
-                case NodeType::Chapter:
-                    buffer += "<div class=\"chapter\">";
-                    break;
+				case NodeType::Part:
+					mBuffer += "<div class=\"part\">";
+					break;
+				case NodeType::Chapter:
+					mBuffer += "<div class=\"chapter\">";
+					break;
 
-                case NodeType::Section:
-                    buffer += "<h2>";
-                    break;
-                case NodeType::Subsection:
-                    buffer += "<h3>";
-                    break;
-                case NodeType::Subsubsection:
-                    buffer += "<h4>";
-                    break;
-                case NodeType::Minisection:
-                    buffer += "<h5>";
-                    break;
+				case NodeType::Section:
+					mBuffer += "<h2>";
+					break;
+				case NodeType::Subsection:
+					mBuffer += "<h3>";
+					break;
+				case NodeType::Subsubsection:
+					mBuffer += "<h4>";
+					break;
+				case NodeType::Minisection:
+					mBuffer += "<h5>";
+					break;
 
-                case NodeType::List:
-                    buffer += "<ul>\n";
-                    break;
-                case NodeType::NList:
-                    buffer += "<ol>\n";
-                    break;
-                case NodeType::Item:
-                    buffer += "<li>";
-                    break;
+				case NodeType::List:
+					mBuffer += "<ul>\n";
+					break;
+				case NodeType::NList:
+					mBuffer += "<ol>\n";
+					break;
+				case NodeType::Item:
+					mBuffer += "<li>";
+					break;
 
-                case NodeType::CheckList:
-                    buffer += "<ul class=\"checklist\">\n";
-                    break;
-                case NodeType::CheckItem:
-                    buffer += "<li class=\"item\">";
-                    buffer += "<input type=\"checkbox\"";
-                    if (static_cast<TernaryNode*>(node)->state == TernaryState::True)
-                        buffer += " checked";
-                    if (static_cast<TernaryNode*>(node)->state == TernaryState::InBetween)
-                        buffer += " indeterminate";
-                    buffer += "><label>";
-                    break;
+				case NodeType::CheckList:
+					mBuffer += "<ul class=\"checklist\">\n";
+					break;
+				case NodeType::CheckItem:
+					mBuffer += "<li class=\"item\">";
+					mBuffer += "<mInput type=\"checkbox\"";
+					if (static_cast<TernaryNode*>(node)->state == TernaryState::True)
+						mBuffer += " checked";
+					if (static_cast<TernaryNode*>(node)->state == TernaryState::InBetween)
+						mBuffer += " indeterminate";
+					mBuffer += "><label>";
+					break;
 
-                case NodeType::Link: {
-                    Node* packageNode = static_cast<ContainerNode*>(node)->package;
-                    ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
-                    buffer += "<a href=\"" + valueNode->value + "\">";
-                    if (packageNode->children.empty())
-                        buffer += valueNode->value;
-                    break;
-                }
-                case NodeType::LocalLink: {
-                    Node* packageNode = static_cast<ContainerNode*>(node)->package;
-                    ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
-                    buffer += "<a href=\"#" + valueNode->value + "\">";
-                    if (packageNode->children.empty())
-                        buffer += valueNode->value;
-                    break;
-                }
+				case NodeType::Link:
+				{
+					Node* packageNode = static_cast<ContainerNode*>(node)->package;
+					ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
+					mBuffer += "<a href=\"" + valueNode->value + "\">";
+					if (packageNode->children.empty())
+						mBuffer += valueNode->value;
+					break;
+				}
+				case NodeType::LocalLink:
+				{
+					Node* packageNode = static_cast<ContainerNode*>(node)->package;
+					ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
+					mBuffer += "<a href=\"#" + valueNode->value + "\">";
+					if (packageNode->children.empty())
+						mBuffer += valueNode->value;
+					break;
+				}
 
-                case NodeType::Table:
-                    buffer += "<table>\n";
-                    break;
-                case NodeType::TableRow:
-                    buffer += "<tr>\n";
-                    break;
-                case NodeType::TableColumn:
-                    buffer += "<td>";
-                    break;
+				case NodeType::Table:
+					mBuffer += "<table>\n";
+					break;
+				case NodeType::TableRow:
+					mBuffer += "<tr>\n";
+					break;
+				case NodeType::TableColumn:
+					mBuffer += "<td>";
+					break;
 
-                case NodeType::InlineImage:
-                case NodeType::Image: {
-                    ValueNode* package = static_cast<ValueNode*>(static_cast<ContainerNode*>(node)->package);
-                    buffer += "<img src=\"" + package->value + "\">";
-                    break;
-                }
+				case NodeType::InlineImage:
+				case NodeType::Image:
+				{
+					ValueNode* package = static_cast<ValueNode*>(static_cast<ContainerNode*>(node)->package);
+					mBuffer += "<img src=\"" + package->value + "\">";
+					break;
+				}
 
-                case NodeType::InlineCode:
-                    buffer += "<code>";
-                    buffer += escape(static_cast<ValueNode*>(node)->value);
-                    buffer += "</code>\n";
-                    break;
+				case NodeType::InlineCode:
+					mBuffer += "<code>";
+					mBuffer += EscapeBuffer(static_cast<ValueNode*>(node)->value);
+					mBuffer += "</code>\n";
+					break;
 
-                case NodeType::Code: {
-                    CodeNode* codeNode = static_cast<CodeNode*>(node);
-                    buffer += "<pre><code>";
-                    buffer += escape(codeNode->value);
-                    buffer += "</code></pre>\n";
-                    break;
-                }
+				case NodeType::Code:
+				{
+					CodeNode* codeNode = static_cast<CodeNode*>(node);
+					mBuffer += "<pre><code>";
+					mBuffer += EscapeBuffer(codeNode->value);
+					mBuffer += "</code></pre>\n";
+					break;
+				}
 
-                default:
-                    break;
-            }
-        }
+				default:
+					break;
+			}
+		}
 
-        void Renderer::postTraverse(Node* node) {
-            switch (node->type) {
-                case NodeType::Title:
-                    buffer += "</h1>\n";
-                    inTitle = false;
-                    break;
+		void Renderer::PostTraverse(Node* node)
+		{
+			switch (node->type)
+			{
+				case NodeType::Title:
+					mBuffer += "</h1>\n";
+					mInTitle = false;
+					break;
 
-                case NodeType::FBold:
-                    buffer += "</b>";
-                    break;
-                case NodeType::FItalic:
-                    buffer += "</i>";
-                    break;
-                case NodeType::FMonospace:
-                    buffer += "</code>";
-                    break;
+				case NodeType::FBold:
+					mBuffer += "</b>";
+					break;
+				case NodeType::FItalic:
+					mBuffer += "</i>";
+					break;
+				case NodeType::FMonospace:
+					mBuffer += "</code>";
+					break;
 
-                case NodeType::Paragraph:
-                    buffer += "</p>\n";
-                    break;
+				case NodeType::Paragraph:
+					mBuffer += "</p>\n";
+					break;
 
-                case NodeType::Indent:
-                    buffer += "</blockquote>";
-                    break;
+				case NodeType::Indent:
+					mBuffer += "</blockquote>";
+					break;
 
-                case NodeType::Part:
-                    buffer += "</div>\n";
-                    break;
-                case NodeType::Chapter:
-                    buffer += "</div>\n";
-                    break;
+				case NodeType::Part:
+					mBuffer += "</div>\n";
+					break;
+				case NodeType::Chapter:
+					mBuffer += "</div>\n";
+					break;
 
-                case NodeType::Section:
-                    buffer += "</h2>\n";
-                    break;
-                case NodeType::Subsection:
-                    buffer += "</h3>\n";
-                    break;
-                case NodeType::Subsubsection:
-                    buffer += "</h4>\n";
-                    break;
-                case NodeType::Minisection:
-                    buffer += "</h5>\n";
-                    break;
+				case NodeType::Section:
+					mBuffer += "</h2>\n";
+					break;
+				case NodeType::Subsection:
+					mBuffer += "</h3>\n";
+					break;
+				case NodeType::Subsubsection:
+					mBuffer += "</h4>\n";
+					break;
+				case NodeType::Minisection:
+					mBuffer += "</h5>\n";
+					break;
 
-                case NodeType::List:
-                case NodeType::CheckList:
-                    buffer += "</ul>\n";
-                    break;
-                case NodeType::NList:
-                    buffer += "</ol>\n";
-                    break;
-                case NodeType::Item:
-                    break;
-                case NodeType::CheckItem:
-                    buffer += "</label></li>\n";
-                    break;
+				case NodeType::List:
+				case NodeType::CheckList:
+					mBuffer += "</ul>\n";
+					break;
+				case NodeType::NList:
+					mBuffer += "</ol>\n";
+					break;
+				case NodeType::Item:
+					break;
+				case NodeType::CheckItem:
+					mBuffer += "</label></li>\n";
+					break;
 
 
-                case NodeType::Link:
-                case NodeType::LocalLink:
-                    buffer += "</a>";
-                    break;
+				case NodeType::Link:
+				case NodeType::LocalLink:
+					mBuffer += "</a>";
+					break;
 
-                case NodeType::Table:
-                    buffer += "</table>\n";
-                    break;
-                case NodeType::TableRow:
-                    buffer += "</tr>\n";
-                    break;
-                case NodeType::TableColumn:
-                    buffer += "</td>\n";
-                    break;
+				case NodeType::Table:
+					mBuffer += "</table>\n";
+					break;
+				case NodeType::TableRow:
+					mBuffer += "</tr>\n";
+					break;
+				case NodeType::TableColumn:
+					mBuffer += "</td>\n";
+					break;
 
-                default:
-                    break;
-            }
-        }
+				default:
+					break;
+			}
+		}
 
-        std::string Renderer::escape(const std::string& raw) {
-            std::string escaped;
+		std::string Renderer::EscapeBuffer(const std::string& buffer)
+		{
+			std::string escaped;
 
-            for (size_t i = 0; i < raw.size(); ++i) {
-                switch (raw[i]) {
-                    case '<':
-                        escaped += "&lt;";
-                        break;
-                    case '>':
-                        escaped += "&gt;";
-                        break;
-                    default:
-                        escaped += raw[i];
-                }
-            }
+			for (size_t i = 0; i < buffer.size(); ++i)
+			{
+				switch (buffer[i])
+				{
+					case '<':
+						escaped += "&lt;";
+						break;
+					case '>':
+						escaped += "&gt;";
+						break;
+					default:
+						escaped += buffer[i];
+				}
+			}
 
-            return escaped;
-        }
-
-    }
+			return escaped;
+		}
+	}
 }
