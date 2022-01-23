@@ -8,23 +8,26 @@ namespace Gularen
 	{
 		unknown,
 
-		documentBegin,
-		documentEnd,
+		openDocument,
+		closeDocument,
 
-		hashSymbol,
-		atSymbol,
+		hash,
+		at,
 		symbol,
-		text,
-		quotedText,
-		rawText,
 
-		keywordImage,
-		keywordTable,
-		keywordCode,
-		KeywordBlock,
-		KeywordFile,
-		KeywordToc,
-		KeywordRef,
+		buffer,
+
+		openInterpolation,
+		closeInterpolation,
+
+		tableKeyword,
+		codeKeyword,
+		admonitionKeyword,
+		fileKeyword,
+		imageKeyword,
+		tocKeyword,
+		indexKeyword,
+		referenceKeyword,
 
 		newline,
 		space,
@@ -38,9 +41,17 @@ namespace Gularen
 		pipe,
 		questionMark,
 		exclamationMark,
+		caret,
+		ampersand,
 
-		leftCurlyBracket,
-		rightCurlyBracket,
+		// English based stylistic quotes
+		openSingleQuote,
+		closeSingleQuote,
+		openDoubleQuote,
+		closeDoubleQuote,
+
+		openCurlyBracket,
+		closeCurlyBracket,
 
 		dollar,
 
@@ -54,7 +65,6 @@ namespace Gularen
 		tail,    // >>
 		reverseTail, // <<
 		arrow,   // ->
-
 		teeth,   // ``
 	};
 

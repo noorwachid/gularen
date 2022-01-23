@@ -9,7 +9,7 @@ Another paragraph
 - list
 - list
 
-$ block 'important'
+$ admonition 'important'
 ---
 You cannot do this
 ---
@@ -24,10 +24,29 @@ $ code
 Console.WriteLine("Hello World!");
 ---
 
+~ file inclusions
+$ file 'someFile.gr'
 $ image 'someImage.png'
 
-$ file 'SomeFile.gr'
+~ variable assignments
+$ author = 'Noor Wachid'
 
+~ internal meta-document
+~ - print the table of contents created
 $ toc
 
-$ author = 'Noor Wachid'
+~ - print the index created by {?} function
+$ index
+
+~ - print the reference table you can refer them with {^} function
+$ reference
+---
+book1 = [
+    author = 'Someone Name',
+    year = 1999,
+]
+book2 = [
+    type = 'website',
+    url = 'http://google.com',
+]
+---

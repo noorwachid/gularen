@@ -23,7 +23,7 @@ namespace Gularen
 			case NodeType::text:
 				return "text";
 			case NodeType::quotedText:
-				return "quotedText";
+				return "buffer";
 			case NodeType::rawText:
 				return "rawText";
 			case NodeType::indent:

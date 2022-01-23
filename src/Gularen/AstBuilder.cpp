@@ -30,14 +30,14 @@ namespace Gularen
 
 	void AstBuilder::parse()
 	{
-		if (getCurrentToken().type == TokenType::documentBegin)
+		if (getCurrentToken().type == TokenType::openDocument)
 			skip();
 
 		parseNewline();
 
 		while (isValid()) {
 			switch (getCurrentToken().type) {
-				case TokenType::text:
+				case TokenType::buffer:
 					getHead()->add(new ValueNode(NodeType::text, NodeGroup::text, NodeShape::inBetween,
 						getCurrentToken().value));
 					skip();
@@ -78,7 +78,7 @@ namespace Gularen
 
 				case TokenType::teeth: {
 					skip();
-					if (getCurrentToken().type == TokenType::text && getNextToken().type == TokenType::teeth) {
+					if (getCurrentToken().type == TokenType::buffer && getNextToken().type == TokenType::teeth) {
 						getHead()->add(new ValueNode(NodeType::inlineCode, NodeGroup::text, NodeShape::inBetween,
 							getCurrentToken().value));
 						skip(2);
@@ -86,7 +86,7 @@ namespace Gularen
 					break;
 				}
 
-				case TokenType::leftCurlyBracket:
+				case TokenType::openCurlyBracket:
 					skip();
 					switch (getCurrentToken().type) {
 						case TokenType::symbol:
@@ -113,7 +113,7 @@ namespace Gularen
 
 					break;
 
-				case TokenType::rightCurlyBracket:
+				case TokenType::closeCurlyBracket:
 					skip();
 					popHead();
 					break;
@@ -125,12 +125,12 @@ namespace Gularen
 					skip();
 					break;
 
-				case TokenType::hashSymbol:
+				case TokenType::hash:
 					getHead()->add(new ValueNode(NodeType::hashSymbol, NodeGroup::tag, NodeShape::inBetween,
 						getCurrentToken().value));
 					skip();
 					break;
-				case TokenType::atSymbol:
+				case TokenType::at:
 					getHead()->add(new ValueNode(NodeType::atSymbol, NodeGroup::tag, NodeShape::inBetween,
 						getCurrentToken().value));
 					skip();
@@ -403,7 +403,7 @@ namespace Gularen
 		ValueNode* node = new ValueNode();
 		skip();
 
-		if (getCurrentToken().type == TokenType::quotedText) {
+		if (getCurrentToken().type == TokenType::buffer) {
 			node->type = NodeType::quotedText;
 			node->value = getCurrentToken().value;
 			skip();
@@ -414,7 +414,7 @@ namespace Gularen
 		}
 		container->value = node;
 
-		if (getCurrentToken().type == TokenType::leftCurlyBracket) {
+		if (getCurrentToken().type == TokenType::openCurlyBracket) {
 			pushHead(container);
 			pushHead(new Node(NodeType::wrapper));
 			skip();
@@ -425,7 +425,7 @@ namespace Gularen
 	void AstBuilder::parseBlock(TokenType type)
 	{
 		switch (type) {
-			case TokenType::keywordTable:
+			case TokenType::tableKeyword:
 				compareAndPopHead(NodeType::table);
 
 				while (isValid() && getCurrentToken().type != TokenType::line) {
@@ -434,13 +434,13 @@ namespace Gularen
 				pushHead(new TableNode());
 				break;
 
-			case TokenType::keywordCode: {
+			case TokenType::codeKeyword: {
 				compareAndPopHead(NodeType::code);
 
 				CodeNode* codeNode = new CodeNode();
 				getHead()->add(codeNode);
 				skip();
-				if (getCurrentToken().type == TokenType::quotedText) {
+				if (getCurrentToken().type == TokenType::buffer) {
 					codeNode->langCode = new ValueNode(NodeType::quotedText, NodeGroup::text, NodeShape::block,
 						getCurrentToken().value);
 					skip();
@@ -453,7 +453,7 @@ namespace Gularen
 					skip();
 
 				if (getCurrentToken().type == TokenType::line &&
-					getNextToken(1).type == TokenType::rawText &&
+					getNextToken(1).type == TokenType::buffer &&
 					getNextToken(2).type == TokenType::line) {
 					codeNode->value = getNextToken(1).value;
 					skip(3);
@@ -461,25 +461,25 @@ namespace Gularen
 				break;
 			}
 
-			case TokenType::KeywordToc:
+			case TokenType::tocKeyword:
 				while (isValid() && getCurrentToken().type != TokenType::newline)
 					skip();
 				getHead()->add(new Node(NodeType::toc, NodeGroup::unknown, NodeShape::line));
 				break;
 
-			case TokenType::KeywordFile:
+			case TokenType::fileKeyword:
 				while (isValid() && getCurrentToken().type != TokenType::newline)
 					skip();
 				getHead()->add(new Node(NodeType::file, NodeGroup::unknown, NodeShape::line));
 				break;
 
-			case TokenType::keywordImage:
+			case TokenType::imageKeyword:
 				while (isValid() && getCurrentToken().type != TokenType::newline)
 					skip();
 				getHead()->add(new Node(NodeType::image, NodeGroup::unknown, NodeShape::line));
 				break;
 
-			case TokenType::KeywordBlock:
+			case TokenType::admonitionKeyword:
 				while (isValid() && getCurrentToken().type != TokenType::line)
 					skip();
 				getHead()->add(new Node(NodeType::block, NodeGroup::unknown, NodeShape::block));

@@ -27,7 +27,7 @@ namespace Gularen
 	void Lexer::parse()
 	{
 		reset();
-		add(Token(TokenType::documentBegin));
+		add(Token(TokenType::openDocument));
 		parseNewline();
 
 		while (isValid()) {
@@ -51,7 +51,7 @@ namespace Gularen
 						std::string buffer;
 						while (isValid()) {
 							if (getCurrentByte() == '`' && getNextByte() == '`') {
-								add(Token(TokenType::text, buffer));
+								add(Token(TokenType::buffer, buffer));
 								add(Token(TokenType::teeth));
 								skip(2);
 								break;
@@ -117,23 +117,36 @@ namespace Gularen
 					break;
 
 				case '{':
-					add(Token(TokenType::leftCurlyBracket));
+					add(Token(TokenType::openCurlyBracket));
 					skip();
 					parseInlineFunction();
 					break;
 
 				case '}':
-					add(Token(TokenType::rightCurlyBracket));
+					add(Token(TokenType::closeCurlyBracket));
 					skip();
 					break;
 
 				case '\\':
-					parseInlineEscapedByte();
+					skip();
+					add(Token(TokenType::buffer, std::string(1, getCurrentByte())));
+					skip();
+					break;
+
+				case '\'':
+					parseQuoteBuffer(TokenType::openDoubleQuote, TokenType::openSingleQuote, TokenType::closeSingleQuote);
+					break;
+
+				case '"':
+					if (!inInterpolatedBuffer)
+						parseQuoteBuffer(TokenType::openSingleQuote, TokenType::openDoubleQuote, TokenType::closeDoubleQuote);
+					else
+						parseInterpolatedString();
 					break;
 
 				case '|':
 					skip();
-					if (!tokens.empty() && tokens.back().type == TokenType::text) {
+					if (!tokens.empty() && tokens.back().type == TokenType::buffer) {
 						// remove blankspaces of previous token
 						for (size_t i = tokens.back().value.size() - 1; i >= 0; --i) {
 							if (tokens.back().value[i] != ' ') {
@@ -154,7 +167,7 @@ namespace Gularen
 						skip();
 					}
 					Token token;
-					token.type = TokenType::hashSymbol;
+					token.type = TokenType::hash;
 					token.value = symbol;
 					add(std::move(token));
 					break;
@@ -167,27 +180,27 @@ namespace Gularen
 						skip();
 					}
 					Token token;
-					token.type = TokenType::atSymbol;
+					token.type = TokenType::at;
 					token.value = symbol;
 					add(std::move(token));
 					break;
 				}
 
 				default:
-					if (isValidText())
-						parseText();
+					if (isValidBuffer())
+						parseBuffer();
 					else {
-						if (!tokens.empty() && tokens.back().type == TokenType::text)
+						if (!tokens.empty() && tokens.back().type == TokenType::buffer)
 							tokens.back().value += getCurrentByte();
 						else
-							add(Token(TokenType::text, std::string(1, getCurrentByte())));
+							add(Token(TokenType::buffer, std::string(1, getCurrentByte())));
 						skip();
 					}
 					break;
 			}
 		}
 
-		add(Token(TokenType::documentEnd));
+		add(Token(TokenType::closeDocument));
 	}
 
 	std::string Lexer::getBuffer()
@@ -203,11 +216,14 @@ namespace Gularen
 	void Lexer::reset()
 	{
 		inHeaderLine = false;
-		inLink = false;
+		inInterpolatedBuffer = false;
 		inCodeBlock = false;
 
 		bufferIndex = 0;
 		tokens.clear();
+
+		previousByte = 0;
+		previousType = TokenType::unknown;
 
 		currentDepth = 0;
 	}
@@ -227,28 +243,46 @@ namespace Gularen
 		return buffer + "\n";
 	}
 
-	void Lexer::parseText()
+	void Lexer::parseBuffer()
 	{
 		std::string buffer;
 
-		while (isValid() && isValidText()) {
+		while (isValid() && isValidBuffer()) {
 			buffer += getCurrentByte();
 			skip();
 		}
 
-		if (!tokens.empty() && tokens.back().type == TokenType::text)
+		if (!tokens.empty() && tokens.back().type == TokenType::buffer)
 			tokens.back().value += buffer;
 		else
-			add(Token(TokenType::text, buffer));
+			add(Token(TokenType::buffer, buffer));
 	}
 
-	void Lexer::parseQuotedText()
+	void Lexer::parseQuoteBuffer(TokenType previousType, TokenType openType, TokenType closeType)
+	{
+		char previousByte = getPreviousByte();
+
+		add(Token((
+			previousByte == ' ' ||
+			previousByte == '\t' ||
+			previousByte == '\n' ||
+			previousByte == '\0' ||
+			this->previousType == previousType)
+				? openType
+				: closeType));
+		skip();
+	}
+
+	void Lexer::parseString()
 	{
 		Token token;
-		token.type = TokenType::quotedText;
+		token.type = TokenType::buffer;
 
 		skip();
 		while (isValid() && getCurrentByte() != '\'') {
+			if (getCurrentByte() == '\\')
+				skip();
+
 			token.value += getCurrentByte();
 			skip();
 		}
@@ -256,33 +290,17 @@ namespace Gularen
 		add(std::move(token));
 	}
 
-	void Lexer::parseInlineEscapedByte()
+	void Lexer::parseInterpolatedString()
 	{
-		skip();
-
-		switch (getCurrentByte()) {
-			case '~': // Oneline comments
-			case '\\':
-			case '*':
-			case '_':
-			case '`':
-			case '{':
-			case '}':
-			case '<':
-				add(Token(TokenType::text, std::string(1, getCurrentByte())));
-				skip();
-				break;
-
-			default: {
-				std::string buffer(1, '\\');
-				buffer += getCurrentByte();
-				add(Token(TokenType::text, buffer));
-				skip();
-				break;
-			}
+		if (!inInterpolatedBuffer) {
+			add(Token(TokenType::openInterpolation));
+			inInterpolatedBuffer = true;
+		} else {
+			add(Token(TokenType::closeInterpolation));
+			inInterpolatedBuffer = false;
 		}
+		skip();
 	}
-
 	void Lexer::parseNewline()
 	{
 		// state variables
@@ -351,7 +369,7 @@ namespace Gularen
 									}
 
 									if (laterSize == size) {
-										add(Token(TokenType::rawText, buffer));
+										add(Token(TokenType::buffer, buffer));
 										add(Token(TokenType::line, size));
 										inCodeBlock = false;
 										break;
@@ -393,10 +411,10 @@ namespace Gularen
 					add(Token(TokenType::numericBullet));
 					skip(2);
 				} else {
-					if (!tokens.empty() && tokens.back().type == TokenType::text)
+					if (!tokens.empty() && tokens.back().type == TokenType::buffer)
 						tokens.back().value += buffer;
 					else
-						add(Token(TokenType::text, buffer));
+						add(Token(TokenType::buffer, buffer));
 				}
 
 				break;
@@ -508,23 +526,23 @@ namespace Gularen
 		}
 
 		if (symbol == "image") {
-			add(Token(TokenType::keywordImage));
+			add(Token(TokenType::imageKeyword));
 			skipSpaces();
 		} else if (symbol == "table") {
-			add(Token(TokenType::keywordTable));
+			add(Token(TokenType::tableKeyword));
 			skipSpaces();
 		} else if (symbol == "code") {
-			add(Token(TokenType::keywordCode));
+			add(Token(TokenType::codeKeyword));
 			skipSpaces();
 			inCodeBlock = true;
 		} else if (symbol == "admon") {
-			add(Token(TokenType::KeywordBlock));
+			add(Token(TokenType::admonitionKeyword));
 			skipSpaces();
 		} else if (symbol == "file") {
-			add(Token(TokenType::KeywordFile));
+			add(Token(TokenType::fileKeyword));
 			skipSpaces();
 		} else if (symbol == "toc") {
-			add(Token(TokenType::KeywordToc));
+			add(Token(TokenType::tocKeyword));
 			skipSpaces();
 		} else
 			add(Token(TokenType::symbol, symbol));
@@ -532,7 +550,9 @@ namespace Gularen
 		skipSpaces();
 
 		if (getCurrentByte() == '\'')
-			parseQuotedText();
+			parseString();
+		else if (getCurrentByte() == '"')
+			parseInterpolatedString();
 		else if (isValidSymbol()) {
 			std::string symbol;
 			while (isValid() && isValidSymbol()) {
@@ -545,7 +565,7 @@ namespace Gularen
 		skipSpaces();
 
 		if (getCurrentByte() == '{') {
-			add(Token(TokenType::leftCurlyBracket));
+			add(Token(TokenType::openCurlyBracket));
 			skip();
 		}
 	}
@@ -554,26 +574,38 @@ namespace Gularen
 	{
 		switch (getCurrentByte()) {
 			case ':':
-				inLink = true;
+				inInterpolatedBuffer = true;
 				add(Token(TokenType::colon));
 				skip();
 				break;
 
 			case '!':
-				inLink = true;
+				inInterpolatedBuffer = true;
 				add(Token(TokenType::exclamationMark));
 				skip();
 				break;
 
 			case '?':
-				inLink = true;
+				inInterpolatedBuffer = true;
 				add(Token(TokenType::questionMark));
+				skip();
+				break;
+
+			case '^':
+				inInterpolatedBuffer = true;
+				add(Token(TokenType::caret));
+				skip();
+				break;
+
+			case '&':
+				inInterpolatedBuffer = true;
+				add(Token(TokenType::ampersand));
 				skip();
 				break;
 		}
 
 		if (getCurrentByte() == '\'')
-			parseQuotedText();
+			parseString();
 		else if (isValidSymbol()) {
 			std::string symbol;
 			while (isValid() && isValidSymbol()) {
@@ -586,7 +618,7 @@ namespace Gularen
 		skipSpaces();
 
 		if (getCurrentByte() == '{') {
-			add(Token(TokenType::leftCurlyBracket));
+			add(Token(TokenType::openCurlyBracket));
 			skip();
 		}
 	}
@@ -596,7 +628,7 @@ namespace Gularen
 		return bufferIndex < bufferSize;
 	}
 
-	bool Lexer::isValidText()
+	bool Lexer::isValidBuffer()
 	{
 		char c = getCurrentByte();
 
@@ -605,7 +637,6 @@ namespace Gularen
 			(c >= '0' && c <= '9') ||
 			c == ' ' || c == '-' || c == '.' ||
 			c == '!' || c == '?' ||
-			c == '"' || c == '\'' ||
 			c == ';' || c == ':';
 	}
 
@@ -628,6 +659,11 @@ namespace Gularen
 		return buffer[bufferIndex];
 	}
 
+	char Lexer::getPreviousByte()
+	{
+		return previousByte;
+	}
+
 	char Lexer::getNextByte(size_t offset)
 	{
 		return bufferIndex + offset < bufferSize ? buffer[bufferIndex + offset] : 0;
@@ -635,6 +671,7 @@ namespace Gularen
 
 	void Lexer::skip(size_t offset)
 	{
+		previousByte = getCurrentByte();
 		bufferIndex += offset;
 	}
 
@@ -646,6 +683,7 @@ namespace Gularen
 
 	void Lexer::add(Token&& token)
 	{
+		previousType = token.type;
 		tokens.emplace_back(token);
 	}
 }

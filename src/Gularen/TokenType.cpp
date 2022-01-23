@@ -8,38 +8,38 @@ namespace Gularen
 			case TokenType::unknown:
 				return "unknown";
 
-			case TokenType::documentBegin:
-				return "documentBegin";
-			case TokenType::documentEnd:
-				return "documentEnd";
+			case TokenType::openDocument:
+				return "openDocument";
+			case TokenType::closeDocument:
+				return "closeDocument";
 
-			case TokenType::hashSymbol:
-				return "hashSymbol";
-			case TokenType::atSymbol:
-				return "atSymbol";
+			case TokenType::hash:
+				return "hash";
+			case TokenType::at:
+				return "at";
 			case TokenType::symbol:
 				return "symbol";
-			case TokenType::text:
-				return "text";
-			case TokenType::quotedText:
-				return "quotedText";
-			case TokenType::rawText:
-				return "rawText";
+			case TokenType::buffer:
+				return "buffer";
+			case TokenType::openInterpolation:
+				return "openInterpolation";
+			case TokenType::closeInterpolation:
+				return "closeInterpolation";
 
-			case TokenType::keywordImage:
-				return "keywordImage";
-			case TokenType::KeywordFile:
-				return "KeywordFile";
-			case TokenType::keywordTable:
-				return "keywordTable";
-			case TokenType::keywordCode:
-				return "keywordCode";
-			case TokenType::KeywordBlock:
-				return "KeywordBlock";
-			case TokenType::KeywordToc:
-				return "KeywordToc";
-			case TokenType::KeywordRef:
-				return "KeywordRef";
+			case TokenType::imageKeyword:
+				return "imageKeyword";
+			case TokenType::fileKeyword:
+				return "fileKeyword";
+			case TokenType::tableKeyword:
+				return "tableKeyword";
+			case TokenType::codeKeyword:
+				return "codeKeyword";
+			case TokenType::admonitionKeyword:
+				return "admonitionKeyword";
+			case TokenType::tocKeyword:
+				return "tocKeyword";
+			case TokenType::referenceKeyword:
+				return "referenceKeyword";
 
 			case TokenType::asterisk:
 				return "asterisk";
@@ -63,11 +63,24 @@ namespace Gularen
 				return "questionMark";
 			case TokenType::exclamationMark:
 				return "exclamationMark";
+			case TokenType::caret:
+				return "caret";
+			case TokenType::ampersand:
+				return "ampersand";
 
-			case TokenType::leftCurlyBracket:
-				return "leftCurlyBracket";
-			case TokenType::rightCurlyBracket:
-				return "rightCurlyBracket";
+			case TokenType::openSingleQuote:
+				return "openSingleQuote";
+			case TokenType::closeSingleQuote:
+				return "closeSingleQuote";
+			case TokenType::openDoubleQuote:
+				return "openDoubleQuote";
+			case TokenType::closeDoubleQuote:
+				return "closeDoubleQuote";
+
+			case TokenType::openCurlyBracket:
+				return "openCurlyBracket";
+			case TokenType::closeCurlyBracket:
+				return "closeCurlyBracket";
 
 			case TokenType::dollar:
 				return "dollar";

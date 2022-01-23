@@ -1,0 +1,21 @@
+~ printing variable or string
+{variable}
+{'string'}
+{"rich string *bold* _italic_ `monospaced`"}
+
+~ jump to url
+{:'duckduckgo.com'}
+{:'duckduckgo.com', "is *here*"}
+
+~ jump to section function
+{!'thisSection'}
+{!'thisSection', 'This section'}
+
+~ create definition
+{?'word', 'definition'}
+
+~ jump to reference
+{^'thisDefinition'}
+
+~ render inline image
+{&'image.png'}

@@ -1,2 +1,2 @@
 $ image 'cat.png'
-$ image 'cat.png', `A cat`
+$ image 'cat.png', 'A cat'

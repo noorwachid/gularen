@@ -29,11 +29,13 @@ namespace Gularen
 		std::string getTokensAsString();
 
 	private:
-		void parseText();
+		void parseBuffer();
 
-		void parseQuotedText();
+		void parseQuoteBuffer(TokenType previousType, TokenType openType, TokenType closeType);
 
-		void parseInlineEscapedByte();
+		void parseString();
+
+		void parseInterpolatedString();
 
 		void parseNewline();
 
@@ -41,17 +43,18 @@ namespace Gularen
 
 		void parseInlineFunction();
 
-
 	private:
 		bool isValid();
 
-		bool isValidText();
+		bool isValidBuffer();
 
 		bool isValidSymbol();
 
 		bool isValidNumeric();
 
 		char getCurrentByte();
+
+		char getPreviousByte();
 
 		char getNextByte(size_t offset = 1);
 
@@ -68,8 +71,11 @@ namespace Gularen
 		size_t bufferSize;
 
 		bool inHeaderLine;
-		bool inLink;
+		bool inInterpolatedBuffer;
 		bool inCodeBlock;
+
+		char previousByte;
+		TokenType previousType;
 
 		size_t currentDepth;
 	};
