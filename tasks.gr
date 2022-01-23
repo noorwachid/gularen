@@ -114,7 +114,7 @@
 	[ ] Print all definitions
 	    $ code 'gr'
 	    ---
-	    $ term
+	    $ index
 	    ---
 
     [ ] References
@@ -125,7 +125,7 @@
 	    ---
 
         [ ] Definitions and Print
-	    $ ref
+	    $ reference
 	    ---
 	    book1 = [
 	        title = 'Avatar Kyoshi',
@@ -195,7 +195,7 @@
 [ ] Admonitions
     $ code 'gr'
     ----
-    $ block 'note'
+    $ admonition 'note'
     ---
     An admonition
     ---
@@ -213,8 +213,6 @@
         }
         ---
         ----
-    [+] Inline codes
-        {@ 'js', 'the code goes here'}
 
 [-] Tables
     $ code 'gr'
