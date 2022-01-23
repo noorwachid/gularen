@@ -21,10 +21,10 @@ namespace Gularen
 				return "symbol";
 			case TokenType::buffer:
 				return "buffer";
-			case TokenType::openInterpolation:
-				return "openInterpolation";
-			case TokenType::closeInterpolation:
-				return "closeInterpolation";
+			case TokenType::openStyleQuote:
+				return "openStyleQuote";
+			case TokenType::closeStyleQuote:
+				return "closeStyleQuote";
 
 			case TokenType::imageKeyword:
 				return "imageKeyword";
@@ -52,6 +52,11 @@ namespace Gularen
 				return "newline";
 			case TokenType::space:
 				return "space";
+
+			case TokenType::period:
+				return "period";
+			case TokenType::comma:
+				return "comma";
 
 			case TokenType::equal:
 				return "equal";
@@ -81,6 +86,10 @@ namespace Gularen
 				return "openCurlyBracket";
 			case TokenType::closeCurlyBracket:
 				return "closeCurlyBracket";
+			case TokenType::openSquareBracket:
+				return "openSquareBracket";
+			case TokenType::closeSquareBracket:
+				return "closeSquareBracket";
 
 			case TokenType::dollar:
 				return "dollar";

@@ -29,24 +29,50 @@ namespace Gularen
 		std::string getTokensAsString();
 
 	private:
-		void parseBuffer();
+		bool parseGlobalRules();
 
-		void parseQuoteBuffer(TokenType previousType, TokenType openType, TokenType closeType);
+		bool parseFormattingRules();
 
-		void parseString();
+		bool parseQuotingRules();
 
-		void parseInterpolatedString();
+		bool parseNewlineRules();
 
-		void parseNewline();
+		bool parseWriter();
 
-		void parseFunction();
+		bool parseSymbolOrString();
 
-		void parseInlineFunction();
+		bool parseSymbolOrStringOrFormattedString();
+
+		bool parseFunction();
+
+		void consumeNewline();
+
+		void consumeQuote(TokenType previousType, TokenType openType, TokenType closeType);
+
+		void consumeBuffer();
+
+		void consumeSymbol();
+
+		void consumeTag(TokenType familyType);
+
+		void consumeString();
+
+		void consumeFormattedString();
+
+		void consumeArray();
+
+		void consumeArguments();
+
+		void consumeBlockKeyword();
 
 	private:
 		bool isValid();
 
 		bool isValidBuffer();
+
+		bool isValidString();
+
+		bool isValidFormattedString();
 
 		bool isValidSymbol();
 
@@ -71,6 +97,7 @@ namespace Gularen
 		size_t bufferSize;
 
 		bool inHeaderLine;
+		bool inWriter;
 		bool inInterpolatedBuffer;
 		bool inCodeBlock;
 

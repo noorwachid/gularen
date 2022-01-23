@@ -17,8 +17,8 @@ namespace Gularen
 
 		buffer,
 
-		openInterpolation,
-		closeInterpolation,
+		openStyleQuote,
+		closeStyleQuote,
 
 		tableKeyword,
 		codeKeyword,
@@ -36,6 +36,8 @@ namespace Gularen
 		underline,
 		backtick,
 
+		period,
+		comma,
 		equal,
 		colon,
 		pipe,
@@ -52,6 +54,8 @@ namespace Gularen
 
 		openCurlyBracket,
 		closeCurlyBracket,
+		openSquareBracket,
+		closeSquareBracket,
 
 		dollar,
 
