@@ -158,7 +158,7 @@ public:
 		IO::writeLine("    -s specify renderer engine's template");
 		IO::writeLine("    -t write tokens to stdout");
 		IO::writeLine("    -a write abstract syntax rootNode to stdout");
-		IO::writeLine("    -b write output buffer to stdout");
+		IO::writeLine("    -b write output string to stdout");
 		IO::writeLine("");
 		IO::writeLine("ENGINES:");
 		IO::writeLine("    html");

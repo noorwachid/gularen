@@ -38,4 +38,8 @@ And of course the checklist or todo-list or whatever you name it.
 [ ] This one is not
 ```
 
-read the [tasks.gr](tasks.gr) for full design and the implementation progress.
+### Build
+1. I'm pretty sure everybody knows how to use CMake.
+
+### Author Notes
+read the [tasks.gr](tasks.gr) for specification and the implementation progress.

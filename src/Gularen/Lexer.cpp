@@ -39,7 +39,7 @@ namespace Gularen
 				if (isValidBuffer()) {
 					consumeBuffer();
 				} else {
-					add(Token(TokenType::buffer, std::string(1, getCurrentByte())));
+					add(Token(TokenType::string, std::string(1, getCurrentByte())));
 					skip();
 				}
 			}
@@ -126,13 +126,13 @@ namespace Gularen
 
 			case '\\':
 				skip();
-				add(Token(TokenType::buffer, std::string(1, getCurrentByte())));
+				add(Token(TokenType::string, std::string(1, getCurrentByte())));
 				skip();
 				return true;
 
 			case '|':
 				skip();
-				if (!tokens.empty() && tokens.back().type == TokenType::buffer) {
+				if (!tokens.empty() && tokens.back().type == TokenType::string) {
 					// remove blank spaces of previous token
 					for (size_t i = tokens.back().value.size() - 1; i >= 0; --i) {
 						if (tokens.back().value[i] != ' ') {
@@ -207,10 +207,10 @@ namespace Gularen
 			skip();
 		}
 
-		if (!tokens.empty() && tokens.back().type == TokenType::buffer)
+		if (!tokens.empty() && tokens.back().type == TokenType::string)
 			tokens.back().value += buffer;
 		else
-			add(Token(TokenType::buffer, buffer));
+			add(Token(TokenType::string, buffer));
 	}
 
 	void Lexer::consumeQuote(TokenType previousType, TokenType openType, TokenType closeType)
@@ -301,7 +301,7 @@ namespace Gularen
 									}
 
 									if (laterSize == size) {
-										add(Token(TokenType::buffer, buffer));
+										add(Token(TokenType::string, buffer));
 										add(Token(TokenType::line, size));
 										inCodeBlock = false;
 										break;
@@ -343,10 +343,10 @@ namespace Gularen
 					add(Token(TokenType::numericBullet));
 					skip(2);
 				} else {
-					if (!tokens.empty() && tokens.back().type == TokenType::buffer)
+					if (!tokens.empty() && tokens.back().type == TokenType::string)
 						tokens.back().value += buffer;
 					else
-						add(Token(TokenType::buffer, buffer));
+						add(Token(TokenType::string, buffer));
 				}
 
 				break;
@@ -469,7 +469,7 @@ namespace Gularen
 
 	void Lexer::consumeString()
 	{
-		Token token(TokenType::buffer);
+		Token token(TokenType::string);
 		skip();
 
 		while (isValid() && isValidString()) {
@@ -494,7 +494,7 @@ namespace Gularen
 		while (isValid() && getCurrentByte() != '"') {
 			if (parseFormattingRules()) {
 			} else {
-				Token token(TokenType::buffer);
+				Token token(TokenType::string);
 				while (isValid() && isValidFormattedString()) {
 					if (getCurrentByte() == '\\')
 						skip();

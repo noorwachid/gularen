@@ -6,7 +6,8 @@ namespace Gularen
 	{
 		unknown = 0,
 
-		text,
+		string,
+		quote,
 
 		header,
 		list,

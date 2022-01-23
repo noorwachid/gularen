@@ -140,9 +140,6 @@ namespace Gularen
 		if (value) {
 			if (value->type == NodeType::symbol)
 				buffer += "%" + static_cast<ValueNode*>(value)->value;
-
-			if (value->type == NodeType::quotedText)
-				buffer += "\"" + static_cast<ValueNode*>(value)->value + "\"";
 		}
 		return buffer;
 	}
@@ -173,9 +170,6 @@ namespace Gularen
 		if (langCode) {
 			if (langCode->type == NodeType::symbol)
 				buffer += "%" + static_cast<ValueNode*>(langCode)->value + " ";
-
-			if (langCode->type == NodeType::quotedText)
-				buffer += "\"" + static_cast<ValueNode*>(langCode)->value + "\" ";
 		}
 		return buffer + "\"" + value + "\"";
 	}

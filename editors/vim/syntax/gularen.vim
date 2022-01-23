@@ -35,12 +35,12 @@ sy region gularenInlineCode start="``" end="``"
 hi gularenFBold   gui=bold cterm=bold
 hi gularenFItalic gui=italic cterm=italic
 
-hi def link gularenComment    Comment
-hi def link gularenTitleArrow Title
-hi def link gularenBullet     Number
-hi def link gularenLine       Function
-hi def link gularenBox        Function
-hi def link gularenRevTail    Function
-hi def link gularenFMonospace Number
-hi def link gularenInlineCode String
-hi def link gularenCB         Keyword
+hi def url gularenComment    Comment
+hi def url gularenTitleArrow Title
+hi def url gularenBullet     Number
+hi def url gularenLine       Function
+hi def url gularenBox        Function
+hi def url gularenRevTail    Function
+hi def url gularenFMonospace Number
+hi def url gularenInlineCode String
+hi def url gularenCB         Keyword

@@ -43,17 +43,16 @@ namespace GularenBridge
 			buffer += "{\"type\":\"" + Gularen::toString(node->type) + "\"";
 
 			switch (node->type) {
-				case NodeType::text:
-				case NodeType::inlineCode:
+				case NodeType::string:
 					buffer += ",\"value\":\"" + escapeBuffer(static_cast<ValueNode*>(node)->value) + "\"}";
 					break;
 
 				case NodeType::paragraph:
 				case NodeType::indent:
-				case NodeType::wrapper:
-				case NodeType::formatBold:
-				case NodeType::formatItalic:
-				case NodeType::formatMonospace:
+				case NodeType::container:
+				case NodeType::boldFormat:
+				case NodeType::italicFormat:
+				case NodeType::monospaceFormat:
 				case NodeType::root:
 					buffer += ",\"children\":[";
 					break;
@@ -72,17 +71,17 @@ namespace GularenBridge
 				case NodeType::part:
 				case NodeType::chapter:
 				case NodeType::section:
-				case NodeType::subsection:
-				case NodeType::subsubsection:
-				case NodeType::minisection:
+				case NodeType::subSection:
+				case NodeType::subSubSection:
+				case NodeType::miniSection:
 				case NodeType::list:
 				case NodeType::numericList:
 				case NodeType::checkList:
 				case NodeType::item:
 				case NodeType::checkItem:
 				case NodeType::table:
-				case NodeType::tableRow:
-				case NodeType::tableColumn:
+				case NodeType::row:
+				case NodeType::cell:
 					buffer += ",\"children\":[";
 					break;
 
@@ -90,12 +89,12 @@ namespace GularenBridge
 					CodeNode* code = static_cast<CodeNode*>(node);
 					if (code->langCode)
 						buffer += ",\"langCode\":\"" + static_cast<ValueNode*>(code->langCode)->value + "\"";
-					buffer += ",\"buffer\":\"" + escapeBuffer(code->value) + "\"";
+					buffer += ",\"string\":\"" + escapeBuffer(code->value) + "\"";
 					buffer += "}";
 					break;
 				}
 
-				case NodeType::link:
+				case NodeType::urlLink:
 					break;
 
 				default:
@@ -108,26 +107,26 @@ namespace GularenBridge
 			switch (node->type) {
 				case NodeType::paragraph:
 				case NodeType::indent:
-				case NodeType::wrapper:
-				case NodeType::formatBold:
-				case NodeType::formatItalic:
-				case NodeType::formatMonospace:
+				case NodeType::container:
+				case NodeType::boldFormat:
+				case NodeType::italicFormat:
+				case NodeType::monospaceFormat:
 				case NodeType::root:
 				case NodeType::title:
 				case NodeType::part:
 				case NodeType::chapter:
 				case NodeType::section:
-				case NodeType::subsection:
-				case NodeType::subsubsection:
-				case NodeType::minisection:
+				case NodeType::subSection:
+				case NodeType::subSubSection:
+				case NodeType::miniSection:
 				case NodeType::list:
 				case NodeType::numericList:
 				case NodeType::checkList:
 				case NodeType::item:
 				case NodeType::checkItem:
 				case NodeType::table:
-				case NodeType::tableRow:
-				case NodeType::tableColumn:
+				case NodeType::row:
+				case NodeType::cell:
 					buffer += "]}";
 					break;
 

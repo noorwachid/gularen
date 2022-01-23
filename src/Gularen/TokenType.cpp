@@ -19,8 +19,8 @@ namespace Gularen
 				return "at";
 			case TokenType::symbol:
 				return "symbol";
-			case TokenType::buffer:
-				return "buffer";
+			case TokenType::string:
+				return "string";
 			case TokenType::openFormatting:
 				return "openFormatting";
 			case TokenType::closeFormatting:
@@ -112,9 +112,6 @@ namespace Gularen
 				return "reverseTail";
 			case TokenType::arrow:
 				return "arrow";
-
-			case TokenType::teeth:
-				return "teeth";
 
 			default:
 				return "[unhandled]";

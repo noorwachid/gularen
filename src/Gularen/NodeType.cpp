@@ -15,17 +15,11 @@ namespace Gularen
 
 			case NodeType::symbol:
 				return "symbol";
-			case NodeType::curtain:
-				return "curtain";
-			case NodeType::wrapper:
+			case NodeType::container:
 				return "container";
 
-			case NodeType::text:
-				return "text";
-			case NodeType::quotedText:
-				return "buffer";
-			case NodeType::rawText:
-				return "rawText";
+			case NodeType::string:
+				return "string";
 			case NodeType::indent:
 				return "indent";
 
@@ -44,52 +38,57 @@ namespace Gularen
 				return "chapter";
 			case NodeType::section:
 				return "section";
-			case NodeType::subsection:
+			case NodeType::subSection:
 				return "subsection";
-			case NodeType::subsubsection:
-				return "subsubsection";
-			case NodeType::minisection:
-				return "minisection";
+			case NodeType::subSubSection:
+				return "subSubSection";
+			case NodeType::miniSection:
+				return "miniSection";
 			case NodeType::paragraph:
-				return "Paragraph";
-
-			case NodeType::inlineCode:
-				return "inlineCode";
-			case NodeType::code:
-				return "code";
+				return "paragraph";
 
 			case NodeType::table:
 				return "table";
-			case NodeType::tableRow:
-				return "tableRow";
-			case NodeType::tableColumn:
-				return "tableColumn";
+			case NodeType::row:
+				return "row";
+			case NodeType::cell:
+				return "cell";
 
+			case NodeType::code:
+				return "code";
 			case NodeType::file:
 				return "file";
+			case NodeType::image:
+				return "image";
 			case NodeType::toc:
 				return "toc";
-			case NodeType::block:
-				return "block";
+			case NodeType::index:
+				return "index";
+			case NodeType::reference:
+				return "reference";
+			case NodeType::admonition:
+				return "admonition";
 			case NodeType::assignment:
 				return "assignment";
 
-			case NodeType::link:
-				return "link";
-			case NodeType::localLink:
-				return "localLink";
+			case NodeType::urlLink:
+				return "urlLink";
+			case NodeType::markerLink:
+				return "markerLink";
+			case NodeType::referenceLink:
+				return "referenceLink";
 
 			case NodeType::inlineImage:
 				return "inlineImage";
-			case NodeType::image:
-				return "image";
+			case NodeType::indexDefinition:
+				return "indexDefinition";
 
-			case NodeType::formatBold:
-				return "formatBold";
-			case NodeType::formatItalic:
-				return "formatItalic";
-			case NodeType::formatMonospace:
-				return "formatMonospace";
+			case NodeType::boldFormat:
+				return "boldFormat";
+			case NodeType::italicFormat:
+				return "italicFormat";
+			case NodeType::monospaceFormat:
+				return "monospaceFormat";
 
 			case NodeType::list:
 				return "list";

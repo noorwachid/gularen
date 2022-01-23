@@ -15,7 +15,7 @@ namespace Gularen
 		at,
 		symbol,
 
-		buffer,
+		string,
 
 		openFormatting,
 		closeFormatting,
@@ -66,10 +66,9 @@ namespace Gularen
 
 		anchor,
 
-		tail,    // >>
+		tail, // >>
 		reverseTail, // <<
-		arrow,   // ->
-		teeth,   // ``
+		arrow, // ->
 	};
 
 	std::string toString(TokenType type);

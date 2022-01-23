@@ -22,43 +22,51 @@ namespace Gularen
 		part,
 		chapter,
 		section,
-		subsection,
-		subsubsection,
-		minisection,
+		subSection,
+		subSubSection,
+		miniSection,
 		paragraph,
 
-		inlineCode,
-		code,
-
 		table,
-		tableRow,
-		tableColumn,
+		row,
+		cell,
 
+		code,
 		file,
+		image,
 		toc,
-		block,
+		index,
+		reference,
+		admonition,
 		assignment,
 
-		hashSymbol,
-		atSymbol,
+		hashtag,
+		username,
 		symbol,
-		curtain,
-		wrapper,
+		container,
 
-		// value types
-		text,
-		quotedText,
-		rawText,
-		link,
-		localLink,
+		string,
+		array,
+
+		// quote
+		openSingleQuote,
+		closeSingleQuote,
+		openDoubleQuote,
+		closeDoubleQuote,
+
+		writer,
+
+		urlLink,
+		markerLink,
+		referenceLink,
 
 		inlineImage,
-		image,
+		indexDefinition,
 
 		// Font style types
-		formatBold,
-		formatItalic,
-		formatMonospace,
+		boldFormat,
+		italicFormat,
+		monospaceFormat,
 
 		// List types
 		list,
@@ -66,7 +74,6 @@ namespace Gularen
 		item,
 		checkList,
 		checkItem,
-
 	};
 
 	enum struct NodeShape

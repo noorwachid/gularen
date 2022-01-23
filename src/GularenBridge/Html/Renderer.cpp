@@ -69,7 +69,7 @@ namespace GularenBridge
             .checklist>.item>label{flex-grow:1}
             hr{border:0;border-top:0.1rem solid #e4e5e6}
             code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
-            pre>code{display:block;white-space:pre;padding:1rem 1.5rem;line-height:1.2;background-color:#010102;}
+            pre>code{display:admonition;white-space:pre;padding:1rem 1.5rem;line-height:1.2;background-color:#010102;}
             </style>
         )";
 			else
@@ -93,7 +93,7 @@ namespace GularenBridge
             .checklist>.item>label{flex-grow:1}
             hr{border:0;border-top:0.1rem solid #e4e5e6}
             code{background: #f4f5f6;font-size:1.5rem;padding:.2rem.5rem;white-space: nowrap}
-            pre>code{display:block;white-space:pre;padding:1rem 1.5rem;line-height:1.2;background-color:#eee;}
+            pre>code{display:admonition;white-space:pre;padding:1rem 1.5rem;line-height:1.2;background-color:#eee;}
             </style>
         )";
 
@@ -112,7 +112,7 @@ namespace GularenBridge
 		void Renderer::preTraverse(Node* node)
 		{
 			switch (node->type) {
-				case NodeType::text: {
+				case NodeType::string: {
 					std::string value = static_cast<ValueNode*>(node)->value;
 					buffer += value;
 
@@ -121,13 +121,13 @@ namespace GularenBridge
 					break;
 				}
 
-				case NodeType::formatBold:
+				case NodeType::boldFormat:
 					buffer += "<b>";
 					break;
-				case NodeType::formatItalic:
+				case NodeType::italicFormat:
 					buffer += "<i>";
 					break;
-				case NodeType::formatMonospace:
+				case NodeType::monospaceFormat:
 					buffer += "<code>";
 					break;
 
@@ -167,13 +167,13 @@ namespace GularenBridge
 				case NodeType::section:
 					buffer += "<h2>";
 					break;
-				case NodeType::subsection:
+				case NodeType::subSection:
 					buffer += "<h3>";
 					break;
-				case NodeType::subsubsection:
+				case NodeType::subSubSection:
 					buffer += "<h4>";
 					break;
-				case NodeType::minisection:
+				case NodeType::miniSection:
 					buffer += "<h5>";
 					break;
 
@@ -200,7 +200,7 @@ namespace GularenBridge
 					buffer += "><label>";
 					break;
 
-				case NodeType::link: {
+				case NodeType::urlLink: {
 					Node* packageNode = static_cast<ContainerNode*>(node)->value;
 					ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
 					buffer += "<a href=\"" + valueNode->value + "\">";
@@ -208,7 +208,7 @@ namespace GularenBridge
 						buffer += valueNode->value;
 					break;
 				}
-				case NodeType::localLink: {
+				case NodeType::markerLink: {
 					Node* packageNode = static_cast<ContainerNode*>(node)->value;
 					ValueNode* valueNode = static_cast<ValueNode*>(packageNode);
 					buffer += "<a href=\"#" + valueNode->value + "\">";
@@ -220,10 +220,10 @@ namespace GularenBridge
 				case NodeType::table:
 					buffer += "<table>\n";
 					break;
-				case NodeType::tableRow:
+				case NodeType::row:
 					buffer += "<tr>\n";
 					break;
-				case NodeType::tableColumn:
+				case NodeType::cell:
 					buffer += "<td>";
 					break;
 
@@ -233,12 +233,6 @@ namespace GularenBridge
 					buffer += "<img src=\"" + package->value + "\">";
 					break;
 				}
-
-				case NodeType::inlineCode:
-					buffer += "<code>";
-					buffer += escapeBuffer(static_cast<ValueNode*>(node)->value);
-					buffer += "</code>\n";
-					break;
 
 				case NodeType::code: {
 					CodeNode* codeNode = static_cast<CodeNode*>(node);
@@ -261,13 +255,13 @@ namespace GularenBridge
 					inTitle = false;
 					break;
 
-				case NodeType::formatBold:
+				case NodeType::boldFormat:
 					buffer += "</b>";
 					break;
-				case NodeType::formatItalic:
+				case NodeType::italicFormat:
 					buffer += "</i>";
 					break;
-				case NodeType::formatMonospace:
+				case NodeType::monospaceFormat:
 					buffer += "</code>";
 					break;
 
@@ -289,13 +283,13 @@ namespace GularenBridge
 				case NodeType::section:
 					buffer += "</h2>\n";
 					break;
-				case NodeType::subsection:
+				case NodeType::subSection:
 					buffer += "</h3>\n";
 					break;
-				case NodeType::subsubsection:
+				case NodeType::subSubSection:
 					buffer += "</h4>\n";
 					break;
-				case NodeType::minisection:
+				case NodeType::miniSection:
 					buffer += "</h5>\n";
 					break;
 
@@ -313,18 +307,18 @@ namespace GularenBridge
 					break;
 
 
-				case NodeType::link:
-				case NodeType::localLink:
+				case NodeType::urlLink:
+				case NodeType::markerLink:
 					buffer += "</a>";
 					break;
 
 				case NodeType::table:
 					buffer += "</table>\n";
 					break;
-				case NodeType::tableRow:
+				case NodeType::row:
 					buffer += "</tr>\n";
 					break;
-				case NodeType::tableColumn:
+				case NodeType::cell:
 					buffer += "</td>\n";
 					break;
 

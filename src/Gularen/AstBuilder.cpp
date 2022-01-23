@@ -37,22 +37,22 @@ namespace Gularen
 
 		while (isValid()) {
 			switch (getCurrentToken().type) {
-				case TokenType::buffer:
-					getHead()->add(new ValueNode(NodeType::text, NodeGroup::text, NodeShape::inBetween,
+				case TokenType::string:
+					getHead()->add(new ValueNode(NodeType::string, NodeGroup::string, NodeShape::inBetween,
 						getCurrentToken().value));
 					skip();
 					break;
 
 				case TokenType::asterisk:
-					pairFormatHead(NodeType::formatBold);
+					pairFormatHead(NodeType::boldFormat);
 					break;
 
 				case TokenType::underline:
-					pairFormatHead(NodeType::formatItalic);
+					pairFormatHead(NodeType::italicFormat);
 					break;
 
 				case TokenType::backtick:
-					pairFormatHead(NodeType::formatMonospace);
+					pairFormatHead(NodeType::monospaceFormat);
 					break;
 
 				case TokenType::newline: {
@@ -76,31 +76,19 @@ namespace Gularen
 					skip();
 					break;
 
-				case TokenType::teeth: {
-					skip();
-					if (getCurrentToken().type == TokenType::buffer && getNextToken().type == TokenType::teeth) {
-						getHead()->add(new ValueNode(NodeType::inlineCode, NodeGroup::text, NodeShape::inBetween,
-							getCurrentToken().value));
-						skip(2);
-					}
-					break;
-				}
-
 				case TokenType::openCurlyBracket:
 					skip();
 					switch (getCurrentToken().type) {
-						case TokenType::symbol:
-							getHead()->add(new ValueNode(NodeType::curtain, NodeGroup::text, NodeShape::inBetween,
-								getCurrentToken().value));
-							skip();
-							break;
-
 						case TokenType::colon:
-							parseLink(NodeType::link);
+							parseLink(NodeType::urlLink);
 							break;
 
 						case TokenType::exclamationMark:
-							parseLink(NodeType::localLink);
+							parseLink(NodeType::markerLink);
+							break;
+
+						case TokenType::caret:
+							parseLink(NodeType::referenceLink);
 							break;
 
 						case TokenType::questionMark:
@@ -119,19 +107,19 @@ namespace Gularen
 					break;
 
 				case TokenType::pipe:
-					while (headNodes.size() > 1 && headNodes.top()->type != NodeType::tableRow)
+					while (headNodes.size() > 1 && headNodes.top()->type != NodeType::row)
 						popHead();
-					pushHead(new Node(NodeType::tableColumn, NodeGroup::table));
+					pushHead(new Node(NodeType::cell, NodeGroup::table));
 					skip();
 					break;
 
 				case TokenType::hash:
-					getHead()->add(new ValueNode(NodeType::hashSymbol, NodeGroup::tag, NodeShape::inBetween,
+					getHead()->add(new ValueNode(NodeType::hashtag, NodeGroup::tag, NodeShape::inBetween,
 						getCurrentToken().value));
 					skip();
 					break;
 				case TokenType::at:
-					getHead()->add(new ValueNode(NodeType::atSymbol, NodeGroup::tag, NodeShape::inBetween,
+					getHead()->add(new ValueNode(NodeType::username, NodeGroup::tag, NodeShape::inBetween,
 						getCurrentToken().value));
 					skip();
 					break;
@@ -225,8 +213,8 @@ namespace Gularen
 			case TokenType::tail:
 				switch (getCurrentToken().size) {
 					case 1:
-						compareAndPopHead(NodeType::minisection, newlineSize);
-						pushHead(new ValueNode(NodeType::minisection, NodeGroup::header, NodeShape::line));
+						compareAndPopHead(NodeType::miniSection, newlineSize);
+						pushHead(new ValueNode(NodeType::miniSection, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 2:
@@ -260,13 +248,13 @@ namespace Gularen
 			case TokenType::arrow:
 				switch (getCurrentToken().size) {
 					case 1:
-						compareAndPopHead(NodeType::subsubsection, newlineSize);
-						pushHead(new ValueNode(NodeType::subsubsection, NodeGroup::header, NodeShape::line));
+						compareAndPopHead(NodeType::subSubSection, newlineSize);
+						pushHead(new ValueNode(NodeType::subSubSection, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 2:
-						compareAndPopHead(NodeType::subsection, newlineSize);
-						pushHead(new ValueNode(NodeType::subsection, NodeGroup::header, NodeShape::line));
+						compareAndPopHead(NodeType::subSection, newlineSize);
+						pushHead(new ValueNode(NodeType::subSection, NodeGroup::header, NodeShape::line));
 						break;
 
 					case 3:
@@ -339,8 +327,8 @@ namespace Gularen
 						getHead()->add(new Node(NodeType::newline));
 				} else {
 					compareAndPopHead(NodeType::table);
-					pushHead(new Node(NodeType::tableRow, NodeGroup::table, NodeShape::line));
-					pushHead(new Node(NodeType::tableColumn, NodeGroup::table, NodeShape::line));
+					pushHead(new Node(NodeType::row, NodeGroup::table, NodeShape::line));
+					pushHead(new Node(NodeType::cell, NodeGroup::table, NodeShape::line));
 				}
 				break;
 		}
@@ -361,7 +349,7 @@ namespace Gularen
 				pushHead(new Node(NodeType::indent, NodeGroup::container, NodeShape::superBlock));
 
 			pushHead(new Node(
-				getHead()->group != NodeGroup::item ? NodeType::indent : NodeType::wrapper,
+				getHead()->group != NodeGroup::item ? NodeType::indent : NodeType::container,
 				NodeGroup::container,
 				NodeShape::superBlock));
 		} else if (currentDepth < depth) {
@@ -403,8 +391,8 @@ namespace Gularen
 		ValueNode* node = new ValueNode();
 		skip();
 
-		if (getCurrentToken().type == TokenType::buffer) {
-			node->type = NodeType::quotedText;
+		if (getCurrentToken().type == TokenType::string) {
+			node->type = NodeType::string;
 			node->value = getCurrentToken().value;
 			skip();
 		} else if (getCurrentToken().type == TokenType::symbol) {
@@ -416,7 +404,7 @@ namespace Gularen
 
 		if (getCurrentToken().type == TokenType::openCurlyBracket) {
 			pushHead(container);
-			pushHead(new Node(NodeType::wrapper));
+			pushHead(new Node(NodeType::container));
 			skip();
 		} else
 			pushHead(container);
@@ -440,8 +428,8 @@ namespace Gularen
 				CodeNode* codeNode = new CodeNode();
 				getHead()->add(codeNode);
 				skip();
-				if (getCurrentToken().type == TokenType::buffer) {
-					codeNode->langCode = new ValueNode(NodeType::quotedText, NodeGroup::text, NodeShape::block,
+				if (getCurrentToken().type == TokenType::string) {
+					codeNode->langCode = new ValueNode(NodeType::string, NodeGroup::string, NodeShape::block,
 						getCurrentToken().value);
 					skip();
 				}
@@ -453,7 +441,7 @@ namespace Gularen
 					skip();
 
 				if (getCurrentToken().type == TokenType::line &&
-					getNextToken(1).type == TokenType::buffer &&
+					getNextToken(1).type == TokenType::string &&
 					getNextToken(2).type == TokenType::line) {
 					codeNode->value = getNextToken(1).value;
 					skip(3);
@@ -465,6 +453,18 @@ namespace Gularen
 				while (isValid() && getCurrentToken().type != TokenType::newline)
 					skip();
 				getHead()->add(new Node(NodeType::toc, NodeGroup::unknown, NodeShape::line));
+				break;
+
+			case TokenType::indexKeyword:
+				while (isValid() && getCurrentToken().type != TokenType::newline)
+					skip();
+				getHead()->add(new Node(NodeType::index, NodeGroup::unknown, NodeShape::line));
+				break;
+
+			case TokenType::referenceKeyword:
+				while (isValid() && getCurrentToken().type != TokenType::newline)
+					skip();
+				getHead()->add(new Node(NodeType::reference, NodeGroup::unknown, NodeShape::line));
 				break;
 
 			case TokenType::fileKeyword:
@@ -482,14 +482,14 @@ namespace Gularen
 			case TokenType::admonitionKeyword:
 				while (isValid() && getCurrentToken().type != TokenType::line)
 					skip();
-				getHead()->add(new Node(NodeType::block, NodeGroup::unknown, NodeShape::block));
+				getHead()->add(new Node(NodeType::admonition, NodeGroup::unknown, NodeShape::block));
 				break;
 
-//        case TokenType::symbol:
-//            while (isValid() && getCurrentToken().type != TokenType::Line)
-//                skip();
-//            getHead()->Add(new Node(NodeType::assignment, NodeGroup::unknown, NodeShape::Line));
-//            break;
+//        	case TokenType::symbol:
+//				while (isValid() && getCurrentToken().type != TokenType::line)
+//                	skip();
+//            	getHead()->add(new Node(NodeType::assignment, NodeGroup::unknown, NodeShape::line));
+//            	break;
 
 			default:
 				break;
