@@ -34,7 +34,6 @@ namespace Gularen
 			if (parseGlobalRules()) {
 			} else if (parseNewlineRules()) {
 			} else if (parseFormattingRules()) {
-			} else if (parseQuotingRules()) {
 			} else if (parseWriter()) {
 			} else {
 				if (isValidBuffer()) {
@@ -84,7 +83,7 @@ namespace Gularen
 		std::string buffer;
 
 		for (Token& token: tokens)
-			buffer += token.ToString() + "\n";
+			buffer += token.toString() + "\n";
 
 		return buffer + "\n";
 	}
@@ -92,6 +91,18 @@ namespace Gularen
 	bool Lexer::parseGlobalRules()
 	{
 		switch (getCurrentByte()) {
+			case '\'':
+				consumeQuote(TokenType::openDoubleQuote,
+					TokenType::openSingleQuote,
+					TokenType::closeSingleQuote);
+				return true;
+
+			case '"':
+				consumeQuote(TokenType::openSingleQuote,
+					TokenType::openDoubleQuote,
+					TokenType::closeDoubleQuote);
+				return true;
+
 			case '\r':
 				skip();
 				return true;
@@ -136,11 +147,11 @@ namespace Gularen
 
 			case '#':
 				consumeTag(TokenType::hash);
-				break;
+				return true;
 
 			case '@':
 				consumeTag(TokenType::at);
-				break;
+				return true;
 
 			default:
 				return false;
@@ -200,26 +211,6 @@ namespace Gularen
 			tokens.back().value += buffer;
 		else
 			add(Token(TokenType::buffer, buffer));
-	}
-
-	bool Lexer::parseQuotingRules()
-	{
-		switch (getCurrentByte()) {
-			case '\'':
-				consumeQuote(TokenType::openDoubleQuote,
-					TokenType::openSingleQuote,
-					TokenType::closeSingleQuote);
-				return true;
-
-			case '"':
-				consumeQuote(TokenType::openSingleQuote,
-					TokenType::openDoubleQuote,
-					TokenType::closeDoubleQuote);
-				return true;
-
-			default:
-				return false;
-		}
 	}
 
 	void Lexer::consumeQuote(TokenType previousType, TokenType openType, TokenType closeType)
@@ -489,59 +480,33 @@ namespace Gularen
 			skip();
 		}
 
+		if (getCurrentByte() == '\'')
+			skip();
+
 		add(static_cast<Token&&>(token));
-		skip();
 	}
 
 	void Lexer::consumeFormattedString()
 	{
-		add(Token(TokenType::openStyleQuote));
+		add(Token(TokenType::openFormatting));
 		skip();
 
 		while (isValid() && getCurrentByte() != '"') {
-			switch (getCurrentByte()) {
-				case '*':
-					add(Token(TokenType::asterisk));
-					skip();
-					break;
-
-				case '_':
-					add(Token(TokenType::underline));
-					skip();
-					break;
-
-				case '`':
-					add(Token(TokenType::backtick));
-					skip();
-					break;
-
-				case '\'':
-					consumeQuote(TokenType::openDoubleQuote,
-						TokenType::openSingleQuote,
-						TokenType::closeSingleQuote);
-					break;
-
-				case '"':
-					consumeQuote(TokenType::openSingleQuote,
-						TokenType::openDoubleQuote,
-						TokenType::closeDoubleQuote);
-					break;
-
-				default:
-					Token token(TokenType::buffer);
-					while (isValid() && isValidFormattedString()) {
-						if (getCurrentByte() == '\\')
-							skip();
-
-						token.value += getCurrentByte();
+			if (parseFormattingRules()) {
+			} else {
+				Token token(TokenType::buffer);
+				while (isValid() && isValidFormattedString()) {
+					if (getCurrentByte() == '\\')
 						skip();
-					}
-					add(static_cast<Token&&>(token));
-					break;
+
+					token.value += getCurrentByte();
+					skip();
+				}
+				add(static_cast<Token&&>(token));
 			}
 		}
 
-		add(Token(TokenType::closeStyleQuote));
+		add(Token(TokenType::closeFormatting));
 		skip();
 	}
 
@@ -584,6 +549,64 @@ namespace Gularen
 			default:
 				return false;
 		}
+	}
+
+	bool Lexer::parseFunctionArguments()
+	{
+		skipSpaces();
+		char c = getCurrentByte();
+
+		if (c != '\'' &&
+			c != '"' &&
+			c != '[' &&
+			!isValidSymbol())
+			return false;
+
+		while (isValid() && getCurrentByte() != '}') {
+			switch (getCurrentByte()) {
+				case '\'':
+					consumeString();
+					break;
+
+				case '"':
+					consumeFormattedString();
+					skipSpaces();
+					break;
+
+				case ',':
+					add(Token(TokenType::comma));
+					skip();
+					skipSpaces();
+					break;
+
+				case '[':
+					add(Token(TokenType::openSquareBracket));
+					skip();
+					skipSpaces();
+					break;
+
+				case ']':
+					add(Token(TokenType::closeSquareBracket));
+					skip();
+					skipSpaces();
+					break;
+
+				default:
+					if (isValidSymbol()) {
+						consumeSymbol();
+						skipSpaces();
+					}
+					else
+						return false;
+			}
+		}
+
+		if (getCurrentByte() != '}')
+			return false;
+
+		add(Token(TokenType::closeCurlyBracket));
+		skip();
+		return true;
 	}
 
 	void Lexer::consumeBlockKeyword()
@@ -665,7 +688,8 @@ namespace Gularen
 
 	bool Lexer::isValidString()
 	{
-		return getCurrentByte() != '\'';
+		char c = getCurrentByte();
+		return c != '\'' && c != '\n';
 	}
 
 	bool Lexer::isValidFormattedString()
@@ -701,7 +725,7 @@ namespace Gularen
 
 	char Lexer::getNextByte(size_t offset)
 	{
-		return bufferIndex + offset < bufferSize ? buffer[bufferIndex + offset] : 0;
+		return bufferIndex + offset < bufferSize ? buffer[bufferIndex + offset] : '\0';
 	}
 
 	void Lexer::skip(size_t offset)
@@ -721,21 +745,24 @@ namespace Gularen
 		previousType = token.type;
 		tokens.emplace_back(token);
 	}
-	
+
 	bool Lexer::parseWriter()
 	{
 		if (getCurrentByte() != '{')
 			return false;
 
+		add(Token(TokenType::openCurlyBracket));
 		skip();
 
-		if (parseSymbolOrStringOrFormattedString() || parseFunction()) {
+		if (parseSymbolOrStringOrFormattedString()) {
 			if (getCurrentByte() != '}')
 				return false;
 
 			add(Token(TokenType::closeCurlyBracket));
 			skip();
 			return true;
+		} else if (parseFunction()) {
+			return parseFunctionArguments();
 		}
 
 		return false;
@@ -762,7 +789,7 @@ namespace Gularen
 		if (parseSymbolOrString())
 			return true;
 
-		if (isValidFormattedString()) {
+		if (getCurrentByte() == '"') {
 			consumeFormattedString();
 			return true;
 		}

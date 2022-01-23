@@ -21,10 +21,10 @@ namespace Gularen
 				return "symbol";
 			case TokenType::buffer:
 				return "buffer";
-			case TokenType::openStyleQuote:
-				return "openStyleQuote";
-			case TokenType::closeStyleQuote:
-				return "closeStyleQuote";
+			case TokenType::openFormatting:
+				return "openFormatting";
+			case TokenType::closeFormatting:
+				return "closeFormatting";
 
 			case TokenType::imageKeyword:
 				return "imageKeyword";

@@ -17,8 +17,8 @@ namespace Gularen
 
 		buffer,
 
-		openStyleQuote,
-		closeStyleQuote,
+		openFormatting,
+		closeFormatting,
 
 		tableKeyword,
 		codeKeyword,

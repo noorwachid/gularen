@@ -31,7 +31,7 @@ namespace Gularen
 	{
 	}
 
-	std::string Token::ToString()
+	std::string Token::toString()
 	{
 		std::string buffer = Gularen::toString(type) + ":";
 

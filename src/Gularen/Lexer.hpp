@@ -33,8 +33,6 @@ namespace Gularen
 
 		bool parseFormattingRules();
 
-		bool parseQuotingRules();
-
 		bool parseNewlineRules();
 
 		bool parseWriter();
@@ -44,6 +42,8 @@ namespace Gularen
 		bool parseSymbolOrStringOrFormattedString();
 
 		bool parseFunction();
+
+		bool parseFunctionArguments();
 
 		void consumeNewline();
 

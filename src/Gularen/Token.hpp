@@ -14,7 +14,7 @@ namespace Gularen
 
 		Token(TokenType type, const std::string& value);
 
-		std::string ToString();
+		std::string toString();
 
 		TokenType type;
 		std::string value;
