@@ -2,10 +2,8 @@
 
 #include <string>
 
-namespace Gularen
-{
-	enum struct NodeType
-	{
+namespace Gularen {
+	enum struct NodeType {
 		unknown = -1,
 		root,
 
@@ -76,8 +74,7 @@ namespace Gularen
 		checkItem,
 	};
 
-	enum struct NodeShape
-	{
+	enum struct NodeShape {
 		unknown = 0,
 		line,
 		inBetween,

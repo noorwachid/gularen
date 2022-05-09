@@ -4,10 +4,8 @@
 #include <Gularen/Node.hpp>
 #include <Gularen/IRenderer.hpp>
 
-namespace GularenBridge
-{
-	namespace Json
-	{
+namespace GularenBridge {
+	namespace Json {
 		using Gularen::NodeType;
 		using Gularen::Node;
 		using Gularen::ValueNode;
@@ -18,8 +16,7 @@ namespace GularenBridge
 		using Gularen::TableNode;
 		using Gularen::IRenderer;
 
-		class Renderer : public IRenderer
-		{
+		class Renderer : public IRenderer {
 		public:
 			Renderer();
 

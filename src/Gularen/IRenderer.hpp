@@ -2,10 +2,8 @@
 
 #include "Node.hpp"
 
-namespace Gularen
-{
-	class IRenderer
-	{
+namespace Gularen {
+	class IRenderer {
 	public:
 		virtual void setTree(Node* tree) = 0;
 

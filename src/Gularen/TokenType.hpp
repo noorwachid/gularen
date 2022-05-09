@@ -2,10 +2,8 @@
 
 #include <string>
 
-namespace Gularen
-{
-	enum struct TokenType
-	{
+namespace Gularen {
+	enum struct TokenType {
 		unknown,
 
 		openDocument,

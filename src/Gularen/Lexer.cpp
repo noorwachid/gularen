@@ -1,31 +1,26 @@
 #include "Lexer.hpp"
 #include "IO.hpp"
 
-namespace Gularen
-{
-	Lexer::Lexer()
-	{
+namespace Gularen {
+	Lexer::Lexer() {
 		reset();
 	}
 
-	void Lexer::setBuffer(const std::string& buffer)
-	{
+	void Lexer::setBuffer(const std::string& buffer) {
 		this->buffer = buffer;
 		bufferSize = buffer.size();
 
 		reset();
 	}
 
-	void Lexer::setTokens(const std::vector<Token>& tokens)
-	{
+	void Lexer::setTokens(const std::vector<Token>& tokens) {
 		reset();
 		buffer.clear();
 
 		this->tokens = tokens;
 	}
 
-	void Lexer::parse()
-	{
+	void Lexer::parse() {
 		reset();
 		add(Token(TokenType::openDocument));
 		parseNewlineRules();
@@ -48,18 +43,15 @@ namespace Gularen
 		add(Token(TokenType::closeDocument));
 	}
 
-	std::string Lexer::getBuffer()
-	{
+	std::string Lexer::getBuffer() {
 		return buffer;
 	}
 
-	Token& Lexer::getTokenAt(size_t index)
-	{
+	Token& Lexer::getTokenAt(size_t index) {
 		return tokens[index];
 	}
 
-	void Lexer::reset()
-	{
+	void Lexer::reset() {
 		inHeaderLine = false;
 		inInterpolatedBuffer = false;
 		inCodeBlock = false;
@@ -73,13 +65,11 @@ namespace Gularen
 		currentDepth = 0;
 	}
 
-	std::vector<Token>& Lexer::getTokens()
-	{
+	std::vector<Token>& Lexer::getTokens() {
 		return tokens;
 	}
 
-	std::string Lexer::getTokensAsString()
-	{
+	std::string Lexer::getTokensAsString() {
 		std::string buffer;
 
 		for (Token& token: tokens)
@@ -88,8 +78,7 @@ namespace Gularen
 		return buffer + "\n";
 	}
 
-	bool Lexer::parseGlobalRules()
-	{
+	bool Lexer::parseGlobalRules() {
 		switch (getCurrentByte()) {
 			case '\'':
 				consumeQuote(TokenType::openDoubleQuote,
@@ -158,8 +147,7 @@ namespace Gularen
 		}
 	}
 
-	bool Lexer::parseFormattingRules()
-	{
+	bool Lexer::parseFormattingRules() {
 		switch (getCurrentByte()) {
 			case '*':
 				add(Token(TokenType::asterisk));
@@ -181,8 +169,7 @@ namespace Gularen
 		}
 	}
 
-	void Lexer::consumeNewline()
-	{
+	void Lexer::consumeNewline() {
 		size_t size = 0;
 		while (isValid() && getCurrentByte() == '\n') {
 			++size;
@@ -198,8 +185,7 @@ namespace Gularen
 		}
 	}
 
-	void Lexer::consumeBuffer()
-	{
+	void Lexer::consumeBuffer() {
 		std::string buffer;
 
 		while (isValid() && isValidBuffer()) {
@@ -213,8 +199,7 @@ namespace Gularen
 			add(Token(TokenType::string, buffer));
 	}
 
-	void Lexer::consumeQuote(TokenType previousType, TokenType openType, TokenType closeType)
-	{
+	void Lexer::consumeQuote(TokenType previousType, TokenType openType, TokenType closeType) {
 		char previousByte = getPreviousByte();
 
 		add(Token((
@@ -228,8 +213,7 @@ namespace Gularen
 		skip();
 	}
 
-	bool Lexer::parseNewlineRules()
-	{
+	bool Lexer::parseNewlineRules() {
 		if (getCurrentByte() != '\n')
 			return false;
 
@@ -450,8 +434,7 @@ namespace Gularen
 		return true;
 	}
 
-	void Lexer::consumeSymbol()
-	{
+	void Lexer::consumeSymbol() {
 		while (isValid() && (isValidSymbol() || getCurrentByte() == '.')) {
 			if (getCurrentByte() == '.') {
 				add(Token(TokenType::period));
@@ -467,8 +450,7 @@ namespace Gularen
 		}
 	}
 
-	void Lexer::consumeString()
-	{
+	void Lexer::consumeString() {
 		Token token(TokenType::string);
 		skip();
 
@@ -486,8 +468,7 @@ namespace Gularen
 		add(static_cast<Token&&>(token));
 	}
 
-	void Lexer::consumeFormattedString()
-	{
+	void Lexer::consumeFormattedString() {
 		add(Token(TokenType::openFormatting));
 		skip();
 
@@ -510,16 +491,13 @@ namespace Gularen
 		skip();
 	}
 
-	void Lexer::consumeArray()
-	{
+	void Lexer::consumeArray() {
 	}
 
-	void Lexer::consumeArguments()
-	{
+	void Lexer::consumeArguments() {
 	}
 
-	bool Lexer::parseFunction()
-	{
+	bool Lexer::parseFunction() {
 		switch (getCurrentByte()) {
 			case ':':
 				add(Token(TokenType::colon));
@@ -551,8 +529,7 @@ namespace Gularen
 		}
 	}
 
-	bool Lexer::parseFunctionArguments()
-	{
+	bool Lexer::parseFunctionArguments() {
 		skipSpaces();
 		char c = getCurrentByte();
 
@@ -609,8 +586,7 @@ namespace Gularen
 		return true;
 	}
 
-	void Lexer::consumeBlockKeyword()
-	{
+	void Lexer::consumeBlockKeyword() {
 		std::string symbol;
 
 		while (isValid() && isValidSymbol()) {
@@ -669,13 +645,11 @@ namespace Gularen
 		}
 	}
 
-	bool Lexer::isValid()
-	{
+	bool Lexer::isValid() {
 		return bufferIndex < bufferSize;
 	}
 
-	bool Lexer::isValidBuffer()
-	{
+	bool Lexer::isValidBuffer() {
 		char c = getCurrentByte();
 
 		return (c >= 'A' && c <= 'Z') ||
@@ -686,68 +660,57 @@ namespace Gularen
 			c == ';' || c == ':';
 	}
 
-	bool Lexer::isValidString()
-	{
+	bool Lexer::isValidString() {
 		char c = getCurrentByte();
 		return c != '\'' && c != '\n';
 	}
 
-	bool Lexer::isValidFormattedString()
-	{
+	bool Lexer::isValidFormattedString() {
 		char c = getCurrentByte();
 
 		return (c != '"' && c != '*' && c != '_' && c != '`');
 	}
 
-	bool Lexer::isValidSymbol()
-	{
+	bool Lexer::isValidSymbol() {
 		char c = getCurrentByte();
 
 		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_';
 	}
 
-	bool Lexer::isValidNumeric()
-	{
+	bool Lexer::isValidNumeric() {
 		char c = getCurrentByte();
 
 		return c >= '0' && c <= '9';
 	}
 
-	char Lexer::getCurrentByte()
-	{
+	char Lexer::getCurrentByte() {
 		return buffer[bufferIndex];
 	}
 
-	char Lexer::getPreviousByte()
-	{
+	char Lexer::getPreviousByte() {
 		return previousByte;
 	}
 
-	char Lexer::getNextByte(size_t offset)
-	{
+	char Lexer::getNextByte(size_t offset) {
 		return bufferIndex + offset < bufferSize ? buffer[bufferIndex + offset] : '\0';
 	}
 
-	void Lexer::skip(size_t offset)
-	{
+	void Lexer::skip(size_t offset) {
 		previousByte = getCurrentByte();
 		bufferIndex += offset;
 	}
 
-	void Lexer::skipSpaces()
-	{
+	void Lexer::skipSpaces() {
 		while (isValid() && getCurrentByte() == ' ')
 			skip();
 	}
 
-	void Lexer::add(Token&& token)
-	{
+	void Lexer::add(Token&& token) {
 		previousType = token.type;
 		tokens.emplace_back(token);
 	}
 
-	bool Lexer::parseWriter()
-	{
+	bool Lexer::parseWriter() {
 		if (getCurrentByte() != '{')
 			return false;
 
@@ -769,8 +732,7 @@ namespace Gularen
 	}
 
 
-	bool Lexer::parseSymbolOrString()
-	{
+	bool Lexer::parseSymbolOrString() {
 		if (getCurrentByte() == '\'') {
 			consumeString();
 			return true;
@@ -784,8 +746,7 @@ namespace Gularen
 		return false;
 	}
 
-	bool Lexer::parseSymbolOrStringOrFormattedString()
-	{
+	bool Lexer::parseSymbolOrStringOrFormattedString() {
 		if (parseSymbolOrString())
 			return true;
 
@@ -796,8 +757,7 @@ namespace Gularen
 
 		return false;
 	}
-	void Lexer::consumeTag(TokenType familyType)
-	{
+	void Lexer::consumeTag(TokenType familyType) {
 		skip();
 		Token token(familyType);
 		while (isValid() && isValidSymbol()) {

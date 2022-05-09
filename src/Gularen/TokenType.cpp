@@ -1,9 +1,7 @@
 #include "TokenType.hpp"
 
-namespace Gularen
-{
-	std::string toString(TokenType type)
-	{
+namespace Gularen {
+	std::string toString(TokenType type) {
 		switch (type) {
 			case TokenType::unknown:
 				return "unknown";

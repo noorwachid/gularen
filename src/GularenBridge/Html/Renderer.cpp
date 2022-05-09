@@ -1,28 +1,22 @@
 #include "Renderer.hpp"
 #include <Gularen/IO.hpp>
 
-namespace GularenBridge
-{
-	namespace Html
-	{
-		Renderer::Renderer()
-		{
+namespace GularenBridge {
+	namespace Html {
+		Renderer::Renderer() {
 		}
 
-		void Renderer::setTree(Node* tree)
-		{
+		void Renderer::setTree(Node* tree) {
 			this->rootNode = tree;
 			buffer.clear();
 		}
 
-		void Renderer::parse()
-		{
+		void Renderer::parse() {
 			titleBuffer.clear();
 			traverse(rootNode);
 		}
 
-		std::string Renderer::getBuffer()
-		{
+		std::string Renderer::getBuffer() {
 			return R"(
 <!doctype html>
 <html langCode="en">
@@ -39,13 +33,11 @@ namespace GularenBridge
 )";
 		}
 
-		std::string Renderer::getContentBuffer()
-		{
+		std::string Renderer::getContentBuffer() {
 			return buffer;
 		}
 
-		void Renderer::setStyle(const std::string& style)
-		{
+		void Renderer::setStyle(const std::string& style) {
 			if (style == "none")
 				styleBuffer.clear();
 			else if (style == "dark")
@@ -99,8 +91,7 @@ namespace GularenBridge
 
 		}
 
-		void Renderer::traverse(Node* node)
-		{
+		void Renderer::traverse(Node* node) {
 			preTraverse(node);
 
 			for (Node* child: node->children)
@@ -109,8 +100,7 @@ namespace GularenBridge
 			postTraverse(node);
 		}
 
-		void Renderer::preTraverse(Node* node)
-		{
+		void Renderer::preTraverse(Node* node) {
 			switch (node->type) {
 				case NodeType::string: {
 					std::string value = static_cast<ValueNode*>(node)->value;
@@ -247,8 +237,7 @@ namespace GularenBridge
 			}
 		}
 
-		void Renderer::postTraverse(Node* node)
-		{
+		void Renderer::postTraverse(Node* node) {
 			switch (node->type) {
 				case NodeType::title:
 					buffer += "</h1>\n";
@@ -327,8 +316,7 @@ namespace GularenBridge
 			}
 		}
 
-		std::string Renderer::escapeBuffer(const std::string& buffer)
-		{
+		std::string Renderer::escapeBuffer(const std::string& buffer) {
 			std::string escaped;
 
 			for (size_t i = 0; i < buffer.size(); ++i) {

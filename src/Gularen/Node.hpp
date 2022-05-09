@@ -4,12 +4,9 @@
 #include "NodeGroup.hpp"
 #include <vector>
 
-namespace Gularen
-{
-	struct Node
-	{
+namespace Gularen {
+	struct Node {
 		Node();
-
 		Node(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown);
 
 		virtual ~Node();
@@ -24,10 +21,8 @@ namespace Gularen
 		std::vector<Node*> children;
 	};
 
-	struct ValueNode : public Node
-	{
+	struct ValueNode : public Node {
 		ValueNode();
-
 		ValueNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 			const std::string& value = std::string());
 
@@ -36,10 +31,8 @@ namespace Gularen
 		std::string value;
 	};
 
-	struct SizeNode : public Node
-	{
+	struct SizeNode : public Node {
 		SizeNode();
-
 		SizeNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 			const size_t size = 0);
 
@@ -48,10 +41,8 @@ namespace Gularen
 		size_t size;
 	};
 
-	struct BooleanNode : public Node
-	{
+	struct BooleanNode : public Node {
 		BooleanNode();
-
 		BooleanNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 			bool state = false);
 
@@ -60,17 +51,14 @@ namespace Gularen
 		bool state;
 	};
 
-	enum struct TernaryState
-	{
+	enum struct TernaryState {
 		off = 0,
 		inBetween = 1,
 		on = 2,
 	};
 
-	struct TernaryNode : public Node
-	{
+	struct TernaryNode : public Node {
 		TernaryNode();
-
 		TernaryNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 			TernaryState state = TernaryState::off);
 
@@ -79,10 +67,8 @@ namespace Gularen
 		TernaryState state;
 	};
 
-	struct ContainerNode : public Node
-	{
+	struct ContainerNode : public Node {
 		ContainerNode();
-
 		ContainerNode(NodeType type, NodeGroup group = NodeGroup::unknown, NodeShape shape = NodeShape::unknown,
 			Node* package = nullptr);
 
@@ -91,10 +77,8 @@ namespace Gularen
 		Node* value;
 	};
 
-	struct CodeNode : public Node
-	{
+	struct CodeNode : public Node {
 		CodeNode();
-
 		CodeNode(const std::string& value, Node* lang = nullptr);
 
 		std::string toString() override;
@@ -103,8 +87,7 @@ namespace Gularen
 		Node* langCode;
 	};
 
-	struct TableNode : public Node
-	{
+	struct TableNode : public Node {
 		TableNode();
 
 		std::vector<ssize_t> horizontalHeaders;

@@ -6,11 +6,9 @@
 using namespace Gularen;
 using namespace GularenBridge;
 
-class ConsoleInterface
-{
+class ConsoleInterface {
 public:
-	void onEntry(int size, char** args)
-	{
+	void onEntry(int size, char** args) {
 		if (size > 0)
 			programExecName = args[0];
 
@@ -80,8 +78,7 @@ public:
 		parse();
 	}
 
-	void parse()
-	{
+	void parse() {
 		std::string inputBuffer;
 
 		if (!input.empty())
@@ -134,18 +131,15 @@ public:
 		}
 	}
 
-	void terminate(int code = 0)
-	{
+	void terminate(int code = 0) {
 		std::exit(code);
 	}
 
-	void writeVersion()
-	{
+	void writeVersion() {
 		IO::writeLine("0.1.1");
 	}
 
-	void writeHelp()
-	{
+	void writeHelp() {
 		IO::writeLine("USAGES:");
 		IO::writeLine("    " + programExecName + " [options] file.gr");
 		IO::writeLine("    stdin | " + programExecName + " [options]");

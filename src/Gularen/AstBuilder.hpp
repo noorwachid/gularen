@@ -4,10 +4,8 @@
 #include "Lexer.hpp"
 #include <stack>
 
-namespace Gularen
-{
-	class AstBuilder
-	{
+namespace Gularen {
+	class AstBuilder {
 	public:
 		AstBuilder();
 
@@ -35,18 +33,13 @@ namespace Gularen
 
 	private:
 		void traverseAndGenerateBuffer(Node* node, size_t depth);
-
 		void traverseAndDestroyNode(Node* node);
 
 	private:
 		void parseNewline(size_t newlineSize = 1);
-
 		void parseIndentation();
-
 		void parseBreak();
-
 		void parseLink(NodeType type);
-
 		void parseBlock(TokenType type);
 
 	private:
@@ -55,9 +48,7 @@ namespace Gularen
 		void pushHead(Node* node);
 
 		void compareAndPopHead(NodeType type);
-
 		void compareAndPopHead(NodeType type, size_t newlineSize);
-
 		void popHead();
 
 		void pairFormatHead(NodeType type);
@@ -66,7 +57,6 @@ namespace Gularen
 		bool isValid();
 
 		Token& getCurrentToken();
-
 		Token& getNextToken(size_t offset = 1);
 
 		void skip(size_t offset = 1);

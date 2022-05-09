@@ -1,9 +1,7 @@
 #pragma once
 
-namespace Gularen
-{
-	enum struct NodeGroup
-	{
+namespace Gularen {
+	enum struct NodeGroup {
 		unknown = 0,
 
 		string,

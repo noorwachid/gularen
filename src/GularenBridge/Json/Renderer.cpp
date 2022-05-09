@@ -1,32 +1,25 @@
 #include "Renderer.hpp"
 #include <Gularen/IO.hpp>
 
-namespace GularenBridge
-{
-	namespace Json
-	{
-		Renderer::Renderer()
-		{
+namespace GularenBridge {
+	namespace Json {
+		Renderer::Renderer() {
 		}
 
-		void Renderer::setTree(Node* tree)
-		{
+		void Renderer::setTree(Node* tree) {
 			this->rootNode = tree;
 			buffer.clear();
 		}
 
-		void Renderer::parse()
-		{
+		void Renderer::parse() {
 			traverse(rootNode);
 		}
 
-		std::string Renderer::getBuffer()
-		{
+		std::string Renderer::getBuffer() {
 			return buffer;
 		}
 
-		void Renderer::traverse(Node* node)
-		{
+		void Renderer::traverse(Node* node) {
 			preTraverse(node);
 
 			for (size_t i = 0; i < node->children.size(); ++i) {
@@ -38,8 +31,7 @@ namespace GularenBridge
 			postTraverse(node);
 		}
 
-		void Renderer::preTraverse(Node* node)
-		{
+		void Renderer::preTraverse(Node* node) {
 			buffer += "{\"type\":\"" + Gularen::toString(node->type) + "\"";
 
 			switch (node->type) {
@@ -102,8 +94,7 @@ namespace GularenBridge
 			}
 		}
 
-		void Renderer::postTraverse(Gularen::Node* node)
-		{
+		void Renderer::postTraverse(Gularen::Node* node) {
 			switch (node->type) {
 				case NodeType::paragraph:
 				case NodeType::indent:
@@ -135,8 +126,7 @@ namespace GularenBridge
 			}
 		}
 
-		std::string Renderer::escapeBuffer(const std::string& buffer)
-		{
+		std::string Renderer::escapeBuffer(const std::string& buffer) {
 			std::string out;
 
 			for (size_t i = 0; i < buffer.size(); ++i) {

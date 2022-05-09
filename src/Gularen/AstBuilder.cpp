@@ -1,35 +1,29 @@
 #include "AstBuilder.hpp"
 #include "IO.hpp"
 
-namespace Gularen
-{
-	AstBuilder::AstBuilder()
-	{
+namespace Gularen {
+	AstBuilder::AstBuilder() {
 	}
 
-	AstBuilder::~AstBuilder()
-	{
+	AstBuilder::~AstBuilder() {
 		if (rootNode)
 			destroyTree();
 	}
 
-	void AstBuilder::setBuffer(const std::string& buffer)
-	{
+	void AstBuilder::setBuffer(const std::string& buffer) {
 		lexer.setBuffer(buffer);
 		lexer.parse();
 
 		reset();
 	}
 
-	void AstBuilder::setTokens(const std::vector<Token>& tokens)
-	{
+	void AstBuilder::setTokens(const std::vector<Token>& tokens) {
 		lexer.setTokens(tokens);
 
 		reset();
 	}
 
-	void AstBuilder::parse()
-	{
+	void AstBuilder::parse() {
 		if (getCurrentToken().type == TokenType::openDocument)
 			skip();
 
@@ -133,8 +127,7 @@ namespace Gularen
 		parseNewline();
 	}
 
-	void AstBuilder::reset()
-	{
+	void AstBuilder::reset() {
 		tokenIndex = 0;
 		tokenSize = lexer.getTokens().size();
 
@@ -149,28 +142,23 @@ namespace Gularen
 		headNodes.push(rootNode);
 	}
 
-	void AstBuilder::destroyTree()
-	{
+	void AstBuilder::destroyTree() {
 		traverseAndDestroyNode(rootNode);
 	}
 
-	std::string AstBuilder::getBuffer()
-	{
+	std::string AstBuilder::getBuffer() {
 		return lexer.getBuffer();
 	}
 
-	Node* AstBuilder::getTree()
-	{
+	Node* AstBuilder::getTree() {
 		return rootNode;
 	}
 
-	std::string AstBuilder::getTokensAsString()
-	{
+	std::string AstBuilder::getTokensAsString() {
 		return lexer.getTokensAsString();
 	}
 
-	std::string AstBuilder::getTreeAsString()
-	{
+	std::string AstBuilder::getTreeAsString() {
 		buffer.clear();
 
 		traverseAndGenerateBuffer(getTree(), 0);
@@ -178,8 +166,7 @@ namespace Gularen
 		return buffer + "\n";
 	}
 
-	void AstBuilder::traverseAndGenerateBuffer(Node* node, size_t depth)
-	{
+	void AstBuilder::traverseAndGenerateBuffer(Node* node, size_t depth) {
 		for (size_t i = 0; i < depth; ++i)
 			buffer += "    ";
 
@@ -189,8 +176,7 @@ namespace Gularen
 			traverseAndGenerateBuffer(child, depth + 1);
 	}
 
-	void AstBuilder::traverseAndDestroyNode(Node* node)
-	{
+	void AstBuilder::traverseAndDestroyNode(Node* node) {
 		for (Node* child: node->children)
 			traverseAndDestroyNode(child);
 
@@ -205,8 +191,7 @@ namespace Gularen
 		node = nullptr;
 	}
 
-	void AstBuilder::parseNewline(size_t newlineSize)
-	{
+	void AstBuilder::parseNewline(size_t newlineSize) {
 		parseIndentation();
 
 		switch (getCurrentToken().type) {
@@ -334,8 +319,7 @@ namespace Gularen
 		}
 	}
 
-	void AstBuilder::parseIndentation()
-	{
+	void AstBuilder::parseIndentation() {
 		size_t currentDepth = 0;
 
 		if (getCurrentToken().type == TokenType::space) {
@@ -369,8 +353,7 @@ namespace Gularen
 		depth = currentDepth;
 	}
 
-	void AstBuilder::parseBreak()
-	{
+	void AstBuilder::parseBreak() {
 		switch (getCurrentToken().size) {
 			case 1:
 				getHead()->add(new Node(NodeType::lineBreak, NodeGroup::break_));
@@ -385,8 +368,7 @@ namespace Gularen
 		skip();
 	}
 
-	void AstBuilder::parseLink(NodeType type)
-	{
+	void AstBuilder::parseLink(NodeType type) {
 		ContainerNode* container = new ContainerNode(type, NodeGroup::link);
 		ValueNode* node = new ValueNode();
 		skip();
@@ -410,8 +392,7 @@ namespace Gularen
 			pushHead(container);
 	}
 
-	void AstBuilder::parseBlock(TokenType type)
-	{
+	void AstBuilder::parseBlock(TokenType type) {
 		switch (type) {
 			case TokenType::tableKeyword:
 				compareAndPopHead(NodeType::table);
@@ -496,19 +477,16 @@ namespace Gularen
 		}
 	}
 
-	Node* AstBuilder::getHead()
-	{
+	Node* AstBuilder::getHead() {
 		return headNodes.top();
 	}
 
-	void AstBuilder::pushHead(Node* node)
-	{
+	void AstBuilder::pushHead(Node* node) {
 		getHead()->add(node);
 		headNodes.push(node);
 	}
 
-	void AstBuilder::compareAndPopHead(NodeType type)
-	{
+	void AstBuilder::compareAndPopHead(NodeType type) {
 		if (headNodes.size() > 1) {
 			if (headNodes.top()->type != type)
 				while (headNodes.size() > 1 && headNodes.top()->type != type
@@ -519,8 +497,7 @@ namespace Gularen
 		}
 	}
 
-	void AstBuilder::compareAndPopHead(NodeType type, size_t newlineSize)
-	{
+	void AstBuilder::compareAndPopHead(NodeType type, size_t newlineSize) {
 		if (headNodes.size() > 1) {
 			if (headNodes.top()->type != type)
 				while (headNodes.size() > 1 && headNodes.top()->type != type
@@ -532,14 +509,12 @@ namespace Gularen
 
 	}
 
-	void AstBuilder::popHead()
-	{
+	void AstBuilder::popHead() {
 		if (headNodes.size() > 1)
 			headNodes.pop();
 	}
 
-	void AstBuilder::pairFormatHead(NodeType type)
-	{
+	void AstBuilder::pairFormatHead(NodeType type) {
 		if (getHead()->type == type)
 			popHead();
 		else
@@ -548,23 +523,19 @@ namespace Gularen
 		skip();
 	}
 
-	bool AstBuilder::isValid()
-	{
+	bool AstBuilder::isValid() {
 		return tokenIndex < tokenSize;
 	}
 
-	Token& AstBuilder::getCurrentToken()
-	{
+	Token& AstBuilder::getCurrentToken() {
 		return lexer.getTokenAt(tokenIndex);
 	}
 
-	Token& AstBuilder::getNextToken(size_t offset)
-	{
+	Token& AstBuilder::getNextToken(size_t offset) {
 		return tokenIndex + offset < tokenSize ? lexer.getTokenAt(tokenIndex + offset) : emptyToken;
 	}
 
-	void AstBuilder::skip(size_t offset)
-	{
+	void AstBuilder::skip(size_t offset) {
 		tokenIndex += offset;
 	}
 }

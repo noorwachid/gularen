@@ -1,9 +1,7 @@
 #include "NodeType.hpp"
 
-namespace Gularen
-{
-	std::string toString(NodeType type)
-	{
+namespace Gularen {
+	std::string toString(NodeType type) {
 		switch (type) {
 			case NodeType::unknown:
 				return "unknown";

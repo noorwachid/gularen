@@ -1,38 +1,28 @@
 #include "Token.hpp"
 
-namespace Gularen
-{
-	Token::Token()
-		:
+namespace Gularen {
+	Token::Token():
 		type(TokenType::unknown),
-		size(0)
-	{
+		size(0) {
 	}
 
-	Token::Token(TokenType type)
-		:
+	Token::Token(TokenType type):
 		type(type),
-		size(0)
-	{
+		size(0) {
 	}
 
-	Token::Token(TokenType type, size_t size)
-		:
+	Token::Token(TokenType type, size_t size):
 		type(type),
-		size(size)
-	{
+		size(size) {
 	}
 
-	Token::Token(TokenType type, const std::string& value)
-		:
+	Token::Token(TokenType type, const std::string& value):
 		type(type),
 		value(value),
-		size(0)
-	{
+		size(0) {
 	}
 
-	std::string Token::toString()
-	{
+	std::string Token::toString() {
 		std::string buffer = Gularen::toString(type) + ":";
 
 		if (size > 0)
