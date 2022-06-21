@@ -3,6 +3,17 @@
 
 namespace GularenBridge {
 	namespace Json {
+		
+		using Gularen::NodeType;
+		using Gularen::Node;
+		using Gularen::ValueNode;
+		using Gularen::SizeNode;
+		using Gularen::BooleanNode;
+		using Gularen::ContainerNode;
+		using Gularen::CodeNode;
+		using Gularen::TableNode;
+		using Gularen::IRenderer;
+
 		Renderer::Renderer() {
 		}
 

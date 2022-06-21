@@ -23,7 +23,8 @@ namespace Gularen {
 	void Lexer::parse() {
 		reset();
 		add(Token(TokenType::openDocument));
-		parseNewlineRules();
+
+		parseNewlineRules(true);
 
 		while (isValid()) {
 			if (parseGlobalRules()) {
@@ -213,11 +214,13 @@ namespace Gularen {
 		skip();
 	}
 
-	bool Lexer::parseNewlineRules() {
-		if (getCurrentByte() != '\n')
-			return false;
+	bool Lexer::parseNewlineRules(bool skipNewlineChecking) {
+		if (!skipNewlineChecking) {
+			if (getCurrentByte() != '\n')
+				return false;
 
-		consumeNewline();
+			consumeNewline();
+		}
 
 		// state variables
 		inHeaderLine = false;

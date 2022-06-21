@@ -28,7 +28,7 @@ namespace Gularen {
 	private:
 		bool parseGlobalRules();
 		bool parseFormattingRules();
-		bool parseNewlineRules();
+		bool parseNewlineRules(bool skipNewlineChecking = false);
 		bool parseWriter();
 		bool parseSymbolOrString();
 		bool parseSymbolOrStringOrFormattedString();

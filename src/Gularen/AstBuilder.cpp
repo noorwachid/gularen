@@ -118,6 +118,23 @@ namespace Gularen {
 					skip();
 					break;
 
+				case TokenType::closeSingleQuote:
+					getHead()->add(new ValueNode(NodeType::closeSingleQuote, NodeGroup::quote));
+					skip();
+					break;
+				case TokenType::openSingleQuote:
+					getHead()->add(new ValueNode(NodeType::openSingleQuote, NodeGroup::quote));
+					skip();
+					break;
+				case TokenType::closeDoubleQuote:
+					getHead()->add(new ValueNode(NodeType::closeDoubleQuote, NodeGroup::quote));
+					skip();
+					break;
+				case TokenType::openDoubleQuote:
+					getHead()->add(new ValueNode(NodeType::openDoubleQuote, NodeGroup::quote));
+					skip();
+					break;
+
 				default:
 					skip();
 					break;

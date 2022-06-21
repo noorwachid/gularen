@@ -3,6 +3,17 @@
 
 namespace GularenBridge {
 	namespace Html {
+
+		using Gularen::NodeType;
+		using Gularen::Node;
+		using Gularen::ValueNode;
+		using Gularen::BooleanNode;
+		using Gularen::TernaryNode;
+		using Gularen::TernaryState;
+		using Gularen::ContainerNode;
+		using Gularen::CodeNode;
+		using Gularen::IRenderer;
+
 		Renderer::Renderer() {
 		}
 
@@ -231,6 +242,19 @@ namespace GularenBridge {
 					buffer += "</code></pre>\n";
 					break;
 				}
+
+				case NodeType::closeSingleQuote: 
+					buffer += "&rsquo;";
+					break;
+				case NodeType::openSingleQuote:
+					buffer += "&lsquo;";
+					break;
+				case NodeType::closeDoubleQuote: 
+					buffer += "&rdquo;";
+					break;
+				case NodeType::openDoubleQuote:
+					buffer += "&ldquo;";
+					break;
 
 				default:
 					break;

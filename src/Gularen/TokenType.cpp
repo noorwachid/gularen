@@ -93,13 +93,13 @@ namespace Gularen {
 				return "dollar";
 
 			case TokenType::bullet:
-				return "Bullet";
+				return "bullet";
 			case TokenType::numericBullet:
 				return "numericBullet";
 			case TokenType::checkBox:
 				return "checkBox";
 			case TokenType::line:
-				return "Line";
+				return "line";
 
 			case TokenType::anchor:
 				return "anchor";
