@@ -8,13 +8,3 @@
 # With alternative label
 ![cat.png](A cat)
 ---
-
-
->>-> Block Image
-
---- gr
-?[cat.png]
-
-# With alternative label
-?[cat.png](A cat)
----

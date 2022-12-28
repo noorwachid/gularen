@@ -29,7 +29,7 @@
 --- gr
 [ ] To-do one 
 [ ] To-do two
-[:] In-progress three
+[v] Done three
 [v] Done four
 [x] Canceled five
 ---
