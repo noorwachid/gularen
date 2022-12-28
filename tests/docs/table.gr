@@ -1,7 +1,0 @@
-$ table vertical = 1
----
-ID | Name     | Address
-1  | Nora     | Earth-12
-2  | *Lewis*  | Forewoll
-3  | Carmilla | Kripton
----

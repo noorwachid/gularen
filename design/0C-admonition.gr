@@ -1,0 +1,24 @@
+>>>-> Admonition
+Avaliable levels are:
+* NOTE
+* TIP
+* IMPORTANT
+* WARNING
+* DANGER
+
+>>-> One Line Admonition
+
+--- gr
+[!] NOTE Something here
+---
+
+>>-> Multi Line Admonition
+--- gr
+[!] IMPORTANT Something here
+    Every +1 indent after admonition modifier will be subcontent of this admonition.
+
+
+[!] IMPORTANT
+    Admonition without title are allowed.
+    Every +1 indent after admonition modifier will be 
+---

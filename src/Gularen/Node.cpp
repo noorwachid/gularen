@@ -1,136 +1,96 @@
-#include "Node.hpp"
+#include "Node.h"
 
-namespace Gularen {
-	Node::Node():
-		type(NodeType::unknown),
-		group(NodeGroup::unknown),
-		shape(NodeShape::unknown) {
-	}
+namespace Gularen 
+{
+    Node::Node(NodeType type): type(type) {}
 
-	Node::Node(NodeType type, NodeGroup group, NodeShape shape):
-		type(type),
-		group(group),
-		shape(shape) {
-	}
+    Node::Node(const NodeChildren& children): children(children) {}
 
-	Node::~Node() {
-	}
+    String Node::ToString() 
+    { 
+        return ""; 
+    }
 
-	void Node::add(Node* node) {
-		children.push_back(node);
-	}
+    bool operator==(const RC<Node>& a, const RC<Node>& b)
+    {
+        if (a->type != b->type) 
+            return false;
 
-	std::string Node::toString() {
-		return Gularen::toString(type) + ":";
-	}
+        // TODO: Implement GetHash instead
+        if (a->ToString() != b->ToString())
+            return false;
 
-	ValueNode::ValueNode():
-		Node() {
-	}
+        if (a->children.size() != b->children.size())
+            return false;
 
-	ValueNode::ValueNode(NodeType type, NodeGroup group, NodeShape shape, const std::string& value):
-		Node(type, group, shape),
-		value(value) {
-	}
+        for (std::size_t i = 0; i < a->children.size(); ++i)
+            if (!(a->children[i] ==  b->children[i]))
+                return false;
 
-	std::string ValueNode::toString() {
-		return Gularen::toString(type) + ": \"" + value + "\"";;
-	}
+        return true;
+    }
 
-	SizeNode::SizeNode():
-		Node() {
-	}
+    DocumentNode::DocumentNode(): Node(NodeType::Document) {}
 
-	SizeNode::SizeNode(NodeType type, NodeGroup group, NodeShape shape, const size_t size):
-		Node(type, group, shape),
-		size(size) {
-	}
+    String DocumentNode::ToString()
+    {
+        return "Document";
+    }
 
-	std::string SizeNode::toString() {
-		return Gularen::toString(type) + ": " + std::to_string(size);
-	}
+    ParagraphNode::ParagraphNode(): Node(NodeType::Paragraph) {}
 
-	BooleanNode::BooleanNode():
-		Node(NodeType::unknown),
-		state(false) {
-	}
+    String ParagraphNode::ToString()
+    {
+        return "Paragraph";
+    }
 
-	BooleanNode::BooleanNode(NodeType type, NodeGroup group, NodeShape shape, bool state):
-		Node(type, group, shape),
-		state(state) {
-	}
+    TextNode::TextNode(const String& content): Node(NodeType::Text), content(content) {}
+        
+    String TextNode::ToString()
+    {
+        return "Text (" + std::to_string(content.size()) + ") \"" + content + "\"";
+    }
 
-	std::string BooleanNode::toString() {
-		return Gularen::toString(type) + ": " + (state ? "on" : "off");
-	}
+    FSNode::FSNode(NodeType type): Node(type) {}
 
-	TernaryNode::TernaryNode():
-		Node(),
-		state(TernaryState::off) {
-	}
+    String FSNode::ToString()
+    {
+        switch (type)
+        {
+        case NodeType::BoldFS:
+            return "BoldFS";
 
-	TernaryNode::TernaryNode(NodeType type, NodeGroup group, NodeShape shape, TernaryState state):
-		Node(type, group, shape),
-		state(state) {
-	}
+        case NodeType::ItalicFS:
+            return "ItalicFS";
 
-	std::string TernaryNode::toString() {
-		std::string buffer = Gularen::toString(type) + ": ";
+        case NodeType::MonospacedFS:
+            return "MonospacedFS";
+            
+        default:
+            return "UnknownFS";
+        }
+    }
 
-		switch (state) {
-			case TernaryState::off:
-				buffer += "off";
-				break;
-			case TernaryState::on:
-				buffer += "on";
-				break;
-			default:
-				buffer += "inBetween";
-				break;
-		}
+    QuoteNode::QuoteNode(NodeType type): Node(type) {}
 
-		return buffer;
-	}
+    String QuoteNode::ToString()
+    {
+        switch (type)
+        {
+        case NodeType::LSQuote:
+            return "LSQuote";
 
-	ContainerNode::ContainerNode():
-		Node(),
-		value(nullptr) {
-	}
+        case NodeType::RSQuote:
+            return "RSQuote";
 
-	ContainerNode::ContainerNode(NodeType type, NodeGroup group, NodeShape shape, Node* node):
-		Node(type, group, shape),
-		value(node) {
-	}
+        case NodeType::LDQuote:
+            return "LDQuote";
 
-	std::string ContainerNode::toString() {
-		std::string buffer = Gularen::toString(type) + ": ";
-		if (value) {
-			if (value->type == NodeType::symbol)
-				buffer += "%" + static_cast<ValueNode*>(value)->value;
-		}
-		return buffer;
-	}
-
-	TableNode::TableNode():
-		Node(NodeType::table, NodeGroup::table, NodeShape::block) {
-	}
-
-	CodeNode::CodeNode():
-		Node(NodeType::code, NodeGroup::code, NodeShape::block) {
-	}
-
-	CodeNode::CodeNode(const std::string& value, Node* lang):
-		Node(NodeType::code, NodeGroup::code, NodeShape::block),
-		value(value),
-		langCode(lang) {
-	}
-
-	std::string CodeNode::toString() {
-		std::string buffer = Gularen::toString(type) + ": ";
-		if (langCode) {
-			if (langCode->type == NodeType::symbol)
-				buffer += "%" + static_cast<ValueNode*>(langCode)->value + " ";
-		}
-		return buffer + "\"" + value + "\"";
-	}
+        case NodeType::RDQuote:
+            return "RDQuote";
+            
+        default:
+            return "UnknownQuote";
+        }
+    }    
 }
