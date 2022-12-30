@@ -10,6 +10,8 @@ file(GLOB GULAREN_SRC
 	src/*.cpp 
 	src/Gularen/*.h
 	src/Gularen/*.cpp
+	src/Gularen/*/*.h
+	src/Gularen/*/*.cpp
 )
 
 add_library(${PROJECT_NAME} ${GULAREN_SRC})

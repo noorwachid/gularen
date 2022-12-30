@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "Gularen/ASTBuilder.h"
+#include "Gularen/Utility/NodeWriter.h"
 #include "Tester.h"
 
 
@@ -22,16 +23,13 @@ int main()
     {
         tester.Test("One line", []()
         {
-			ASTBuilder builder;
-			builder.SetBuffer("Now you see me. # Now you don't.");
-			builder.Parse();
-
-			auto generated = builder.GetAST();
-			auto expected = AST(CreateRC<DocumentNode>(NodeChildren {
+            ASTBuilder builder;
+			RC<Node> generated = builder.Parse("Now you see me. # Now you don't.");
+			RC<Node> expected = CreateRC<DocumentNode>(NodeChildren {
 				CreateRC<TextNode>("Now you see me. ")
-			}));
+			});
 
-			return generated.GetRootNode() == expected.GetRootNode();
+            return *generated == *expected;
         });
     });
 

@@ -5,14 +5,11 @@ namespace Gularen
 {
     // PUBLIC DEFINITIONS
     
-    void Lexer::SetBuffer(const String& buffer)
+    Array<Token> Lexer::Parse(const String& buffer)
     {
         _buffer = buffer;
         _bufferCursor = _buffer.begin();
-    }
 
-    void Lexer::Parse()
-    {
         _tokens.clear();
 
         // Guarantied to have one token in the collection
@@ -60,21 +57,8 @@ namespace Gularen
 
         // Guarantied to have two token in the collection
         AddToken(Token(TokenType::EODocument));
-    }
-    
-    void Lexer::PrintDebugInformation()
-    {
-        for (auto& token: _tokens)
-            std::cout << token.ToString() << "\n";
-    }
-    
-    const String& Lexer::GetBuffer() const
-    {
-        return _buffer;
-    }
 
-    const Array<Token>& Lexer::GetTokens() const
-    {
+        // TODO: Optimize this copy
         return _tokens;
     }
 

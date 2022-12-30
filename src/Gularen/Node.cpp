@@ -1,30 +1,32 @@
 #include "Node.h"
+#include "ASTBuilder.h"
+#include <iostream>
 
 namespace Gularen 
 {
     Node::Node(NodeType type): type(type) {}
 
-    Node::Node(const NodeChildren& children): children(children) {}
+    Node::Node(NodeType type, const NodeChildren& children): type(type), children(children) {}
 
-    String Node::ToString() 
+    String Node::ToString() const
     { 
         return ""; 
     }
 
-    bool operator==(const RC<Node>& a, const RC<Node>& b)
+    bool operator==(const Node& a, const Node& b)
     {
-        if (a->type != b->type) 
+        if (a.type != b.type) 
             return false;
 
         // TODO: Implement GetHash instead
-        if (a->ToString() != b->ToString())
+        if (a.ToString() != b.ToString())
             return false;
 
-        if (a->children.size() != b->children.size())
+        if (a.children.size() != b.children.size())
             return false;
 
-        for (std::size_t i = 0; i < a->children.size(); ++i)
-            if (!(a->children[i] ==  b->children[i]))
+        for (std::size_t i = 0; i < a.children.size(); ++i)
+            if (!(*a.children[i] == *b.children[i]))
                 return false;
 
         return true;
@@ -32,28 +34,30 @@ namespace Gularen
 
     DocumentNode::DocumentNode(): Node(NodeType::Document) {}
 
-    String DocumentNode::ToString()
+    DocumentNode::DocumentNode(const NodeChildren& children): Node(NodeType::Document, children) {}
+
+    String DocumentNode::ToString() const
     {
         return "Document";
     }
 
     ParagraphNode::ParagraphNode(): Node(NodeType::Paragraph) {}
 
-    String ParagraphNode::ToString()
+    String ParagraphNode::ToString() const
     {
         return "Paragraph";
     }
 
     TextNode::TextNode(const String& content): Node(NodeType::Text), content(content) {}
         
-    String TextNode::ToString()
+    String TextNode::ToString() const
     {
         return "Text (" + std::to_string(content.size()) + ") \"" + content + "\"";
     }
 
     FSNode::FSNode(NodeType type): Node(type) {}
 
-    String FSNode::ToString()
+    String FSNode::ToString() const
     {
         switch (type)
         {
@@ -73,7 +77,7 @@ namespace Gularen
 
     QuoteNode::QuoteNode(NodeType type): Node(type) {}
 
-    String QuoteNode::ToString()
+    String QuoteNode::ToString() const
     {
         switch (type)
         {

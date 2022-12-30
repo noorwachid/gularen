@@ -36,27 +36,27 @@ namespace Gularen
 
         Node(NodeType type);
 
-        Node(const NodeChildren& children);
+        Node(NodeType type, const NodeChildren& children);
 
-        virtual String ToString();
+        virtual String ToString() const;
     };
 
-    bool operator==(const RC<Node>& a, const RC<Node>& b);
+    bool operator==(const Node& a, const Node& b);
 
     struct DocumentNode: Node
     {
         DocumentNode();
 
-		DocumentNode(const NodeChildren& children): Node(children) {}
+		DocumentNode(const NodeChildren& children);
 
-        virtual String ToString() override;
+        virtual String ToString() const override;
     };
 
     struct ParagraphNode: Node
     {
         ParagraphNode();
 
-        virtual String ToString() override;
+        virtual String ToString() const override;
     };
 
     struct TextNode: Node
@@ -65,20 +65,20 @@ namespace Gularen
 
         TextNode(const String& content);
         
-        virtual String ToString() override;
+        virtual String ToString() const override;
     };
 
     struct FSNode: Node
     {
         FSNode(NodeType type);
 
-        virtual String ToString() override;
+        virtual String ToString() const override;
     };
 
     struct QuoteNode: Node
     {
         QuoteNode(NodeType type);
 
-        virtual String ToString() override;
+        virtual String ToString() const override;
     };
 }

@@ -1,29 +1,19 @@
 #include "ASTBuilder.h"
+#include "Utility/NodeWriter.h"
 
 namespace Gularen
 {
     // PUBLIC DEFINITION
 
-    void ASTBuilder::SetBuffer(const String& buffer)
+    RC<DocumentNode> ASTBuilder::Parse(const String& buffer)
     {
-        _lexer.SetBuffer(buffer);
-        _lexer.Parse();
-        _tokens = _lexer.GetTokens();
+        Lexer lexer;
+        _tokens = lexer.Parse(buffer);
         _tokenCursor = _tokens.begin();
-    }
-    
-    void ASTBuilder::SetTokens(const Array<Token>& tokens)
-    {
-        _tokens = tokens;
-        _tokenCursor = _tokens.begin();
-    }
 
-    void ASTBuilder::Parse()
-    {
-        RC<Node> documentNode = CreateRC<DocumentNode>();
+        _documentNode = CreateRC<DocumentNode>();
         _nodeCursors.clear();
-        _nodeCursors.push_back(documentNode);
-		_ast.SetRootNode(documentNode);
+        _nodeCursors.push_back(_documentNode);
         
         while (IsInProgress())
         {
@@ -68,25 +58,8 @@ namespace Gularen
 
             Advance();
         }
-    }
 
-	const AST& ASTBuilder::GetAST() const
-	{
-		return _ast;
-	}
-
-    void ASTBuilder::PrintDebugInformation()
-    {
-        std::cout << "[Buffer]\n";
-        std::cout << _lexer.GetBuffer() << "\n";
-        std::cout << "\n";
-
-        std::cout << "[Tokens]\n";
-        _lexer.PrintDebugInformation();
-        std::cout << "\n";
-
-        std::cout << "[AST]\n";            
-        _ast.Print();
+        return _documentNode;
     }
 
     // PRIVATE DEFINITION

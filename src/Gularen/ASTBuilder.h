@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Lexer.h"
-#include "AST.h"
+#include "Node.h"
 #include <iostream>
 
 namespace Gularen
@@ -9,16 +9,8 @@ namespace Gularen
     class ASTBuilder
     {
     public:
-        void SetBuffer(const String& buffer);
-
-        void SetTokens(const Array<Token>& tokens);
-        
-        void Parse();
+        RC<DocumentNode> Parse(const String& buffer);
     
-        void PrintDebugInformation();
-
-		const AST& GetAST() const;
-
     private:
         // Main Routine Parsing
 
@@ -45,12 +37,10 @@ namespace Gularen
         void Retreat();
 
     private:
-        Lexer _lexer;
-
         Array<Token> _tokens;
         Array<Token>::iterator _tokenCursor;
         
-        AST _ast;
+        RC<DocumentNode> _documentNode;
         Array<RC<Node>> _nodeCursors;
     };
 }

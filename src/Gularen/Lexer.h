@@ -8,16 +8,8 @@ namespace Gularen
     class Lexer
     {
     public:
-        void SetBuffer(const String& buffer);
-        
-        void Parse();
+        Array<Token> Parse(const String& string);
 
-        void PrintDebugInformation();
-        
-        const String& GetBuffer() const;
-
-        const Array<Token>& GetTokens() const;
-        
     private:
         // Main Routine Buffer Parsing
 
