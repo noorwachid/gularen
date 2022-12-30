@@ -14,7 +14,11 @@ namespace Gularen
     private:
         // Main Routine Parsing
 
-        void ParseFS(NodeType type);
+        void ParseOpeningNewline();
+
+        void ParseClosingNewline();
+
+        void ParseFS(const RC<FSNode>& node);
 
         // Cursor Node Manipulation
 

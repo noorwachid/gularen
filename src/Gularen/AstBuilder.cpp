@@ -1,5 +1,4 @@
 #include "ASTBuilder.h"
-#include "Utility/NodeWriter.h"
 
 namespace Gularen
 {
@@ -19,36 +18,26 @@ namespace Gularen
         {
             switch (GetCurrent().type)
             {
+            case TokenType::Newline:
+            case TokenType::BODocument:
+                ParseClosingNewline();
+                ParseOpeningNewline();
+                break;
+
             case TokenType::Text:
                 AddChildCursorNode(CreateRC<TextNode>(GetCurrent().content));
                 break;
                 
-            case TokenType::LSQuote:
-                AddChildCursorNode(CreateRC<QuoteNode>(NodeType::LSQuote));
-                break;
-
-            case TokenType::RSQuote:
-                AddChildCursorNode(CreateRC<QuoteNode>(NodeType::RSQuote));
-                break;
-
-            case TokenType::LDQuote:
-                AddChildCursorNode(CreateRC<QuoteNode>(NodeType::LDQuote));
-                break;
-
-            case TokenType::RDQuote:
-                AddChildCursorNode(CreateRC<QuoteNode>(NodeType::RDQuote));
-                break;
-                
             case TokenType::Asterisk:
-                ParseFS(NodeType::BoldFS);
+                ParseFS(CreateRC<BoldFSNode>());
                 break;
 
             case TokenType::Underscore:
-                ParseFS(NodeType::ItalicFS);
+                ParseFS(CreateRC<ItalicFSNode>());
                 break;
 
             case TokenType::Backtick:
-                ParseFS(NodeType::MonospacedFS);
+                ParseFS(CreateRC<MonospaceFSNode>());
                 break;
             
             default:
@@ -66,12 +55,21 @@ namespace Gularen
 
     // Main Routine Parsing
 
-    void ASTBuilder::ParseFS(NodeType type)
+    void ASTBuilder::ParseOpeningNewline()
     {
-        if (GetCursorNode()->type == type)
+        PushCursorNode(CreateRC<ParagraphNode>());
+    }
+
+    void ASTBuilder::ParseClosingNewline()
+    {
+    }
+
+    void ASTBuilder::ParseFS(const RC<FSNode>& node)
+    {
+        if (GetCursorNode()->type == node->type)
             return PopCursorNode();
 
-        PushCursorNode(CreateRC<FSNode>(type));
+        PushCursorNode(node);
     }
 
     // Cursor Node Manipulation
