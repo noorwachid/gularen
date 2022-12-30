@@ -27,6 +27,7 @@ These types of heading will be index to create table of contents.
 >>-> Heading Subtitle
 If the segment modifier placed after one line any headings. It will be parsed as subtitle.
 
+--- gr
 >>> Document Title
 > Document Subtitle
 
@@ -35,3 +36,12 @@ If the segment modifier placed after one line any headings. It will be parsed as
 
 > Segment
 > Segment Subtitle
+---
+
+>>-> Heading ID 
+
+--- gr
+>>>-> Chapter 1 > chapter-one
+
+See [#chapter-one](chapter 1)
+---
