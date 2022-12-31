@@ -68,6 +68,16 @@ namespace Gularen
 
     void Lexer::ParseNewline()
     {
+        UintSize size = 0;
+
+        while (IsInProgress() && GetCurrent() == '\n')
+        {
+            Advance();
+            ++size;
+        }
+
+        Retreat();
+        AddToken(Token(TokenType::Newline, size));
     }
 
 	void Lexer::ParseComment()

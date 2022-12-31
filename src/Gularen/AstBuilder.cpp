@@ -20,8 +20,7 @@ namespace Gularen
             {
             case TokenType::Newline:
             case TokenType::BODocument:
-                ParseClosingNewline();
-                ParseOpeningNewline();
+                ParseNewline();
                 break;
 
             case TokenType::Text:
@@ -54,14 +53,16 @@ namespace Gularen
     // PRIVATE DEFINITION
 
     // Main Routine Parsing
-
-    void ASTBuilder::ParseOpeningNewline()
+    
+    void ASTBuilder::ParseNewline()
     {
-        PushCursorNode(CreateRC<ParagraphNode>());
-    }
+        if (GetCurrent().size > 1 || GetCurrent().type == TokenType::BODocument)
+        {
+            // Should begin new segment
+            PopCursorNode();
 
-    void ASTBuilder::ParseClosingNewline()
-    {
+            PushCursorNode(CreateRC<ParagraphNode>());
+        }
     }
 
     void ASTBuilder::ParseFS(const RC<FSNode>& node)
@@ -76,7 +77,8 @@ namespace Gularen
 
     void ASTBuilder::PopCursorNode()
     {
-        _nodeCursors.pop_back();
+        if (_nodeCursors.size() > 1)
+            _nodeCursors.pop_back();
     }
     
     void ASTBuilder::PushCursorNode(const RC<Node>& node)

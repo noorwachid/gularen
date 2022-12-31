@@ -8,7 +8,7 @@
 int main()
 {
     using namespace Gularen;
-    
+
     Tester tester;
     
     tester.Group("Primitive", [&tester]() 
@@ -35,7 +35,7 @@ int main()
         });
     });
     
-     tester.Group("LF Font Styles", [&tester]() 
+    tester.Group("LF Font Styles", [&tester]() 
     {
         tester.Test("Serial", []()
         {
@@ -77,6 +77,27 @@ int main()
                         }),
                     }),
                     CreateRC<TextNode>("."),
+                })
+			});
+
+            return *generated == *expected;
+        });
+    });
+
+    tester.Group("LF Paragraphs", [&tester]() 
+    {
+        tester.Test("Two Paragraphs", []()
+        {
+            ASTBuilder builder;
+			RC<Node> generated = builder.Parse("First line.\nSecond line.\n\nThird line.\nForth line.");
+			RC<Node> expected = CreateRC<DocumentNode>(NodeChildren{
+                CreateRC<ParagraphNode>(NodeChildren{
+    				CreateRC<TextNode>("First line."),
+    				CreateRC<TextNode>("Second line."),
+                }),
+                CreateRC<ParagraphNode>(NodeChildren{
+    				CreateRC<TextNode>("Third line."),
+    				CreateRC<TextNode>("Forth line."),
                 })
 			});
 
