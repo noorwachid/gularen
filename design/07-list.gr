@@ -3,9 +3,9 @@
 >>-> Bullet List
 
 --- gr
-* Fast
-* Furious
-* Fit
+- Fast
+- Furious
+- Fit
 ---
 
 >>-> Ordered List
@@ -37,17 +37,17 @@
 >>-> Nested Variation
 
 --- gr
-* One 
-* Two 
-    * Two sub 1
-    * Two sub 2
-        * Two sub 2 section A 
-        * Two sub 2 section B
-    * Two sub 3
+- One 
+- Two 
+    - Two sub 1
+    - Two sub 2
+        - Two sub 2 section A 
+        - Two sub 2 section B
+    - Two sub 3
 ---
 
 >>-> List With Description
-* First 
-* Second 
-* Third 
+- First 
+- Second 
+- Third 
     +1 level indentation after current list will create the body of the list.
