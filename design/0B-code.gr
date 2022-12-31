@@ -2,8 +2,8 @@
 Anything between three dashes or more will be considered as code.
 And make sure to have same dashes count between opening and ending.
 
----- gr
---- cpp
+----- gr
+---- cpp
 #include <iostream>
 
 int main() 
@@ -12,5 +12,5 @@ int main()
 
     return 0;
 }
----
----- 
+----
+----- 

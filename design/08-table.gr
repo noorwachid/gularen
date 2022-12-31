@@ -2,37 +2,37 @@
 
 >>-> Table Data Only
 
---- gr
+---- gr
 | 1 | 2 |
 | 3 | 4 |
---- 
+---- 
 
 >>-> Table With Heading
 
---- gr
+---- gr
 | ID | Name   |
 |----|--------|
 |  1 | Name 1 |
 |  2 | Name 2 |
----
+----
 
 >>-> Table With Heading And Alignment
 
---- gr
+---- gr
 | Left | Center | Right |
 |:-----|:------:|------:|
 | 1    |  Ada   |    19 |
 | 2    | Fowler |    23 |
---- 
+---- 
 
 >>-> Table With Heading And Footer
 Footer only works if the heading is defined.
 
---- gr
+---- gr
 | ID | Name   |
 |----|--------|
 |  1 | Name 1 |
 |  2 | Name 2 |
 |----|--------|
 | ID | Name   |
----
+----
