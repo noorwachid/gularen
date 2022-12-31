@@ -27,7 +27,7 @@ Mungkin karena kau sedang cantik-cantiknya.
 - [0A Image](design/0A-image.gr)
 - [0B Code](design/0B-code.gr)
 - [0C Admonition](design/0C-admonition.gr)
-- [0D Quotation](design/0D-quotation.gr)
+- [0D Punctuation Mark](design/0D-punctuation-mark.gr)
 - [0E Variable](design/0E-variable.gr)
 - [0F Inclusion](design/0F-inclusion.gr)
 - [10 Webpage Embedding](design/10-webpage-embedding.gr)
