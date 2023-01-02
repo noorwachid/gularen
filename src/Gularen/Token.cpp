@@ -13,7 +13,10 @@ namespace Gularen
         switch (type)
         {
         case TokenType::Text:
-            return "Text (" + std::to_string(size) + ") \"" + content + "\"";
+            return "Text \"" + content + "\"";
+
+        case TokenType::Symbol:
+            return "Symbol \"" + content + "\"";
 
         case TokenType::Newline:
             return "Newline (" + std::to_string(size) + ")";
@@ -44,7 +47,28 @@ namespace Gularen
 
         case TokenType::EODocument:
             return "EODocument";
+
+        case TokenType::SmallArrow:
+            return "SmallArrow";
+
+        case TokenType::Arrow:
+            return "Arrow";
             
+        case TokenType::LargeArrow:
+            return "LargeArrow";
+            
+        case TokenType::ExtraLargeArrow:
+            return "ExtraLargeArrow";
+
+        case TokenType::ArrowHead:
+            return "ArrowHead";
+
+        case TokenType::ArrowTail:
+            return "ArrowTail";
+            
+        case TokenType::LargeArrowTail:
+            return "LargeArrowTail";
+
         default:
             return "Unknown";
             break;

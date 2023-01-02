@@ -7,7 +7,7 @@ void Tester::Group(const std::string& group, const std::function<void()>& callba
 
     _groups.push_back(group);
     
-    std::cout << "Testing \x1b[33m\"" << group << "\"\x1b[0m Group:\r\n";
+    std::cout << "* " << group << ":\r\n";
 
     callback();
 
@@ -25,7 +25,7 @@ void Tester::Test(const std::string &title, const std::function<bool()>& callbac
     for (std::size_t i = 0; i < _groups.size(); ++i)
         std::cout << "    ";
 
-    std::cout << "[" << (result ? "\x1b[32mPASS\x1b[0m" : "\x1b[31mFAIL\x1b[0m") << "] " << title << "\r\n";
+    std::cout << "* " << (result ? "\x1b[32mPASS\x1b[0m" : "\x1b[31mFAIL\x1b[0m") << " " << title << "\r\n";
 }
 
 void Tester::Sumarize()

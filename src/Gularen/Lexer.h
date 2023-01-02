@@ -23,9 +23,25 @@ namespace Gularen
         
         void ParseText();
 
+        void ParseSymbol();
+
+        void ParseBlock(bool withAdvancing = false);
+
+        void ParseLine();
+
+        void ParseArrow();
+
+        void ParseArrowID();
+
+        void ParseDash();
+
+        void ParseEmojiShortcode();
+
         // Sub Routine Buffer Parsing
 
         String ConsumeText();
+
+        String ConsumeSymbol();
 
         // Buffer Iterator Helper
 
@@ -39,6 +55,8 @@ namespace Gularen
         
         bool IsCurrentText();
 
+        bool IsCurrentSymbol();
+
         // Token Helper
 
         void AddToken(Token&& token);
@@ -48,5 +66,7 @@ namespace Gularen
         String::iterator _bufferCursor;
 
         Array<Token> _tokens;
+        
+        bool _inArrowLine = false;
     };
 }

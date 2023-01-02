@@ -14,6 +14,7 @@ namespace Gularen
 
         // Guarantied to have one token in the collection
         AddToken(Token(TokenType::BODocument));
+        ParseBlock(true);
 
         while (IsInProgress())
         {
@@ -21,11 +22,26 @@ namespace Gularen
             {
             case '\n':
                 ParseNewline();
+                Advance();
+
+                ParseBlock();
                 break;
 			
 			case '#':
 				ParseComment();
 				break;
+
+            case '>':
+                ParseArrowID();
+                break;
+                
+            case '-': 
+                ParseDash();
+                break;
+
+            case ':':
+                ParseEmojiShortcode();
+                break;
 
             case '*':
                 ParseFS(TokenType::Asterisk);
@@ -76,8 +92,9 @@ namespace Gularen
             ++size;
         }
 
-        Retreat();
         AddToken(Token(TokenType::Newline, size));
+
+        Retreat();
     }
 
 	void Lexer::ParseComment()
@@ -113,8 +130,219 @@ namespace Gularen
         if (IsCurrentText())
             AddToken(Token(TokenType::Text, ConsumeText()));
         else
-            // TODO: check if previously is Text then append
-            AddToken(Token(TokenType::Text, {GetCurrent(), 0x0}));
+            if (_tokens.back().type != TokenType::Text)
+                AddToken(Token(TokenType::Text, {GetCurrent(), 0x0}));
+            else 
+                _tokens.back().content += GetCurrent();
+    }
+    
+    void Lexer::ParseSymbol()
+    {
+        if (IsCurrentSymbol())
+            AddToken(Token(TokenType::Symbol, ConsumeSymbol()));
+        else
+            ParseText();
+    }
+
+    void Lexer::ParseBlock(bool withAdvancing)
+    {
+        _inArrowLine = false;
+
+        switch (GetCurrent()) 
+        {
+        case '>':
+            ParseArrow();
+            break;
+
+        case '-':
+            ParseLine();
+            break;
+
+        default:
+            Retreat();
+            break;
+        }
+        
+        if (withAdvancing)
+            Advance();
+    }
+
+    void Lexer::ParseLine()
+    {
+        Advance();
+
+        if (GetCurrent() == '>')
+        {
+            Advance();
+
+            if (GetCurrent() == ' ')
+            {
+                // "-> "
+
+                _inArrowLine = true;
+                return AddToken(Token(TokenType::SmallArrow));
+            }
+
+            Retreat();
+        }
+
+        Retreat();
+    }
+
+    void Lexer::ParseArrow()
+    {
+        Advance();
+
+        if (GetCurrent() == ' ') 
+        {
+            // "> "
+            _inArrowLine = true;
+            return AddToken(Token(TokenType::ArrowHead));
+        }
+
+        if (GetCurrent() == '-') 
+        {
+            Advance();
+
+            if (GetCurrent() == '>') 
+            {
+                Advance();
+
+                if (GetCurrent() == ' ') 
+                {
+                    // ">-> "
+                    _inArrowLine = true;
+                    return AddToken(Token(TokenType::Arrow));
+                }
+
+                Retreat();
+            }
+
+            Retreat();
+        }
+
+        if (GetCurrent() == '>') 
+        {
+            Advance();
+            
+            if (GetCurrent() == ' ') 
+            {
+                // ">> "
+                _inArrowLine = true;
+                return AddToken(Token(TokenType::ArrowTail));
+            }
+
+            if (GetCurrent() == '-') 
+            {
+                Advance();
+
+                if (GetCurrent() == '>') 
+                {
+                    Advance();
+
+                    if (GetCurrent() == ' ') 
+                    {
+                        // ">>-> "
+                        _inArrowLine = true;
+                        return AddToken(Token(TokenType::LargeArrow));
+                    }
+
+                    Retreat();
+                }
+
+                Retreat();
+            }
+
+            if (GetCurrent() == '>') 
+            {
+                Advance();
+
+                if (GetCurrent() == ' ') 
+                {
+                    // ">>> "
+                    _inArrowLine = true;
+                    return AddToken(Token(TokenType::LargeArrowTail));
+                }
+
+                if (GetCurrent() == '-') 
+                {
+                    Advance();
+
+                    if (GetCurrent() == '>') 
+                    {
+                        Advance();
+
+                        if (GetCurrent() == ' ') 
+                        {
+                            // ">>>-> "
+                            _inArrowLine = true;
+                            return AddToken(Token(TokenType::ExtraLargeArrow));
+                        }
+
+                        Retreat();
+                    }
+
+                    Retreat();
+                }
+
+                Retreat();
+            }
+
+            Retreat();
+        }
+
+        Retreat();
+    }
+
+    void Lexer::ParseArrowID()
+    {
+        if (!_inArrowLine)
+            return ParseText();
+
+        AddToken(Token(TokenType::ArrowHead));
+
+        Advance();
+
+        if (GetCurrent() == ' ')
+        {
+            Advance();
+            
+            if (IsCurrentSymbol())
+            {
+                return ParseSymbol();
+            }
+                
+            Retreat();
+        }
+            
+        Retreat();
+    }
+
+    void Lexer::ParseDash()
+    {
+        Advance();
+
+        if (GetCurrent() == '-')
+        {
+            Advance();
+
+            if (GetCurrent() == '-')
+            {
+                return AddToken(Token(TokenType::EmDash));
+            }
+
+            Retreat();
+
+            return AddToken(Token(TokenType::EnDash));
+        }
+
+        Retreat();
+
+        return AddToken(Token(TokenType::Hyphen));
+    }
+
+    void Lexer::ParseEmojiShortcode()
+    {
     }
 
     // Sub Routine Buffer Parsing
@@ -133,6 +361,22 @@ namespace Gularen
         Retreat();
         
         return text;
+    }
+
+    String Lexer::ConsumeSymbol()
+    {
+        String symbol;
+        
+        while (IsInProgress() && IsCurrentSymbol())
+        {
+            symbol += GetCurrent();
+            
+            Advance();
+        }
+        
+        Retreat();
+        
+        return symbol;
     }
 
     // Buffer Iterator Helper
@@ -168,10 +412,19 @@ namespace Gularen
 
             byte == ' ' || 
             byte == ',' ||
-            byte == '.' ||
-            byte == '!' ||
-            byte == '?' ||
-            byte == ':' ||
+            byte == '.'
+        ;
+    }
+
+    bool Lexer::IsCurrentSymbol()
+    {
+        char byte = GetCurrent();
+        
+        return 
+            (byte >= 'a' && byte <= 'z') || 
+            (byte >= 'A' && byte <= 'Z') ||
+            (byte >= '0' && byte <= '9') ||
+
             byte == '-'
         ;
     }

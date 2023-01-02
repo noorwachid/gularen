@@ -9,7 +9,7 @@ namespace Gularen
     class ASTBuilder
     {
     public:
-        RC<DocumentNode> Parse(const String& buffer);
+        RC<RootNode> Parse(const String& buffer);
     
     private:
         // Main Routine Parsing
@@ -42,7 +42,7 @@ namespace Gularen
         Array<Token> _tokens;
         Array<Token>::iterator _tokenCursor;
         
-        RC<DocumentNode> _documentNode;
+        RC<RootNode> _rootNode;
         Array<RC<Node>> _nodeCursors;
     };
 }

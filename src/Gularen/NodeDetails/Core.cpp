@@ -2,31 +2,28 @@
 
 namespace Gularen 
 {
-    Node::Node(NodeType type): type(type) {}
+    RootNode::RootNode(): Node(NodeType::Root) {}
 
-    Node::Node(NodeType type, const NodeChildren& children): type(type), children(children) {}
+    RootNode::RootNode(const NodeChildren& children): Node(NodeType::Root, children) {}
 
-    String Node::ToString() const
-    { 
-        return ""; 
+    String RootNode::ToString() const
+    {
+        return "Root";
     }
 
-    bool operator==(const Node& a, const Node& b)
+    ParagraphNode::ParagraphNode(): Node(NodeType::Paragraph) {}
+
+    ParagraphNode::ParagraphNode(const NodeChildren& children): Node(NodeType::Paragraph, children) {}
+
+    String ParagraphNode::ToString() const
     {
-        if (a.type != b.type) 
-            return false;
+        return "Paragraph";
+    }
 
-        // TODO: Implement GetHash instead
-        if (a.ToString() != b.ToString())
-            return false;
-
-        if (a.children.size() != b.children.size())
-            return false;
-
-        for (std::size_t i = 0; i < a.children.size(); ++i)
-            if (!(*a.children[i] == *b.children[i]))
-                return false;
-
-        return true;
+    TextNode::TextNode(const String& content): Node(NodeType::Text), content(content) {}
+        
+    String TextNode::ToString() const
+    {
+        return "Text content:\"" + content + "\"";
     }
 }

@@ -17,6 +17,7 @@ namespace Gularen
         Backtick,
         
         Text,
+        Symbol,
         
         Newline,
         
@@ -24,6 +25,21 @@ namespace Gularen
         RSQuote,
         LDQuote,
         RDQuote,
+
+        LargeArrowTail,
+        ArrowTail,
+
+        ExtraLargeArrow,
+        LargeArrow,
+        Arrow,
+        SmallArrow,
+
+        ArrowHead,
+
+
+        Hyphen,
+        EnDash,
+        EmDash,
     };
 
     struct Token

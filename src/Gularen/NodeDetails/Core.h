@@ -1,45 +1,33 @@
 #pragma once
 
-#include "../DS/String.h"
-#include "../DS/Array.h"
-#include "../DS/RC.h"
+#include "Structure.h"
 
-namespace Gularen
+namespace Gularen 
 {
-    enum struct NodeType
+    struct RootNode: Node
     {
-        Document,
+        RootNode();
 
-        Paragraph,
+		RootNode(const NodeChildren& children);
 
-        Text,
-
-        BoldFS,
-        ItalicFS,
-        MonospaceFS,
-        
-        LSQuote,
-        RSQuote,
-        LDQuote,
-        RDQuote,
+        virtual String ToString() const override;
     };
 
-	struct Node;
-
-	using NodeChildren = Array<RC<Node>>;
-
-    struct Node
+    struct ParagraphNode: Node
     {
-        NodeType type;
-        
-        NodeChildren children;
+        ParagraphNode();
 
-        Node(NodeType type);
+		ParagraphNode(const NodeChildren& children);
 
-        Node(NodeType type, const NodeChildren& children);
-
-        virtual String ToString() const;
+        virtual String ToString() const override;
     };
 
-    bool operator==(const Node& a, const Node& b);
+    struct TextNode: Node
+    {
+        String content;
+
+        TextNode(const String& content);
+        
+        virtual String ToString() const override;
+    };
 }
