@@ -1,17 +1,17 @@
 >>>-> Variable
 
 >>-> Assigning variable
----- gr 
+=== gr 
 :: mc-name = Zack
-----
+===
 
 >>-> Printing variable
----- gr
+=== gr
 His name is {mc-name}
-----
+===
 
 >>-> Built-in variables
----- gr
+=== gr
 # Table of Contents
 {document-index}
 
@@ -23,4 +23,4 @@ His name is {mc-name}
 
 # Active Page Footnote
 {document-active-page-footnote}
-----
+===

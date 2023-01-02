@@ -2,9 +2,9 @@
 
 >>-> Inline Image
 
----- gr
+=== gr
 ![cat.png]
 
 # With alternative label
 ![cat.png](A cat)
-----
+===

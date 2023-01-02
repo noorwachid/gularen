@@ -1,13 +1,13 @@
 >>>-> Font Style
 
----- gr
+=== gr
 *Anything inside two asterisks will be rendered as bold font style.*
-----
+===
 
----- gr
+=== gr
 _Anything inside two underscores will be rendered as italic font style._
-----
+===
 
----- gr
+=== gr
 `Anything inside two backticks will be rendered as monospaced font style.`
-----
+===

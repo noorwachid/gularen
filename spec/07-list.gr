@@ -2,41 +2,41 @@
 
 >>-> Bullet List
 
----- gr
+=== gr
 * Fast
 * Furious
 * Fit
-----
+===
 
 >>-> Ordered List
 
----- gr
+=== gr
 1. One
 2. Two 
 3. Three
-----
+===
 
 >>-> Auto-Countering Ordered List
 
----- gr
+=== gr
 .. One 
 .. Two 
 .. Three
----- 
+=== 
 
 >>-> Task List
 
----- gr
+=== gr
 [ ] To-do one 
 [ ] To-do two
 [v] Done three
 [v] Done four
 [x] Canceled five
-----
+===
 
 >>-> Nested Variation
 
----- gr
+=== gr
 * One 
 * Two 
     * Two sub 1
@@ -44,7 +44,7 @@
         * Two sub 2 section A 
         * Two sub 2 section B
     * Two sub 3
-----
+===
 
 >>-> List With Description
 * First 

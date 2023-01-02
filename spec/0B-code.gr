@@ -1,0 +1,16 @@
+>>>-> Code
+Anything between three or more equals will be considered as code.
+And make sure to have same equals count between opening and ending.
+
+==== gr
+=== cpp
+#include <iostream>
+
+int main() 
+{
+    std::cout << "Hello World\n";
+
+    return 0;
+}
+===
+==== 

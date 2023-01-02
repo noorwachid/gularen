@@ -1,9 +1,9 @@
 >>>-> Indentation
 The sequence of four spaces after newline will count as 1 level indentation.
 
----- gr
+=== gr
 Level 0 indentation.
     Level 1 indentation.
         Level 2 indentation.
             Level 3 indentation.
-----
+===

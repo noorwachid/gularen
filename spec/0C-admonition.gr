@@ -8,12 +8,12 @@ Avaliable levels are:
 
 >>-> One Line Admonition
 
----- gr
+=== gr
 [!] NOTE Something here
-----
+===
 
 >>-> Multi Line Admonition
----- gr
+=== gr
 [!] IMPORTANT Something here
     Every +1 indent after admonition modifier will be subcontent of this admonition.
 
@@ -21,4 +21,4 @@ Avaliable levels are:
 [!] IMPORTANT
     Admonition without title are allowed.
     Every +1 indent after admonition modifier will be 
-----
+===
