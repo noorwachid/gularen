@@ -2,8 +2,7 @@
 
 #include <vector>
 
-namespace Gularen 
-{
+namespace Gularen {
 	template <typename T>
 	using Array = std::vector<T>;
 }

@@ -2,14 +2,12 @@
 
 #include <memory>
 
-namespace Gularen 
-{
+namespace Gularen {
 	template <typename T>
 	using RC = std::shared_ptr<T>;
 
 	template<typename T, typename ... Args>
-	constexpr RC<T> CreateRC(Args&& ... args)
-	{
+	constexpr RC<T> makeRC(Args&& ... args) {
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 }

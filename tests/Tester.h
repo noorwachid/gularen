@@ -5,14 +5,13 @@
 #include <functional>
 #include <iostream>
 
-class Tester
-{
+class Tester {
 public:
-    void Group(const std::string& group, const std::function<void()>& callback);
+    void group(const std::string& group, const std::function<void()>& callback);
 
-    void Test(const std::string& title, const std::function<bool()>& callback);
+    void test(const std::string& title, const std::function<bool()>& callback);
 
-    void Sumarize();
+    void sumarize();
 
 private:
     std::size_t _counter = 0;

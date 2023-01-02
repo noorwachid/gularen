@@ -1,82 +1,78 @@
 #include "Token.h"
 
-namespace Gularen 
-{
+namespace Gularen {
     Token::Token(TokenType type): type(type), size(0) {}
     
     Token::Token(TokenType type, const String& content): type(type), content(content), size(content.size()) {}
 
     Token::Token(TokenType type, std::size_t size): type(type), size(size) {}
 
-    String Token::ToString()
-    {
-        switch (type)
-        {
-        case TokenType::Text:
-            return "Text \"" + content + "\"";
+    String Token::toString() {
+        switch (type) {
+        case TokenType::text:
+            return "text \"" + content + "\"";
 
-        case TokenType::Symbol:
-            return "Symbol \"" + content + "\"";
+        case TokenType::symbol:
+            return "symbol \"" + content + "\"";
 
-        case TokenType::Newline:
-            return "Newline (" + std::to_string(size) + ")";
+        case TokenType::newline:
+            return "newline (" + std::to_string(size) + ")";
             
-        case TokenType::Asterisk:
-            return "Asterisk";
+        case TokenType::asterisk:
+            return "asterisk";
             
-        case TokenType::Underscore:
-            return "Underscore";
+        case TokenType::underscore:
+            return "underscore";
             
-        case TokenType::Backtick:
-            return "Backtick";
+        case TokenType::backtick:
+            return "backtick";
             
-        case TokenType::LSQuote:
-            return "LSQuote";
+        case TokenType::lsQuote:
+            return "lsQuote";
             
-        case TokenType::RSQuote:
-            return "RSQuote";
+        case TokenType::rsQuote:
+            return "rsQuote";
             
-        case TokenType::LDQuote:
-            return "LDQuote";
+        case TokenType::ldQuote:
+            return "ldQuote";
             
-        case TokenType::RDQuote:
-            return "RDQuote";
+        case TokenType::rdQuote:
+            return "rdQuote";
 
-        case TokenType::BODocument:
-            return "BODocument";
+        case TokenType::boDocument:
+            return "boDocument";
 
-        case TokenType::EODocument:
-            return "EODocument";
+        case TokenType::eoDocument:
+            return "eoDocument";
 
-        case TokenType::SmallArrow:
-            return "SmallArrow";
+        case TokenType::smallArrow:
+            return "smallArrow";
 
-        case TokenType::Arrow:
-            return "Arrow";
+        case TokenType::arrow:
+            return "arrow";
             
-        case TokenType::LargeArrow:
-            return "LargeArrow";
+        case TokenType::largeArrow:
+            return "largeArrow";
             
-        case TokenType::ExtraLargeArrow:
-            return "ExtraLargeArrow";
+        case TokenType::extraLargeArrow:
+            return "extraLargeArrow";
 
-        case TokenType::ArrowHead:
-            return "ArrowHead";
+        case TokenType::arrowHead:
+            return "arrowHead";
 
-        case TokenType::ArrowTail:
-            return "ArrowTail";
+        case TokenType::arrowTail:
+            return "arrowTail";
             
-        case TokenType::LargeArrowTail:
-            return "LargeArrowTail";
+        case TokenType::largeArrowTail:
+            return "largeArrowTail";
 
         default:
-            return "Unknown";
+            return "unknown";
             break;
         }
     }  
 
-    bool Token::operator==(const Token& other)
-    {
+    bool Token::operator==(const Token& other) {
         return 
             type == other.type && 
             size == other.size &&

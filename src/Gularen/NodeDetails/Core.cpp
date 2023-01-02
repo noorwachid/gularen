@@ -1,29 +1,25 @@
 #include "Core.h"
 
-namespace Gularen 
-{
-    RootNode::RootNode(): Node(NodeType::Root) {}
+namespace Gularen {
+    RootNode::RootNode(): Node(NodeType::root) {}
 
-    RootNode::RootNode(const NodeChildren& children): Node(NodeType::Root, children) {}
+    RootNode::RootNode(const NodeChildren& children): Node(NodeType::root, children) {}
 
-    String RootNode::ToString() const
-    {
-        return "Root";
+    String RootNode::toString() const {
+        return "root";
     }
 
-    ParagraphNode::ParagraphNode(): Node(NodeType::Paragraph) {}
+    ParagraphNode::ParagraphNode(): Node(NodeType::paragraph) {}
 
-    ParagraphNode::ParagraphNode(const NodeChildren& children): Node(NodeType::Paragraph, children) {}
+    ParagraphNode::ParagraphNode(const NodeChildren& children): Node(NodeType::paragraph, children) {}
 
-    String ParagraphNode::ToString() const
-    {
-        return "Paragraph";
+    String ParagraphNode::toString() const {
+        return "paragraph";
     }
 
-    TextNode::TextNode(const String& content): Node(NodeType::Text), content(content) {}
+    TextNode::TextNode(const String& content): Node(NodeType::text), content(content) {}
         
-    String TextNode::ToString() const
-    {
-        return "Text content:\"" + content + "\"";
+    String TextNode::toString() const {
+        return "text content:\"" + content + "\"";
     }
 }

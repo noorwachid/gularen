@@ -3,47 +3,44 @@
 #include "Integer.h"
 #include "DS/String.h"
 
-namespace Gularen
-{
-    enum class TokenType
-    {
-        BODocument,
-        EODocument,
+namespace Gularen {
+    enum class TokenType {
+        boDocument,
+        eoDocument,
 
-        Unknown,
+        unknown,
         
-        Asterisk,
-        Underscore,
-        Backtick,
+        asterisk,
+        underscore,
+        backtick,
         
-        Text,
-        Symbol,
+        text,
+        symbol,
         
-        Newline,
+        newline,
         
-        LSQuote,
-        RSQuote,
-        LDQuote,
-        RDQuote,
+        lsQuote,
+        rsQuote,
+        ldQuote,
+        rdQuote,
 
-        LargeArrowTail,
-        ArrowTail,
+        largeArrowTail,
+        arrowTail,
 
-        ExtraLargeArrow,
-        LargeArrow,
-        Arrow,
-        SmallArrow,
+        extraLargeArrow,
+        largeArrow,
+        arrow,
+        smallArrow,
 
-        ArrowHead,
+        arrowHead,
 
 
-        Hyphen,
-        EnDash,
-        EmDash,
+        hyphen,
+        enDash,
+        emDash,
     };
 
-    struct Token
-    {
+    struct Token {
         TokenType type;
         String content;
         UintSize size;
@@ -54,7 +51,7 @@ namespace Gularen
 
         Token(TokenType type, UintSize size);
         
-        String ToString();
+        String toString();
         
         bool operator==(const Token& other);
     };

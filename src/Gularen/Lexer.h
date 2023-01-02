@@ -3,63 +3,61 @@
 #include "Token.h"
 #include "DS/Array.h"
 
-namespace Gularen
-{
-    class Lexer
-    {
+namespace Gularen {
+    class Lexer {
     public:
-        Array<Token> Parse(const String& string);
+        Array<Token> parse(const String& string);
 
     private:
         // Main Routine Buffer Parsing
 
-        void ParseNewline();
+        void parseNewline();
 
-		void ParseComment();
+		void parseComment();
         
-        void ParseFS(TokenType type);
+        void parseFS(TokenType type);
 
-        void ParseQuote(TokenType opening, TokenType ending);
+        void parseQuote(TokenType opening, TokenType ending);
         
-        void ParseText();
+        void parseText();
 
-        void ParseSymbol();
+        void parseSymbol();
 
-        void ParseBlock(bool withAdvancing = false);
+        void parseBlock(bool withAdvancing = false);
 
-        void ParseLine();
+        void parseLine();
 
-        void ParseArrow();
+        void parseArrow();
 
-        void ParseArrowID();
+        void parseArrowID();
 
-        void ParseDash();
+        void parseDash();
 
-        void ParseEmojiShortcode();
+        void parseEmojiShortcode();
 
         // Sub Routine Buffer Parsing
 
-        String ConsumeText();
+        String consumeTextBytes();
 
-        String ConsumeSymbol();
+        String consumeSymbolBytes();
 
         // Buffer Iterator Helper
 
-        char GetCurrent();
+        char getCurrentByte();
         
-        bool IsInProgress();
+        bool isByteCursorInProgress();
         
-        void Advance();
+        void advanceByteCursor();
         
-        void Retreat();
+        void retreatByteCursor();
         
-        bool IsCurrentText();
+        bool isCurrentByteText();
 
-        bool IsCurrentSymbol();
+        bool isCurrentByteSymbol();
 
         // Token Helper
 
-        void AddToken(Token&& token);
+        void addToken(Token&& token);
 
     private:
         String _buffer;

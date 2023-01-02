@@ -2,7 +2,6 @@
 
 #include <string>
 
-namespace Gularen 
-{
+namespace Gularen {
 	using String = std::string;
 }

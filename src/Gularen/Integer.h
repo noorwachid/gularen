@@ -3,8 +3,7 @@
 #include <cstddef>
 #include <cinttypes>
 
-namespace Gularen
-{
+namespace Gularen {
 	using Int8 = std::int8_t; 
 	using Int16 = std::int16_t; 
 	using Int32 = std::int32_t; 

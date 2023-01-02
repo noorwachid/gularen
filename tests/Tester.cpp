@@ -1,7 +1,6 @@
 #include "Tester.h"
 
-void Tester::Group(const std::string& group, const std::function<void()>& callback)
-{
+void Tester::group(const std::string& group, const std::function<void()>& callback) {
     for (std::size_t i = 0; i < _groups.size(); ++i)
         std::cout << "    ";
 
@@ -15,8 +14,7 @@ void Tester::Group(const std::string& group, const std::function<void()>& callba
         _groups.pop_back();
 }
 
-void Tester::Test(const std::string &title, const std::function<bool()>& callback)
-{
+void Tester::test(const std::string &title, const std::function<bool()>& callback) {
     bool result = callback();
     
     if (!result)
@@ -28,9 +26,7 @@ void Tester::Test(const std::string &title, const std::function<bool()>& callbac
     std::cout << "* " << (result ? "\x1b[32mPASS\x1b[0m" : "\x1b[31mFAIL\x1b[0m") << " " << title << "\r\n";
 }
 
-void Tester::Sumarize()
-{
-
+void Tester::sumarize() {
     std::cout << "\r\n";
     std::cout << "Total " << _counter << " test(s)\r\n";
 

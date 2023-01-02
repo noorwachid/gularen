@@ -4,39 +4,37 @@
 #include "Node.h"
 #include <iostream>
 
-namespace Gularen
-{
-    class ASTBuilder
-    {
+namespace Gularen {
+    class ASTBuilder {
     public:
-        RC<RootNode> Parse(const String& buffer);
+        RC<RootNode> parse(const String& buffer);
     
     private:
         // Main Routine Parsing
         
-        void ParseNewline();
+        void parseNewline();
 
-        void ParseFS(const RC<FSNode>& node);
+        void parseFS(const RC<FSNode>& node);
 
         // Cursor Node Manipulation
 
-        void PopCursorNode();
+        void popNodeCursor();
 
-        void PushCursorNode(const RC<Node>& node);
+        void pushNodeCursor(const RC<Node>& node);
 
-        void AddChildCursorNode(const RC<Node>& node);
+        void addNodeCursorChild(const RC<Node>& node);
 
-        const RC<Node>& GetCursorNode() const;
+        const RC<Node>& getNodeCursor() const;
 
         // Token Iterator
 
-        const Token& GetCurrent() const;
+        const Token& getCurrentToken() const;
         
-        bool IsInProgress();
+        bool isTokenCursorInProgress();
         
-        void Advance();
+        void advanceTokenCursor();
         
-        void Retreat();
+        void retreatTokenCursor();
 
     private:
         Array<Token> _tokens;

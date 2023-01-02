@@ -1,23 +1,20 @@
 #include "Core.h"
 
-namespace Gularen 
-{
+namespace Gularen {
     Node::Node(NodeType type): type(type) {}
 
     Node::Node(NodeType type, const NodeChildren& children): type(type), children(children) {}
 
-    String Node::ToString() const
-    { 
-        return ""; 
+    String Node::toString() const { 
+        return "[unimplemented]"; 
     }
 
-    bool operator==(const Node& a, const Node& b)
-    {
+    bool operator==(const Node& a, const Node& b) {
         if (a.type != b.type) 
             return false;
 
         // TODO: Implement GetHash instead
-        if (a.ToString() != b.ToString())
+        if (a.toString() != b.toString())
             return false;
 
         if (a.children.size() != b.children.size())

@@ -5,14 +5,12 @@
 // #define GULAREN_DEBUG_TOKENS 1
 // #define GULAREN_DEBUG_AST 1
 
-namespace Gularen
-{
+namespace Gularen {
     // PUBLIC DEFINITION
 
-    RC<RootNode> ASTBuilder::Parse(const String& buffer)
-    {
+    RC<RootNode> ASTBuilder::parse(const String& buffer) {
         Lexer lexer;
-        _tokens = lexer.Parse(buffer);
+        _tokens = lexer.parse(buffer);
         _tokenCursor = _tokens.begin();
 
         #ifdef GULAREN_DEBUG_BUFFER
@@ -23,53 +21,50 @@ namespace Gularen
         #ifdef GULAREN_DEBUG_TOKENS
         std::cout << "[Gularen.Debug.Tokens]\n";
         for (auto a: _tokens)
-            std::cout << a.ToString() << "\n";
+            std::cout << a.toString() << "\n";
         std::cout << "\n";
         #endif
 
-        _rootNode = CreateRC<RootNode>();
+        _rootNode = makeRC<RootNode>();
         _nodeCursors.clear();
         _nodeCursors.push_back(_rootNode);
         
-        while (IsInProgress())
-        {
-            switch (GetCurrent().type)
-            {
-            case TokenType::Newline:
-            case TokenType::BODocument:
-                ParseNewline();
+        while (isTokenCursorInProgress()) {
+            switch (getCurrentToken().type) {
+            case TokenType::newline:
+            case TokenType::boDocument:
+                parseNewline();
                 break;
 
-            case TokenType::ArrowHead:
-                Advance();
+            case TokenType::arrowHead:
+                advanceTokenCursor();
 
-                if (GetCurrent().type == TokenType::Symbol && GetCursorNode()->type == NodeType::Title)
-                {
-                    static_cast<HeadingNode*>(_nodeCursors[_nodeCursors.size() - 2].get())->id = GetCurrent().content;
+                if (getCurrentToken().type == TokenType::symbol && getNodeCursor()->type == NodeType::title) {
+                    static_cast<HeadingNode*>(_nodeCursors[_nodeCursors.size() - 2].get())->id = getCurrentToken().content;
                     break;
                 }
 
-                Retreat();
+                retreatTokenCursor();
                 break;
 
-            case TokenType::Text:
-                AddChildCursorNode(CreateRC<TextNode>(GetCurrent().content));
+            case TokenType::text:
+                addNodeCursorChild(makeRC<TextNode>(getCurrentToken().content));
                 break;
                 
-            case TokenType::Asterisk:
-                ParseFS(CreateRC<BoldFSNode>());
+            case TokenType::asterisk:
+                parseFS(makeRC<BoldFSNode>());
                 break;
 
-            case TokenType::Underscore:
-                ParseFS(CreateRC<ItalicFSNode>());
+            case TokenType::underscore:
+                parseFS(makeRC<ItalicFSNode>());
                 break;
 
-            case TokenType::Backtick:
-                ParseFS(CreateRC<MonospaceFSNode>());
+            case TokenType::backtick:
+                parseFS(makeRC<MonospaceFSNode>());
                 break;
 
-            case TokenType::LargeArrowTail:
-                // PopCursorNode();
+            case TokenType::largeArrowTail:
+                // popNodeCursor();
                 break;
             
             default:
@@ -77,7 +72,7 @@ namespace Gularen
                 break;
             }
 
-            Advance();
+            advanceTokenCursor();
         }
 
         #ifdef GULAREN_DEBUG_AST
@@ -94,81 +89,74 @@ namespace Gularen
 
     // Main Routine Parsing
     
-    void ASTBuilder::ParseNewline()
-    {
-        auto newlineSize = GetCurrent().size;
+    void ASTBuilder::parseNewline() {
+        auto newlineSize = getCurrentToken().size;
 
-        Advance();
+        advanceTokenCursor();
 
-        auto previousType = GetCursorNode()->type;
+        auto previousType = getNodeCursor()->type;
         bool spawningNewParagraph = false;
 
         // Closing
-        if (previousType == NodeType::Title)
-        {
-            PopCursorNode();
+        if (previousType == NodeType::title) {
+            popNodeCursor();
             
             // Only parse as subtitle if the segment identifier right below heading
-            if (GetCurrent().type == TokenType::ArrowHead && newlineSize == 1)
-                return PushCursorNode(CreateRC<SubtitleNode>());
+            if (getCurrentToken().type == TokenType::arrowHead && newlineSize == 1)
+                return pushNodeCursor(makeRC<SubtitleNode>());
             
-            PopCursorNode();
-        }
-        else if (previousType == NodeType::Paragraph) 
-        {
-            if (GetCurrent().type != TokenType::Text || newlineSize > 1)
-            {
-                PopCursorNode();
+            popNodeCursor();
+        } else if (previousType == NodeType::paragraph) {
+            if (getCurrentToken().type != TokenType::text || newlineSize > 1) {
+                popNodeCursor();
             }
         }
 
-        switch (GetCurrent().type)
-        {
-        case TokenType::LargeArrowTail:
-            PushCursorNode(CreateRC<DocumentNode>());
-            PushCursorNode(CreateRC<TitleNode>());
+        switch (getCurrentToken().type) {
+        case TokenType::largeArrowTail:
+            pushNodeCursor(makeRC<DocumentNode>());
+            pushNodeCursor(makeRC<TitleNode>());
             break;
 
-        case TokenType::ArrowTail:
-            PushCursorNode(CreateRC<PartNode>());
-            PushCursorNode(CreateRC<TitleNode>());
+        case TokenType::arrowTail:
+            pushNodeCursor(makeRC<PartNode>());
+            pushNodeCursor(makeRC<TitleNode>());
             break;
 
-        case TokenType::ExtraLargeArrow:
-            PushCursorNode(CreateRC<ChapterNode>());
-            PushCursorNode(CreateRC<TitleNode>());
+        case TokenType::extraLargeArrow:
+            pushNodeCursor(makeRC<ChapterNode>());
+            pushNodeCursor(makeRC<TitleNode>());
             break;
 
-        case TokenType::LargeArrow:
-            PushCursorNode(CreateRC<SectionNode>());
-            PushCursorNode(CreateRC<TitleNode>());
+        case TokenType::largeArrow:
+            pushNodeCursor(makeRC<SectionNode>());
+            pushNodeCursor(makeRC<TitleNode>());
             break;
 
-        case TokenType::Arrow:
-            PushCursorNode(CreateRC<SubsectionNode>());
-            PushCursorNode(CreateRC<TitleNode>());
+        case TokenType::arrow:
+            pushNodeCursor(makeRC<SubsectionNode>());
+            pushNodeCursor(makeRC<TitleNode>());
             break;
 
-        case TokenType::SmallArrow:
-            PushCursorNode(CreateRC<SubsubsectionNode>());
-            PushCursorNode(CreateRC<TitleNode>());
+        case TokenType::smallArrow:
+            pushNodeCursor(makeRC<SubsubsectionNode>());
+            pushNodeCursor(makeRC<TitleNode>());
             break;
 
-        case TokenType::ArrowHead:
-            PushCursorNode(CreateRC<SegmentNode>());
-            PushCursorNode(CreateRC<TitleNode>());
+        case TokenType::arrowHead:
+            pushNodeCursor(makeRC<SegmentNode>());
+            pushNodeCursor(makeRC<TitleNode>());
             break;
 
-        case TokenType::Text:
-        case TokenType::Asterisk:
-        case TokenType::Underscore:
-        case TokenType::Backtick:
-            if (previousType != NodeType::Paragraph || (previousType == NodeType::Paragraph && newlineSize > 1))
-            {
-                PushCursorNode(CreateRC<ParagraphNode>());
+        case TokenType::text:
+        case TokenType::asterisk:
+        case TokenType::underscore:
+        case TokenType::backtick:
+            if (previousType != NodeType::paragraph || (previousType == NodeType::paragraph && newlineSize > 1)) {
+                pushNodeCursor(makeRC<ParagraphNode>());
             }
 
-            Retreat();
+            retreatTokenCursor();
             break;
         
         default:
@@ -176,57 +164,48 @@ namespace Gularen
         }
     }
 
-    void ASTBuilder::ParseFS(const RC<FSNode>& node)
-    {
-        if (GetCursorNode()->type == node->type)
-            return PopCursorNode();
+    void ASTBuilder::parseFS(const RC<FSNode>& node) {
+        if (getNodeCursor()->type == node->type)
+            return popNodeCursor();
 
-        PushCursorNode(node);
+        pushNodeCursor(node);
     }
 
     // Cursor Node Manipulation
 
-    void ASTBuilder::PopCursorNode()
-    {
+    void ASTBuilder::popNodeCursor() {
         if (!_nodeCursors.empty())
             _nodeCursors.pop_back();
     }
     
-    void ASTBuilder::PushCursorNode(const RC<Node>& node)
-    {
-        AddChildCursorNode(node);
+    void ASTBuilder::pushNodeCursor(const RC<Node>& node) {
+        addNodeCursorChild(node);
         _nodeCursors.push_back(node);
     }
 
-    void ASTBuilder::AddChildCursorNode(const RC<Node>& node)
-    {
+    void ASTBuilder::addNodeCursorChild(const RC<Node>& node) {
         _nodeCursors.back()->children.push_back(node);
     }
 
-    const RC<Node>& ASTBuilder::GetCursorNode() const
-    {
+    const RC<Node>& ASTBuilder::getNodeCursor() const {
         return _nodeCursors.back();
     }
 
     // Token Iterator
 
-    const Token& ASTBuilder::GetCurrent() const
-    {
+    const Token& ASTBuilder::getCurrentToken() const {
         return *_tokenCursor;
     }
     
-    bool ASTBuilder::IsInProgress()
-    {
+    bool ASTBuilder::isTokenCursorInProgress() {
         return _tokenCursor < _tokens.end();
     }
     
-    void ASTBuilder::Advance()
-    {
+    void ASTBuilder::advanceTokenCursor() {
         ++_tokenCursor;
     }
     
-    void ASTBuilder::Retreat()
-    {
+    void ASTBuilder::retreatTokenCursor() {
         --_tokenCursor;
     }
 }
