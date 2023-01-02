@@ -77,13 +77,61 @@ int main() {
     });
 
     tester.group("LS Headings", [&tester]() {
-        tester.test("Simple heading", []() {
+        tester.test("Chapter", []() {
             ASTBuilder builder;
 			RC<Node> generated = builder.parse(">>>-> Chapter 1");
 			RC<Node> expected = makeRC<RootNode>(NodeChildren{
                 makeRC<ChapterNode>(NodeChildren{
                     makeRC<TitleNode>(NodeChildren{
                         makeRC<TextNode>("Chapter 1")
+                    })
+                })
+			});
+
+            return *generated == *expected;
+        });
+
+        tester.test("Section with ID", []() {
+            ASTBuilder builder;
+			RC<Node> generated = builder.parse(">>-> Red Apple > red-apple");
+
+            RC<SectionNode> section = makeRC<SectionNode>(NodeChildren{
+                makeRC<TitleNode>(NodeChildren{
+                    makeRC<TextNode>("Red Apple ")
+                }),
+            });
+
+            section->id = "red-apple";
+
+			RC<Node> expected = makeRC<RootNode>(NodeChildren{section});
+
+            return *generated == *expected;
+        });
+
+        tester.test("Segment", []() {
+            ASTBuilder builder;
+			RC<Node> generated = builder.parse("> Amoeba");
+			RC<Node> expected = makeRC<RootNode>(NodeChildren{
+                makeRC<SegmentNode>(NodeChildren{
+                    makeRC<TitleNode>(NodeChildren{
+                        makeRC<TextNode>("Amoeba")
+                    })
+                })
+			});
+
+            return *generated == *expected;
+        });
+
+        tester.test("Document with subtitle", []() {
+            ASTBuilder builder;
+			RC<Node> generated = builder.parse(">>> A Song of Ice and Fire\n> A Game of Thrones");
+			RC<Node> expected = makeRC<RootNode>(NodeChildren{
+                makeRC<DocumentNode>(NodeChildren{
+                    makeRC<TitleNode>(NodeChildren{
+                        makeRC<TextNode>("A Song of Ice and Fire")
+                    }),
+                    makeRC<SubtitleNode>(NodeChildren{
+                        makeRC<TextNode>("A Game of Thrones")
                     })
                 })
 			});
