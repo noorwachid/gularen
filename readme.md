@@ -14,7 +14,7 @@ Mungkin karena kau sedang cantik-cantiknya.
 =[1] Ketika waktu fajar.
 ~~~
 
-## Language Design
+## Language Specification
 * [01 Comment](spec/01-comment.gr)
 * [02 Font Style](spec/02-font-style.gr)
 * [03 Heading](spec/03-heading.gr)
