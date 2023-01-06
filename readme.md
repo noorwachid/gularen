@@ -34,3 +34,4 @@ Mungkin karena kau sedang cantik-cantiknya.
 * [11 Blockquote](spec/11-blockquote.gr)
 * [12 Footnote](spec/12-footnote.gr)
 * [13 Emoji](spec/13-emoji.gr)
+* [14 Emoji](spec/14-column.gr)
