@@ -6,7 +6,7 @@
 namespace Gularen {
     class Lexer {
     public:
-        Array<Token> parse(const String& string);
+        Array<Token> tokenize(const String& string);
 
     private:
         // Main Routine Buffer Parsing
@@ -26,6 +26,8 @@ namespace Gularen {
         void parseBlock(bool withAdvancing = false);
 
         void parseLine();
+
+		void parseIndentation();
 
         void parseArrow();
 
@@ -60,11 +62,11 @@ namespace Gularen {
         void addToken(Token&& token);
 
     private:
-        String _buffer;
-        String::iterator _bufferCursor;
+        String buffer;
+        String::iterator bufferCursor;
 
-        Array<Token> _tokens;
+        Array<Token> tokens;
         
-        bool _inArrowLine = false;
+        bool inArrowLine = false;
     };
 }

@@ -1,9 +1,9 @@
 #include "FS.h"
 
 namespace Gularen {
-    FSNode::FSNode(NodeType type): Node(type) {}
+    FSNode::FSNode(NodeType type): Node(type, NodeGroup::inline_) {}
 
-    FSNode::FSNode(NodeType type, const NodeChildren& children): Node(type, children) {}
+    FSNode::FSNode(NodeType type, const NodeChildren& children): Node(type, NodeGroup::inline_, children) {}
 
     String FSNode::toString() const {
         return "[unimplementedFS]";

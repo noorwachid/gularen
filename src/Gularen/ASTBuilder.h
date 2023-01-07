@@ -7,12 +7,16 @@
 namespace Gularen {
     class ASTBuilder {
     public:
-        RC<RootNode> parse(const String& buffer);
+        RC<RootNode> build(const String& buffer);
+
+        const Array<Token>& getTokenCollection() const;
     
     private:
         // Main Routine Parsing
         
         void parseNewline();
+
+		void parseIndentation(UintSize indentationLevel);
 
         void parseFS(const RC<FSNode>& node);
 
@@ -37,10 +41,12 @@ namespace Gularen {
         void retreatTokenCursor();
 
     private:
-        Array<Token> _tokens;
-        Array<Token>::iterator _tokenCursor;
+		UintSize indentationLevel = 0;
+
+        Array<Token> tokens;
+        Array<Token>::iterator tokenCursor;
         
-        RC<RootNode> _rootNode;
-        Array<RC<Node>> _nodeCursors;
+        RC<RootNode> rootNode;
+        Array<RC<Node>> nodeCursors;
     };
 }

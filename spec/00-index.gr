@@ -1,5 +1,22 @@
->>> Gularen's Language Design
+>>> Gularen Language Specification Implementation
 
-+[01-comment.gr]
-+[02-font-style.gr]
-+[03-heading.gr]
+[v] 01 comment
+[v] 02 font-style
+[v] 03 heading
+[v] 04 paragraph
+[v] 05 indentation
+[ ] 06 breaking
+[ ] 07 list
+[ ] 08 table
+[ ] 09 link
+[ ] 0A image
+[ ] 0B code
+[ ] 0C admonition
+[ ] 0D punctuation-mark
+[ ] 0E variable
+[ ] 0F inclusion
+[ ] 10 webpage-embedding
+[ ] 11 blockquote
+[ ] 12 footnote
+[ ] 13 emoji
+[ ] 14 colum

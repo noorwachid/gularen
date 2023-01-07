@@ -1,9 +1,9 @@
 #include "Core.h"
 
 namespace Gularen {
-    Node::Node(NodeType type): type(type) {}
+    Node::Node(NodeType type, NodeGroup group): type(type), group(group) {}
 
-    Node::Node(NodeType type, const NodeChildren& children): type(type), children(children) {}
+    Node::Node(NodeType type, NodeGroup group, const NodeChildren& children): type(type), group(group), children(children) {}
 
     String Node::toString() const { 
         return "[unimplemented]"; 
@@ -12,6 +12,8 @@ namespace Gularen {
     bool operator==(const Node& a, const Node& b) {
         if (a.type != b.type) 
             return false;
+
+        // NOTE: I think There is no need to compare group
 
         // TODO: Implement GetHash instead
         if (a.toString() != b.toString())

@@ -8,10 +8,10 @@
 namespace Gularen {
     // PUBLIC DEFINITION
 
-    RC<RootNode> ASTBuilder::parse(const String& buffer) {
+    RC<RootNode> ASTBuilder::build(const String& buffer) {
         Lexer lexer;
-        _tokens = lexer.parse(buffer);
-        _tokenCursor = _tokens.begin();
+        tokens = lexer.tokenize(buffer);
+        tokenCursor = tokens.begin();
 
         #ifdef GULAREN_DEBUG_BUFFER
         std::cout << "[Gularen.Debug.Buffer]\n";
@@ -20,19 +20,28 @@ namespace Gularen {
 
         #ifdef GULAREN_DEBUG_TOKENS
         std::cout << "[Gularen.Debug.Tokens]\n";
-        for (auto a: _tokens)
+        for (auto a: tokens)
             std::cout << a.toString() << "\n";
         std::cout << "\n";
         #endif
 
-        _rootNode = makeRC<RootNode>();
-        _nodeCursors.clear();
-        _nodeCursors.push_back(_rootNode);
+        rootNode = makeRC<RootNode>();
+        nodeCursors.clear();
+        nodeCursors.push_back(rootNode);
         
         while (isTokenCursorInProgress()) {
             switch (getCurrentToken().type) {
-            case TokenType::newline:
             case TokenType::boDocument:
+                advanceTokenCursor();
+
+                // In case some people write with excess newlines
+                if (getCurrentToken().type != TokenType::newline) 
+                    retreatTokenCursor();
+
+                parseNewline();
+                break;
+
+            case TokenType::newline:
                 parseNewline();
                 break;
 
@@ -40,7 +49,7 @@ namespace Gularen {
                 advanceTokenCursor();
 
                 if (getCurrentToken().type == TokenType::symbol && getNodeCursor()->type == NodeType::title) {
-                    static_cast<HeadingNode*>(_nodeCursors[_nodeCursors.size() - 2].get())->id = getCurrentToken().content;
+                    static_cast<HeadingNode*>(nodeCursors[nodeCursors.size() - 2].get())->id = getCurrentToken().content;
                     break;
                 }
 
@@ -78,11 +87,15 @@ namespace Gularen {
         #ifdef GULAREN_DEBUG_AST
         std::cout << "[Gularen.Debug.Tokens]\n";
         NodeWriter writer;
-        writer.Write(_rootNode);
+        writer.Write(rootNode);
         std::cout << "\n";
         #endif
 
-        return _rootNode;
+        return rootNode;
+    }
+
+    const Array<Token>& ASTBuilder::getTokenCollection() const {
+        return tokens;
     }
 
     // PRIVATE DEFINITION
@@ -94,20 +107,32 @@ namespace Gularen {
 
         advanceTokenCursor();
 
-        auto previousType = getNodeCursor()->type;
+        // Indentation is independent from any other parsing type
+        if (getCurrentToken().type == TokenType::indentation) {
+            UintSize indentationLevel = getCurrentToken().size;
+            advanceTokenCursor();
+            parseIndentation(indentationLevel);
+        } else {
+            parseIndentation(0);
+        }
+
         bool spawningNewParagraph = false;
 
         // Closing
-        if (previousType == NodeType::title) {
-            popNodeCursor();
-            
-            // Only parse as subtitle if the segment identifier right below heading
-            if (getCurrentToken().type == TokenType::arrowHead && newlineSize == 1)
-                return pushNodeCursor(makeRC<SubtitleNode>());
-            
-            popNodeCursor();
-        } else if (previousType == NodeType::paragraph) {
-            if (getCurrentToken().type != TokenType::text || newlineSize > 1) {
+        if (getNodeCursor()->type != NodeType::indentation) {
+            if (getNodeCursor()->type == NodeType::title) {
+                popNodeCursor();
+                
+                // Only parse as subtitle if the segment identifier right below heading
+                if (getCurrentToken().type == TokenType::arrowHead && newlineSize == 1)
+                    return pushNodeCursor(makeRC<SubtitleNode>());
+                
+                popNodeCursor();
+            } else if (getNodeCursor()->type == NodeType::paragraph) {
+                if (getCurrentToken().type != TokenType::text || newlineSize > 1) {
+                    popNodeCursor();
+                }
+            } else {
                 popNodeCursor();
             }
         }
@@ -152,7 +177,7 @@ namespace Gularen {
         case TokenType::asterisk:
         case TokenType::underscore:
         case TokenType::backtick:
-            if (previousType != NodeType::paragraph || (previousType == NodeType::paragraph && newlineSize > 1)) {
+            if (getNodeCursor()->type != NodeType::paragraph || (getNodeCursor()->type == NodeType::paragraph && newlineSize > 1)) {
                 pushNodeCursor(makeRC<ParagraphNode>());
             }
 
@@ -164,6 +189,40 @@ namespace Gularen {
         }
     }
 
+	void ASTBuilder::parseIndentation(UintSize currentIndentationLevel) {
+		if (indentationLevel == currentIndentationLevel)
+			return;
+
+		if (indentationLevel < currentIndentationLevel) {
+            UintSize difference = currentIndentationLevel - indentationLevel;
+
+            while (nodeCursors.size() > 1 && getNodeCursor()->group != NodeGroup::block) {
+                popNodeCursor();
+            }
+
+            popNodeCursor();
+
+            for (UintSize i = 0; i < difference; ++i) {
+			    pushNodeCursor(makeRC<IndentationNode>());
+            }
+
+            indentationLevel = currentIndentationLevel;
+            return;
+		}
+
+        UintSize difference = indentationLevel - currentIndentationLevel;
+
+        for (UintSize i = 0; i < difference && nodeCursors.size() > 1; ++i) {
+            while (nodeCursors.size() > 1 && getNodeCursor()->type != NodeType::indentation) {
+                popNodeCursor();
+            }
+            popNodeCursor();
+        }
+
+        indentationLevel = currentIndentationLevel;
+		return;
+	}
+
     void ASTBuilder::parseFS(const RC<FSNode>& node) {
         if (getNodeCursor()->type == node->type)
             return popNodeCursor();
@@ -174,38 +233,38 @@ namespace Gularen {
     // Cursor Node Manipulation
 
     void ASTBuilder::popNodeCursor() {
-        if (!_nodeCursors.empty())
-            _nodeCursors.pop_back();
+        if (nodeCursors.size() > 1)
+            nodeCursors.pop_back();
     }
     
     void ASTBuilder::pushNodeCursor(const RC<Node>& node) {
         addNodeCursorChild(node);
-        _nodeCursors.push_back(node);
+        nodeCursors.push_back(node);
     }
 
     void ASTBuilder::addNodeCursorChild(const RC<Node>& node) {
-        _nodeCursors.back()->children.push_back(node);
+        nodeCursors.back()->children.push_back(node);
     }
 
     const RC<Node>& ASTBuilder::getNodeCursor() const {
-        return _nodeCursors.back();
+        return nodeCursors.back();
     }
 
     // Token Iterator
 
     const Token& ASTBuilder::getCurrentToken() const {
-        return *_tokenCursor;
+        return *tokenCursor;
     }
     
     bool ASTBuilder::isTokenCursorInProgress() {
-        return _tokenCursor < _tokens.end();
+        return tokenCursor < tokens.end();
     }
     
     void ASTBuilder::advanceTokenCursor() {
-        ++_tokenCursor;
+        ++tokenCursor;
     }
     
     void ASTBuilder::retreatTokenCursor() {
-        --_tokenCursor;
+        --tokenCursor;
     }
 }

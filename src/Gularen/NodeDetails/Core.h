@@ -26,4 +26,13 @@ namespace Gularen {
         
         virtual String toString() const override;
     };
+
+	struct IndentationNode: Node {
+
+		IndentationNode();
+
+		IndentationNode(const NodeChildren& children);
+
+		virtual String toString() const override;
+	};
 }

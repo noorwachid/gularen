@@ -13,6 +13,8 @@ namespace Gularen {
         asterisk,
         underscore,
         backtick,
+
+		indentation,
         
         text,
         symbol,
@@ -51,8 +53,10 @@ namespace Gularen {
 
         Token(TokenType type, UintSize size);
         
-        String toString();
+        String toString() const;
         
         bool operator==(const Token& other);
     };
+
+    String toString(TokenType tokenType);
 }

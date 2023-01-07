@@ -1,10 +1,10 @@
 #include "Heading.h"
 
 namespace Gularen {
-    HeadingNode::HeadingNode(NodeType type): Node(type) {
+    HeadingNode::HeadingNode(NodeType type): Node(type, NodeGroup::block) {
     }
 
-    HeadingNode::HeadingNode(NodeType type, const NodeChildren &children): Node(type, children) {
+    HeadingNode::HeadingNode(NodeType type, const NodeChildren &children): Node(type, NodeGroup::block, children) {
     }
 
     String HeadingNode::toString() const {

@@ -16,9 +16,11 @@ void Tester::group(const std::string& group, const std::function<void()>& callba
 
 void Tester::test(const std::string &title, const std::function<bool()>& callback) {
     bool result = callback();
+
+    ++counter;
     
     if (!result)
-        ++_failedCounter;
+        ++failedCounter;
     
     for (std::size_t i = 0; i < _groups.size(); ++i)
         std::cout << "    ";
@@ -28,12 +30,12 @@ void Tester::test(const std::string &title, const std::function<bool()>& callbac
 
 void Tester::sumarize() {
     std::cout << "\r\n";
-    std::cout << "Total " << _counter << " test(s)\r\n";
+    std::cout << "Total " << counter << " test(s)\r\n";
 
-    if (_failedCounter == 0)
+    if (failedCounter == 0)
         std::cout << "All test(s) passed\r\n";
     else
-        std::cout << _failedCounter << " test(s) failed\r\n";
+        std::cout << failedCounter << " test(s) failed\r\n";
 
     std::cout << "\r\n";
 }

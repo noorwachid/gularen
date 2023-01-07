@@ -23,6 +23,8 @@ namespace Gularen {
 
         text,
 
+		indentation,
+
         boldFS,
         italicFS,
         monospaceFS,
@@ -33,18 +35,25 @@ namespace Gularen {
         rdQuote,
     };
 
+    enum struct NodeGroup {
+        inline_,
+        block,
+        virtualBlock,
+    };
+
 	struct Node;
 
 	using NodeChildren = Array<RC<Node>>;
 
     struct Node {
         NodeType type;
+        NodeGroup group;
         
         NodeChildren children;
 
-        Node(NodeType type);
+        Node(NodeType type, NodeGroup group);
 
-        Node(NodeType type, const NodeChildren& children);
+        Node(NodeType type, NodeGroup group, const NodeChildren& children);
 
         virtual String toString() const;
     };

@@ -7,16 +7,39 @@ namespace Gularen {
 
     Token::Token(TokenType type, std::size_t size): type(type), size(size) {}
 
-    String Token::toString() {
-        switch (type) {
+    String Token::toString() const {
+        if (type == TokenType::text || type == TokenType::symbol) {
+            return Gularen::toString(type) + " content:\"" + content + "\"";
+        }
+
+        if (type == TokenType::indentation || type == TokenType::newline) {
+            return Gularen::toString(type) + " size:" + std::to_string(size);
+        }
+
+        return Gularen::toString(type);
+    }  
+
+    bool Token::operator==(const Token& other) {
+        return 
+            type == other.type && 
+            size == other.size &&
+            content == other.content
+        ;
+    }
+
+    String toString(TokenType tokenType) {
+        switch (tokenType) {
         case TokenType::text:
-            return "text \"" + content + "\"";
+            return "text";
 
         case TokenType::symbol:
-            return "symbol \"" + content + "\"";
+            return "symbol";
+
+        case TokenType::indentation:
+            return "indentation";
 
         case TokenType::newline:
-            return "newline (" + std::to_string(size) + ")";
+            return "newline";
             
         case TokenType::asterisk:
             return "asterisk";
@@ -70,13 +93,5 @@ namespace Gularen {
             return "unknown";
             break;
         }
-    }  
-
-    bool Token::operator==(const Token& other) {
-        return 
-            type == other.type && 
-            size == other.size &&
-            content == other.content
-        ;
     }
 }

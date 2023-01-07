@@ -14,8 +14,8 @@ public:
     void sumarize();
 
 private:
-    std::size_t _counter = 0;
-    std::size_t _failedCounter = 0;
+    std::size_t counter = 0;
+    std::size_t failedCounter = 0;
     
     std::vector<std::string> _groups;
 };
