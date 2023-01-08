@@ -9,6 +9,14 @@ namespace Gularen {
         return "root";
     }
 
+    IndentationNode::IndentationNode(): Node(NodeType::indentation, NodeGroup::block) {}
+
+    IndentationNode::IndentationNode(const NodeChildren& children): Node(NodeType::indentation, NodeGroup::block, children) {}
+
+    String IndentationNode::toString() const {
+        return "indentation";
+    }
+
     ParagraphNode::ParagraphNode(): Node(NodeType::paragraph, NodeGroup::block) {}
 
     ParagraphNode::ParagraphNode(const NodeChildren& children): Node(NodeType::paragraph, NodeGroup::block, children) {}
@@ -20,15 +28,12 @@ namespace Gularen {
     TextNode::TextNode(const String& content): Node(NodeType::text, NodeGroup::inline_), content(content) {}
         
     String TextNode::toString() const {
-        return "text content:\"" + content + "\"";
+        return "text content = \"" + content + "\"";
     }
 
-    IndentationNode::IndentationNode(): Node(NodeType::indentation, NodeGroup::block) {}
-
-    IndentationNode::IndentationNode(const NodeChildren& children): Node(NodeType::indentation, NodeGroup::block, children) {}
-
-    String IndentationNode::toString() const {
-        return "indentation";
+    NewlineNode::NewlineNode(UintSize repeatition): Node(NodeType::newline, NodeGroup::inline_), repetition(repeatition) {}
+        
+    String NewlineNode::toString() const {
+        return "newline repetition = " + std::to_string(repetition);
     }
-
 }

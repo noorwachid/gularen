@@ -1,5 +1,6 @@
 #include "ASTBuilder.h"
 #include "Utilities/NodeWriter.h"
+#include <iostream>
 
 // #define GULAREN_DEBUG_BUFFER 1
 // #define GULAREN_DEBUG_TOKENS 1
@@ -59,6 +60,10 @@ namespace Gularen {
             case TokenType::text:
                 addNodeCursorChild(makeRC<TextNode>(getCurrentToken().content));
                 break;
+
+            case TokenType::reverseArrowHead:
+                addNodeCursorChild(makeRC<LineBreakNode>());
+                break;
                 
             case TokenType::asterisk:
                 parseFS(makeRC<BoldFSNode>());
@@ -87,7 +92,7 @@ namespace Gularen {
         #ifdef GULAREN_DEBUG_AST
         std::cout << "[Gularen.Debug.Tokens]\n";
         NodeWriter writer;
-        writer.Write(rootNode);
+        writer.write(rootNode);
         std::cout << "\n";
         #endif
 
@@ -173,12 +178,28 @@ namespace Gularen {
             pushNodeCursor(makeRC<TitleNode>());
             break;
 
+        case TokenType::reverseArrowTail:
+            addNodeCursorChild(makeRC<PageBreakNode>());
+            break;
+
+        case TokenType::reverseLargeArrowTail:
+            advanceTokenCursor();
+            // TODO: stop the parsing and send error
+            tokenCursor = tokens.end();
+
+            rootNode = makeRC<RootNode>();
+            nodeCursors.clear();
+            nodeCursors.push_back(rootNode);
+            break;
+
         case TokenType::text:
         case TokenType::asterisk:
         case TokenType::underscore:
         case TokenType::backtick:
             if (getNodeCursor()->type != NodeType::paragraph || (getNodeCursor()->type == NodeType::paragraph && newlineSize > 1)) {
                 pushNodeCursor(makeRC<ParagraphNode>());
+            } else {
+                addNodeCursorChild(makeRC<NewlineNode>(1));
             }
 
             retreatTokenCursor();

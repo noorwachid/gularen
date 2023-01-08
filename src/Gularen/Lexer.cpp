@@ -5,6 +5,8 @@ namespace Gularen {
     // PUBLIC DEFINITIONS
     
     Array<Token> Lexer::tokenize(const String& newBuffer) {
+        lineCounter = 1;
+
         buffer = newBuffer;
         bufferCursor = buffer.begin();
 
@@ -29,6 +31,10 @@ namespace Gularen {
 
             case '>':
                 parseArrowID();
+                break;
+
+            case '<':
+                parseReverseArrowPart();
                 break;
                 
             case '-': 
@@ -90,6 +96,8 @@ namespace Gularen {
             addToken(Token(TokenType::newline, size));
         else 
             tokens.back().size += size;
+
+        lineCounter += size;
 
         retreatByteCursor();
     }
@@ -319,6 +327,35 @@ namespace Gularen {
         retreatByteCursor();
     }
 
+    void Lexer::parseReverseArrowPart() {
+        String buffer;
+
+        while (isByteCursorInProgress() && getCurrentByte() == '<') {
+            buffer += '<';
+            advanceByteCursor();
+        }
+
+        retreatByteCursor();
+
+        switch (buffer.size()) {
+        case 1:
+            addToken(TokenType::reverseArrowHead);
+            break;
+        
+        case 2:
+            addToken(TokenType::reverseArrowTail);
+            break;
+
+        case 3:
+            addToken(TokenType::reverseLargeArrowTail);
+            break;
+
+        default:
+            addTokenText(buffer);
+            break;
+        }
+    }
+
     void Lexer::parseDash() {
         advanceByteCursor();
 
@@ -419,6 +456,14 @@ namespace Gularen {
     // Token Helper
 
     void Lexer::addToken(Token&& token) {
+        token.line = lineCounter;
         tokens.push_back(token);
+    }
+
+    void Lexer::addTokenText(const String& text) {
+        if (tokens.back().type == TokenType::text)
+            tokens.back().content += text;
+        else 
+            addToken(Token(TokenType::text, text));
     }
 }

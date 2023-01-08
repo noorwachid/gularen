@@ -1,15 +1,26 @@
 #pragma once
 
 #include "Structure.h"
+#include "../Integer.h"
 
 namespace Gularen {
     struct RootNode: Node {
+        String file = "[memory]";
+
         RootNode();
 
 		RootNode(const NodeChildren& children);
 
         virtual String toString() const override;
     };
+
+	struct IndentationNode: Node {
+		IndentationNode();
+
+		IndentationNode(const NodeChildren& children);
+
+		virtual String toString() const override;
+	};
 
     struct ParagraphNode: Node {
         ParagraphNode();
@@ -27,12 +38,13 @@ namespace Gularen {
         virtual String toString() const override;
     };
 
-	struct IndentationNode: Node {
+    struct NewlineNode: Node {
+        UintSize repetition;
+        
+        NewlineNode();
 
-		IndentationNode();
+        NewlineNode(UintSize repetition);
 
-		IndentationNode(const NodeChildren& children);
-
-		virtual String toString() const override;
-	};
+        virtual String toString() const override;
+    };
 }

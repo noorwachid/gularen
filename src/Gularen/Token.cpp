@@ -9,15 +9,15 @@ namespace Gularen {
 
     String Token::toString() const {
         if (type == TokenType::text || type == TokenType::symbol) {
-            return Gularen::toString(type) + " content:\"" + content + "\"";
+            return Gularen::toString(type) + " content = \"" + content + "\"";
         }
 
         if (type == TokenType::indentation || type == TokenType::newline) {
-            return Gularen::toString(type) + " size:" + std::to_string(size);
+            return Gularen::toString(type) + " size = " + std::to_string(size);
         }
 
         return Gularen::toString(type);
-    }  
+    }
 
     bool Token::operator==(const Token& other) {
         return 
@@ -29,69 +29,38 @@ namespace Gularen {
 
     String toString(TokenType tokenType) {
         switch (tokenType) {
-        case TokenType::text:
-            return "text";
+        case TokenType::text: return "text";
+        case TokenType::symbol: return "symbol";
 
-        case TokenType::symbol:
-            return "symbol";
+        case TokenType::indentation: return "indentation";
+        case TokenType::newline: return "newline";
+            
+        case TokenType::asterisk: return "asterisk";
+        case TokenType::underscore: return "underscore";
+        case TokenType::backtick: return "backtick";
+            
+        case TokenType::lsQuote: return "lsQuote";
+        case TokenType::rsQuote: return "rsQuote";
+        case TokenType::ldQuote: return "ldQuote";
+        case TokenType::rdQuote: return "rdQuote";
 
-        case TokenType::indentation:
-            return "indentation";
+        case TokenType::boDocument: return "boDocument";
+        case TokenType::eoDocument: return "eoDocument";
 
-        case TokenType::newline:
-            return "newline";
-            
-        case TokenType::asterisk:
-            return "asterisk";
-            
-        case TokenType::underscore:
-            return "underscore";
-            
-        case TokenType::backtick:
-            return "backtick";
-            
-        case TokenType::lsQuote:
-            return "lsQuote";
-            
-        case TokenType::rsQuote:
-            return "rsQuote";
-            
-        case TokenType::ldQuote:
-            return "ldQuote";
-            
-        case TokenType::rdQuote:
-            return "rdQuote";
+        case TokenType::smallArrow: return "smallArrow";
+        case TokenType::arrow: return "arrow";
+        case TokenType::largeArrow: return "largeArrow";
+        case TokenType::extraLargeArrow: return "extraLargeArrow";
 
-        case TokenType::boDocument:
-            return "boDocument";
+        case TokenType::arrowHead: return "arrowHead";
+        case TokenType::arrowTail: return "arrowTail";
+        case TokenType::largeArrowTail: return "largeArrowTail";
 
-        case TokenType::eoDocument:
-            return "eoDocument";
+        case TokenType::reverseArrowHead: return "reverseArrowHead";
+        case TokenType::reverseArrowTail: return "reverseArrowTail";
+        case TokenType::reverseLargeArrowTail: return "reverseLargeArrowTail";
 
-        case TokenType::smallArrow:
-            return "smallArrow";
-
-        case TokenType::arrow:
-            return "arrow";
-            
-        case TokenType::largeArrow:
-            return "largeArrow";
-            
-        case TokenType::extraLargeArrow:
-            return "extraLargeArrow";
-
-        case TokenType::arrowHead:
-            return "arrowHead";
-
-        case TokenType::arrowTail:
-            return "arrowTail";
-            
-        case TokenType::largeArrowTail:
-            return "largeArrowTail";
-
-        default:
-            return "unknown";
-            break;
+        default: return "unknown";
         }
     }
 }

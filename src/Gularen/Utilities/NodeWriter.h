@@ -6,6 +6,6 @@
 namespace Gularen {
 	class NodeWriter {
 	public:
-        void Write(const RC<Node>& parentNode, UintSize depth = 0);
+        void write(const RC<Node>& parentNode, UintSize depth = 0);
 	};
 }

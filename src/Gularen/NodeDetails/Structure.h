@@ -19,11 +19,15 @@ namespace Gularen {
         subsubsection,
         segment,
 
+		indentation,
+
         paragraph,
 
         text,
+        newline,
 
-		indentation,
+        lineBreak,
+        pageBreak,
 
         boldFS,
         italicFS,

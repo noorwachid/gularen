@@ -36,6 +36,9 @@ namespace Gularen {
 
         arrowHead,
 
+        reverseArrowHead,
+        reverseArrowTail,
+        reverseLargeArrowTail,
 
         hyphen,
         enDash,
@@ -46,6 +49,7 @@ namespace Gularen {
         TokenType type;
         String content;
         UintSize size;
+        UintSize line;
         
         Token(TokenType type);
         
@@ -54,6 +58,8 @@ namespace Gularen {
         Token(TokenType type, UintSize size);
         
         String toString() const;
+
+        String toEscapeSequenceString() const;
         
         bool operator==(const Token& other);
     };

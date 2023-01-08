@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include "Gularen/ASTBuilder.h"
-#include "Gularen/Utilities/TokenCollectionWriter.h"
 #include "Gularen/Utilities/NodeWriter.h"
 #include "Tester.h"
 
@@ -148,10 +147,12 @@ int main() {
 			RC<Node> expected = makeRC<RootNode>(NodeChildren{
                 makeRC<ParagraphNode>(NodeChildren{
     				makeRC<TextNode>("First line."),
+                    makeRC<NewlineNode>(1),
     				makeRC<TextNode>("Second line."),
                 }),
                 makeRC<ParagraphNode>(NodeChildren{
     				makeRC<TextNode>("Third line."),
+                    makeRC<NewlineNode>(1),
     				makeRC<TextNode>("Forth line."),
                 })
 			});
@@ -170,6 +171,7 @@ int main() {
                 }),
                 makeRC<ParagraphNode>(NodeChildren{
     				makeRC<TextNode>("First line."),
+                    makeRC<NewlineNode>(1),
     				makeRC<TextNode>("Second line."),
                 }),
 			});

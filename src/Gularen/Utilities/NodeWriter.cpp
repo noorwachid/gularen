@@ -2,7 +2,7 @@
 #include <iostream>
 
 namespace Gularen {
-	void NodeWriter::Write(const RC<Node>& parentNode, UintSize depth) {
+	void NodeWriter::write(const RC<Node>& parentNode, UintSize depth) {
 		if (!parentNode)
 			return;
 
@@ -12,6 +12,6 @@ namespace Gularen {
         std::cout << parentNode->toString() << "\n";
 
         for (const RC<Node>& childNode: parentNode->children)
-            Write(childNode, depth + 1);
+            write(childNode, depth + 1);
 	}
 }

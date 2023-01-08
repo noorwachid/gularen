@@ -33,6 +33,8 @@ namespace Gularen {
 
         void parseArrowID();
 
+        void parseReverseArrowPart();
+
         void parseDash();
 
         void parseEmojiShortcode();
@@ -61,6 +63,8 @@ namespace Gularen {
 
         void addToken(Token&& token);
 
+        void addTokenText(const String& text);
+
     private:
         String buffer;
         String::iterator bufferCursor;
@@ -68,5 +72,7 @@ namespace Gularen {
         Array<Token> tokens;
         
         bool inArrowLine = false;
+
+        UintSize lineCounter = 1;
     };
 }
