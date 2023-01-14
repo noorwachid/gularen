@@ -4,49 +4,51 @@
 #include "Node.h"
 #include <iostream>
 
-namespace Gularen {
-    class ASTBuilder {
-    public:
-        RC<RootNode> build(const String& buffer);
+namespace Gularen
+{
+    class ASTBuilder
+    {
+      public:
+        RC<RootNode> Build(const String& buffer);
 
-        const Array<Token>& getTokenCollection() const;
-    
-    private:
+        const Array<Token>& GetTokenCollection() const;
+
+      private:
         // Main Routine Parsing
-        
-        void parseNewline();
 
-		void parseIndentation(UintSize indentationLevel);
+        void ParseNewline();
 
-        void parseFS(const RC<FSNode>& node);
+        void ParseIndentation(UintSize indentationLevel);
+
+        void ParseFS(const RC<FSNode>& node);
 
         // Cursor Node Manipulation
 
-        void popNodeCursor();
+        void PopNodeCursor();
 
-        void pushNodeCursor(const RC<Node>& node);
+        void PushNodeCursor(const RC<Node>& node);
 
-        void addNodeCursorChild(const RC<Node>& node);
+        void AddNodeCursorChild(const RC<Node>& node);
 
-        const RC<Node>& getNodeCursor() const;
+        const RC<Node>& GetNodeCursor() const;
 
         // Token Iterator
 
-        const Token& getCurrentToken() const;
-        
-        bool isTokenCursorInProgress();
-        
-        void advanceTokenCursor();
-        
-        void retreatTokenCursor();
+        const Token& GetCurrentToken() const;
 
-    private:
-		UintSize indentationLevel = 0;
+        bool IsTokenCursorInProgress();
 
-        Array<Token> tokens;
-        Array<Token>::iterator tokenCursor;
-        
-        RC<RootNode> rootNode;
-        Array<RC<Node>> nodeCursors;
+        void AdvanceTokenCursor();
+
+        void RetreatTokenCursor();
+
+      private:
+        UintSize _indentationLevel = 0;
+
+        Array<Token> _tokens;
+        Array<Token>::iterator _tokenCursor;
+
+        RC<RootNode> _rootNode;
+        Array<RC<Node>> _nodeCursors;
     };
 }

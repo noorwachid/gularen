@@ -1,250 +1,270 @@
+#include "Gularen/ASTBuilder.h"
+#include "Gularen/Node/NodeWriter.h"
+#include "Tester.h"
 #include <iostream>
 #include <vector>
-#include "Gularen/ASTBuilder.h"
-#include "Gularen/Utilities/NodeWriter.h"
-#include "Tester.h"
 
-int main() {
+int main()
+{
     using namespace Gularen;
 
     Tester tester;
-    
-    // Guaranteed to return true, if it's not then something must horibly went wrong
-    tester.group("Primitive", [&tester]() {
-        tester.test("Boolean Comparison", []() {
-            return true == true;
-        });
-    });
 
-    tester.group("LS Comments", [&tester]() {
-        tester.test("Inline", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("Now you see me. # Now you don't.");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("Now you see me. ")
-                })
-			});
+    // Guaranteed to return true, if it's not then something must horibly went
+    // wrong
+    tester.Group("Primitive", [&tester]() { tester.Test("Boolean Comparison", []() { return true == true; }); });
 
-            return *generated == *expected;
-        });
-    });
-    
-    tester.group("LS Font Styles", [&tester]() {
-        tester.test("Serial", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("*Hello* _darkness_ `my old friend`.");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ParagraphNode>(NodeChildren{
-                    makeRC<BoldFSNode>(NodeChildren{
-        				makeRC<TextNode>("Hello")
-                    }),
-                    makeRC<TextNode>(" "),
-                    makeRC<ItalicFSNode>(NodeChildren{
-        				makeRC<TextNode>("darkness")
-                    }),
-                    makeRC<TextNode>(" "),
-                    makeRC<MonospaceFSNode>(NodeChildren{
-        				makeRC<TextNode>("my old friend")
-                    }),
-                    makeRC<TextNode>("."),
-                })
-			});
+    tester.Group(
+        "LS Comments",
+        [&tester]()
+        {
+            tester.Test(
+                "Inline",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("Now you see me. # Now you don't.");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{
+                        CreateRC<ParagraphNode>(NodeChildren{CreateRC<TextNode>("Now you see me. ")})});
 
-            return *generated == *expected;
-        });
+                    return *generated == *expected;
+                }
+            );
+        }
+    );
 
-        tester.test("Nesting", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("*Hello _darkness `my old friend`_*.");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ParagraphNode>(NodeChildren{
-                    makeRC<BoldFSNode>(NodeChildren{
-        				makeRC<TextNode>("Hello "),
-                            makeRC<ItalicFSNode>(NodeChildren{
-                            makeRC<TextNode>("darkness "),
-                            makeRC<MonospaceFSNode>(NodeChildren{
-                                makeRC<TextNode>("my old friend")
+    tester.Group(
+        "LS Font Styles",
+        [&tester]()
+        {
+            tester.Test(
+                "Serial",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("*Hello* _darkness_ `my old friend`.");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{CreateRC<ParagraphNode>(NodeChildren{
+                        CreateRC<BoldFSNode>(NodeChildren{CreateRC<TextNode>("Hello")}),
+                        CreateRC<TextNode>(" "),
+                        CreateRC<ItalicFSNode>(NodeChildren{CreateRC<TextNode>("darkness")}),
+                        CreateRC<TextNode>(" "),
+                        CreateRC<MonospaceFSNode>(NodeChildren{CreateRC<TextNode>("my old friend")}),
+                        CreateRC<TextNode>("."),
+                    })});
+
+                    return *generated == *expected;
+                }
+            );
+
+            tester.Test(
+                "Nesting",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("*Hello _darkness `my old friend`_*.");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{CreateRC<ParagraphNode>(NodeChildren{
+                        CreateRC<BoldFSNode>(NodeChildren{
+                            CreateRC<TextNode>("Hello "),
+                            CreateRC<ItalicFSNode>(NodeChildren{
+                                CreateRC<TextNode>("darkness "),
+                                CreateRC<MonospaceFSNode>(NodeChildren{CreateRC<TextNode>("my old friend")}),
                             }),
                         }),
-                    }),
-                    makeRC<TextNode>("."),
-                })
-			});
+                        CreateRC<TextNode>("."),
+                    })});
 
-            return *generated == *expected;
-        });
-    });
+                    return *generated == *expected;
+                }
+            );
+        }
+    );
 
-    tester.group("LS Headings", [&tester]() {
-        tester.test("Chapter", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build(">>>-> Chapter 1");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ChapterNode>(NodeChildren{
-                    makeRC<TitleNode>(NodeChildren{
-                        makeRC<TextNode>("Chapter 1")
-                    })
-                })
-			});
+    tester.Group(
+        "LS Headings",
+        [&tester]()
+        {
+            tester.Test(
+                "Chapter",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build(">>>-> Chapter 1");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{CreateRC<ChapterNode>(NodeChildren{
+                        CreateRC<TitleNode>(NodeChildren{CreateRC<TextNode>("Chapter 1")})})});
 
-            return *generated == *expected;
-        });
+                    return *generated == *expected;
+                }
+            );
 
-        tester.test("Section with ID", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build(">>-> Red Apple > red-apple");
+            tester.Test(
+                "Section with ID",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build(">>-> Red Apple > red-apple");
 
-            RC<SectionNode> section = makeRC<SectionNode>(NodeChildren{
-                makeRC<TitleNode>(NodeChildren{
-                    makeRC<TextNode>("Red Apple ")
-                }),
-            });
+                    RC<SectionNode> section = CreateRC<SectionNode>(NodeChildren{
+                        CreateRC<TitleNode>(NodeChildren{CreateRC<TextNode>("Red Apple ")}),
+                    });
 
-            section->id = "red-apple";
+                    section->id = "red-apple";
 
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{section});
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{section});
 
-            return *generated == *expected;
-        });
+                    return *generated == *expected;
+                }
+            );
 
-        tester.test("Segment", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("> Amoeba");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<SegmentNode>(NodeChildren{
-                    makeRC<TitleNode>(NodeChildren{
-                        makeRC<TextNode>("Amoeba")
-                    })
-                })
-			});
+            tester.Test(
+                "Segment",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("> Amoeba");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{CreateRC<SegmentNode>(NodeChildren{
+                        CreateRC<TitleNode>(NodeChildren{CreateRC<TextNode>("Amoeba")})})});
 
-            return *generated == *expected;
-        });
+                    return *generated == *expected;
+                }
+            );
 
-        tester.test("Document with subtitle", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build(">>> A Song of Ice and Fire\n> A Game of Thrones");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<DocumentNode>(NodeChildren{
-                    makeRC<TitleNode>(NodeChildren{
-                        makeRC<TextNode>("A Song of Ice and Fire")
-                    }),
-                    makeRC<SubtitleNode>(NodeChildren{
-                        makeRC<TextNode>("A Game of Thrones")
-                    })
-                })
-			});
+            tester.Test(
+                "Document with subtitle",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build(">>> A Song of Ice and Fire\n> A Game of Thrones");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{CreateRC<DocumentNode>(NodeChildren{
+                        CreateRC<TitleNode>(NodeChildren{CreateRC<TextNode>("A Song of Ice and Fire")}),
+                        CreateRC<SubtitleNode>(NodeChildren{CreateRC<TextNode>("A Game of Thrones")})})});
 
-            return *generated == *expected;
-        });
-    });
+                    return *generated == *expected;
+                }
+            );
+        }
+    );
 
-    tester.group("LS Paragraphs", [&tester]() {
-        tester.test("Two Paragraphs", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("First line.\nSecond line.\n\nThird line.\nForth line.");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("First line."),
-                    makeRC<NewlineNode>(1),
-    				makeRC<TextNode>("Second line."),
-                }),
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("Third line."),
-                    makeRC<NewlineNode>(1),
-    				makeRC<TextNode>("Forth line."),
-                })
-			});
+    tester.Group(
+        "LS Paragraphs",
+        [&tester]()
+        {
+            tester.Test(
+                "Two Paragraphs",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("First line.\nSecond line.\n\nThird line.\nForth line.");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{
+                        CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("First line."),
+                            CreateRC<NewlineNode>(1),
+                            CreateRC<TextNode>("Second line."),
+                        }),
+                        CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("Third line."),
+                            CreateRC<NewlineNode>(1),
+                            CreateRC<TextNode>("Forth line."),
+                        })});
 
-            return *generated == *expected;
-        });
+                    return *generated == *expected;
+                }
+            );
 
-        tester.test("After Other Block", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build(">>> A Title\nFirst line.\nSecond line.");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<DocumentNode>(NodeChildren{
-                    makeRC<TitleNode>(NodeChildren{
-                        makeRC<TextNode>("A Title")
-                    }),
-                }),
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("First line."),
-                    makeRC<NewlineNode>(1),
-    				makeRC<TextNode>("Second line."),
-                }),
-			});
+            tester.Test(
+                "After Other Block",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build(">>> A Title\nFirst line.\nSecond line.");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{
+                        CreateRC<DocumentNode>(NodeChildren{
+                            CreateRC<TitleNode>(NodeChildren{CreateRC<TextNode>("A Title")}),
+                        }),
+                        CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("First line."),
+                            CreateRC<NewlineNode>(1),
+                            CreateRC<TextNode>("Second line."),
+                        }),
+                    });
 
-            return *generated == *expected;
-        });
-    });
+                    return *generated == *expected;
+                }
+            );
+        }
+    );
 
-    tester.group("LS Indentation", [&tester]() {
-        tester.test("Single Indentation", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("Level 0.\n    Level 1.\n");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("Level 0."),
-                }),
-                makeRC<IndentationNode>(NodeChildren{
-                    makeRC<ParagraphNode>(NodeChildren{
-                        makeRC<TextNode>("Level 1."),
-                    })
-                })
-			});
+    tester.Group(
+        "LS Indentation",
+        [&tester]()
+        {
+            tester.Test(
+                "Single Indentation",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("Level 0.\n    Level 1.\n");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{
+                        CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("Level 0."),
+                        }),
+                        CreateRC<IndentationNode>(NodeChildren{CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("Level 1."),
+                        })})});
 
-            return *generated == *expected;
-        });
+                    return *generated == *expected;
+                }
+            );
 
-        tester.test("Piramid Indentation", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("Level 0.\n    Level 1.\nLevel 0.");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("Level 0."),
-                }),
-                makeRC<IndentationNode>(NodeChildren{
-                    makeRC<ParagraphNode>(NodeChildren{
-                        makeRC<TextNode>("Level 1."),
-                    })
-                }),
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("Level 0."),
-                }),
-			});
+            tester.Test(
+                "Piramid Indentation",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("Level 0.\n    Level 1.\nLevel 0.");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{
+                        CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("Level 0."),
+                        }),
+                        CreateRC<IndentationNode>(NodeChildren{CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("Level 1."),
+                        })}),
+                        CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("Level 0."),
+                        }),
+                    });
 
-            return *generated == *expected;
-        });
+                    return *generated == *expected;
+                }
+            );
 
-        tester.test("Irregular Indentation", []() {
-            ASTBuilder builder;
-			RC<Node> generated = builder.build("Level 0.\n            Level 3.\n    Level 1.");
-			RC<Node> expected = makeRC<RootNode>(NodeChildren{
-                makeRC<ParagraphNode>(NodeChildren{
-    				makeRC<TextNode>("Level 0."),
-                }),
-                makeRC<IndentationNode>(NodeChildren{
-                    makeRC<IndentationNode>(NodeChildren{
-                        makeRC<IndentationNode>(NodeChildren{
-                            makeRC<ParagraphNode>(NodeChildren{
-                                makeRC<TextNode>("Level 3."),
-                            })
-                        })
-                    }),
-                    makeRC<ParagraphNode>(NodeChildren{
-                        makeRC<TextNode>("Level 1."),
-                    }),
-                }),
-			});
+            tester.Test(
+                "Irregular Indentation",
+                []()
+                {
+                    ASTBuilder builder;
+                    RC<Node> generated = builder.Build("Level 0.\n            Level 3.\n    Level 1.");
+                    RC<Node> expected = CreateRC<RootNode>(NodeChildren{
+                        CreateRC<ParagraphNode>(NodeChildren{
+                            CreateRC<TextNode>("Level 0."),
+                        }),
+                        CreateRC<IndentationNode>(NodeChildren{
+                            CreateRC<IndentationNode>(NodeChildren{
+                                CreateRC<IndentationNode>(NodeChildren{CreateRC<ParagraphNode>(NodeChildren{
+                                    CreateRC<TextNode>("Level 3."),
+                                })})}),
+                            CreateRC<ParagraphNode>(NodeChildren{
+                                CreateRC<TextNode>("Level 1."),
+                            }),
+                        }),
+                    });
 
-            return *generated == *expected;
-        });
-    });
+                    return *generated == *expected;
+                }
+            );
+        }
+    );
 
-    tester.sumarize();
+    tester.Sumarize();
 
     return 0;
 }
-	

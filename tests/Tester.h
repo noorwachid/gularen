@@ -7,15 +7,15 @@
 
 class Tester {
 public:
-    void group(const std::string& group, const std::function<void()>& callback);
+    void Group(const std::string& group, const std::function<void()>& callback);
 
-    void test(const std::string& title, const std::function<bool()>& callback);
+    void Test(const std::string& title, const std::function<bool()>& callback);
 
-    void sumarize();
+    void Sumarize();
 
 private:
-    std::size_t counter = 0;
-    std::size_t failedCounter = 0;
+    std::size_t _counter = 0;
+    std::size_t _failedCounter = 0;
     
     std::vector<std::string> _groups;
 };

@@ -2,7 +2,8 @@
 
 #include <vector>
 
-namespace Gularen {
-	template <typename T>
-	using Array = std::vector<T>;
+namespace Gularen
+{
+    template <typename T>
+    using Array = std::vector<T>;
 }

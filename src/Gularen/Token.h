@@ -1,68 +1,69 @@
 #pragma once
 
-#include "Integer.h"
 #include "DS/String.h"
+#include "Integer.h"
 
-namespace Gularen {
-    enum class TokenType {
-        boDocument,
-        eoDocument,
+namespace Gularen
+{
+    enum class TokenType
+    {
+        BODocument,
+        EODocument,
 
-        unknown,
-        
-        asterisk,
-        underscore,
-        backtick,
+        Unknown,
 
-		indentation,
-        
-        text,
-        symbol,
-        
-        newline,
-        
-        lsQuote,
-        rsQuote,
-        ldQuote,
-        rdQuote,
+        Asterisk,
+        Underscore,
+        Backtick,
 
-        largeArrowTail,
-        arrowTail,
+        Indentation,
 
-        extraLargeArrow,
-        largeArrow,
-        arrow,
-        smallArrow,
+        Text,
+        Symbol,
 
-        arrowHead,
+        Newline,
 
-        reverseArrowHead,
-        reverseArrowTail,
-        reverseLargeArrowTail,
+        LSQuote,
+        RSQuote,
+        LDQuote,
+        RDQuote,
 
-        hyphen,
-        enDash,
-        emDash,
+        LArrowTail,
+        ArrowTail,
+
+        XLArrow,
+        LArrow,
+        Arrow,
+        SArrow,
+
+        ArrowHead,
+
+        RArrowHead,
+        RArrowTail,
+        RLArrowTail,
+
+        Hyphen,
+        EnDash,
+        EmDash,
     };
 
-    struct Token {
+    struct Token
+    {
         TokenType type;
         String content;
         UintSize size;
         UintSize line;
-        
+
         Token(TokenType type);
-        
-        Token(TokenType type, const String& content);
+
+        Token(TokenType type, const String &content);
 
         Token(TokenType type, UintSize size);
-        
-        String toString() const;
 
-        String toEscapeSequenceString() const;
-        
-        bool operator==(const Token& other);
+        String ToString() const;
+
+        bool operator==(const Token &other);
     };
 
-    String toString(TokenType tokenType);
+    String ToString(TokenType tokenType);
 }

@@ -1,469 +1,497 @@
 #include "Lexer.h"
 #include <iostream>
 
-namespace Gularen {
+namespace Gularen
+{
     // PUBLIC DEFINITIONS
-    
-    Array<Token> Lexer::tokenize(const String& newBuffer) {
+
+    Array<Token> Lexer::Tokenize(const String& newBuffer)
+    {
         lineCounter = 1;
 
-        buffer = newBuffer;
-        bufferCursor = buffer.begin();
+        _buffer = newBuffer;
+        _bufferCursor = _buffer.begin();
 
-        tokens.clear();
+        _tokens.clear();
 
         // Guarantied to have one token in the collection
-        addToken(Token(TokenType::boDocument));
-        parseBlock(true);
+        AddToken(Token(TokenType::BODocument));
+        ParseBlock(true);
 
-        while (isByteCursorInProgress()) {
-            switch (getCurrentByte()) {
+        while (IsByteCursorInProgress())
+        {
+            switch (GetCurrentByte())
+            {
             case '\n':
-                parseNewline();
-                advanceByteCursor();
+                ParseNewline();
+                AdvanceByteCursor();
 
-                parseBlock();
+                ParseBlock();
                 break;
-			
-			case '#':
-				parseComment();
-				break;
+
+            case '#':
+                ParseComment();
+                break;
 
             case '>':
-                parseArrowID();
+                ParseArrowID();
                 break;
 
             case '<':
-                parseReverseArrowPart();
+                ParseReverseArrowPart();
                 break;
-                
-            case '-': 
-                parseDash();
+
+            case '-':
+                ParseDash();
                 break;
 
             case ':':
-                parseEmojiShortcode();
+                ParseEmojiShortcode();
                 break;
 
             case '*':
-                parseFS(TokenType::asterisk);
+                ParseFS(TokenType::Asterisk);
                 break;
-                
+
             case '_':
-                parseFS(TokenType::underscore);
+                ParseFS(TokenType::Underscore);
                 break;
-                
+
             case '`':
-                parseFS(TokenType::backtick);
+                ParseFS(TokenType::Backtick);
                 break;
-                
+
             case '\'':
-                parseQuote(TokenType::lsQuote, TokenType::rsQuote);
+                ParseQuote(TokenType::LSQuote, TokenType::RSQuote);
                 break;
 
             case '"':
-                parseQuote(TokenType::ldQuote, TokenType::rdQuote);
+                ParseQuote(TokenType::LDQuote, TokenType::RDQuote);
                 break;
-                
+
             default:
-                parseText();
+                ParseText();
                 break;
             }
-            
-            advanceByteCursor();
+
+            AdvanceByteCursor();
         }
 
         // Guarantied to have two token in the collection
-        addToken(Token(TokenType::eoDocument));
+        AddToken(Token(TokenType::EODocument));
 
         // TODO: Optimize this copy
-        return tokens;
+        return _tokens;
     }
 
     // PRIVATE DEFINITIONS
 
     // Main Routine Buffer Parsing
 
-    void Lexer::parseNewline() {
+    void Lexer::ParseNewline()
+    {
         UintSize size = 0;
 
-        while (isByteCursorInProgress() && getCurrentByte() == '\n') {
-            advanceByteCursor();
+        while (IsByteCursorInProgress() && GetCurrentByte() == '\n')
+        {
+            AdvanceByteCursor();
             ++size;
         }
 
-        if (tokens.back().type != TokenType::newline)
-            addToken(Token(TokenType::newline, size));
-        else 
-            tokens.back().size += size;
+        if (_tokens.back().type != TokenType::Newline)
+            AddToken(Token(TokenType::Newline, size));
+        else
+            _tokens.back().size += size;
 
         lineCounter += size;
 
-        retreatByteCursor();
+        RetreatByteCursor();
     }
 
-	void Lexer::parseComment() {
-		advanceByteCursor();
+    void Lexer::ParseComment()
+    {
+        AdvanceByteCursor();
 
-		while (isByteCursorInProgress() && getCurrentByte() != '\n')
-			advanceByteCursor();
+        while (IsByteCursorInProgress() && GetCurrentByte() != '\n')
+            AdvanceByteCursor();
 
-		if (getCurrentByte() == '\n' || getCurrentByte() == '\0') 
-			retreatByteCursor();
-	}
-    
-    void Lexer::parseFS(TokenType type) {
-        addToken(Token(type));
-    }  
-
-    void Lexer::parseQuote(TokenType opening, TokenType ending) {
-        auto& previous = tokens.back();
-
-        if ((previous.type == TokenType::text && previous.content.back() == ' ') || 
-            previous.type == TokenType::newline || 
-            previous.type == TokenType::boDocument)
-            return addToken(Token(opening));
-
-        addToken(Token(ending));
+        if (GetCurrentByte() == '\n' || GetCurrentByte() == '\0')
+            RetreatByteCursor();
     }
-    
-    void Lexer::parseText() {
-        if (isCurrentByteText())
-            addToken(Token(TokenType::text, consumeTextBytes()));
+
+    void Lexer::ParseFS(TokenType type) { AddToken(Token(type)); }
+
+    void Lexer::ParseQuote(TokenType opening, TokenType ending)
+    {
+        auto& previous = _tokens.back();
+
+        if ((previous.type == TokenType::Text && previous.content.back() == ' ') ||
+            previous.type == TokenType::Newline || previous.type == TokenType::BODocument)
+            return AddToken(Token(opening));
+
+        AddToken(Token(ending));
+    }
+
+    void Lexer::ParseText()
+    {
+        if (IsCurrentByteText())
+            AddToken(Token(TokenType::Text, ConsumeTextBytes()));
+        else if (_tokens.back().type != TokenType::Text)
+            AddToken(Token(TokenType::Text, {GetCurrentByte(), 0x0}));
         else
-            if (tokens.back().type != TokenType::text)
-                addToken(Token(TokenType::text, {getCurrentByte(), 0x0}));
-            else 
-                tokens.back().content += getCurrentByte();
-    }
-    
-    void Lexer::parseSymbol() {
-        if (isCurrentByteSymbol())
-            addToken(Token(TokenType::symbol, consumeSymbolBytes()));
-        else
-            parseText();
+            _tokens.back().content += GetCurrentByte();
     }
 
-    void Lexer::parseBlock(bool withAdvancing) {
+    void Lexer::ParseSymbol()
+    {
+        if (IsCurrentByteSymbol())
+            AddToken(Token(TokenType::Symbol, ConsumeSymbolBytes()));
+        else
+            ParseText();
+    }
+
+    void Lexer::ParseBlock(bool withAdvancing)
+    {
         inArrowLine = false;
 
+        if (GetCurrentByte() == ' ')
+        {
+            ParseIndentation();
 
-		if (getCurrentByte() == ' ') {
-			parseIndentation();
-
-            if (tokens.back().type == TokenType::indentation && getCurrentByte() == '\n') {
-                tokens.pop_back();
-                parseNewline();
+            if (_tokens.back().type == TokenType::Indentation && GetCurrentByte() == '\n')
+            {
+                _tokens.pop_back();
+                ParseNewline();
             }
         }
 
-        switch (getCurrentByte()) {
+        switch (GetCurrentByte())
+        {
         case '>':
-            parseArrow();
+            ParseArrow();
             break;
 
         case '-':
-            parseLine();
+            ParseLine();
             break;
 
         default:
-            retreatByteCursor();
+            RetreatByteCursor();
             break;
         }
-        
+
         if (withAdvancing)
-            advanceByteCursor();
+            AdvanceByteCursor();
     }
 
-    void Lexer::parseLine() {
-        advanceByteCursor();
+    void Lexer::ParseLine()
+    {
+        AdvanceByteCursor();
 
-        if (getCurrentByte() == '>') {
-            advanceByteCursor();
+        if (GetCurrentByte() == '>')
+        {
+            AdvanceByteCursor();
 
-            if (getCurrentByte() == ' ') {
+            if (GetCurrentByte() == ' ')
+            {
                 // "-> "
 
                 inArrowLine = true;
-                return addToken(Token(TokenType::smallArrow));
+                return AddToken(Token(TokenType::SArrow));
             }
 
-            retreatByteCursor();
+            RetreatByteCursor();
         }
 
-        retreatByteCursor();
+        RetreatByteCursor();
     }
 
-	void Lexer::parseIndentation() {
-		UintSize size = 0;
+    void Lexer::ParseIndentation()
+    {
+        UintSize size = 0;
 
-		while (isByteCursorInProgress() && getCurrentByte() == ' ') {
-			advanceByteCursor();
+        while (IsByteCursorInProgress() && GetCurrentByte() == ' ')
+        {
+            AdvanceByteCursor();
 
-			++size;
-		}
+            ++size;
+        }
 
-		UintSize indentSpaceSize = 4;
-		UintSize indentLevel = size / indentSpaceSize;
-		UintSize indentReminder = size % indentSpaceSize;
+        UintSize indentSpaceSize = 4;
+        UintSize indentLevel = size / indentSpaceSize;
+        UintSize indentReminder = size % indentSpaceSize;
 
-		if (indentLevel) 
-			addToken(Token(TokenType::indentation, indentLevel));
+        if (indentLevel)
+            AddToken(Token(TokenType::Indentation, indentLevel));
 
-		if (indentReminder) {
-			for (UintSize leftOverIndex = 0; leftOverIndex < indentReminder; ++leftOverIndex) 
-				retreatByteCursor();
-		}
-	}
+        if (indentReminder)
+        {
+            for (UintSize leftOverIndex = 0; leftOverIndex < indentReminder; ++leftOverIndex)
+                RetreatByteCursor();
+        }
+    }
 
-    void Lexer::parseArrow() {
-        advanceByteCursor();
+    void Lexer::ParseArrow()
+    {
+        AdvanceByteCursor();
 
-        if (getCurrentByte() == ' ') {
+        if (GetCurrentByte() == ' ')
+        {
             // "> "
             inArrowLine = true;
-            return addToken(Token(TokenType::arrowHead));
+            return AddToken(Token(TokenType::ArrowHead));
         }
 
-        if (getCurrentByte() == '-') {
-            advanceByteCursor();
+        if (GetCurrentByte() == '-')
+        {
+            AdvanceByteCursor();
 
-            if (getCurrentByte() == '>') {
-                advanceByteCursor();
+            if (GetCurrentByte() == '>')
+            {
+                AdvanceByteCursor();
 
-                if (getCurrentByte() == ' ') {
+                if (GetCurrentByte() == ' ')
+                {
                     // ">-> "
                     inArrowLine = true;
-                    return addToken(Token(TokenType::arrow));
+                    return AddToken(Token(TokenType::Arrow));
                 }
 
-                retreatByteCursor();
+                RetreatByteCursor();
             }
 
-            retreatByteCursor();
+            RetreatByteCursor();
         }
 
-        if (getCurrentByte() == '>') {
-            advanceByteCursor();
-            
-            if (getCurrentByte() == ' ') {
+        if (GetCurrentByte() == '>')
+        {
+            AdvanceByteCursor();
+
+            if (GetCurrentByte() == ' ')
+            {
                 // ">> "
                 inArrowLine = true;
-                return addToken(Token(TokenType::arrowTail));
+                return AddToken(Token(TokenType::ArrowTail));
             }
 
-            if (getCurrentByte() == '-') {
-                advanceByteCursor();
+            if (GetCurrentByte() == '-')
+            {
+                AdvanceByteCursor();
 
-                if (getCurrentByte() == '>') {
-                    advanceByteCursor();
+                if (GetCurrentByte() == '>')
+                {
+                    AdvanceByteCursor();
 
-                    if (getCurrentByte() == ' ') {
+                    if (GetCurrentByte() == ' ')
+                    {
                         // ">>-> "
                         inArrowLine = true;
-                        return addToken(Token(TokenType::largeArrow));
+                        return AddToken(Token(TokenType::LArrow));
                     }
 
-                    retreatByteCursor();
+                    RetreatByteCursor();
                 }
 
-                retreatByteCursor();
+                RetreatByteCursor();
             }
 
-            if (getCurrentByte() == '>') {
-                advanceByteCursor();
+            if (GetCurrentByte() == '>')
+            {
+                AdvanceByteCursor();
 
-                if (getCurrentByte() == ' ') {
+                if (GetCurrentByte() == ' ')
+                {
                     // ">>> "
                     inArrowLine = true;
-                    return addToken(Token(TokenType::largeArrowTail));
+                    return AddToken(Token(TokenType::LArrowTail));
                 }
 
-                if (getCurrentByte() == '-') {
-                    advanceByteCursor();
+                if (GetCurrentByte() == '-')
+                {
+                    AdvanceByteCursor();
 
-                    if (getCurrentByte() == '>') {
-                        advanceByteCursor();
+                    if (GetCurrentByte() == '>')
+                    {
+                        AdvanceByteCursor();
 
-                        if (getCurrentByte() == ' ') {
+                        if (GetCurrentByte() == ' ')
+                        {
                             // ">>>-> "
                             inArrowLine = true;
-                            return addToken(Token(TokenType::extraLargeArrow));
+                            return AddToken(Token(TokenType::XLArrow));
                         }
 
-                        retreatByteCursor();
+                        RetreatByteCursor();
                     }
 
-                    retreatByteCursor();
+                    RetreatByteCursor();
                 }
 
-                retreatByteCursor();
+                RetreatByteCursor();
             }
 
-            retreatByteCursor();
+            RetreatByteCursor();
         }
 
-        retreatByteCursor();
+        RetreatByteCursor();
     }
 
-    void Lexer::parseArrowID() {
+    void Lexer::ParseArrowID()
+    {
         if (!inArrowLine)
-            return parseText();
+            return ParseText();
 
-        addToken(Token(TokenType::arrowHead));
+        AddToken(Token(TokenType::ArrowHead));
 
-        advanceByteCursor();
+        AdvanceByteCursor();
 
-        if (getCurrentByte() == ' ') {
-            advanceByteCursor();
-            
-            if (isCurrentByteSymbol()) {
-                return parseSymbol();
+        if (GetCurrentByte() == ' ')
+        {
+            AdvanceByteCursor();
+
+            if (IsCurrentByteSymbol())
+            {
+                return ParseSymbol();
             }
-                
-            retreatByteCursor();
+
+            RetreatByteCursor();
         }
-            
-        retreatByteCursor();
+
+        RetreatByteCursor();
     }
 
-    void Lexer::parseReverseArrowPart() {
+    void Lexer::ParseReverseArrowPart()
+    {
         String buffer;
 
-        while (isByteCursorInProgress() && getCurrentByte() == '<') {
+        while (IsByteCursorInProgress() && GetCurrentByte() == '<')
+        {
             buffer += '<';
-            advanceByteCursor();
+            AdvanceByteCursor();
         }
 
-        retreatByteCursor();
+        RetreatByteCursor();
 
-        switch (buffer.size()) {
+        switch (buffer.size())
+        {
         case 1:
-            addToken(TokenType::reverseArrowHead);
+            AddToken(TokenType::RArrowHead);
             break;
-        
+
         case 2:
-            addToken(TokenType::reverseArrowTail);
+            AddToken(TokenType::RArrowTail);
             break;
 
         case 3:
-            addToken(TokenType::reverseLargeArrowTail);
+            AddToken(TokenType::RLArrowTail);
             break;
 
         default:
-            addTokenText(buffer);
+            AddTokenText(buffer);
             break;
         }
     }
 
-    void Lexer::parseDash() {
-        advanceByteCursor();
+    void Lexer::ParseDash()
+    {
+        AdvanceByteCursor();
 
-        if (getCurrentByte() == '-') {
-            advanceByteCursor();
+        if (GetCurrentByte() == '-')
+        {
+            AdvanceByteCursor();
 
-            if (getCurrentByte() == '-') {
-                return addToken(Token(TokenType::emDash));
+            if (GetCurrentByte() == '-')
+            {
+                return AddToken(Token(TokenType::EmDash));
             }
 
-            retreatByteCursor();
+            RetreatByteCursor();
 
-            return addToken(Token(TokenType::enDash));
+            return AddToken(Token(TokenType::EnDash));
         }
 
-        retreatByteCursor();
+        RetreatByteCursor();
 
-        return addToken(Token(TokenType::hyphen));
+        return AddToken(Token(TokenType::Hyphen));
     }
 
-    void Lexer::parseEmojiShortcode() {
-    }
+    void Lexer::ParseEmojiShortcode() {}
 
     // Sub Routine Buffer Parsing
-    
-    String Lexer::consumeTextBytes() {
+
+    String Lexer::ConsumeTextBytes()
+    {
         String text;
-        
-        while (isByteCursorInProgress() && isCurrentByteText()) {
-            text += getCurrentByte();
-            
-            advanceByteCursor();
+
+        while (IsByteCursorInProgress() && IsCurrentByteText())
+        {
+            text += GetCurrentByte();
+
+            AdvanceByteCursor();
         }
-        
-        retreatByteCursor();
-        
+
+        RetreatByteCursor();
+
         return text;
     }
 
-    String Lexer::consumeSymbolBytes() {
+    String Lexer::ConsumeSymbolBytes()
+    {
         String symbol;
-        
-        while (isByteCursorInProgress() && isCurrentByteSymbol()) {
-            symbol += getCurrentByte();
-            
-            advanceByteCursor();
+
+        while (IsByteCursorInProgress() && IsCurrentByteSymbol())
+        {
+            symbol += GetCurrentByte();
+
+            AdvanceByteCursor();
         }
-        
-        retreatByteCursor();
-        
+
+        RetreatByteCursor();
+
         return symbol;
     }
 
     // Buffer Iterator Helper
 
-    char Lexer::getCurrentByte() {
-        return *bufferCursor;
-    }
-    
-    bool Lexer::isByteCursorInProgress() {
-        return bufferCursor < buffer.end();
-    }
-    
-    void Lexer::advanceByteCursor() {
-        ++bufferCursor;
-    }
-    
-    void Lexer::retreatByteCursor() {
-        --bufferCursor;
-    }
-    
-    bool Lexer::isCurrentByteText() {
-        char byte = getCurrentByte();
+    char Lexer::GetCurrentByte() { return *_bufferCursor; }
 
-        return 
-            (byte >= 'a' && byte <= 'z') || 
-            (byte >= 'A' && byte <= 'Z') ||
-            (byte >= '0' && byte <= '9') ||
+    bool Lexer::IsByteCursorInProgress() { return _bufferCursor < _buffer.end(); }
 
-            byte == ' ' || 
-            byte == ',' ||
-            byte == '.'
-        ;
+    void Lexer::AdvanceByteCursor() { ++_bufferCursor; }
+
+    void Lexer::RetreatByteCursor() { --_bufferCursor; }
+
+    bool Lexer::IsCurrentByteText()
+    {
+        char byte = GetCurrentByte();
+
+        return (byte >= 'a' && byte <= 'z') || (byte >= 'A' && byte <= 'Z') || (byte >= '0' && byte <= '9') ||
+
+               byte == ' ' || byte == ',' || byte == '.';
     }
 
-    bool Lexer::isCurrentByteSymbol() {
-        char byte = getCurrentByte();
-        
-        return 
-            (byte >= 'a' && byte <= 'z') || 
-            (byte >= 'A' && byte <= 'Z') ||
-            (byte >= '0' && byte <= '9') ||
+    bool Lexer::IsCurrentByteSymbol()
+    {
+        char byte = GetCurrentByte();
 
-            byte == '-'
-        ;
+        return (byte >= 'a' && byte <= 'z') || (byte >= 'A' && byte <= 'Z') || (byte >= '0' && byte <= '9') ||
+
+               byte == '-';
     }
 
     // Token Helper
 
-    void Lexer::addToken(Token&& token) {
+    void Lexer::AddToken(Token&& token)
+    {
         token.line = lineCounter;
-        tokens.push_back(token);
+        _tokens.push_back(token);
     }
 
-    void Lexer::addTokenText(const String& text) {
-        if (tokens.back().type == TokenType::text)
-            tokens.back().content += text;
-        else 
-            addToken(Token(TokenType::text, text));
+    void Lexer::AddTokenText(const String& text)
+    {
+        if (_tokens.back().type == TokenType::Text)
+            _tokens.back().content += text;
+        else
+            AddToken(Token(TokenType::Text, text));
     }
 }

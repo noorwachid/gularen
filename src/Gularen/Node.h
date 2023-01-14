@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NodeDetails/Core.h"
-#include "NodeDetails/FS.h"
-#include "NodeDetails/Heading.h"
-#include "NodeDetails/Break.h"
+#include "Node/CoreNode.h"
+#include "Node/FSNode.h"
+#include "Node/HeadingNode.h"
+#include "Node/BreakNode.h"

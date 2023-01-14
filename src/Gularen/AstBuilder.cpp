@@ -1,291 +1,308 @@
 #include "ASTBuilder.h"
-#include "Utilities/NodeWriter.h"
+#include "Node/NodeWriter.h"
 #include <iostream>
 
 // #define GULAREN_DEBUG_BUFFER 1
 // #define GULAREN_DEBUG_TOKENS 1
 // #define GULAREN_DEBUG_AST 1
 
-namespace Gularen {
+namespace Gularen
+{
     // PUBLIC DEFINITION
 
-    RC<RootNode> ASTBuilder::build(const String& buffer) {
+    RC<RootNode> ASTBuilder::Build(const String& buffer)
+    {
         Lexer lexer;
-        tokens = lexer.tokenize(buffer);
-        tokenCursor = tokens.begin();
+        _tokens = lexer.Tokenize(buffer);
+        _tokenCursor = _tokens.begin();
 
-        #ifdef GULAREN_DEBUG_BUFFER
+#ifdef GULAREN_DEBUG_BUFFER
         std::cout << "[Gularen.Debug.Buffer]\n";
         std::cout << buffer << "\n\n";
-        #endif
+#endif
 
-        #ifdef GULAREN_DEBUG_TOKENS
+#ifdef GULAREN_DEBUG_TOKENS
         std::cout << "[Gularen.Debug.Tokens]\n";
-        for (auto a: tokens)
+        for (auto a : tokens)
             std::cout << a.toString() << "\n";
         std::cout << "\n";
-        #endif
+#endif
 
-        rootNode = makeRC<RootNode>();
-        nodeCursors.clear();
-        nodeCursors.push_back(rootNode);
-        
-        while (isTokenCursorInProgress()) {
-            switch (getCurrentToken().type) {
-            case TokenType::boDocument:
-                advanceTokenCursor();
+        _rootNode = CreateRC<RootNode>();
+        _nodeCursors.clear();
+        _nodeCursors.push_back(_rootNode);
+
+        while (IsTokenCursorInProgress())
+        {
+            switch (GetCurrentToken().type)
+            {
+            case TokenType::BODocument:
+                AdvanceTokenCursor();
 
                 // In case some people write with excess newlines
-                if (getCurrentToken().type != TokenType::newline) 
-                    retreatTokenCursor();
+                if (GetCurrentToken().type != TokenType::Newline)
+                    RetreatTokenCursor();
 
-                parseNewline();
+                ParseNewline();
                 break;
 
-            case TokenType::newline:
-                parseNewline();
+            case TokenType::Newline:
+                ParseNewline();
                 break;
 
-            case TokenType::arrowHead:
-                advanceTokenCursor();
+            case TokenType::ArrowHead:
+                AdvanceTokenCursor();
 
-                if (getCurrentToken().type == TokenType::symbol && getNodeCursor()->type == NodeType::title) {
-                    static_cast<HeadingNode*>(nodeCursors[nodeCursors.size() - 2].get())->id = getCurrentToken().content;
+                if (GetCurrentToken().type == TokenType::Symbol && GetNodeCursor()->type == NodeType::Title)
+                {
+                    static_cast<HeadingNode*>(_nodeCursors[_nodeCursors.size() - 2].get())->id =
+                        GetCurrentToken().content;
                     break;
                 }
 
-                retreatTokenCursor();
+                RetreatTokenCursor();
                 break;
 
-            case TokenType::text:
-                addNodeCursorChild(makeRC<TextNode>(getCurrentToken().content));
+            case TokenType::Text:
+                AddNodeCursorChild(CreateRC<TextNode>(GetCurrentToken().content));
                 break;
 
-            case TokenType::reverseArrowHead:
-                addNodeCursorChild(makeRC<LineBreakNode>());
-                break;
-                
-            case TokenType::asterisk:
-                parseFS(makeRC<BoldFSNode>());
+            case TokenType::RArrowHead:
+                AddNodeCursorChild(CreateRC<LineBreakNode>());
                 break;
 
-            case TokenType::underscore:
-                parseFS(makeRC<ItalicFSNode>());
+            case TokenType::Asterisk:
+                ParseFS(CreateRC<BoldFSNode>());
                 break;
 
-            case TokenType::backtick:
-                parseFS(makeRC<MonospaceFSNode>());
+            case TokenType::Underscore:
+                ParseFS(CreateRC<ItalicFSNode>());
                 break;
 
-            case TokenType::largeArrowTail:
+            case TokenType::Backtick:
+                ParseFS(CreateRC<MonospaceFSNode>());
+                break;
+
+            case TokenType::LArrowTail:
                 // popNodeCursor();
                 break;
-            
+
             default:
                 // Do nothing
                 break;
             }
 
-            advanceTokenCursor();
+            AdvanceTokenCursor();
         }
 
-        #ifdef GULAREN_DEBUG_AST
+#ifdef GULAREN_DEBUG_AST
         std::cout << "[Gularen.Debug.Tokens]\n";
         NodeWriter writer;
         writer.write(rootNode);
         std::cout << "\n";
-        #endif
+#endif
 
-        return rootNode;
+        return _rootNode;
     }
 
-    const Array<Token>& ASTBuilder::getTokenCollection() const {
-        return tokens;
-    }
+    const Array<Token>& ASTBuilder::GetTokenCollection() const { return _tokens; }
 
     // PRIVATE DEFINITION
 
     // Main Routine Parsing
-    
-    void ASTBuilder::parseNewline() {
-        auto newlineSize = getCurrentToken().size;
 
-        advanceTokenCursor();
+    void ASTBuilder::ParseNewline()
+    {
+        auto newlineSize = GetCurrentToken().size;
+
+        AdvanceTokenCursor();
 
         // Indentation is independent from any other parsing type
-        if (getCurrentToken().type == TokenType::indentation) {
-            UintSize indentationLevel = getCurrentToken().size;
-            advanceTokenCursor();
-            parseIndentation(indentationLevel);
-        } else {
-            parseIndentation(0);
+        if (GetCurrentToken().type == TokenType::Indentation)
+        {
+            UintSize indentationLevel = GetCurrentToken().size;
+            AdvanceTokenCursor();
+            ParseIndentation(indentationLevel);
+        }
+        else
+        {
+            ParseIndentation(0);
         }
 
         bool spawningNewParagraph = false;
 
         // Closing
-        if (getNodeCursor()->type != NodeType::indentation) {
-            if (getNodeCursor()->type == NodeType::title) {
-                popNodeCursor();
-                
+        if (GetNodeCursor()->type != NodeType::Indentation)
+        {
+            if (GetNodeCursor()->type == NodeType::Title)
+            {
+                PopNodeCursor();
+
                 // Only parse as subtitle if the segment identifier right below heading
-                if (getCurrentToken().type == TokenType::arrowHead && newlineSize == 1)
-                    return pushNodeCursor(makeRC<SubtitleNode>());
-                
-                popNodeCursor();
-            } else if (getNodeCursor()->type == NodeType::paragraph) {
-                if (getCurrentToken().type != TokenType::text || newlineSize > 1) {
-                    popNodeCursor();
+                if (GetCurrentToken().type == TokenType::ArrowHead && newlineSize == 1)
+                    return PushNodeCursor(CreateRC<SubtitleNode>());
+
+                PopNodeCursor();
+            }
+            else if (GetNodeCursor()->type == NodeType::Paragraph)
+            {
+                if (GetCurrentToken().type != TokenType::Text || newlineSize > 1)
+                {
+                    PopNodeCursor();
                 }
-            } else {
-                popNodeCursor();
+            }
+            else
+            {
+                PopNodeCursor();
             }
         }
 
-        switch (getCurrentToken().type) {
-        case TokenType::largeArrowTail:
-            pushNodeCursor(makeRC<DocumentNode>());
-            pushNodeCursor(makeRC<TitleNode>());
+        switch (GetCurrentToken().type)
+        {
+        case TokenType::LArrowTail:
+            PushNodeCursor(CreateRC<DocumentNode>());
+            PushNodeCursor(CreateRC<TitleNode>());
             break;
 
-        case TokenType::arrowTail:
-            pushNodeCursor(makeRC<PartNode>());
-            pushNodeCursor(makeRC<TitleNode>());
+        case TokenType::ArrowTail:
+            PushNodeCursor(CreateRC<PartNode>());
+            PushNodeCursor(CreateRC<TitleNode>());
             break;
 
-        case TokenType::extraLargeArrow:
-            pushNodeCursor(makeRC<ChapterNode>());
-            pushNodeCursor(makeRC<TitleNode>());
+        case TokenType::XLArrow:
+            PushNodeCursor(CreateRC<ChapterNode>());
+            PushNodeCursor(CreateRC<TitleNode>());
             break;
 
-        case TokenType::largeArrow:
-            pushNodeCursor(makeRC<SectionNode>());
-            pushNodeCursor(makeRC<TitleNode>());
+        case TokenType::LArrow:
+            PushNodeCursor(CreateRC<SectionNode>());
+            PushNodeCursor(CreateRC<TitleNode>());
             break;
 
-        case TokenType::arrow:
-            pushNodeCursor(makeRC<SubsectionNode>());
-            pushNodeCursor(makeRC<TitleNode>());
+        case TokenType::Arrow:
+            PushNodeCursor(CreateRC<SubsectionNode>());
+            PushNodeCursor(CreateRC<TitleNode>());
             break;
 
-        case TokenType::smallArrow:
-            pushNodeCursor(makeRC<SubsubsectionNode>());
-            pushNodeCursor(makeRC<TitleNode>());
+        case TokenType::SArrow:
+            PushNodeCursor(CreateRC<SubsubsectionNode>());
+            PushNodeCursor(CreateRC<TitleNode>());
             break;
 
-        case TokenType::arrowHead:
-            pushNodeCursor(makeRC<SegmentNode>());
-            pushNodeCursor(makeRC<TitleNode>());
+        case TokenType::ArrowHead:
+            PushNodeCursor(CreateRC<SegmentNode>());
+            PushNodeCursor(CreateRC<TitleNode>());
             break;
 
-        case TokenType::reverseArrowTail:
-            addNodeCursorChild(makeRC<PageBreakNode>());
+        case TokenType::RArrowTail:
+            AddNodeCursorChild(CreateRC<PageBreakNode>());
             break;
 
-        case TokenType::reverseLargeArrowTail:
-            advanceTokenCursor();
+        case TokenType::RLArrowTail:
+            AdvanceTokenCursor();
             // TODO: stop the parsing and send error
-            tokenCursor = tokens.end();
+            _tokenCursor = _tokens.end();
 
-            rootNode = makeRC<RootNode>();
-            nodeCursors.clear();
-            nodeCursors.push_back(rootNode);
+            _rootNode = CreateRC<RootNode>();
+            _nodeCursors.clear();
+            _nodeCursors.push_back(_rootNode);
             break;
 
-        case TokenType::text:
-        case TokenType::asterisk:
-        case TokenType::underscore:
-        case TokenType::backtick:
-            if (getNodeCursor()->type != NodeType::paragraph || (getNodeCursor()->type == NodeType::paragraph && newlineSize > 1)) {
-                pushNodeCursor(makeRC<ParagraphNode>());
-            } else {
-                addNodeCursorChild(makeRC<NewlineNode>(1));
+        case TokenType::Text:
+        case TokenType::Asterisk:
+        case TokenType::Underscore:
+        case TokenType::Backtick:
+            if (GetNodeCursor()->type != NodeType::Paragraph ||
+                (GetNodeCursor()->type == NodeType::Paragraph && newlineSize > 1))
+            {
+                PushNodeCursor(CreateRC<ParagraphNode>());
+            }
+            else
+            {
+                AddNodeCursorChild(CreateRC<NewlineNode>(1));
             }
 
-            retreatTokenCursor();
+            RetreatTokenCursor();
             break;
-        
+
         default:
             break;
         }
     }
 
-	void ASTBuilder::parseIndentation(UintSize currentIndentationLevel) {
-		if (indentationLevel == currentIndentationLevel)
-			return;
-
-		if (indentationLevel < currentIndentationLevel) {
-            UintSize difference = currentIndentationLevel - indentationLevel;
-
-            while (nodeCursors.size() > 1 && getNodeCursor()->group != NodeGroup::block) {
-                popNodeCursor();
-            }
-
-            popNodeCursor();
-
-            for (UintSize i = 0; i < difference; ++i) {
-			    pushNodeCursor(makeRC<IndentationNode>());
-            }
-
-            indentationLevel = currentIndentationLevel;
+    void ASTBuilder::ParseIndentation(UintSize currentIndentationLevel)
+    {
+        if (_indentationLevel == currentIndentationLevel)
             return;
-		}
 
-        UintSize difference = indentationLevel - currentIndentationLevel;
+        if (_indentationLevel < currentIndentationLevel)
+        {
+            UintSize difference = currentIndentationLevel - _indentationLevel;
 
-        for (UintSize i = 0; i < difference && nodeCursors.size() > 1; ++i) {
-            while (nodeCursors.size() > 1 && getNodeCursor()->type != NodeType::indentation) {
-                popNodeCursor();
+            while (_nodeCursors.size() > 1 && GetNodeCursor()->group != NodeGroup::Block)
+            {
+                PopNodeCursor();
             }
-            popNodeCursor();
+
+            PopNodeCursor();
+
+            for (UintSize i = 0; i < difference; ++i)
+            {
+                PushNodeCursor(CreateRC<IndentationNode>());
+            }
+
+            _indentationLevel = currentIndentationLevel;
+            return;
         }
 
-        indentationLevel = currentIndentationLevel;
-		return;
-	}
+        UintSize difference = _indentationLevel - currentIndentationLevel;
 
-    void ASTBuilder::parseFS(const RC<FSNode>& node) {
-        if (getNodeCursor()->type == node->type)
-            return popNodeCursor();
+        for (UintSize i = 0; i < difference && _nodeCursors.size() > 1; ++i)
+        {
+            while (_nodeCursors.size() > 1 && GetNodeCursor()->type != NodeType::Indentation)
+            {
+                PopNodeCursor();
+            }
+            PopNodeCursor();
+        }
 
-        pushNodeCursor(node);
+        _indentationLevel = currentIndentationLevel;
+        return;
+    }
+
+    void ASTBuilder::ParseFS(const RC<FSNode>& node)
+    {
+        if (GetNodeCursor()->type == node->type)
+            return PopNodeCursor();
+
+        PushNodeCursor(node);
     }
 
     // Cursor Node Manipulation
 
-    void ASTBuilder::popNodeCursor() {
-        if (nodeCursors.size() > 1)
-            nodeCursors.pop_back();
-    }
-    
-    void ASTBuilder::pushNodeCursor(const RC<Node>& node) {
-        addNodeCursorChild(node);
-        nodeCursors.push_back(node);
+    void ASTBuilder::PopNodeCursor()
+    {
+        if (_nodeCursors.size() > 1)
+            _nodeCursors.pop_back();
     }
 
-    void ASTBuilder::addNodeCursorChild(const RC<Node>& node) {
-        nodeCursors.back()->children.push_back(node);
+    void ASTBuilder::PushNodeCursor(const RC<Node>& node)
+    {
+        AddNodeCursorChild(node);
+        _nodeCursors.push_back(node);
     }
 
-    const RC<Node>& ASTBuilder::getNodeCursor() const {
-        return nodeCursors.back();
-    }
+    void ASTBuilder::AddNodeCursorChild(const RC<Node>& node) { _nodeCursors.back()->children.push_back(node); }
+
+    const RC<Node>& ASTBuilder::GetNodeCursor() const { return _nodeCursors.back(); }
 
     // Token Iterator
 
-    const Token& ASTBuilder::getCurrentToken() const {
-        return *tokenCursor;
-    }
-    
-    bool ASTBuilder::isTokenCursorInProgress() {
-        return tokenCursor < tokens.end();
-    }
-    
-    void ASTBuilder::advanceTokenCursor() {
-        ++tokenCursor;
-    }
-    
-    void ASTBuilder::retreatTokenCursor() {
-        --tokenCursor;
-    }
+    const Token& ASTBuilder::GetCurrentToken() const { return *_tokenCursor; }
+
+    bool ASTBuilder::IsTokenCursorInProgress() { return _tokenCursor < _tokens.end(); }
+
+    void ASTBuilder::AdvanceTokenCursor() { ++_tokenCursor; }
+
+    void ASTBuilder::RetreatTokenCursor() { --_tokenCursor; }
 }
