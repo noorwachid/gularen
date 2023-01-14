@@ -8,6 +8,27 @@ int main()
 {
     using namespace Gularen;
 
+    Lexer lexer;
+    auto tokens = lexer.Tokenize(R"(
+        1. First
+        2. Second
+        3. Third
+    )");
+
+
+    for (const Token& token : tokens)
+    {
+        std::cout << token.ToString() << "\n";
+    }
+
+    ASTBuilder builder;
+    auto tree = builder.Build(tokens);
+
+    NodeWriter writer;
+    writer.Write(tree);
+
+    return 0;
+
     Tester tester;
 
     // Guaranteed to return true, if it's not then something must horibly went

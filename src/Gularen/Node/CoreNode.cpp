@@ -6,7 +6,7 @@ namespace Gularen
 
     RootNode::RootNode(const NodeChildren& children) : Node(NodeType::Root, NodeGroup::Block, children) {}
 
-    String RootNode::ToString() const { return "root"; }
+    String RootNode::ToString() const { return "Root"; }
 
     IndentationNode::IndentationNode() : Node(NodeType::Indentation, NodeGroup::Block) {}
 
@@ -15,7 +15,7 @@ namespace Gularen
     {
     }
 
-    String IndentationNode::ToString() const { return "indentation"; }
+    String IndentationNode::ToString() const { return "Indentation"; }
 
     ParagraphNode::ParagraphNode() : Node(NodeType::Paragraph, NodeGroup::Block) {}
 
@@ -23,16 +23,16 @@ namespace Gularen
     {
     }
 
-    String ParagraphNode::ToString() const { return "paragraph"; }
+    String ParagraphNode::ToString() const { return "Paragraph"; }
 
     TextNode::TextNode(const String& content) : Node(NodeType::Text, NodeGroup::Inline), content(content) {}
 
-    String TextNode::ToString() const { return "text content = \"" + content + "\""; }
+    String TextNode::ToString() const { return "Text content = \"" + content + "\""; }
 
     NewlineNode::NewlineNode(UintSize repeatition)
         : Node(NodeType::Newline, NodeGroup::Inline), repetition(repeatition)
     {
     }
 
-    String NewlineNode::ToString() const { return "newline repetition = " + std::to_string(repetition); }
+    String NewlineNode::ToString() const { return "Newline repetition = " + std::to_string(repetition); }
 }

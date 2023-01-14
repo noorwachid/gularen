@@ -9,11 +9,9 @@
 namespace Gularen
 {
     // PUBLIC DEFINITION
-
-    RC<RootNode> ASTBuilder::Build(const String& buffer)
+    RC<RootNode> ASTBuilder::Build(const Array<Token>& tokens)
     {
-        Lexer lexer;
-        _tokens = lexer.Tokenize(buffer);
+        _tokens = tokens;
         _tokenCursor = _tokens.begin();
 
 #ifdef GULAREN_DEBUG_BUFFER
@@ -105,7 +103,10 @@ namespace Gularen
         return _rootNode;
     }
 
-    const Array<Token>& ASTBuilder::GetTokenCollection() const { return _tokens; }
+    RC<RootNode> ASTBuilder::Build(const String& buffer)
+    {
+        return Build(Lexer().Tokenize(buffer));
+    }
 
     // PRIVATE DEFINITION
 

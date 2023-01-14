@@ -7,7 +7,7 @@ namespace Gularen
 
     Array<Token> Lexer::Tokenize(const String& newBuffer)
     {
-        lineCounter = 1;
+        _lineCounter = 1;
 
         _buffer = newBuffer;
         _bufferCursor = _buffer.begin();
@@ -103,7 +103,7 @@ namespace Gularen
         else
             _tokens.back().size += size;
 
-        lineCounter += size;
+        _lineCounter += size;
 
         RetreatByteCursor();
     }
@@ -152,7 +152,7 @@ namespace Gularen
 
     void Lexer::ParseBlock(bool withAdvancing)
     {
-        inArrowLine = false;
+        _inArrowLine = false;
 
         if (GetCurrentByte() == ' ')
         {
@@ -196,7 +196,7 @@ namespace Gularen
             {
                 // "-> "
 
-                inArrowLine = true;
+                _inArrowLine = true;
                 return AddToken(Token(TokenType::SArrow));
             }
 
@@ -238,7 +238,7 @@ namespace Gularen
         if (GetCurrentByte() == ' ')
         {
             // "> "
-            inArrowLine = true;
+            _inArrowLine = true;
             return AddToken(Token(TokenType::ArrowHead));
         }
 
@@ -253,7 +253,7 @@ namespace Gularen
                 if (GetCurrentByte() == ' ')
                 {
                     // ">-> "
-                    inArrowLine = true;
+                    _inArrowLine = true;
                     return AddToken(Token(TokenType::Arrow));
                 }
 
@@ -270,7 +270,7 @@ namespace Gularen
             if (GetCurrentByte() == ' ')
             {
                 // ">> "
-                inArrowLine = true;
+                _inArrowLine = true;
                 return AddToken(Token(TokenType::ArrowTail));
             }
 
@@ -285,7 +285,7 @@ namespace Gularen
                     if (GetCurrentByte() == ' ')
                     {
                         // ">>-> "
-                        inArrowLine = true;
+                        _inArrowLine = true;
                         return AddToken(Token(TokenType::LArrow));
                     }
 
@@ -302,7 +302,7 @@ namespace Gularen
                 if (GetCurrentByte() == ' ')
                 {
                     // ">>> "
-                    inArrowLine = true;
+                    _inArrowLine = true;
                     return AddToken(Token(TokenType::LArrowTail));
                 }
 
@@ -317,7 +317,7 @@ namespace Gularen
                         if (GetCurrentByte() == ' ')
                         {
                             // ">>>-> "
-                            inArrowLine = true;
+                            _inArrowLine = true;
                             return AddToken(Token(TokenType::XLArrow));
                         }
 
@@ -338,7 +338,7 @@ namespace Gularen
 
     void Lexer::ParseArrowID()
     {
-        if (!inArrowLine)
+        if (!_inArrowLine)
             return ParseText();
 
         AddToken(Token(TokenType::ArrowHead));
@@ -483,7 +483,7 @@ namespace Gularen
 
     void Lexer::AddToken(Token&& token)
     {
-        token.line = lineCounter;
+        token.line = _lineCounter;
         _tokens.push_back(token);
     }
 

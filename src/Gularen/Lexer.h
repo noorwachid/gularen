@@ -73,8 +73,8 @@ namespace Gularen
 
         Array<Token> _tokens;
 
-        bool inArrowLine = false;
+        bool _inArrowLine = false;
 
-        UintSize lineCounter = 1;
+        UintSize _lineCounter = 1;
     };
 }

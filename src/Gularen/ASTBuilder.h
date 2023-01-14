@@ -9,9 +9,9 @@ namespace Gularen
     class ASTBuilder
     {
       public:
-        RC<RootNode> Build(const String& buffer);
+        RC<RootNode> Build(const Array<Token>& tokens);
 
-        const Array<Token>& GetTokenCollection() const;
+        RC<RootNode> Build(const String& buffer);
 
       private:
         // Main Routine Parsing
