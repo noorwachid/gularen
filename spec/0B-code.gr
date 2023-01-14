@@ -1,4 +1,6 @@
 >>>-> Code
+
+>>-> Block Code
 Anything between three or more equals will be considered as code.
 And make sure to have same equals count between opening and ending.
 
@@ -14,3 +16,9 @@ int main()
 }
 ===
 ==== 
+
+>>-> Inline Code
+
+=== gr
+For example: {var a = 123}
+===
