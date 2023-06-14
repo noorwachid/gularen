@@ -43,12 +43,12 @@ namespace Gularen
         void RetreatTokenCursor();
 
       private:
-        UintSize _indentationLevel = 0;
+        UintSize indentationLevel = 0;
 
-        Array<Token> _tokens;
-        Array<Token>::iterator _tokenCursor;
+        Array<Token> tokens;
+        Array<Token>::iterator tokenCursor;
 
-        RC<RootNode> _rootNode;
-        Array<RC<Node>> _nodeCursors;
+        RC<RootNode> rootNode;
+        Array<RC<Node>> nodeCursors;
     };
 }

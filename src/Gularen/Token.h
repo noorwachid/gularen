@@ -45,6 +45,9 @@ namespace Gularen
         Hyphen,
         EnDash,
         EmDash,
+
+        Bullet,
+        NumericBullet,
     };
 
     struct Token

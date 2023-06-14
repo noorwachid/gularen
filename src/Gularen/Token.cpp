@@ -86,6 +86,11 @@ namespace Gularen
         case TokenType::RLArrowTail:
             return "RLArrowTail";
 
+        case TokenType::NumericBullet:
+            return "NumericBullet";
+        case TokenType::Bullet:
+            return "Bullet";
+
         default:
             return "[Unknown]";
         }

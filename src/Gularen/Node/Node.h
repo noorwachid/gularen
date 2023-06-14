@@ -39,6 +39,12 @@ namespace Gularen
         RSQuote,
         LDQuote,
         RDQuote,
+
+        List,
+        Item,
+
+        NumericList,
+        NumericItem,
     };
 
     enum struct NodeGroup

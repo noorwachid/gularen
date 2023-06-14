@@ -39,9 +39,13 @@ namespace Gularen
 
         void ParseDash();
 
+        void ParseList();
+
         void ParseEmojiShortcode();
 
         // Sub Routine Buffer Parsing
+        //
+        String ConsumeNumericBytes();
 
         String ConsumeTextBytes();
 
@@ -57,6 +61,8 @@ namespace Gularen
 
         void RetreatByteCursor();
 
+        bool IsCurrentByteNumeric();
+
         bool IsCurrentByteText();
 
         bool IsCurrentByteSymbol();
@@ -68,13 +74,13 @@ namespace Gularen
         void AddTokenText(const String& text);
 
       private:
-        String _buffer;
-        String::iterator _bufferCursor;
+        String buffer;
+        String::iterator bufferCursor;
 
-        Array<Token> _tokens;
+        Array<Token> tokens;
 
-        bool _inArrowLine = false;
+        bool inArrowLine = false;
 
-        UintSize _lineCounter = 1;
+        UintSize lineCounter = 1;
     };
 }

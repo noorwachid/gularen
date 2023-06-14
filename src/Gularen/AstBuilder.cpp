@@ -9,10 +9,10 @@
 namespace Gularen
 {
     // PUBLIC DEFINITION
-    RC<RootNode> ASTBuilder::Build(const Array<Token>& tokens)
+    RC<RootNode> ASTBuilder::Build(const Array<Token>& newTokens)
     {
-        _tokens = tokens;
-        _tokenCursor = _tokens.begin();
+        tokens = newTokens;
+        tokenCursor = tokens.begin();
 
 #ifdef GULAREN_DEBUG_BUFFER
         std::cout << "[Gularen.Debug.Buffer]\n";
@@ -26,9 +26,9 @@ namespace Gularen
         std::cout << "\n";
 #endif
 
-        _rootNode = CreateRC<RootNode>();
-        _nodeCursors.clear();
-        _nodeCursors.push_back(_rootNode);
+        rootNode = CreateRC<RootNode>();
+        nodeCursors.clear();
+        nodeCursors.push_back(rootNode);
 
         while (IsTokenCursorInProgress())
         {
@@ -53,7 +53,7 @@ namespace Gularen
 
                 if (GetCurrentToken().type == TokenType::Symbol && GetNodeCursor()->type == NodeType::Title)
                 {
-                    static_cast<HeadingNode*>(_nodeCursors[_nodeCursors.size() - 2].get())->id =
+                    static_cast<HeadingNode*>(nodeCursors[nodeCursors.size() - 2].get())->id =
                         GetCurrentToken().content;
                     break;
                 }
@@ -100,7 +100,7 @@ namespace Gularen
         std::cout << "\n";
 #endif
 
-        return _rootNode;
+        return rootNode;
     }
 
     RC<RootNode> ASTBuilder::Build(const String& buffer)
@@ -201,13 +201,16 @@ namespace Gularen
 
         case TokenType::RLArrowTail:
             AdvanceTokenCursor();
-            // TODO: stop the parsing and send error
-            _tokenCursor = _tokens.end();
-
-            _rootNode = CreateRC<RootNode>();
-            _nodeCursors.clear();
-            _nodeCursors.push_back(_rootNode);
+            tokenCursor = tokens.end();
             break;
+
+        case TokenType::NumericBullet:
+            if (GetNodeCursor()->type != NodeType::NumericList) 
+                PushNodeCursor(CreateRC<NumericListNode>());
+
+            PushNodeCursor(CreateRC<NumericItemNode>());
+            break;
+
 
         case TokenType::Text:
         case TokenType::Asterisk:
@@ -233,14 +236,14 @@ namespace Gularen
 
     void ASTBuilder::ParseIndentation(UintSize currentIndentationLevel)
     {
-        if (_indentationLevel == currentIndentationLevel)
+        if (indentationLevel == currentIndentationLevel)
             return;
 
-        if (_indentationLevel < currentIndentationLevel)
+        if (indentationLevel < currentIndentationLevel)
         {
-            UintSize difference = currentIndentationLevel - _indentationLevel;
+            UintSize difference = currentIndentationLevel - indentationLevel;
 
-            while (_nodeCursors.size() > 1 && GetNodeCursor()->group != NodeGroup::Block)
+            while (nodeCursors.size() > 1 && GetNodeCursor()->group != NodeGroup::Block)
             {
                 PopNodeCursor();
             }
@@ -252,22 +255,22 @@ namespace Gularen
                 PushNodeCursor(CreateRC<IndentationNode>());
             }
 
-            _indentationLevel = currentIndentationLevel;
+            indentationLevel = currentIndentationLevel;
             return;
         }
 
-        UintSize difference = _indentationLevel - currentIndentationLevel;
+        UintSize difference = indentationLevel - currentIndentationLevel;
 
-        for (UintSize i = 0; i < difference && _nodeCursors.size() > 1; ++i)
+        for (UintSize i = 0; i < difference && nodeCursors.size() > 1; ++i)
         {
-            while (_nodeCursors.size() > 1 && GetNodeCursor()->type != NodeType::Indentation)
+            while (nodeCursors.size() > 1 && GetNodeCursor()->type != NodeType::Indentation)
             {
                 PopNodeCursor();
             }
             PopNodeCursor();
         }
 
-        _indentationLevel = currentIndentationLevel;
+        indentationLevel = currentIndentationLevel;
         return;
     }
 
@@ -283,27 +286,27 @@ namespace Gularen
 
     void ASTBuilder::PopNodeCursor()
     {
-        if (_nodeCursors.size() > 1)
-            _nodeCursors.pop_back();
+        if (nodeCursors.size() > 1)
+            nodeCursors.pop_back();
     }
 
     void ASTBuilder::PushNodeCursor(const RC<Node>& node)
     {
         AddNodeCursorChild(node);
-        _nodeCursors.push_back(node);
+        nodeCursors.push_back(node);
     }
 
-    void ASTBuilder::AddNodeCursorChild(const RC<Node>& node) { _nodeCursors.back()->children.push_back(node); }
+    void ASTBuilder::AddNodeCursorChild(const RC<Node>& node) { nodeCursors.back()->children.push_back(node); }
 
-    const RC<Node>& ASTBuilder::GetNodeCursor() const { return _nodeCursors.back(); }
+    const RC<Node>& ASTBuilder::GetNodeCursor() const { return nodeCursors.back(); }
 
     // Token Iterator
 
-    const Token& ASTBuilder::GetCurrentToken() const { return *_tokenCursor; }
+    const Token& ASTBuilder::GetCurrentToken() const { return *tokenCursor; }
 
-    bool ASTBuilder::IsTokenCursorInProgress() { return _tokenCursor < _tokens.end(); }
+    bool ASTBuilder::IsTokenCursorInProgress() { return tokenCursor < tokens.end(); }
 
-    void ASTBuilder::AdvanceTokenCursor() { ++_tokenCursor; }
+    void ASTBuilder::AdvanceTokenCursor() { ++tokenCursor; }
 
-    void ASTBuilder::RetreatTokenCursor() { --_tokenCursor; }
+    void ASTBuilder::RetreatTokenCursor() { --tokenCursor; }
 }
