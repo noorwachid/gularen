@@ -25,7 +25,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 if(DEFINED RUN_TEST)
 	message("Runing Test")
 
-	add_executable(${PROJECT_NAME}Test tests/main.cpp tests/Tester.h tests/Tester.cpp)
+	add_executable(${PROJECT_NAME}Test test/main.cpp test/Tester.h test/Tester.cpp)
 
 	set_target_properties(${PROJECT_NAME}Test PROPERTIES OUTPUT_NAME "gularen_test")
 	set_target_properties(${PROJECT_NAME}Test PROPERTIES CXX_STANDARD 17)

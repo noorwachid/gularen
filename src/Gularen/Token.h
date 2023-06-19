@@ -3,70 +3,67 @@
 #include "DS/String.h"
 #include "Integer.h"
 
-namespace Gularen
-{
-    enum class TokenType
-    {
-        BODocument,
-        EODocument,
+namespace Gularen {
+	enum class TokenType {
+		boDocument,
+		eoDocument,
 
-        Unknown,
+		unknown,
 
-        Asterisk,
-        Underscore,
-        Backtick,
+		asterisk,
+		underscore,
+		Backtick,
 
-        Indentation,
+		indentation,
 
-        Text,
-        Symbol,
+		text,
+		symbol,
 
-        Newline,
+		newline,
 
-        LSQuote,
-        RSQuote,
-        LDQuote,
-        RDQuote,
+		lsQuote,
+		rsQuote,
+		ldQuote,
+		rdQuote,
 
-        LArrowTail,
-        ArrowTail,
+		lArrowTail,
+		arrowTail,
 
-        XLArrow,
-        LArrow,
-        Arrow,
-        SArrow,
+		xlArrow,
+		lArrow,
+		arrow,
+		sArrow,
 
-        ArrowHead,
+		arrowHead,
 
-        RArrowHead,
-        RArrowTail,
-        RLArrowTail,
+		rArrowHead,
+		rArrowTail,
+		rlArrowTail,
 
-        Hyphen,
-        EnDash,
-        EmDash,
+		hyphen,
+		enDash,
+		emDash,
 
-        Bullet,
-        NumericBullet,
-    };
+		bullet,
+		numericBullet,
+	};
 
-    struct Token
-    {
-        TokenType type;
-        String content;
-        UintSize size;
-        UintSize line;
+	struct Token {
+		TokenType type;
+		String content;
+		UintSize size;
+		UintSize line;
 
-        Token(TokenType type);
+		Token(TokenType type);
 
-        Token(TokenType type, const String &content);
+		Token(TokenType type, const String& content);
 
-        Token(TokenType type, UintSize size);
+		Token(TokenType type, UintSize size);
 
-        String ToString() const;
+		String toString() const;
 
-        bool operator==(const Token &other);
-    };
+		bool operator==(const Token& other);
+	};
 
-    String ToString(TokenType tokenType);
+	String toString(TokenType tokenType);
 }

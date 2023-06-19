@@ -3,54 +3,48 @@
 #include "../Integer.h"
 #include "Node.h"
 
-namespace Gularen
-{
-    struct RootNode : Node
-    {
-        String file = "[memory]";
+namespace Gularen {
+	struct RootNode : Node {
+		String file = "[memory]";
 
-        RootNode();
+		RootNode();
 
-        RootNode(const NodeChildren& children);
+		RootNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct IndentationNode : Node
-    {
-        IndentationNode();
+	struct IndentationNode : Node {
+		IndentationNode();
 
-        IndentationNode(const NodeChildren& children);
+		IndentationNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct ParagraphNode : Node
-    {
-        ParagraphNode();
+	struct ParagraphNode : Node {
+		ParagraphNode();
 
-        ParagraphNode(const NodeChildren& children);
+		ParagraphNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct TextNode : Node
-    {
-        String content;
+	struct TextNode : Node {
+		String content;
 
-        TextNode(const String& content);
+		TextNode(const String& content);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct NewlineNode : Node
-    {
-        UintSize repetition;
+	struct NewlineNode : Node {
+		UintSize repetition;
 
-        NewlineNode();
+		NewlineNode();
 
-        NewlineNode(UintSize repetition);
+		NewlineNode(UintSize repetition);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 }

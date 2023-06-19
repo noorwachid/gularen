@@ -1,28 +1,43 @@
 #include "ListNode.h"
 
-namespace Gularen
-{
-    ListNode::ListNode(NodeType type) : Node(type, NodeGroup::Block) {}
+namespace Gularen {
+	ListNode::ListNode(NodeType type) : Node(type, NodeGroup::Block) {
+	}
 
-    ListNode::ListNode(NodeType type, const NodeChildren& children) : Node(type, NodeGroup::Block, children) {}
+	ListNode::ListNode(NodeType type, const NodeChildren& children) : Node(type, NodeGroup::Block, children) {
+	}
 
-    String ListNode::ToString() const { return "ListNode"; }
+	String ListNode::toString() const {
+		return "list";
+	}
 
-    ItemNode::ItemNode(NodeType type) : Node(type, NodeGroup::Block) {}
+	ItemNode::ItemNode(NodeType type) : Node(type, NodeGroup::Block) {
+	}
 
-    ItemNode::ItemNode(NodeType type, const NodeChildren& children) : Node(type, NodeGroup::Block, children) {}
+	ItemNode::ItemNode(NodeType type, const NodeChildren& children) : Node(type, NodeGroup::Block, children) {
+	}
 
-    String ItemNode::ToString() const { return "ItemNode"; }
+	String ItemNode::toString() const {
+		return "item";
+	}
 
-    NumericListNode::NumericListNode() : ListNode(NodeType::NumericList) {}
+	NumericListNode::NumericListNode() : ListNode(NodeType::numericList) {
+	}
 
-    NumericListNode::NumericListNode(const NodeChildren& children) : ListNode(NodeType::NumericItem, children) {}
+	NumericListNode::NumericListNode(const NodeChildren& children) : ListNode(NodeType::numericItem, children) {
+	}
 
-    String NumericListNode::ToString() const { return "NumericListNode"; }
+	String NumericListNode::toString() const {
+		return "numericList";
+	}
 
-    NumericItemNode::NumericItemNode() : ItemNode(NodeType::NumericItem) {}
+	NumericItemNode::NumericItemNode() : ItemNode(NodeType::numericItem) {
+	}
 
-    NumericItemNode::NumericItemNode(const NodeChildren& children) : ItemNode(NodeType::NumericItem, children) {}
+	NumericItemNode::NumericItemNode(const NodeChildren& children) : ItemNode(NodeType::numericItem, children) {
+	}
 
-    String NumericItemNode::ToString() const { return "NumericItemNode"; }
+	String NumericItemNode::toString() const {
+		return "numericItem";
+	}
 }

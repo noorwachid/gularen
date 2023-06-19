@@ -1,28 +1,43 @@
 #include "FSNode.h"
 
-namespace Gularen
-{
-    FSNode::FSNode(NodeType type) : Node(type, NodeGroup::Inline) {}
+namespace Gularen {
+	FSNode::FSNode(NodeType type) : Node(type, NodeGroup::Inline) {
+	}
 
-    FSNode::FSNode(NodeType type, const NodeChildren& children) : Node(type, NodeGroup::Inline, children) {}
+	FSNode::FSNode(NodeType type, const NodeChildren& children) : Node(type, NodeGroup::Inline, children) {
+	}
 
-    String FSNode::ToString() const { return "[UnimplementedFS]"; }
+	String FSNode::toString() const {
+		return "[unimplementedFS]";
+	}
 
-    BoldFSNode::BoldFSNode() : FSNode(NodeType::BoldFS) {}
+	BoldFSNode::BoldFSNode() : FSNode(NodeType::boldFS) {
+	}
 
-    BoldFSNode::BoldFSNode(const NodeChildren& children) : FSNode(NodeType::BoldFS, children) {}
+	BoldFSNode::BoldFSNode(const NodeChildren& children) : FSNode(NodeType::boldFS, children) {
+	}
 
-    String BoldFSNode::ToString() const { return "BoldFS"; }
+	String BoldFSNode::toString() const {
+		return "boldFS";
+	}
 
-    ItalicFSNode::ItalicFSNode() : FSNode(NodeType::ItalicFS) {}
+	ItalicFSNode::ItalicFSNode() : FSNode(NodeType::italicFS) {
+	}
 
-    ItalicFSNode::ItalicFSNode(const NodeChildren& children) : FSNode(NodeType::ItalicFS, children) {}
+	ItalicFSNode::ItalicFSNode(const NodeChildren& children) : FSNode(NodeType::italicFS, children) {
+	}
 
-    String ItalicFSNode::ToString() const { return "ItalicFS"; }
+	String ItalicFSNode::toString() const {
+		return "italicFS";
+	}
 
-    MonospaceFSNode::MonospaceFSNode() : FSNode(NodeType::MonospaceFS) {}
+	MonospaceFSNode::MonospaceFSNode() : FSNode(NodeType::monospaceFS) {
+	}
 
-    MonospaceFSNode::MonospaceFSNode(const NodeChildren& children) : FSNode(NodeType::MonospaceFS, children) {}
+	MonospaceFSNode::MonospaceFSNode(const NodeChildren& children) : FSNode(NodeType::monospaceFS, children) {
+	}
 
-    String MonospaceFSNode::ToString() const { return "MonospaceFS"; }
+	String MonospaceFSNode::toString() const {
+		return "monospaceFS";
+	}
 }

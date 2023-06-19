@@ -2,41 +2,36 @@
 
 #include "CoreNode.h"
 
-namespace Gularen
-{
-    struct FSNode : Node
-    {
-        FSNode(NodeType type);
+namespace Gularen {
+	struct FSNode : Node {
+		FSNode(NodeType type);
 
-        FSNode(NodeType type, const NodeChildren& children);
+		FSNode(NodeType type, const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct BoldFSNode : FSNode
-    {
-        BoldFSNode();
+	struct BoldFSNode : FSNode {
+		BoldFSNode();
 
-        BoldFSNode(const NodeChildren& children);
+		BoldFSNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct ItalicFSNode : FSNode
-    {
-        ItalicFSNode();
+	struct ItalicFSNode : FSNode {
+		ItalicFSNode();
 
-        ItalicFSNode(const NodeChildren& children);
+		ItalicFSNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct MonospaceFSNode : FSNode
-    {
-        MonospaceFSNode();
+	struct MonospaceFSNode : FSNode {
+		MonospaceFSNode();
 
-        MonospaceFSNode(const NodeChildren& children);
+		MonospaceFSNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 }

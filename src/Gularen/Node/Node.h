@@ -4,73 +4,69 @@
 #include "../DS/RC.h"
 #include "../DS/String.h"
 
-namespace Gularen
-{
-    enum struct NodeType
-    {
-        Root,
+namespace Gularen {
+	enum struct NodeType {
+		root,
 
-        Title,
-        Subtitle,
+		title,
+		subtitle,
 
-        Document,
-        Part,
-        Chapter,
-        Section,
-        Subsection,
-        Subsubsection,
-        Segment,
+		document,
+		part,
+		chapter,
+		section,
+		subsection,
+		subsubsection,
+		segment,
 
-        Indentation,
+		indentation,
 
-        Paragraph,
+		paragraph,
 
-        Text,
-        Newline,
+		text,
+		newline,
 
-        LineBreak,
-        PageBreak,
+		lineBreak,
+		pageBreak,
 
-        BoldFS,
-        ItalicFS,
-        MonospaceFS,
+		boldFS,
+		italicFS,
+		monospaceFS,
 
-        LSQuote,
-        RSQuote,
-        LDQuote,
-        RDQuote,
+		lsQuote,
+		rsQuote,
+		ldQuote,
+		rdQuote,
 
-        List,
-        Item,
+		list,
+		item,
 
-        NumericList,
-        NumericItem,
-    };
+		numericList,
+		numericItem,
+	};
 
-    enum struct NodeGroup
-    {
-        Inline,
-        Block,
-        VirtualBlock,
-    };
+	enum struct NodeGroup {
+		Inline,
+		Block,
+		VirtualBlock,
+	};
 
-    struct Node;
+	struct Node;
 
-    using NodeChildren = Array<RC<Node>>;
+	using NodeChildren = Array<RC<Node>>;
 
-    struct Node
-    {
-        NodeType type;
-        NodeGroup group;
+	struct Node {
+		NodeType type;
+		NodeGroup group;
 
-        NodeChildren children;
+		NodeChildren children;
 
-        Node(NodeType type, NodeGroup group);
+		Node(NodeType type, NodeGroup group);
 
-        Node(NodeType type, NodeGroup group, const NodeChildren& children);
+		Node(NodeType type, NodeGroup group, const NodeChildren& children);
 
-        virtual String ToString() const;
-    };
+		virtual String toString() const;
+	};
 
-    bool operator==(const Node& a, const Node& b);
+	bool operator==(const Node& a, const Node& b);
 }

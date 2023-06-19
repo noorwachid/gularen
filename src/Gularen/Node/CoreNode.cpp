@@ -1,38 +1,49 @@
 #include "CoreNode.h"
 
-namespace Gularen
-{
-    RootNode::RootNode() : Node(NodeType::Root, NodeGroup::Block) {}
+namespace Gularen {
+	RootNode::RootNode() : Node(NodeType::root, NodeGroup::Block) {
+	}
 
-    RootNode::RootNode(const NodeChildren& children) : Node(NodeType::Root, NodeGroup::Block, children) {}
+	RootNode::RootNode(const NodeChildren& children) : Node(NodeType::root, NodeGroup::Block, children) {
+	}
 
-    String RootNode::ToString() const { return "Root"; }
+	String RootNode::toString() const {
+		return "root";
+	}
 
-    IndentationNode::IndentationNode() : Node(NodeType::Indentation, NodeGroup::Block) {}
+	IndentationNode::IndentationNode() : Node(NodeType::indentation, NodeGroup::Block) {
+	}
 
-    IndentationNode::IndentationNode(const NodeChildren& children)
-        : Node(NodeType::Indentation, NodeGroup::Block, children)
-    {
-    }
+	IndentationNode::IndentationNode(const NodeChildren& children)
+		: Node(NodeType::indentation, NodeGroup::Block, children) {
+	}
 
-    String IndentationNode::ToString() const { return "Indentation"; }
+	String IndentationNode::toString() const {
+		return "indentation";
+	}
 
-    ParagraphNode::ParagraphNode() : Node(NodeType::Paragraph, NodeGroup::Block) {}
+	ParagraphNode::ParagraphNode() : Node(NodeType::paragraph, NodeGroup::Block) {
+	}
 
-    ParagraphNode::ParagraphNode(const NodeChildren& children) : Node(NodeType::Paragraph, NodeGroup::Block, children)
-    {
-    }
+	ParagraphNode::ParagraphNode(const NodeChildren& children) : Node(NodeType::paragraph, NodeGroup::Block, children) {
+	}
 
-    String ParagraphNode::ToString() const { return "Paragraph"; }
+	String ParagraphNode::toString() const {
+		return "paragraph";
+	}
 
-    TextNode::TextNode(const String& content) : Node(NodeType::Text, NodeGroup::Inline), content(content) {}
+	TextNode::TextNode(const String& content) : Node(NodeType::text, NodeGroup::Inline), content(content) {
+	}
 
-    String TextNode::ToString() const { return "Text content = \"" + content + "\""; }
+	String TextNode::toString() const {
+		return "text content = \"" + content + "\"";
+	}
 
-    NewlineNode::NewlineNode(UintSize repeatition)
-        : Node(NodeType::Newline, NodeGroup::Inline), repetition(repeatition)
-    {
-    }
+	NewlineNode::NewlineNode(UintSize repeatition)
+		: Node(NodeType::newline, NodeGroup::Inline), repetition(repeatition) {
+	}
 
-    String NewlineNode::ToString() const { return "Newline repetition = " + std::to_string(repetition); }
+	String NewlineNode::toString() const {
+		return "newline repetition = " + std::to_string(repetition);
+	}
 }

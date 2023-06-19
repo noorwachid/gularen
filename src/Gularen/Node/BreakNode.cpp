@@ -1,16 +1,24 @@
 #include "BreakNode.h"
 
-namespace Gularen
-{
-    BreakNode::BreakNode(NodeType type, NodeGroup group) : Node(type, group) {}
+namespace Gularen {
+	BreakNode::BreakNode(NodeType type, NodeGroup group) : Node(type, group) {
+	}
 
-    String BreakNode::ToString() const { return "Break"; }
+	String BreakNode::toString() const {
+		return "break";
+	}
 
-    LineBreakNode::LineBreakNode() : BreakNode(NodeType::LineBreak, NodeGroup::Inline) {}
+	LineBreakNode::LineBreakNode() : BreakNode(NodeType::lineBreak, NodeGroup::Inline) {
+	}
 
-    String LineBreakNode::ToString() const { return "LineBreak"; }
+	String LineBreakNode::toString() const {
+		return "lineBreak";
+	}
 
-    PageBreakNode::PageBreakNode() : BreakNode(NodeType::PageBreak, NodeGroup::Block) {}
+	PageBreakNode::PageBreakNode() : BreakNode(NodeType::pageBreak, NodeGroup::Block) {
+	}
 
-    String PageBreakNode::ToString() const { return "PageBreak"; }
+	String PageBreakNode::toString() const {
+		return "pageBreak";
+	}
 }

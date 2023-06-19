@@ -2,26 +2,22 @@
 
 #include "Node.h"
 
-namespace Gularen
-{
-    struct BreakNode : Node
-    {
-        BreakNode(NodeType type, NodeGroup group);
+namespace Gularen {
+	struct BreakNode : Node {
+		BreakNode(NodeType type, NodeGroup group);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct LineBreakNode : BreakNode
-    {
-        LineBreakNode();
+	struct LineBreakNode : BreakNode {
+		LineBreakNode();
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct PageBreakNode : BreakNode
-    {
-        PageBreakNode();
+	struct PageBreakNode : BreakNode {
+		PageBreakNode();
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 }

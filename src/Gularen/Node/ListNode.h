@@ -2,41 +2,36 @@
 
 #include "CoreNode.h"
 
-namespace Gularen
-{
-    struct ListNode : Node
-    {
-        ListNode(NodeType type);
+namespace Gularen {
+	struct ListNode : Node {
+		ListNode(NodeType type);
 
-        ListNode(NodeType type, const NodeChildren& children);
+		ListNode(NodeType type, const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct ItemNode : Node
-    {
-        ItemNode(NodeType type);
+	struct ItemNode : Node {
+		ItemNode(NodeType type);
 
-        ItemNode(NodeType type, const NodeChildren& children);
+		ItemNode(NodeType type, const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct NumericListNode : ListNode
-    {
-        NumericListNode();
+	struct NumericListNode : ListNode {
+		NumericListNode();
 
-        NumericListNode(const NodeChildren& children);
+		NumericListNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct NumericItemNode : ItemNode
-    {
-        NumericItemNode();
+	struct NumericItemNode : ItemNode {
+		NumericItemNode();
 
-        NumericItemNode(const NodeChildren& children);
+		NumericItemNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 }

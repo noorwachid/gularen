@@ -3,84 +3,82 @@
 #include "DS/Array.h"
 #include "Token.h"
 
-namespace Gularen
-{
-    class Lexer
-    {
-      public:
-        Array<Token> Tokenize(const String& string);
+namespace Gularen {
+	class Lexer {
+	public:
+		Array<Token> tokenize(const String& string);
 
-      private:
-        // Main Routine Buffer Parsing
+	private:
+		// Main Routine Buffer Parsing
 
-        void ParseNewline();
+		void parseNewline();
 
-        void ParseComment();
+		void parseComment();
 
-        void ParseFS(TokenType type);
+		void parseFS(TokenType type);
 
-        void ParseQuote(TokenType opening, TokenType ending);
+		void parseQuote(TokenType opening, TokenType ending);
 
-        void ParseText();
+		void parseText();
 
-        void ParseSymbol();
+		void parseSymbol();
 
-        void ParseBlock(bool withAdvancing = false);
+		void parseBlock(bool withAdvancing = false);
 
-        void ParseLine();
+		void parseLine();
 
-        void ParseIndentation();
+		void parseIndentation();
 
-        void ParseArrow();
+		void parseArrow();
 
-        void ParseArrowID();
+		void parseArrowID();
 
-        void ParseReverseArrowPart();
+		void parseReverseArrowPart();
 
-        void ParseDash();
+		void parseDash();
 
-        void ParseList();
+		void parseList();
 
-        void ParseEmojiShortcode();
+		void parseEmojiShortcode();
 
-        // Sub Routine Buffer Parsing
-        //
-        String ConsumeNumericBytes();
+		// Sub Routine Buffer Parsing
+		//
+		String consumeNumericBytes();
 
-        String ConsumeTextBytes();
+		String consumeTextBytes();
 
-        String ConsumeSymbolBytes();
+		String consumeSymbolBytes();
 
-        // Buffer Iterator Helper
+		// Buffer Iterator Helper
 
-        char GetCurrentByte();
+		char getCurrentByte();
 
-        bool IsByteCursorInProgress();
+		bool isByteCursorInProgress();
 
-        void AdvanceByteCursor();
+		void advanceByteCursor();
 
-        void RetreatByteCursor();
+		void retreatByteCursor();
 
-        bool IsCurrentByteNumeric();
+		bool isCurrentByteNumeric();
 
-        bool IsCurrentByteText();
+		bool isCurrentByteText();
 
-        bool IsCurrentByteSymbol();
+		bool isCurrentByteSymbol();
 
-        // Token Helper
+		// Token Helper
 
-        void AddToken(Token&& token);
+		void addToken(Token&& token);
 
-        void AddTokenText(const String& text);
+		void addTokenText(const String& text);
 
-      private:
-        String buffer;
-        String::iterator bufferCursor;
+	private:
+		String buffer;
+		String::iterator bufferCursor;
 
-        Array<Token> tokens;
+		Array<Token> tokens;
 
-        bool inArrowLine = false;
+		bool inArrowLine = false;
 
-        UintSize lineCounter = 1;
-    };
+		UintSize lineCounter = 1;
+	};
 }

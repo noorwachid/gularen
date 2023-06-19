@@ -2,97 +2,86 @@
 
 #include "CoreNode.h"
 
-namespace Gularen
-{
-    struct HeadingNode : Node
-    {
-        String id;
+namespace Gularen {
+	struct HeadingNode : Node {
+		String id;
 
-        HeadingNode(NodeType type);
+		HeadingNode(NodeType type);
 
-        HeadingNode(NodeType type, const NodeChildren& children);
+		HeadingNode(NodeType type, const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct TitleNode : HeadingNode
-    {
-        TitleNode();
+	struct TitleNode : HeadingNode {
+		TitleNode();
 
-        TitleNode(const NodeChildren& children);
+		TitleNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct SubtitleNode : HeadingNode
-    {
-        SubtitleNode();
+	struct SubtitleNode : HeadingNode {
+		SubtitleNode();
 
-        SubtitleNode(const NodeChildren& children);
+		SubtitleNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct DocumentNode : HeadingNode
-    {
-        DocumentNode();
+	struct DocumentNode : HeadingNode {
+		DocumentNode();
 
-        DocumentNode(const NodeChildren& children);
+		DocumentNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct PartNode : HeadingNode
-    {
-        PartNode();
+	struct PartNode : HeadingNode {
+		PartNode();
 
-        PartNode(const NodeChildren& children);
+		PartNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct ChapterNode : HeadingNode
-    {
-        ChapterNode();
+	struct ChapterNode : HeadingNode {
+		ChapterNode();
 
-        ChapterNode(const NodeChildren& children);
+		ChapterNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct SectionNode : HeadingNode
-    {
-        SectionNode();
+	struct SectionNode : HeadingNode {
+		SectionNode();
 
-        SectionNode(const NodeChildren& children);
+		SectionNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct SubsectionNode : HeadingNode
-    {
-        SubsectionNode();
+	struct SubsectionNode : HeadingNode {
+		SubsectionNode();
 
-        SubsectionNode(const NodeChildren& children);
+		SubsectionNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct SubsubsectionNode : HeadingNode
-    {
-        SubsubsectionNode();
+	struct SubsubsectionNode : HeadingNode {
+		SubsubsectionNode();
 
-        SubsubsectionNode(const NodeChildren& children);
+		SubsubsectionNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 
-    struct SegmentNode : HeadingNode
-    {
-        SegmentNode();
+	struct SegmentNode : HeadingNode {
+		SegmentNode();
 
-        SegmentNode(const NodeChildren& children);
+		SegmentNode(const NodeChildren& children);
 
-        virtual String ToString() const override;
-    };
+		virtual String toString() const override;
+	};
 }
