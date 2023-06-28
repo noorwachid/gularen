@@ -264,7 +264,7 @@ namespace Gularen {
 
 		while (check(0)) {
 			if (is(0, '\n')) {
-				advance(0);
+				size_t newlineCounter = count('\n');
 
 				if (check(0)) {
 					size_t tabCounter = count('\t');
@@ -275,6 +275,14 @@ namespace Gularen {
 							break;
 						}
 						source += std::string(closingCounter, '-');
+					} else {
+						if (newlineCounter > 0) {
+							source += std::string(newlineCounter, '\n');
+						}
+
+						if (tabCounter > 0) {
+							source += std::string(tabCounter, '\t');
+						}
 					}
 				} else {
 					break;
