@@ -1,23 +1,16 @@
->>>-> Breaking
+>>> Breaking
 
->>-> Thematic-Break
-=== gr
+>> Thematic-Break
+--- gr
 ***
-===
+---
 
->>-> Line-Break
-=== gr
+>> Line-Break
+--- gr
 This will create<line-break.
-===
+---
 
->>-> Page-Break
-=== gr
+>> Page-Break
+--- gr
 <<
-===
-
->>-> Document-Break
-The purpose of this is to stop the parsing process.
-
-=== gr
-<<< 
-===
+---

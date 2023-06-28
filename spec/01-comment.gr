@@ -1,6 +1,6 @@
->>>-> Comment
+>>> Comment
 Any character after hash won't be parsed until newline or end of document.
 
-=== gr
-Now you see me. # Now you dont.
-===
+--- gr
+Now you see me. ~ Now you dont.
+---

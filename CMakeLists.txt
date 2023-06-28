@@ -1,36 +1,23 @@
 cmake_minimum_required(VERSION 3.18)
 
-project("Gularen"
+project(gularen
 	VERSION 1.0 
 	LANGUAGES CXX
 )
 
-file(GLOB GULAREN_SRC 
-	src/*.h
-	src/*.cpp 
-	src/Gularen/*.h
-	src/Gularen/*.cpp
-	src/Gularen/*/*.h
-	src/Gularen/*/*.cpp
+file(GLOB gularen_sources
+	source/Gularen/*.cpp
+	source/Gularen/*/*.cpp
 )
 
-add_library(${PROJECT_NAME} ${GULAREN_SRC})
+add_library(gularen ${gularen_sources})
 
-target_include_directories(${PROJECT_NAME} PUBLIC src)
+target_include_directories(gularen PUBLIC source)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "gularen")
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+set_target_properties(gularen PROPERTIES CXX_STANDARD 17)
 
+add_executable(gularen-cli source/cli.cpp)
+set_target_properties(gularen-cli PROPERTIES OUTPUT_NAME gularen)
+set_target_properties(gularen-cli PROPERTIES CXX_STANDARD 17)
 
-if(DEFINED RUN_TEST)
-	message("Runing Test")
-
-	add_executable(${PROJECT_NAME}Test test/main.cpp test/Tester.h test/Tester.cpp)
-
-	set_target_properties(${PROJECT_NAME}Test PROPERTIES OUTPUT_NAME "gularen_test")
-	set_target_properties(${PROJECT_NAME}Test PROPERTIES CXX_STANDARD 17)
-
-
-	target_link_libraries(${PROJECT_NAME}Test ${PROJECT_NAME})
-
-endif(DEFINED RUN_TEST)
+target_link_libraries(gularen-cli gularen)

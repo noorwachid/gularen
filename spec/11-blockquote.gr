@@ -1,15 +1,15 @@
->>>-> Block Quote
+>>> Block Quote
 
-=== gr 
+--- gr 
 / "You have power over your mind – not outside events. Realize this, and you will find strength." 
 /
 / -- Markus Aurelius
 
-# Nested block quote
+~ Nested block quote
 
 / / "You have power over your mind – not outside events. Realize this, and you will find strength." 
 / /
 / / -- Markus Aurelius
 / 
 / Say what now?
-===
+---

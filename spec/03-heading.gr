@@ -1,47 +1,33 @@
->>>-> Heading
+>>> Heading
 
->>-> Non-Indexable Headings
-These types of heading won't be index to create table of contents.
+--- gr
+>>> Chapter
 
-=== gr
->>> Document
+>> Section
 
->> Part
+> Subsection
+---
 
-> Segment
-===
-
->>-> Indexable Heading
-These types of heading will be index to create table of contents.
-
-=== gr
->>>-> Chapter
-
->>-> Section
-
->-> Subsection
-
--> Subsubsection
-===
-
->>-> Heading Subtitle
+>> Heading Subtitle
 If the segment modifier placed after one line any headings. It will be parsed as subtitle.
 
-=== gr
->>> Document Title
-> Document Subtitle
+--- gr
+>>> Chapter
+> Chapter Subtitle
 
->> Part
-> Part Subtitle
+>> Section
+> Section Subtitle
 
-> Segment
-> Segment Subtitle
-===
+> Subsection
+> Subsection Subtitle
+---
 
->>-> Heading ID 
+>> Heading ID 
 
-=== gr
->>>-> Chapter 1 > chapter-one
+--- gr
+>>> Chapter 1 > chapter-one
 
-See [#chapter-one](chapter 1)
-===
+See [>chapter-one](chapter 1)
+
+If on another file [chapter-1.gr>chapter-one](chapter 1)
+---

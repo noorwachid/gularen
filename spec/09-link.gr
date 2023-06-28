@@ -1,28 +1,28 @@
->>>-> Link
+>>> Link
 
->>-> Hyper Link
+>> Hyper Link
 
-=== gr
+--- gr
 [http://google.com]
 
-# With alternative label
+~ With alternative label
 [http://google.com](Google)
-===
+---
 
->>-> Relative Link 
+>> Relative Link 
 
-=== gr
+--- gr
 [another-document.gr]
 
-# With alternative label
+~ With alternative label
 [another-document.gr](Another document)
-===
+---
 
->>-> Local Link
+>> Local Link
 
-=== gr
-[#this-segment]
+--- gr
+[>this-segment]
 
-# With alternative label
-[#this-segment](see this segment)
-===
+~ With alternative label
+[>this-segment](see this segment)
+---

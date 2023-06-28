@@ -1,5 +1,4 @@
 -std=c++20
 -stdlib=libc++
 -xc++
--I.
--I./src
+-Isource

@@ -1,55 +1,55 @@
->>>-> List
+>>> List
 
->>-> Bullet List
+>> Bullet List
 
-=== gr
-* Fast
-* Furious
-* Fit
-===
+--- gr
+- Fast
+- Furious
+- Fit
+---
 
->>-> Ordered List
+>> Ordered List
 
-=== gr
+--- gr
 1. One
 2. Two 
 3. Three
-===
+---
 
->>-> Auto-Countering Ordered List
+>> Auto-Countering Ordered List
 
-=== gr
+--- gr
 .. One 
 .. Two 
 .. Three
-=== 
+--- 
 
->>-> Task List
+>> Task List
 
-=== gr
+--- gr
 [ ] To-do one 
 [ ] To-do two
 [v] Done three
 [v] Done four
 [x] Canceled five
-===
+---
 
->>-> Nested Variation
+>> Nested Variation
 
-=== gr
-* One 
-* Two 
-    * Two sub 1
-    * Two sub 2
-        * Two sub 2 section A 
-        * Two sub 2 section B
-    * Two sub 3
-===
+--- gr
+- One 
+- Two 
+	- Two sub 1
+	- Two sub 2
+		- Two sub 2 section A 
+		- Two sub 2 section B
+	- Two sub 3
+---
 
->>-> List With Description
-=== gr
-* First 
-* Second 
-* Third 
+>> List With Description
+--- gr
+- First 
+- Second 
+- Third 
     +1 level indentation after current list will create the body of the list.
-===
+---

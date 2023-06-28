@@ -1,21 +1,21 @@
->>>-> Admonition
+>>> Admonition
 Avaliable levels are:
-=== gr
+--- gr
 </> Note
 <?> Hint
 <!> Important
 <^> Warning
 <@> Danger
-<~> See also
-===
+<&> See also
+---
 
->>-> One Line Admonition
+>> One Line Admonition
+--- gr
+<!> Something here
+---
+
+>> Multi Line Admonition
 === gr
 <!> Something here
-===
-
->>-> Multi Line Admonition
-=== gr
-<!> Something here
-    Every +1 indent after admonition modifier will be subcontent of this admonition.
+	Every +1 indent after admonition modifier will be subcontent of this admonition.
 ===
