@@ -3,7 +3,7 @@ A well-thought lightweight markup language that makes sense
 
 ## Overview
 ~~~
->>>-> Chapter 1
+>>> Chapter 1
 > Untuk Perempuan Yang Sedang Di Pelukan
 
 Tak terasa gelap pun jatuh^[1].

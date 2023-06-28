@@ -166,6 +166,36 @@ namespace Gularen {
 				add(TokenType::hyphen, 1, "-");
 				break;
 
+			case ':': {
+				advance(0);
+
+				if (check(0)) {
+					size_t emojiIndex = index;
+					size_t emojiSize = 0;
+
+					while (check(0) && (get(0) >= 'a' && get(0) <= 'z' || is(0, '-'))) {
+						if (is(0, ':')) {
+							break;
+						}
+
+						advance(0);
+						++emojiSize;
+					}
+
+					if (is(0, ':') && emojiSize > 0) {
+						advance(0);
+						add(TokenType::emoji, 1, content.substr(emojiIndex, emojiSize));
+						break;
+					}
+
+					addText(":" + content.substr(emojiIndex, emojiSize));
+					break;
+				}
+
+				addText(":");
+				break;
+			}
+
 			case '[': {
 				advance(0);
 				
@@ -200,7 +230,7 @@ namespace Gularen {
 
 					if (idMarkerExists) {
 						add(TokenType::reference, 1, reference.substr(0, idMarkerIndex));
-						add(TokenType::referenceID, 1, reference.substr(idMarkerIndex + 1, reference.size() - idMarkerIndex));
+						add(TokenType::referenceID, 1, reference.substr(idMarkerIndex + 1));
 					} else {
 						add(TokenType::reference, 1, reference);
 					}
@@ -348,6 +378,7 @@ namespace Gularen {
 				break;
 
 			default:
+				addText(content.substr(index, 1));
 				advance(0);
 				break;
 		}
