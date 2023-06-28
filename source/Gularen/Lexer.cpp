@@ -223,6 +223,50 @@ namespace Gularen {
 				break;
 			}
 
+			case '!':
+				if (check(1) && is(1, '[')) {
+					advance(0);
+					add(TokenType::readMarker, 1, "!");
+					// see inline [
+					break;
+				}
+				advance(0);
+				addText("!");
+				break;
+
+			case '?':
+				if (check(1) && is(1, '[')) {
+					advance(0);
+					add(TokenType::includeMarker, 1, "?");
+					// see inline [
+					break;
+				}
+				advance(0);
+				addText("!");
+				break;
+
+			case '^':
+				if (check(1) && is(1, '[')) {
+					advance(0);
+					add(TokenType::jumpMarker, 1, "^");
+					// see inline [
+					break;
+				}
+				advance(0);
+				addText("!");
+				break;
+
+			case '=':
+				if (check(1) && is(1, '[')) {
+					advance(0);
+					add(TokenType::describeMarker, 1, "=");
+					// see inline [
+					break;
+				}
+				advance(0);
+				addText("!");
+				break;
+
 			case '|':
 				add(TokenType::pipe, 1, "|");
 				advance(0);

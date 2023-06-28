@@ -34,6 +34,11 @@ namespace Gularen {
 		reference,
 		referenceID,
 		referenceLabel,
+
+		readMarker,
+		includeMarker,
+		jumpMarker,
+		describeMarker,
 	};
 
 	struct Token {
