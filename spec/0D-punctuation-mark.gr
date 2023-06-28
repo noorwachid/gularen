@@ -7,6 +7,12 @@ Any single or double apostrophe will be converted into the correct left and righ
 "Don't you dare!" He said calmly.
 ---
 
+>> Minus
+if the left side of minus is number it will became the number minus
+--- gr
+-4 degree
+---
+
 >> Hyphen, En Dash, Em Dash
 Two hyphen will make en dash.
 Three hyphen will make em dash.
@@ -17,4 +23,7 @@ A closed-door meetings
 
 ~ En dash
 I’ll schedule you from 4:30--5:00
+
+~ Em dash
+Wait! I forgot to tell you---
 ---

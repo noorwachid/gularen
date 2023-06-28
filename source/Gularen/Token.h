@@ -43,6 +43,18 @@ namespace Gularen {
 		blockquote,
 
 		admonition,
+
+		emoji,
+
+		minus,
+		hyphen,
+		enDash,
+		emDash,
+		
+		lsquote,
+		rsquote,
+		ldquote,
+		rdquote,
 	};
 
 	struct Token {

@@ -146,6 +146,26 @@ namespace Gularen {
 				}
 				break;
 
+			case '-':
+				if (check(1) && get(1) >= '0' && get(1) <= '9') {
+					add(TokenType::minus, 1, "−");
+					advance(0);
+					break;
+				}
+				if (check(2) && is(1, '-') && is(2, '-')) {
+					advance(2);
+					add(TokenType::emDash, 1, "—");
+					break;
+				}
+				if (check(1) && is(1, '-')) {
+					advance(1);
+					add(TokenType::enDash, 1, "–");
+					break;
+				}
+				advance(0);
+				add(TokenType::hyphen, 1, "-");
+				break;
+
 			case '[': {
 				advance(0);
 				
@@ -494,12 +514,16 @@ namespace Gularen {
 				add(TokenType::bullet, 1, "-");
 				return;
 			}
-			addText("-");
+
+			--index;
+			// see inline -
 			return;
 		}
 		
 		if (counter == 2) {
-			addText("-");
+			--index;
+			--index;
+			// see inline -
 			return;
 		}
 
