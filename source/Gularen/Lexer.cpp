@@ -146,6 +146,21 @@ namespace Gularen {
 				parseText();
 				break;
 
+			case '*':
+				add(TokenType::fsBold, 1, "*");
+				advance(0);
+				break;
+
+			case '_':
+				add(TokenType::fsItalic, 1, "_");
+				advance(0);
+				break;
+
+			case '`':
+				add(TokenType::fsMonospace, 1, "`");
+				advance(0);
+				break;
+
 			default:
 				advance(0);
 				break;

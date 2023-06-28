@@ -16,6 +16,10 @@ namespace Gularen {
 		headingMarker,
 		headingID,
 
+		fsBold,
+		fsItalic,
+		fsMonospace,
+
 		bullet,
 		checkbox,
 	};
