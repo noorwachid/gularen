@@ -1,4 +1,4 @@
-#include <Gularen/Lexer.h>
+#include <Gularen/Parser.h>
 #include <fstream>
 #include <iostream>
 
@@ -24,18 +24,11 @@ int main(int argc, char** argv) {
 		Gularen::Tokens tokens = lexer.parse(content);
 
 		for (const Gularen::Token& token : tokens) {
-			std::cout << static_cast<int>(token.type) << '\t' << token.count << '\t' << token.value << '\n';
-		}
-
-		for (const Gularen::Token& token : tokens) {
 			if (token.type == Gularen::TokenType::codeSource) {
 				std::cout << '\n';
 
-				Gularen::Tokens tokens = lexer.parse(token.value);
-
-				for (const Gularen::Token& token : tokens) {
-					std::cout << static_cast<int>(token.type) << '\t' << token.count << '\t' << token.value << '\n';
-				}
+				Gularen::Parser parser;
+				parser.parse(token.value);
 			}
 		}
 		return 0;

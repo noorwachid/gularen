@@ -63,5 +63,5 @@ namespace Gularen {
 		std::string value;
 	};
 	
-	void a();
+	using Tokens = std::vector<Token>;
 }

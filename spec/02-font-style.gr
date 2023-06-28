@@ -11,3 +11,7 @@ _Anything inside two underscores will be rendered as italic font style._
 --- gr
 `Anything inside two backticks will be rendered as monospaced font style.`
 ---
+
+--- gr
+`Hello _*darkness* my old_ friend`
+---

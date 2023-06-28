@@ -6,8 +6,8 @@ project(gularen
 )
 
 file(GLOB gularen_sources
-	source/Gularen/*.cpp
-	source/Gularen/*/*.cpp
+	source/Gularen/Lexer.cpp
+	source/Gularen/Parser.cpp
 )
 
 add_library(gularen ${gularen_sources})

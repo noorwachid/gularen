@@ -4,11 +4,11 @@
 #include <vector>
 
 namespace Gularen {
-	using Tokens = std::vector<Token>;
-
 	class Lexer {
 	public:
 		const Tokens& parse(const std::string& content);
+		
+		const Tokens& get() const;
 
 	private:
 		bool check(size_t offset);

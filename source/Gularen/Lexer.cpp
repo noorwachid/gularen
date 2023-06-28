@@ -1,4 +1,4 @@
-#include "Lexer.h"
+#include <Gularen/Lexer.h>
 #include <iostream>
 
 namespace Gularen {
@@ -13,6 +13,10 @@ namespace Gularen {
 			parseInline();
 		}
 
+		return tokens;
+	}
+
+	const Tokens& Lexer::get() const {
 		return tokens;
 	}
 
