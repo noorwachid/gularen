@@ -11,6 +11,7 @@ namespace Gularen {
 		heading,
 		paragraph,
 		indent,
+		break_,
 	};
 
 	struct Node;
@@ -104,6 +105,23 @@ namespace Gularen {
 	
 		virtual std::string toString() override {
 			return "indent";
+		}
+	};
+
+	enum class BreakType {
+		line,
+		page,
+	};
+
+	struct BreakNode : Node {
+		BreakType type;
+
+		BreakNode(BreakType type) : type{type} {
+			group = NodeGroup::break_;;
+		}
+	
+		virtual std::string toString() override {
+			return "break: " + std::to_string(static_cast<int>(type));
 		}
 	};
 }

@@ -125,6 +125,16 @@ namespace Gularen {
 				add(std::make_shared<TextNode>(">"));
 				break;
 
+			case TokenType::break_:
+				if (get(0).count == 2) {
+					add(std::make_shared<BreakNode>(BreakType::page));
+					advance(0);
+					break;
+				}
+				add(std::make_shared<BreakNode>(BreakType::line));
+				advance(0);
+				break;
+
 			case TokenType::newline:
 				lastNewline = get(0).count;
 				advance(0);
@@ -161,9 +171,6 @@ namespace Gularen {
 			lastIndentCall = false;
 		}
 
-		std::cout << "lastIndent: " << lastIndent << '\n';
-		std::cout << "token: " << get(0).value << '\n';
-
 		switch (get(0).type) {
 			case TokenType::indent:
 				parseIndent(get(0).count);
@@ -196,13 +203,11 @@ namespace Gularen {
 				}
 			}
 			lastIndent = indent;
-			std::cout << "down lastIndent: " << lastIndent << '\n';
 		} else if (lastIndent < indent) {
 			while (lastIndent < indent) {
 				++lastIndent;
 				addScope(std::make_shared<IndentNode>());
 			}
-			std::cout << "up lastIndent: " << lastIndent << '\n';
 		}
 	}
 }
