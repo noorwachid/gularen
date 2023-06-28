@@ -41,6 +41,8 @@ namespace Gularen {
 		describeMarker,
 
 		blockquote,
+
+		admonition,
 	};
 
 	struct Token {

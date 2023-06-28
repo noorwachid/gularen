@@ -406,6 +406,54 @@ namespace Gularen {
 				break;
 			}
 
+			case '<':
+				if (check(3) && is(2, '>') && is(3, ' ')) {
+					// </> Note
+					// <?> Hint
+					// <!> Important
+					// <^> Warning
+					// <@> Danger
+					// <&> See also
+					if (is(1, '/')) {
+						advance(2);
+						parseSpace();
+						add(TokenType::admonition, 1, "</>");
+						break;
+					}
+					if (is(1, '?')) {
+						advance(2);
+						parseSpace();
+						add(TokenType::admonition, 2, "<?>");
+						break;
+					}
+					if (is(1, '!')) {
+						advance(2);
+						parseSpace();
+						add(TokenType::admonition, 3, "<!>");
+						break;
+					}
+					if (is(1, '^')) {
+						advance(2);
+						parseSpace();
+						add(TokenType::admonition, 4, "<^>");
+						break;
+					}
+					if (is(1, '@')) {
+						advance(2);
+						parseSpace();
+						add(TokenType::admonition, 5, "<@>");
+						break;
+					}
+					if (is(1, '&')) {
+						advance(2);
+						parseSpace();
+						add(TokenType::admonition, 6, "<&>");
+						break;
+					}
+				}
+				// see inline <
+				break;
+
 			case '1':
 			case '2':
 			case '3':

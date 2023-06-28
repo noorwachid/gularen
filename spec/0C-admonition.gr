@@ -15,7 +15,7 @@ Avaliable levels are:
 ---
 
 >> Multi Line Admonition
-=== gr
+--- gr
 <!> Something here
 	Every +1 indent after admonition modifier will be subcontent of this admonition.
-===
+---
