@@ -23,6 +23,9 @@ namespace Gularen {
 
 		bullet,
 		checkbox,
+
+		break_,
+		dinkus,
 	};
 
 	struct Token {

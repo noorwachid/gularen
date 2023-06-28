@@ -146,7 +146,22 @@ namespace Gularen {
 				parseText();
 				break;
 
+			case '<':
+				if (check(1) && is(1, '<')) {
+					add(TokenType::break_, 2, "<<");
+					advance(1);
+					break;
+				}
+				add(TokenType::break_, 1, "<");
+				advance(0);
+				break;
+
 			case '*':
+				if (check(2) && is(1, '*') && is(2, '*')) {
+					add(TokenType::dinkus, 1, "***");
+					advance(2);
+					break;
+				}
 				add(TokenType::fsBold, 1, "*");
 				advance(0);
 				break;
