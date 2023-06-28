@@ -9,6 +9,7 @@ namespace Gularen {
 		text,
 		fs,
 		heading,
+		paragraph,
 	};
 
 	struct Node;
@@ -82,6 +83,17 @@ namespace Gularen {
 			}
 			
 			return string;
+		}
+	};
+	
+
+	struct ParagraphNode : Node {
+		ParagraphNode() {
+			group = NodeGroup::paragraph;
+		}
+	
+		virtual std::string toString() override {
+			return "paragraph";
 		}
 	};
 }

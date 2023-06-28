@@ -48,6 +48,8 @@ namespace Gularen {
 		root = std::make_shared<Node>();
 		scopes.push(root);
 
+		parseBlock();
+
 		while (check(0)) {
 			parse();
 		}
@@ -123,15 +125,41 @@ namespace Gularen {
 				break;
 
 			case TokenType::newline:
-				if (getScope()->group == NodeGroup::heading) {
-					removeScope();
-				}
 				lastNewline = get(0).count;
 				advance(0);
+				parseBlock();
 				break;
 				
 			default:
 				advance(0);
+				break;
+		}
+	}
+
+	void Parser::parseBlock() {
+		switch (getScope()->group) {
+			case NodeGroup::heading:
+				removeScope();
+				break;
+
+			case NodeGroup::paragraph:
+				if (lastNewline > 1) {
+					removeScope();
+				}
+				break;
+			
+			default:
+				break;
+		}
+
+		switch (get(0).type) {
+			case TokenType::text:
+				if (getScope()->group != NodeGroup::paragraph) {
+					addScope(std::make_shared<ParagraphNode>());
+				}
+				break;
+			
+			default:
 				break;
 		}
 	}

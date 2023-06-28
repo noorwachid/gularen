@@ -40,6 +40,15 @@ int main(int argc, char** argv) {
 				if (token.type == Gularen::TokenType::codeSource) {
 					std::cout << '\n';
 
+					if (argv[2] == std::string("with-token")) {
+						Gularen::Lexer lexer;
+						Gularen::Tokens tokens = lexer.parse(token.value);
+						for (const Gularen::Token& token : tokens) {
+							std::cout << token.toString() << '\n';
+						}
+						std::cout << '\n';
+					}
+
 					Gularen::Parser parser;
 					Gularen::NodePtr root = parser.parse(token.value);
 

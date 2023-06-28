@@ -29,6 +29,8 @@ namespace Gularen {
 
 		void parse();
 
+		void parseBlock();
+
 	private:
 		NodePtr root;
 		Lexer lexer;
