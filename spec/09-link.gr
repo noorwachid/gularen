@@ -16,6 +16,9 @@
 
 ~ With alternative label
 [another-document.gr](Another document)
+
+~ With specify heading ID
+[another-document.gr>legal-section]
 ---
 
 >> Local Link

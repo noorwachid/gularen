@@ -59,33 +59,6 @@ namespace Gularen {
 
 	void Lexer::parseInline() {
 		switch (get(0)) {
-			case '\n':
-				add(TokenType::newline, count('\n'), "\\n");
-				parseBlock();
-				break;
-
-			case '\\':
-				advance(0);
-				if (check(0)) {
-					addText(content.substr(index));
-					advance(0);
-				}
-				break;
-
-			case '~':
-				advance(0);
-
-				while (check(0) && !is(0, '\n')) {
-					advance(0);
-				}
-				break;
-
-			case '|':
-				add(TokenType::pipe, 1, "|");
-				advance(0);
-				parseSpace();
-				break;
-
 			case ' ':
 			case 'a':
 			case 'b':
@@ -151,6 +124,111 @@ namespace Gularen {
 			case '9':
 				parseText();
 				break;
+
+			case '\n':
+				add(TokenType::newline, count('\n'), "\\n");
+				parseBlock();
+				break;
+
+			case '\\':
+				advance(0);
+				if (check(0)) {
+					addText(content.substr(index));
+					advance(0);
+				}
+				break;
+
+			case '~':
+				advance(0);
+
+				while (check(0) && !is(0, '\n')) {
+					advance(0);
+				}
+				break;
+
+			case '[': {
+				advance(0);
+				
+				if (check(0)) {
+					bool idMarkerExists = false;
+					size_t idMarkerIndex = 0;
+					size_t depth = 0;
+					std::string reference;
+
+					while (check(0)) {
+						if (is(0, ']') && depth == 0) {
+							advance(0);
+							break;
+						}
+
+						if (is(0, '[')) {
+							++depth;
+						}
+
+						if (is(0, '>')) {
+							idMarkerExists = true;
+							idMarkerIndex = reference.size();
+						}
+						
+						if (is(0, '\\')) {
+							advance(0);
+						}
+
+						reference += get(0);
+						advance(0);
+					}
+
+					if (idMarkerExists) {
+						add(TokenType::reference, 1, reference.substr(0, idMarkerIndex));
+						add(TokenType::referenceID, 1, reference.substr(idMarkerIndex + 1, reference.size() - idMarkerIndex));
+					} else {
+						add(TokenType::reference, 1, reference);
+					}
+					
+					if (is(0, '(')) {
+						advance(0);
+
+						if (check(0)) {
+							size_t depth = 0;
+							std::string label;
+
+							while (check(0)) {
+								if (is(0, ')') && depth == 0) {
+									advance(0);
+									break;
+								}
+
+								if (is(0, '(')) {
+									++depth;
+								}
+								
+								if (is(0, '\\')) {
+									advance(0);
+								}
+
+								label += get(0);
+								advance(0);
+							}
+
+							add(TokenType::referenceLabel, 1, label);
+							break;
+						} else {
+							addText("(");
+						}
+					}
+					break;
+				}
+
+				addText("[");
+				break;
+			}
+
+			case '|':
+				add(TokenType::pipe, 1, "|");
+				advance(0);
+				parseSpace();
+				break;
+
 				
 			case '<':
 				if (check(1) && is(1, '<')) {
@@ -254,7 +332,7 @@ namespace Gularen {
 					}
 				}
 				
-				addText("[");
+				// see inline [
 				break;
 
 			case '.': {

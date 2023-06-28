@@ -30,6 +30,10 @@ namespace Gularen {
 
 		pipe,
 		pipeConnector,
+
+		reference,
+		referenceID,
+		referenceLabel,
 	};
 
 	struct Token {
