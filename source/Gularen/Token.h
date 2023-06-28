@@ -15,6 +15,7 @@ namespace Gularen {
 		
 		headingMarker,
 		headingID,
+		headingIDMarker,
 
 		fsBold,
 		fsItalic,

@@ -161,6 +161,29 @@ namespace Gularen {
 				advance(0);
 				break;
 
+			case '>':
+				if (check(1) && is(1, ' ')) {
+					advance(0);
+					parseSpace();
+					add(TokenType::headingIDMarker, 1, ">");
+
+					size_t idIndex = index;
+					size_t idSize = 0;
+
+					while (check(0) && !is(0, '\n')) {
+						++idSize;
+						advance(0);
+					}
+					
+					if (idSize > 0) {
+						add(TokenType::headingID, 1, content.substr(idIndex, idSize));
+					}
+				}
+
+				addText(">");
+				advance(0);
+				break;
+
 			default:
 				advance(0);
 				break;
