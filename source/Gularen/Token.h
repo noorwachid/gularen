@@ -39,6 +39,8 @@ namespace Gularen {
 		includeMarker,
 		jumpMarker,
 		describeMarker,
+
+		blockquote,
 	};
 
 	struct Token {

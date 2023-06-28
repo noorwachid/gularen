@@ -394,6 +394,18 @@ namespace Gularen {
 				parseTable();
 				break;
 
+			case '/': {
+				size_t depth = 0;
+				while (check(0) && (is(0, '/') || is(0, ' '))) {
+					if (is(0, '/')) {
+						++depth;
+					}
+					advance(0);
+				}
+				add(TokenType::blockquote, depth, "/");
+				break;
+			}
+
 			case '1':
 			case '2':
 			case '3':
