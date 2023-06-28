@@ -145,7 +145,7 @@ namespace Gularen {
 			case '9':
 				parseText();
 				break;
-
+				
 			case '<':
 				if (check(1) && is(1, '<')) {
 					add(TokenType::break_, 2, "<<");
@@ -231,6 +231,62 @@ namespace Gularen {
 				parseCode();
 				break;
 			}
+
+			case '[':
+				if (check(2) && is(2, ']')) {
+					if (is(1, ' ')) {
+						add(TokenType::checkbox, 0, "[ ]");
+						break;
+					}
+					if (is(1, 'v')) {
+						add(TokenType::checkbox, 1, "[v]");
+						break;
+					}
+					if (is(1, 'x')) {
+						add(TokenType::checkbox, 2, "[x]");
+						break;
+					}
+				}
+				
+				addText("[");
+				break;
+
+			case '.': {
+				if (check(2) && is(1, '.') && is(2, ' ')) {
+					parseSpace();
+					add(TokenType::index, 1, "..");
+					break;
+				}
+				
+				addText(".");
+				break;
+			}
+
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9': {
+				std::string number;
+				while (check(0) && get(0) >= '0' && get(0) <= '9') {
+					number += get(0);
+					advance(0);
+				}
+
+				if (check(1) && is(0, '.') && is(1, ' ')) {
+					parseSpace();
+					add(TokenType::index, std::stoi(number), number + ".");
+					break;
+				}
+				
+				addText(number);
+				break;
+			}
+
 			
 			default:
 				break;

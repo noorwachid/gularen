@@ -23,6 +23,7 @@ namespace Gularen {
 
 		bullet,
 		checkbox,
+		index,
 
 		break_,
 		dinkus,
