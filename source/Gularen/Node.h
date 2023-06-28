@@ -5,12 +5,10 @@
 #include <stack>
 
 namespace Gularen {
-	enum class NodeType {
+	enum class NodeGroup {
 		text,
-
-		fsBold,
-		fsItalic,
-		fsMonospace
+		fs,
+		heading,
 	};
 
 	struct Node;
@@ -19,15 +17,15 @@ namespace Gularen {
 	using NodeChildren = std::vector<NodePtr>;
 
 	struct Node {
-		NodeType type;
+		NodeGroup group;
 		NodeChildren children;
 
 		Node() = default;
 		
-		Node(NodeType type) : type{type} {}
+		Node(NodeGroup group) : group{group} {}
 
 		virtual std::string toString() {
-			return "base: " + std::to_string(static_cast<int>(type));
+			return "base: " + std::to_string(static_cast<int>(group));
 		}
 	};
 
@@ -35,11 +33,55 @@ namespace Gularen {
 		std::string value;
 
 		TextNode(const std::string& value) : value{value} {
-			type = NodeType::text;
+			group = NodeGroup::text;
 		}
 		
 		virtual std::string toString() override {
 			return "text: " + value;
+		}
+	};
+	
+	enum class FSType {
+		bold,
+		italic,
+		monospace
+	};
+
+	struct FSNode : Node {
+		FSType type;
+		
+		FSNode(FSType type) : type{type} {
+			group = NodeGroup::fs;
+		}
+
+		virtual std::string toString() override {
+			return "fs: " + std::to_string(static_cast<int>(type));
+		}
+	};
+
+	enum class HeadingType {
+		chapter,
+		section,
+		subsection,
+		subtitle,
+	};
+
+	struct HeadingNode : Node {
+		HeadingType type;
+		std::string id;
+		
+		HeadingNode(HeadingType type) : type{type} {
+			group = NodeGroup::heading;
+		}
+
+		virtual std::string toString() override {
+			std::string string = "heading: " + std::to_string(static_cast<int>(type));
+
+			if (!id.empty()) {
+				string += " id: " + id;
+			}
+			
+			return string;
 		}
 	};
 }

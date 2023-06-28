@@ -25,7 +25,7 @@ namespace Gularen {
 
 		void removeScope();
 
-		const NodePtr& getScope() const;
+		const NodePtr& getScope();
 
 		void parse();
 
@@ -34,5 +34,6 @@ namespace Gularen {
 		Lexer lexer;
 		std::stack<NodePtr> scopes;
 		size_t index;
+		size_t lastNewline;
 	};
 }

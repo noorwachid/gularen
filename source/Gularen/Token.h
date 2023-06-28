@@ -61,6 +61,10 @@ namespace Gularen {
 		TokenType type;
 		size_t count;
 		std::string value;
+		
+		std::string toString() const {
+			return std::to_string(static_cast<int>(type)) + '\t' + std::to_string(count) + '\t' + value;
+		}
 	};
 	
 	using Tokens = std::vector<Token>;

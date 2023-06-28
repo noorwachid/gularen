@@ -2,8 +2,16 @@
 #include <fstream>
 #include <iostream>
 
+void print(const Gularen::NodePtr& node, size_t depth = 0) {
+	std::cout << std::string(depth * 2, ' ') << node->toString() << '\n';
+
+	for (const Gularen::NodePtr& childNode : node->children) {
+		print(childNode, depth + 1);
+	}
+}
+
 int main(int argc, char** argv) {
-	if (argc == 2) {
+	if (argc > 1) {
 		std::ifstream file(argv[1]);
 
 		if (!file.is_open()) {
@@ -24,12 +32,30 @@ int main(int argc, char** argv) {
 		Gularen::Tokens tokens = lexer.parse(content);
 
 		for (const Gularen::Token& token : tokens) {
-			if (token.type == Gularen::TokenType::codeSource) {
-				std::cout << '\n';
-
-				Gularen::Parser parser;
-				parser.parse(token.value);
+			if (argc == 2) {
+				std::cout << token.toString() << '\n';
 			}
+
+			if (argc == 3) {
+				if (token.type == Gularen::TokenType::codeSource) {
+					std::cout << '\n';
+
+					Gularen::Parser parser;
+					Gularen::NodePtr root = parser.parse(token.value);
+
+					print(root, 0);
+				}
+			}
+		}
+
+		if (argc == 2) {
+			std::cout << '\n';
+			Gularen::Parser parser;
+			Gularen::NodePtr root = parser.parse(content);
+
+			print(root, 0);
+
+			return 0;
 		}
 		return 0;
 	}

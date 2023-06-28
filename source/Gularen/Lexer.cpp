@@ -375,6 +375,7 @@ namespace Gularen {
 					if (idSize > 0) {
 						add(TokenType::headingID, 1, content.substr(idIndex, idSize));
 					}
+					break;
 				}
 
 				addText(">");

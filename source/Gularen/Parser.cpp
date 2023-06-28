@@ -20,7 +20,6 @@ namespace Gularen {
 
 	void Parser::add(const NodePtr& node) {
 		scopes.top()->children.push_back(node);
-		std::cout << std::string((scopes.size() - 1) * 2, ' ') << node->toString() << '\n';
 	}
 
 	void Parser::addScope(const NodePtr& node) {
@@ -29,17 +28,18 @@ namespace Gularen {
 	}
 
 	void Parser::removeScope() {
-		if (scopes.empty()) return;
+		if (scopes.size() == 1) return;
 		scopes.pop();
 	}
 
-	const NodePtr& Parser::getScope() const {
+	const NodePtr& Parser::getScope() {
 		return scopes.top();
 	}
 
 	const NodePtr& Parser::parse(const std::string& content) {
 		lexer.parse(content);
 		index = 0;
+		lastNewline = 0;
 		
 		while (!scopes.empty()) {
 			scopes.pop();
@@ -67,32 +67,66 @@ namespace Gularen {
 				break;
 
 			case TokenType::fsBold:
-				if (getScope()->type == NodeType::fsBold) {
+				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::bold) {
 					removeScope();
 					advance(0);
 					break;
 				}
-				addScope(std::make_shared<Node>(NodeType::fsBold));
+				addScope(std::make_shared<FSNode>(FSType::bold));
 				advance(0);
 				break;
 
 			case TokenType::fsItalic:
-				if (getScope()->type == NodeType::fsItalic) {
+				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::italic) {
 					removeScope();
 					advance(0);
 					break;
 				}
-				addScope(std::make_shared<Node>(NodeType::fsItalic));
+				addScope(std::make_shared<FSNode>(FSType::italic));
 				advance(0);
 				break;
 
 			case TokenType::fsMonospace:
-				if (getScope()->type == NodeType::fsMonospace) {
+				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::monospace) {
 					removeScope();
 					advance(0);
 					break;
 				}
-				addScope(std::make_shared<Node>(NodeType::fsMonospace));
+				addScope(std::make_shared<FSNode>(FSType::monospace));
+				advance(0);
+				break;
+
+			case TokenType::headingMarker:
+				if (get(0).count == 3) {
+					addScope(std::make_shared<HeadingNode>(HeadingType::chapter));
+				}
+				if (get(0).count == 2) {
+					addScope(std::make_shared<HeadingNode>(HeadingType::section));
+				}
+				if (get(0).count == 1) {
+					if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading && lastNewline == 1) {
+						addScope(std::make_shared<HeadingNode>(HeadingType::subtitle));
+					} else {
+						addScope(std::make_shared<HeadingNode>(HeadingType::subsection));
+					}
+				}
+				advance(0);
+				break;
+
+			case TokenType::headingIDMarker:
+				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::heading) {
+					static_cast<HeadingNode*>(getScope().get())->id = get(1).value;
+					advance(1);
+					break;
+				} 
+				add(std::make_shared<TextNode>(">"));
+				break;
+
+			case TokenType::newline:
+				if (getScope()->group == NodeGroup::heading) {
+					removeScope();
+				}
+				lastNewline = get(0).count;
 				advance(0);
 				break;
 				
