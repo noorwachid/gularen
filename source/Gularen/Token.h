@@ -27,6 +27,9 @@ namespace Gularen {
 
 		break_,
 		dinkus,
+
+		pipe,
+		pipeConnector,
 	};
 
 	struct Token {

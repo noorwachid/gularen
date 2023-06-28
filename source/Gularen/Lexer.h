@@ -35,6 +35,8 @@ namespace Gularen {
 
 		void parseSpace();
 
+		void parseTable();
+
 	private:
 		size_t index;
 		std::string content;

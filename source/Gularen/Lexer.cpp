@@ -80,6 +80,12 @@ namespace Gularen {
 				}
 				break;
 
+			case '|':
+				add(TokenType::pipe, 1, "|");
+				advance(0);
+				parseSpace();
+				break;
+
 			case ' ':
 			case 'a':
 			case 'b':
@@ -262,6 +268,10 @@ namespace Gularen {
 				break;
 			}
 
+			case '|':
+				parseTable();
+				break;
+
 			case '1':
 			case '2':
 			case '3':
@@ -374,6 +384,54 @@ namespace Gularen {
 		}
 
 		return;
+	}
+
+	void Lexer::parseTable() {
+		add(TokenType::pipe, 1, "|");
+		advance(0);
+		parseSpace();
+
+		if (!is(0, ':') && !is(0, '-')) {
+			return;
+		}
+
+		while (check(0) && !is(0, '\n')) {
+			if (check(1) && is(0, ':') && is(1, '-')) {
+				advance(0);
+				size_t lineCounter = count('-');
+
+				if (get(0) == ':') {
+					advance(0);
+					add(TokenType::pipeConnector, 1, ":-:");
+					continue;
+				}
+
+				add(TokenType::pipeConnector, 0, ":--");
+				continue;
+			}
+
+			if (is(0, '-')) {
+				size_t lineCounter = count('-');
+
+				if (get(0) == ':') {
+					advance(0);
+					add(TokenType::pipeConnector, 2, "--:");
+					continue;
+				}
+
+				add(TokenType::pipeConnector, 0, ":--");
+				continue;
+			}
+
+			if (is(0, '|')) {
+				add(TokenType::pipe, 1, "|");
+				advance(0);
+				continue;
+			}
+
+			addText(content.substr(index));
+			return;
+		}
 	}
 
 	void Lexer::parseText() {
