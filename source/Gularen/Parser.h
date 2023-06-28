@@ -31,11 +31,15 @@ namespace Gularen {
 
 		void parseBlock();
 
+		void parseIndent(size_t indent);
+
 	private:
 		NodePtr root;
 		Lexer lexer;
 		std::stack<NodePtr> scopes;
 		size_t index;
 		size_t lastNewline;
+		size_t lastIndent;
+		size_t lastIndentCall;
 	};
 }

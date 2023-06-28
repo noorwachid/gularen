@@ -40,6 +40,7 @@ namespace Gularen {
 		lexer.parse(content);
 		index = 0;
 		lastNewline = 0;
+		lastIndent = 0;
 		
 		while (!scopes.empty()) {
 			scopes.pop();
@@ -152,15 +153,56 @@ namespace Gularen {
 				break;
 		}
 
+		if (!lastIndentCall && get(0).type != TokenType::indent) {
+			parseIndent(0);
+		}
+
+		if (lastIndentCall) {
+			lastIndentCall = false;
+		}
+
+		std::cout << "lastIndent: " << lastIndent << '\n';
+		std::cout << "token: " << get(0).value << '\n';
+
 		switch (get(0).type) {
+			case TokenType::indent:
+				parseIndent(get(0).count);
+				advance(0);
+
+				if (check(0)) {
+					lastIndentCall = true;
+					parseBlock();
+				}
+				break;
+
 			case TokenType::text:
 				if (getScope()->group != NodeGroup::paragraph) {
 					addScope(std::make_shared<ParagraphNode>());
 				}
 				break;
+
 			
 			default:
 				break;
+		}
+	}
+
+	void Parser::parseIndent(size_t indent) {
+		if (lastIndent > indent) {
+			while (scopes.size() > 1 && lastIndent + 1 > indent) {
+				removeScope();
+				if (getScope()->group == NodeGroup::indent) {
+					--lastIndent;
+				}
+			}
+			lastIndent = indent;
+			std::cout << "down lastIndent: " << lastIndent << '\n';
+		} else if (lastIndent < indent) {
+			while (lastIndent < indent) {
+				++lastIndent;
+				addScope(std::make_shared<IndentNode>());
+			}
+			std::cout << "up lastIndent: " << lastIndent << '\n';
 		}
 	}
 }

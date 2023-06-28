@@ -10,6 +10,7 @@ namespace Gularen {
 		fs,
 		heading,
 		paragraph,
+		indent,
 	};
 
 	struct Node;
@@ -86,7 +87,6 @@ namespace Gularen {
 		}
 	};
 	
-
 	struct ParagraphNode : Node {
 		ParagraphNode() {
 			group = NodeGroup::paragraph;
@@ -94,6 +94,16 @@ namespace Gularen {
 	
 		virtual std::string toString() override {
 			return "paragraph";
+		}
+	};
+
+	struct IndentNode : Node {
+		IndentNode() {
+			group = NodeGroup::indent;
+		}
+	
+		virtual std::string toString() override {
+			return "indent";
 		}
 	};
 }
