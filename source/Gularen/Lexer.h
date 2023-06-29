@@ -37,6 +37,8 @@ namespace Gularen {
 
 		void parseTable();
 
+		void parseQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue);
+
 	private:
 		size_t index;
 		std::string content;

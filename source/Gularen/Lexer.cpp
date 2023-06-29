@@ -149,6 +149,16 @@ namespace Gularen {
 					advance(0);
 				}
 				break;
+			
+			case '\'':
+				parseQuoMark(tokens.empty() || tokens.back().type == TokenType::ldQuo, TokenType::lsQuo, "‘", TokenType::rsQuo, "’");
+				advance(0);
+				break;
+
+			case '"':
+				parseQuoMark(tokens.empty() || tokens.back().type == TokenType::lsQuo, TokenType::ldQuo, "“", TokenType::rdQuo, "”");
+				advance(0);
+				break;
 
 			case '-':
 				if (check(1) && get(1) >= '0' && get(1) <= '9') {
@@ -759,5 +769,21 @@ namespace Gularen {
 					return;
 			}
 		}
+	}
+
+	void Lexer::parseQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue) {
+		if (should || 
+			index == 0 ||
+			content[index - 1] == ' ' || 
+            content[index - 1] == '\t' || 
+            content[index - 1] == '\n' || 
+            content[index - 1] == '\0')
+            
+        {
+            add(leftType, 1, leftValue);
+            return;
+        }
+
+        add(rightType, 1, rightValue);
 	}
 }

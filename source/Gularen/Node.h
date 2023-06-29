@@ -22,6 +22,8 @@ namespace Gularen {
 		resource,
 
 		code,
+
+		punct,
 	};
 
 	struct Node;
@@ -51,6 +53,31 @@ namespace Gularen {
 		
 		virtual std::string toString() override {
 			return "text " + value;
+		}
+	};
+	
+	enum class PunctType {
+		minus,
+		hyphen,
+		enDash,
+		emDash,
+		
+		lsQuo,
+		rsQuo,
+		ldQuo,
+		rdQuo,
+	};
+
+	struct PunctNode : Node {
+		PunctType type;
+		std::string value;
+
+		PunctNode(PunctType type, const std::string& value) : type{type}, value{value} {
+			group = NodeGroup::punct;
+		}
+
+		virtual std::string toString() {
+			return "punct " + std::to_string(static_cast<int>(type)) + " " + value;
 		}
 	};
 	

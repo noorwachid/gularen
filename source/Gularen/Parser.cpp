@@ -93,6 +93,40 @@ namespace Gularen {
 				advance(0);
 				break;
 
+			case TokenType::lsQuo:
+				add(std::make_shared<PunctNode>(PunctType::lsQuo, get(0).value));
+				advance(0);
+				break;
+			case TokenType::rsQuo:
+				add(std::make_shared<PunctNode>(PunctType::rsQuo, get(0).value));
+				advance(0);
+				break;
+			case TokenType::ldQuo:
+				add(std::make_shared<PunctNode>(PunctType::ldQuo, get(0).value));
+				advance(0);
+				break;
+			case TokenType::rdQuo:
+				add(std::make_shared<PunctNode>(PunctType::rdQuo, get(0).value));
+				advance(0);
+				break;
+
+			case TokenType::minus:
+				add(std::make_shared<PunctNode>(PunctType::minus, get(0).value));
+				advance(0);
+				break;
+			case TokenType::hyphen:
+				add(std::make_shared<PunctNode>(PunctType::hyphen, get(0).value));
+				advance(0);
+				break;
+			case TokenType::enDash:
+				add(std::make_shared<PunctNode>(PunctType::enDash, get(0).value));
+				advance(0);
+				break;
+			case TokenType::emDash:
+				add(std::make_shared<PunctNode>(PunctType::emDash, get(0).value));
+				advance(0);
+				break;
+
 			case TokenType::fsBold:
 				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::bold) {
 					removeScope();

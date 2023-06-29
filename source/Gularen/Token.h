@@ -51,10 +51,10 @@ namespace Gularen {
 		enDash,
 		emDash,
 		
-		lsquote,
-		rsquote,
-		ldquote,
-		rdquote,
+		lsQuo,
+		rsQuo,
+		ldQuo,
+		rdQuo,
 	};
 
 	struct Token {
