@@ -135,6 +135,16 @@ namespace Gularen {
 				advance(0);
 				break;
 
+			case TokenType::pipe:
+				if (getScope()->group == NodeGroup::tableCell) {
+					removeScope();
+				}
+				if (check(1) && !is(1, TokenType::newline) && getScope()->group == NodeGroup::tableRow) {
+					addScope(std::make_shared<TableCellNode>());
+				}
+				advance(0);
+				break;
+
 			case TokenType::newline:
 				lastNewline = get(0).count;
 				advance(0);
@@ -154,6 +164,7 @@ namespace Gularen {
 
 				if (lastNewline > 1 || 
 					is(0, TokenType::text) ||
+					is(0, TokenType::pipe) ||
 					is(0, TokenType::headingMarker)
 					) {
 					removeScope();
@@ -169,10 +180,15 @@ namespace Gularen {
 					is(0, TokenType::bullet) ||
 					is(0, TokenType::index) ||
 					is(0, TokenType::checkbox) ||
+					is(0, TokenType::pipe) ||
 					is(0, TokenType::headingMarker)
 					) {
 					removeScope();
 				}
+				break;
+
+			case NodeGroup::tableRow:
+				removeScope();
 				break;
 			
 			default:
@@ -222,13 +238,39 @@ namespace Gularen {
 				advance(0);
 				break;
 
+			case TokenType::pipe:
+				if (getScope()->group != NodeGroup::table) {
+					addScope(std::make_shared<TableNode>());
+				}
+
+				if (check(1) && is(1, TokenType::pipeConnector)) {
+					TableNode* tableNode = static_cast<TableNode*>(getScope().get());
+					if (tableNode->header == 0) {
+						tableNode->header = tableNode->children.size();
+					} else {
+						tableNode->footer = tableNode->children.size();
+					}
+
+					while (check(0) && (is(0, TokenType::pipe) || is(0, TokenType::pipeConnector))) {
+						if (is(0, TokenType::pipeConnector)) {
+							tableNode->alignments.push_back(static_cast<Alignment>(get(0).count));
+						}
+						advance(0);
+					}
+					break;
+				}
+
+				if (getScope()->group == NodeGroup::table) {
+					addScope(std::make_shared<TableRowNode>());
+				}
+				break;
+
 			case TokenType::text:
 				if (getScope()->group != NodeGroup::paragraph) {
 					addScope(std::make_shared<ParagraphNode>());
 				}
 				break;
 
-			
 			default:
 				break;
 		}

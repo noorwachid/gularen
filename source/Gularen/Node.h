@@ -15,7 +15,9 @@ namespace Gularen {
 		list,
 		listItem,
 
-		
+		table,
+		tableRow,
+		tableCell,
 	};
 
 	struct Node;
@@ -160,6 +162,61 @@ namespace Gularen {
 	
 		virtual std::string toString() override {
 			return "list-item: state: " + std::to_string(static_cast<int>(state));
+		}
+	};
+
+	enum class Alignment {
+		left,
+		center,
+		right,
+	};
+
+	struct TableNode : Node {
+		size_t header = 0;
+		size_t footer = 0;
+		std::vector<Alignment> alignments;
+		
+		TableNode() {
+			group = NodeGroup::table;
+		}
+
+		virtual std::string toString() override {
+			std::string string =  "table:";
+			if (header > 0) {
+				string += " header: " + std::to_string(header);
+			}
+			if (footer > 0) {
+				string += " footer: " + std::to_string(footer);
+			}
+
+			if (!alignments.empty()) {
+				string += " alignments: ";
+				for (Alignment alignment : alignments) {
+					string += std::to_string(static_cast<int>(alignment)) + " ";
+				}
+			}
+
+			return string;
+		}
+	};
+
+	struct TableRowNode : Node {
+		TableRowNode() {
+			group = NodeGroup::tableRow;
+		}
+
+		virtual std::string toString() override {
+			return "table-row:";
+		}
+	};
+
+	struct TableCellNode : Node {
+		TableCellNode() {
+			group = NodeGroup::tableCell;
+		}
+
+		virtual std::string toString() override {
+			return "table-cell:";
 		}
 	};
 }
