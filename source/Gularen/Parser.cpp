@@ -2,6 +2,30 @@
 #include <iostream>
 
 namespace Gularen {
+	bool hasNetProtocol(const std::string& reference) {
+		if (reference.empty()) return false;
+
+		if (reference[0] >= 'a' && reference[0] <= 'z') {
+			size_t i = 0;
+			size_t size = 0;
+			while (i < reference.size() && reference[i] >= 'a' && reference[i] <= 'z') {
+				++i;
+				++size;
+			}
+
+			if (i + 2 < reference.size() && 
+				reference[i] == ':' && 
+				reference[i + 1] == '/' &&
+				reference[i + 2] == '/') {
+				return true;
+			}
+
+			return false;
+		}
+
+		return false;
+	}
+
 	bool Parser::check(size_t offset) const {
 		return index + offset < lexer.get().size();
 	}
@@ -144,6 +168,24 @@ namespace Gularen {
 				}
 				advance(0);
 				break;
+
+			case TokenType::reference: {
+				if (hasNetProtocol(get(0).value)) {
+					std::shared_ptr<LinkNode> linkNode = std::make_shared<LinkNode>(get(0).value);
+					add(linkNode);
+					advance(0);
+					break;
+				}
+				std::shared_ptr<LocalLinkNode> linkNode = std::make_shared<LocalLinkNode>(get(0).value);
+				add(linkNode);
+				advance(0);
+
+				if (check(0) && is(0, TokenType::referenceID)) {
+					linkNode->referenceID = get(0).value;
+					advance(0);
+				}
+				break;
+			}
 
 			case TokenType::newline:
 				lastNewline = get(0).count;

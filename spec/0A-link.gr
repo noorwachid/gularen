@@ -1,24 +1,12 @@
 >>> Link
 
->> Hyper Link
+>> Link
 
 --- gr
 [http://google.com]
 
 ~ With alternative label
 [http://google.com](Google)
----
-
->> Relative Link 
-
---- gr
-[another-document.gr]
-
-~ With alternative label
-[another-document.gr](Another document)
-
-~ With specify heading ID
-[another-document.gr>legal-section]
 ---
 
 >> Local Link
@@ -28,4 +16,14 @@
 
 ~ With alternative label
 [>this-segment](see this segment)
+---
+
+--- gr
+[another-document.gr]
+
+~ With alternative label
+[another-document.gr](Another document)
+
+~ With specify heading ID
+[another-document.gr>legal-section]
 ---

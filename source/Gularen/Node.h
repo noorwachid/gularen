@@ -18,6 +18,8 @@ namespace Gularen {
 		table,
 		tableRow,
 		tableCell,
+
+		link,
 	};
 
 	struct Node;
@@ -34,7 +36,7 @@ namespace Gularen {
 		Node(NodeGroup group) : group{group} {}
 
 		virtual std::string toString() {
-			return "base: " + std::to_string(static_cast<int>(group));
+			return "base " + std::to_string(static_cast<int>(group));
 		}
 	};
 
@@ -46,7 +48,7 @@ namespace Gularen {
 		}
 		
 		virtual std::string toString() override {
-			return "text: " + value;
+			return "text " + value;
 		}
 	};
 	
@@ -64,7 +66,7 @@ namespace Gularen {
 		}
 
 		virtual std::string toString() override {
-			return "fs: " + std::to_string(static_cast<int>(type));
+			return "fs " + std::to_string(static_cast<int>(type));
 		}
 	};
 
@@ -84,7 +86,7 @@ namespace Gularen {
 		}
 
 		virtual std::string toString() override {
-			std::string string = "heading: " + std::to_string(static_cast<int>(type));
+			std::string string = "heading " + std::to_string(static_cast<int>(type));
 
 			if (!id.empty()) {
 				string += " id: " + id;
@@ -127,7 +129,7 @@ namespace Gularen {
 		}
 	
 		virtual std::string toString() override {
-			return "break: " + std::to_string(static_cast<int>(type));
+			return "break " + std::to_string(static_cast<int>(type));
 		}
 	};
 
@@ -145,7 +147,7 @@ namespace Gularen {
 		}
 	
 		virtual std::string toString() override {
-			return "list: " + std::to_string(static_cast<int>(type));
+			return "list " + std::to_string(static_cast<int>(type));
 		}
 	};
 
@@ -161,7 +163,7 @@ namespace Gularen {
 		}
 	
 		virtual std::string toString() override {
-			return "list-item: state: " + std::to_string(static_cast<int>(state));
+			return "listItem state: " + std::to_string(static_cast<int>(state));
 		}
 	};
 
@@ -181,7 +183,7 @@ namespace Gularen {
 		}
 
 		virtual std::string toString() override {
-			std::string string =  "table:";
+			std::string string =  "table";
 			if (header > 0) {
 				string += " header: " + std::to_string(header);
 			}
@@ -206,7 +208,7 @@ namespace Gularen {
 		}
 
 		virtual std::string toString() override {
-			return "table-row:";
+			return "tableRow";
 		}
 	};
 
@@ -216,7 +218,54 @@ namespace Gularen {
 		}
 
 		virtual std::string toString() override {
-			return "table-cell:";
+			return "tableCell";
+		}
+	};
+
+	struct LinkNode : Node {
+		std::string reference;
+		std::string label;
+		
+		LinkNode(const std::string& reference) : reference{reference} {
+			group = NodeGroup::link;
+		}
+
+		virtual std::string toString() override {
+			std::string string = "link reference: " + reference;
+			
+			if (!label.empty()) {
+				string += " label: " + label;
+			}
+			
+			return string;
+		}
+	};
+
+	struct LocalLinkNode : Node {
+		std::string reference;
+		std::string referenceID;
+		std::string label;
+		
+		LocalLinkNode(const std::string& reference) : reference{reference} {
+			group = NodeGroup::link;
+		}
+
+		virtual std::string toString() override {
+			std::string string = "localLink";
+
+			if (!reference.empty()) {
+				string += " reference: " + reference;
+			}
+
+			if (!referenceID.empty()) {
+				string += " referenceID: " + referenceID;
+			}
+
+			if (!label.empty()) {
+				string += " label: " + label;
+			}
+			
+			return string;
 		}
 	};
 }
