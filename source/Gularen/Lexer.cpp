@@ -207,7 +207,7 @@ namespace Gularen {
 					bool idMarkerExists = false;
 					size_t idMarkerIndex = 0;
 					size_t depth = 0;
-					std::string reference;
+					std::string resource;
 
 					while (check(0)) {
 						if (is(0, ']') && depth == 0) {
@@ -221,22 +221,22 @@ namespace Gularen {
 
 						if (is(0, '>')) {
 							idMarkerExists = true;
-							idMarkerIndex = reference.size();
+							idMarkerIndex = resource.size();
 						}
 						
 						if (is(0, '\\')) {
 							advance(0);
 						}
 
-						reference += get(0);
+						resource += get(0);
 						advance(0);
 					}
 
 					if (idMarkerExists) {
-						add(TokenType::reference, 1, reference.substr(0, idMarkerIndex));
-						add(TokenType::referenceID, 1, reference.substr(idMarkerIndex + 1));
+						add(TokenType::resource, 1, resource.substr(0, idMarkerIndex));
+						add(TokenType::resourceID, 1, resource.substr(idMarkerIndex + 1));
 					} else {
-						add(TokenType::reference, 1, reference);
+						add(TokenType::resource, 1, resource);
 					}
 					
 					if (is(0, '(')) {
@@ -264,7 +264,7 @@ namespace Gularen {
 								advance(0);
 							}
 
-							add(TokenType::referenceLabel, 1, label);
+							add(TokenType::resourceLabel, 1, label);
 							break;
 						} else {
 							addText("(");
@@ -280,7 +280,7 @@ namespace Gularen {
 			case '!':
 				if (check(1) && is(1, '[')) {
 					advance(0);
-					add(TokenType::readMarker, 1, "!");
+					add(TokenType::presentMarker, 1, "!");
 					// see inline [
 					break;
 				}

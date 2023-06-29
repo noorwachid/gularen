@@ -31,11 +31,11 @@ namespace Gularen {
 		pipe,
 		pipeConnector,
 
-		reference,
-		referenceID,
-		referenceLabel,
+		resource,
+		resourceID,
+		resourceLabel,
 
-		readMarker,
+		presentMarker,
 		includeMarker,
 		jumpMarker,
 		describeMarker,

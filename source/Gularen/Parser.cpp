@@ -169,19 +169,43 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::reference: {
-				if (hasNetProtocol(get(0).value)) {
-					std::shared_ptr<LinkNode> linkNode = std::make_shared<LinkNode>(get(0).value);
-					add(linkNode);
-					advance(0);
-					break;
-				}
-				std::shared_ptr<LocalLinkNode> linkNode = std::make_shared<LocalLinkNode>(get(0).value);
+			case TokenType::resource: {
+				ResourceType type = hasNetProtocol(get(0).value) ? ResourceType::linker : ResourceType::linkerLocal;
+				std::shared_ptr<ResourceNode> linkNode = std::make_shared<ResourceNode>(type, get(0).value);
 				add(linkNode);
 				advance(0);
 
-				if (check(0) && is(0, TokenType::referenceID)) {
-					linkNode->referenceID = get(0).value;
+				if (check(0) && is(0, TokenType::resourceID)) {
+					linkNode->id = get(0).value;
+					advance(0);
+				}
+
+				if (check(0) && is(0, TokenType::resourceLabel)) {
+					linkNode->label = get(0).value;
+					advance(0);
+				}
+				break;
+			}
+
+			case TokenType::presentMarker: {
+				advance(0);
+
+				if (!check(0) || !is(0, TokenType::resource)) {
+					break;
+				}
+
+				ResourceType type = hasNetProtocol(get(0).value) ? ResourceType::presenter : ResourceType::presenterLocal;
+				std::shared_ptr<ResourceNode> linkNode = std::make_shared<ResourceNode>(type, get(0).value);
+				add(linkNode);
+				advance(0);
+
+				if (check(0) && is(0, TokenType::resourceID)) {
+					linkNode->id = get(0).value;
+					advance(0);
+				}
+
+				if (check(0) && is(0, TokenType::resourceLabel)) {
+					linkNode->label = get(0).value;
 					advance(0);
 				}
 				break;

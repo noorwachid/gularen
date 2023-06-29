@@ -1,6 +1,6 @@
->>> Link
+>>> Linker
 
->> Link
+>> Linker
 
 --- gr
 [http://google.com]
@@ -9,7 +9,7 @@
 [http://google.com](Google)
 ---
 
->> Local Link
+>> Local Linker
 
 --- gr
 [>this-segment]

@@ -19,7 +19,7 @@ namespace Gularen {
 		tableRow,
 		tableCell,
 
-		link,
+		resource,
 	};
 
 	struct Node;
@@ -222,43 +222,32 @@ namespace Gularen {
 		}
 	};
 
-	struct LinkNode : Node {
-		std::string reference;
-		std::string label;
-		
-		LinkNode(const std::string& reference) : reference{reference} {
-			group = NodeGroup::link;
-		}
-
-		virtual std::string toString() override {
-			std::string string = "link reference: " + reference;
-			
-			if (!label.empty()) {
-				string += " label: " + label;
-			}
-			
-			return string;
-		}
+	enum class ResourceType {
+		linker,
+		linkerLocal,
+		presenter,
+		presenterLocal,
 	};
 
-	struct LocalLinkNode : Node {
-		std::string reference;
-		std::string referenceID;
+	struct ResourceNode : Node {
+		ResourceType type;
+		std::string value;
+		std::string id;
 		std::string label;
 		
-		LocalLinkNode(const std::string& reference) : reference{reference} {
-			group = NodeGroup::link;
+		ResourceNode(ResourceType type, const std::string& value) : type{type}, value{value} {
+			group = NodeGroup::resource;
 		}
 
 		virtual std::string toString() override {
-			std::string string = "localLink";
+			std::string string = "resource " + std::to_string(static_cast<int>(type));
 
-			if (!reference.empty()) {
-				string += " reference: " + reference;
+			if (!value.empty()) {
+				string += " value: " + value;
 			}
 
-			if (!referenceID.empty()) {
-				string += " referenceID: " + referenceID;
+			if (!id.empty()) {
+				string += " id: " + id;
 			}
 
 			if (!label.empty()) {
