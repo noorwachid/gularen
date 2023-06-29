@@ -1,20 +1,20 @@
->>> Gularen Language Specification Implementation
+>>> Gularen Markup Language Specification Implementation
 
-[v] 01 comment
-[v] 02 font-style
-[v] 03 heading
-[v] 04 paragraph
-[v] 05 indentation
-[v] 06 breaking
-[ ] 07 list
-[ ] 08 table
-[ ] 09 link
-[ ] 0A image
-[ ] 0B code
-[ ] 0C admonition
-[ ] 0D punctuation-mark
-[ ] 0E column
-[ ] 0F inclusion
-[ ] 13 emoji
-[ ] 11 blockquote
-[ ] 12 footnote
+[v] [01-comment.gr](01 comment)
+[v] [02-font-style.gr](02 font-style)
+[v] [03-heading.gr](03 heading)
+[v] [04-paragraph.gr](04 paragraph)
+[v] [05-indentation.gr](05 indentation)
+[v] [06-breaking.gr](06 breaking)
+[v] [07-list.gr](07 list)
+[ ] [08-table.gr](08 table)
+[ ] [09-column.gr](09 column)
+[ ] [0A-link.gr](0A link)
+[ ] [0B-reader.gr](0B reader)
+[ ] [0C-inclusion.gr](0C inclusion)
+[ ] [0D-footnote.gr](0D footnote)
+[ ] [0E-code.gr](0E code)
+[ ] [0F-punctuation-mark.gr](0F punctuation-mark)
+[ ] [10-emoji.gr](10 emoji)
+[ ] [11-blockquote.gr](11 blockquote)
+[ ] [12-admonition.gr](12 admonition)
