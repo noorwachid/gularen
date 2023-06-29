@@ -149,12 +149,28 @@ namespace Gularen {
 
 	void Parser::parseBlock() {
 		switch (getScope()->group) {
+			case NodeGroup::listItem:
+				removeScope();
+
+				if (lastNewline > 1 || 
+					is(0, TokenType::text) ||
+					is(0, TokenType::headingMarker)
+					) {
+					removeScope();
+				}
+				break;
+
 			case NodeGroup::heading:
 				removeScope();
 				break;
 
 			case NodeGroup::paragraph:
-				if (lastNewline > 1) {
+				if (lastNewline > 1 || 
+					is(0, TokenType::bullet) ||
+					is(0, TokenType::index) ||
+					is(0, TokenType::checkbox) ||
+					is(0, TokenType::headingMarker)
+					) {
 					removeScope();
 				}
 				break;
@@ -182,6 +198,30 @@ namespace Gularen {
 				}
 				break;
 
+			case TokenType::bullet:
+				if (getScope()->group != NodeGroup::list) {
+					addScope(std::make_shared<ListNode>(ListType::bullet));
+				}
+				addScope(std::make_shared<ListItemNode>());
+				advance(0);
+				break;
+
+			case TokenType::index:
+				if (getScope()->group != NodeGroup::list) {
+					addScope(std::make_shared<ListNode>(ListType::index));
+				}
+				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1));
+				advance(0);
+				break;
+
+			case TokenType::checkbox:
+				if (getScope()->group != NodeGroup::list) {
+					addScope(std::make_shared<ListNode>(ListType::index));
+				}
+				addScope(std::make_shared<ListItemNode>(get(0).count));
+				advance(0);
+				break;
+
 			case TokenType::text:
 				if (getScope()->group != NodeGroup::paragraph) {
 					addScope(std::make_shared<ParagraphNode>());
@@ -204,6 +244,10 @@ namespace Gularen {
 			}
 			lastIndent = indent;
 		} else if (lastIndent < indent) {
+			if (getScope()->group == NodeGroup::list && lastIndent + 1 == indent) {
+				addScope(getScope()->children.back());
+			}
+
 			while (lastIndent < indent) {
 				++lastIndent;
 				addScope(std::make_shared<IndentNode>());

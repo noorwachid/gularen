@@ -437,6 +437,7 @@ namespace Gularen {
 
 			case '.': {
 				if (check(2) && is(1, '.') && is(2, ' ')) {
+					advance(1);
 					parseSpace();
 					add(TokenType::index, 1, "..");
 					break;
@@ -526,6 +527,7 @@ namespace Gularen {
 				}
 
 				if (check(1) && is(0, '.') && is(1, ' ')) {
+					advance(0);
 					parseSpace();
 					add(TokenType::index, std::stoi(number), number + ".");
 					break;

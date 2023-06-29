@@ -12,6 +12,8 @@ namespace Gularen {
 		paragraph,
 		indent,
 		break_,
+		list,
+		listItem,
 	};
 
 	struct Node;
@@ -122,6 +124,40 @@ namespace Gularen {
 	
 		virtual std::string toString() override {
 			return "break: " + std::to_string(static_cast<int>(type));
+		}
+	};
+
+	enum class ListType {
+		bullet,
+		index,
+		checkbox,
+	};
+
+	struct ListNode : Node {
+		ListType type;
+
+		ListNode(ListType type) : type{type} {
+			group = NodeGroup::list;
+		}
+	
+		virtual std::string toString() override {
+			return "list: " + std::to_string(static_cast<int>(type));
+		}
+	};
+
+	struct ListItemNode : Node {
+		size_t state = 0;
+
+		ListItemNode() {
+			group = NodeGroup::listItem;
+		}
+
+		ListItemNode(size_t state) : state{state} {
+			group = NodeGroup::listItem;
+		}
+	
+		virtual std::string toString() override {
+			return "list-item: state: " + std::to_string(static_cast<int>(state));
 		}
 	};
 }
