@@ -24,6 +24,7 @@ namespace Gularen {
 		code,
 
 		punct,
+		emoji,
 	};
 
 	struct Node;
@@ -78,6 +79,18 @@ namespace Gularen {
 
 		virtual std::string toString() {
 			return "punct " + std::to_string(static_cast<int>(type)) + " " + value;
+		}
+	};
+
+	struct EmojiNode : Node {
+		std::string value;
+
+		EmojiNode(const std::string& value) :  value{value} {
+			group = NodeGroup::emoji;
+		}
+
+		virtual std::string toString() {
+			return "emoji " + value;
 		}
 	};
 	

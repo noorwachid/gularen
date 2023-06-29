@@ -127,6 +127,11 @@ namespace Gularen {
 				advance(0);
 				break;
 
+			case TokenType::emoji:
+				add(std::make_shared<EmojiNode>(get(0).value));
+				advance(0);
+				break;
+
 			case TokenType::fsBold:
 				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::bold) {
 					removeScope();
