@@ -10,15 +10,9 @@ And make sure to have same equals count between opening and ending.
 
 int main() 
 {
-    std::cout << "Hello World\n";
+	std::cout << "Hello World\n";
 
-    return 0;
+	return 0;
 }
 ---
 ----
-
->> Inline Code
-
---- gr
-For example: {var a = 123}
----

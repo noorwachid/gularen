@@ -20,6 +20,8 @@ namespace Gularen {
 		tableCell,
 
 		resource,
+
+		code,
 	};
 
 	struct Node;
@@ -254,6 +256,29 @@ namespace Gularen {
 				string += " label: " + label;
 			}
 			
+			return string;
+		}
+	};
+
+	struct CodeNode : Node {
+		std::string lang;
+		std::string source;
+		
+		CodeNode() {
+			group = NodeGroup::code;
+		}
+
+		virtual std::string toString() override {
+			std::string string = "code";
+
+			if (!lang.empty()) {
+				string += " lang: " + lang;
+			}
+
+			if (!source.empty()) {
+				string += " source: " + source;
+			}
+
 			return string;
 		}
 	};

@@ -544,9 +544,10 @@ namespace Gularen {
 	}
 
 	void Lexer::parseCode() {
-		size_t counter = count('-');
+		size_t openingIndent = !tokens.empty() && tokens.back().type == TokenType::indent ? tokens.back().count : 0;
+		size_t openingCounter = count('-');
 
-		if (counter == 1) {
+		if (openingCounter == 1) {
 			if (is(0, ' ')) {
 				parseSpace();
 				add(TokenType::bullet, 1, "-");
@@ -558,14 +559,14 @@ namespace Gularen {
 			return;
 		}
 		
-		if (counter == 2) {
+		if (openingCounter == 2) {
 			--index;
 			--index;
 			// see inline -
 			return;
 		}
 
-		add(TokenType::codeMarker, 1, std::string(counter, '-'));
+		add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
 		parseSpace();
 
 		size_t langIndex = index;
@@ -589,28 +590,34 @@ namespace Gularen {
 
 		while (check(0)) {
 			if (is(0, '\n')) {
-				size_t newlineCounter = count('\n');
+				size_t newline = count('\n');
+				size_t indent = count('\t');
 
-				if (check(0)) {
-					size_t tabCounter = count('\t');
-
-					if (check(2) && is(0, '-') && is(1, '-') && is(2, '-')) {
-						size_t closingCounter = count('-');
-						if (closingCounter == counter) {
-							break;
-						}
-						source += std::string(closingCounter, '-');
-					} else {
-						if (newlineCounter > 0) {
-							source += std::string(newlineCounter, '\n');
-						}
-
-						if (tabCounter > 0) {
-							source += std::string(tabCounter, '\t');
-						}
+				if (check(2) && is(0, '-') && is(1, '-') && is(2, '-')) {
+					size_t closingCounter = count('-');
+					if (closingCounter == openingCounter) {
+						break;
 					}
+
+					if (newline > 0) {
+						source += std::string(newline, '\n');
+					}
+
+					if (indent > openingIndent) {
+						source += std::string(indent - openingIndent, '\t');
+					}
+
+					source += std::string(closingCounter, '-');
+					continue;
 				} else {
-					break;
+					if (newline > 0) {
+						source += std::string(newline, '\n');
+					}
+
+					if (indent > openingIndent) {
+						source += std::string(indent - openingIndent, '\t');
+					}
+					continue;
 				}
 			}
 
@@ -619,7 +626,7 @@ namespace Gularen {
 		}
 
 		add(TokenType::codeSource, 1, source);
-		add(TokenType::codeMarker, 1, std::string(counter, '-'));
+		add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
 	}
 
 	void Lexer::parseSpace() {

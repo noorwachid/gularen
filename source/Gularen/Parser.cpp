@@ -218,6 +218,7 @@ namespace Gularen {
 				break;
 				
 			default:
+				add(std::make_shared<TextNode>(get(0).value));
 				advance(0);
 				break;
 		}
@@ -330,6 +331,25 @@ namespace Gularen {
 					addScope(std::make_shared<TableRowNode>());
 				}
 				break;
+
+			case TokenType::codeMarker: {
+				if (check(2) && is(1, TokenType::codeSource) && is(2, TokenType::codeMarker)) {
+					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
+					codeNode->source = get(1).value;
+					add(codeNode);
+					advance(2);
+					break;
+				}
+				if (check(3) && is(1, TokenType::codeLang) && is(2, TokenType::codeSource) && is(3, TokenType::codeMarker)) {
+					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
+					codeNode->source = get(2).value;
+					add(codeNode);
+					advance(3);
+					break;
+				}
+				// see default inline 
+				break;
+			}
 
 			case TokenType::text:
 				if (getScope()->group != NodeGroup::paragraph) {
