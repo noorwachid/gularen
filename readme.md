@@ -2,7 +2,7 @@
 A well-thought lightweight markup language that makes sense
 
 ## Overview
-~~~
+~~~ gr
 >>> Chapter 1
 > Untuk Perempuan Yang Sedang Di Pelukan
 
@@ -14,6 +14,9 @@ Mungkin karena kau sedang cantik-cantiknya.
 =[1] Ketika waktu fajar.
 ~~~
 
+## Demo
+[Right over here](https://noorwach.id/gularen/binding/javascript/)
+
 ## Language Specification
 * [01 Comment](spec/01-comment.gr)
 * [02 Font Style](spec/02-font-style.gr)
@@ -23,14 +26,13 @@ Mungkin karena kau sedang cantik-cantiknya.
 * [06 Breaking](spec/06-breaking.gr)
 * [07 List](spec/07-list.gr)
 * [08 Table](spec/08-table.gr)
-* [09 Link](spec/09-link.gr)
-* [0A Image](spec/0A-image.gr)
-* [0B Code](spec/0B-code.gr)
-* [0C Admonition](spec/0C-admonition.gr)
-* [0D Punctuation Mark](spec/0D-punctuation-mark.gr)
-* [0E Column](spec/0E-column.gr)
-* [0F Inclusion](spec/0F-inclusion.gr)
-* [10 Webpage Embedding](spec/10-webpage-embedding.gr)
+* [09 Column](spec/09-column.gr)
+* [0A Linker](spec/0A-link.gr)
+* [0B Presenter](spec/0B-image.gr)
+* [0C Inclusion](spec/0C-inclusion.gr)
+* [0D Footnote](spec/0D-footnote.gr)
+* [0E Code](spec/0E-code.gr)
+* [0F Punctuation Mark](spec/0F-punctuation-mark.gr)
+* [10 Emoji](spec/10-emoji.gr)
 * [11 Blockquote](spec/11-blockquote.gr)
-* [12 Footnote](spec/12-footnote.gr)
-* [13 Emoji](spec/13-emoji.gr)
+* [12 Admonition](spec/12-admonition.gr)
