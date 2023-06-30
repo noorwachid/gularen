@@ -1,4 +1,4 @@
-em++ --bind  -std=c++17 -Isource \
+em++ --bind  -std=c++17 -O3 -Isource \
 	-o binding/javascript/gularen.js \
 	binding/javascript/binding.cpp \
 	source/Gularen/Lexer.cpp \
