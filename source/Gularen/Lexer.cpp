@@ -1,10 +1,27 @@
 #include <Gularen/Lexer.h>
 #include <iostream>
+#include <fstream>
 
 namespace Gularen {
-	const Tokens& Lexer::parse(const std::string& content) {
-		this->tokens.clear();
+	void Lexer::load(const std::string& path) {
+		std::ifstream file(path);
+		file.seekg(0, std::ios::end);   
+		content.reserve(file.tellg());
+		file.seekg(0, std::ios::beg);
+		content.assign(
+			std::istreambuf_iterator<char>(file),
+			std::istreambuf_iterator<char>()
+		);
+	}
+
+	void Lexer::set(const std::string& content) {
 		this->content = content;
+	}
+
+	void Lexer::parse() {
+		if (content.empty()) return;
+
+		this->tokens.clear();
 		this->index = 0;
 
 		parseBlock();
@@ -12,8 +29,6 @@ namespace Gularen {
 		while (check(0)) {
 			parseInline();
 		}
-
-		return tokens;
 	}
 
 	const Tokens& Lexer::get() const {
@@ -130,7 +145,12 @@ namespace Gularen {
 				break;
 
 			case '\n':
-				add(TokenType::newline, count('\n'), "\\n");
+				// from comment
+				if (!tokens.empty() && tokens.back().type == TokenType::newline) {
+					tokens.back().count += count('\n');
+				} else {
+					add(TokenType::newline, count('\n'), "\\n");
+				}
 				parseBlock();
 				break;
 
@@ -595,7 +615,6 @@ namespace Gularen {
 			return;
 		}
 
-		advance(0);
 		std::string source;
 
 		while (check(0)) {
@@ -605,7 +624,7 @@ namespace Gularen {
 
 				if (check(2) && is(0, '-') && is(1, '-') && is(2, '-')) {
 					size_t closingCounter = count('-');
-					if (closingCounter == openingCounter) {
+					if (check(0) && is(0, '\n') && closingCounter == openingCounter) {
 						break;
 					}
 
@@ -635,7 +654,20 @@ namespace Gularen {
 			advance(0);
 		}
 
-		add(TokenType::codeSource, 1, source);
+		size_t trimBegin = 0;
+		size_t trimEnd = 0;
+
+		for (size_t i = 0; i < source.size() && source[i] == '\n'; ++i) {
+			++trimBegin;
+		}
+
+		for (size_t i = source.size(); source.size() && i > 0 && source[i] == '\n'; --i) {
+			++trimEnd;
+		}
+
+		size_t trimSize = trimEnd == source.size() ? source.size() : source.size() - trimBegin - trimEnd;
+
+		add(TokenType::codeSource, 1, source.substr(trimBegin, trimSize));
 		add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
 	}
 

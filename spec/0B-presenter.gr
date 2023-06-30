@@ -1,7 +1,10 @@
 >>> Presenter
-Depends on the frontend ability to present the resource otherwise became linker
+Depends on the frontend ability to present the resource.
+Like tsv can be presented as table or code block or a link to the resource.
 
 --- gr
+![mydata.tsv]
+
 ![https://www.youtube.com/watch?v=dQw4w9WgXcQ]
 
 ![cat.png]

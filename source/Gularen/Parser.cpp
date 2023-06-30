@@ -1,6 +1,6 @@
 #include <Gularen/Parser.h>
 #include <iostream>
-#include <csignal>
+#include <fstream>
 
 namespace Gularen {
 	bool hasNetProtocol(const std::string& reference) {
@@ -61,8 +61,66 @@ namespace Gularen {
 		return scopes.top();
 	}
 
-	const NodePtr& Parser::parse(const std::string& content) {
-		lexer.parse(content);
+	void Parser::set(const std::string& content, const std::string& path) {
+		lexer.set(content);
+		this->pathVirtual = true;
+		this->path = path;
+		this->previousPaths.clear();
+		this->previousPaths.push_back(path);
+	}
+
+	void Parser::load(const std::string& path) {
+		this->pathVirtual = false;
+		this->path = path;
+		this->previousPaths.clear();
+		this->previousPaths.push_back(path);
+		std::ifstream file(path);
+
+		if (!file.is_open()) {
+			lexer.set("");
+			return;
+		}
+
+		std::string content;
+		file.seekg(0, std::ios::end);   
+		content.reserve(file.tellg());
+		file.seekg(0, std::ios::beg);
+		content.assign(
+			std::istreambuf_iterator<char>(file),
+			std::istreambuf_iterator<char>()
+		);
+		
+		lexer.set(content);
+	}
+
+	NodePtr Parser::recursiveLoad(const std::string& directory, const std::string& nextPath) {
+		std::string nextFullPath = directory + "/" + nextPath;
+		for (const std::string& previousPath : previousPaths) {
+			if (previousPath == nextFullPath) {
+				return nullptr;
+			}
+		}
+		
+		Parser parser;
+		parser.load(nextFullPath);
+		parser.previousPaths.insert(parser.previousPaths.end(), previousPaths.begin(), previousPaths.end());
+		parser.parse();
+
+		NodePtr node = parser.get();
+		
+		if (node) {
+			static_cast<FileNode*>(node.get())->path = nextPath;
+		}
+
+		return node;
+	}
+
+	void Parser::parse() {
+		lexer.parse();
+		root = nullptr;
+
+		if (lexer.get().empty()) return;
+
 		index = 0;
 		lastNewline = 0;
 		lastIndent = 0;
@@ -71,7 +129,7 @@ namespace Gularen {
 			scopes.pop();
 		}
 
-		root = std::make_shared<Node>();
+		root = std::make_shared<FileNode>(pathVirtual ? "" : path);
 		scopes.push(root);
 
 		parseBlock();
@@ -79,12 +137,24 @@ namespace Gularen {
 		while (check(0)) {
 			parseInline();
 		}
-
-		return root;
 	}
 
 	const NodePtr& Parser::get() const {
 		return root;
+	}
+
+	void Parser::visit(const Visitor& visitor) {
+		visit(visitor, root);
+	}
+
+	void Parser::visit(const Visitor& visitor, const NodePtr& node) {
+		if (!visitor) return;
+
+		visitor(node);
+		
+		for (const NodePtr& childNode : node->children) {
+			visit(visitor, childNode);
+		}
 	}
 
 	void Parser::parseInline() {
@@ -254,6 +324,17 @@ namespace Gularen {
 			case TokenType::jumpMarker:
 				if (check(1) && is(1, TokenType::resource)) {
 					add(std::make_shared<FootnoteJumpNode>(get(1).value));
+					advance(1);
+					break;
+				}
+				// see default inline
+				break;
+
+			case TokenType::includeMarker:
+				if (check(1) && is(1, TokenType::resource)) {
+					std::string directory = path == "" ? std::filesystem::current_path().string() : std::filesystem::path(path).parent_path().string();
+					NodePtr fileNode = recursiveLoad(directory, get(1).value);
+					add(fileNode ? fileNode : std::make_shared<FileNode>(get(1).value));
 					advance(1);
 					break;
 				}

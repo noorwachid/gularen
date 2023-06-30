@@ -4,8 +4,12 @@
 #include <memory>
 #include <stack>
 
+void escapeYAML(const std::string& from, std::string& to);
+
 namespace Gularen {
 	enum class NodeGroup {
+		file,
+
 		text,
 		fs,
 		heading,
@@ -46,7 +50,21 @@ namespace Gularen {
 		Node(NodeGroup group) : group{group} {}
 
 		virtual std::string toString() {
-			return "base " + std::to_string(static_cast<int>(group));
+			return "base: " + std::to_string(static_cast<int>(group));
+		}
+	};
+
+	struct FileNode : Node {
+		std::string path;
+
+		FileNode(const std::string& path) : path{path} {
+			group = NodeGroup::file;
+		}
+
+		virtual std::string toString() {
+			if (path.empty()) return "file:";
+
+			return "file: " + path;
 		}
 	};
 
@@ -58,7 +76,7 @@ namespace Gularen {
 		}
 		
 		virtual std::string toString() override {
-			return "text " + value;
+			return "text: " + value;
 		}
 	};
 	
@@ -364,7 +382,8 @@ namespace Gularen {
 			}
 
 			if (!source.empty()) {
-				string += " source: " + source;
+				string += " source: ";
+				escapeYAML(source, string);
 			}
 
 			return string;

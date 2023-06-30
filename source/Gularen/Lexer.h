@@ -6,7 +6,11 @@
 namespace Gularen {
 	class Lexer {
 	public:
-		const Tokens& parse(const std::string& content);
+		void load(const std::string& path);
+
+		void set(const std::string& content);
+
+		void parse();
 		
 		const Tokens& get() const;
 

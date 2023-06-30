@@ -1,4 +1,7 @@
 >>> Inclusion
+Include file and parse the content as gularen markup.
+
+</> Only local file that allowed to be included.
 
 --- gr
 ?[chapter-1.gr]
