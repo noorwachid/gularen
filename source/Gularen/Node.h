@@ -4,8 +4,6 @@
 #include <memory>
 #include <stack>
 
-void escapeYAML(const std::string& from, std::string& to);
-
 namespace Gularen {
 	enum class NodeGroup {
 		file,
@@ -45,39 +43,25 @@ namespace Gularen {
 		NodeGroup group;
 		NodeChildren children;
 
-		Node() = default;
-		
-		Node(NodeGroup group) : group{group} {}
+		virtual std::string toString();
 
-		virtual std::string toString() {
-			return "base: " + std::to_string(static_cast<int>(group));
-		}
+		static std::string escape(const std::string& from);
 	};
 
 	struct FileNode : Node {
 		std::string path;
 
-		FileNode(const std::string& path) : path{path} {
-			group = NodeGroup::file;
-		}
+		FileNode(const std::string& path);
 
-		virtual std::string toString() {
-			if (path.empty()) return "file:";
-
-			return "file: " + path;
-		}
+		virtual std::string toString();
 	};
 
 	struct TextNode : Node {
 		std::string value;
 
-		TextNode(const std::string& value) : value{value} {
-			group = NodeGroup::text;
-		}
-		
-		virtual std::string toString() override {
-			return "text: " + value;
-		}
+		TextNode(const std::string& value);
+
+		virtual std::string toString() override;
 	};
 	
 	enum class PunctType {
@@ -96,25 +80,17 @@ namespace Gularen {
 		PunctType type;
 		std::string value;
 
-		PunctNode(PunctType type, const std::string& value) : type{type}, value{value} {
-			group = NodeGroup::punct;
-		}
+		PunctNode(PunctType type, const std::string& value);
 
-		virtual std::string toString() {
-			return "punct " + std::to_string(static_cast<int>(type)) + " " + value;
-		}
+		virtual std::string toString();
 	};
 
 	struct EmojiNode : Node {
 		std::string value;
 
-		EmojiNode(const std::string& value) :  value{value} {
-			group = NodeGroup::emoji;
-		}
+		EmojiNode(const std::string& value);
 
-		virtual std::string toString() {
-			return "emoji " + value;
-		}
+		virtual std::string toString();
 	};
 	
 	enum class FSType {
@@ -125,14 +101,10 @@ namespace Gularen {
 
 	struct FSNode : Node {
 		FSType type;
-		
-		FSNode(FSType type) : type{type} {
-			group = NodeGroup::fs;
-		}
 
-		virtual std::string toString() override {
-			return "fs " + std::to_string(static_cast<int>(type));
-		}
+		FSNode(FSType type);
+
+		virtual std::string toString() override;
 	};
 
 	enum class HeadingType {
@@ -145,30 +117,16 @@ namespace Gularen {
 	struct HeadingNode : Node {
 		HeadingType type;
 		std::string id;
-		
-		HeadingNode(HeadingType type) : type{type} {
-			group = NodeGroup::heading;
-		}
 
-		virtual std::string toString() override {
-			std::string string = "heading " + std::to_string(static_cast<int>(type));
+		HeadingNode(HeadingType type);
 
-			if (!id.empty()) {
-				string += " id: " + id;
-			}
-			
-			return string;
-		}
+		virtual std::string toString() override;
 	};
 	
 	struct ParagraphNode : Node {
-		ParagraphNode() {
-			group = NodeGroup::paragraph;
-		}
-	
-		virtual std::string toString() override {
-			return "paragraph";
-		}
+		ParagraphNode();
+
+		virtual std::string toString() override;
 	};
 
 	enum class AdmonType {
@@ -182,46 +140,34 @@ namespace Gularen {
 
 	struct AdmonNode : Node {
 		AdmonType type;
-		AdmonNode(AdmonType type) : type{type} {
-			group = NodeGroup::admon;
-		}
 
-		virtual std::string toString() override {
-			return "admon " + std::to_string(static_cast<int>(type));
-		}
+		AdmonNode(AdmonType type);
+
+		virtual std::string toString() override;
 	};
 
 	struct FootnoteJumpNode : Node {
 		std::string value;
-		FootnoteJumpNode(const std::string& value) : value{value} {
-			group = NodeGroup::footnoteJump;
-		}
 
-		virtual std::string toString() override {
-			return "footnoteJump " + value;
-		}
+		FootnoteJumpNode(const std::string& value);
+
+		virtual std::string toString() override;
 	};
 
 	struct FootnoteDescribeNode : Node {
 		std::string value;
 
-		FootnoteDescribeNode(const std::string& value) : value{value} {
-			group = NodeGroup::footnoteDescribe;
-		}
+		FootnoteDescribeNode(const std::string& value);
 
-		virtual std::string toString() override {
-			return "footnoteDescribe";
-		}
+		virtual std::string toString() override;
 	};
 
 	struct IndentNode : Node {
 		IndentNode() {
 			group = NodeGroup::indent;
 		}
-	
-		virtual std::string toString() override {
-			return "indent";
-		}
+
+		virtual std::string toString() override;
 	};
 
 	enum class BreakType {
@@ -232,47 +178,41 @@ namespace Gularen {
 	struct BreakNode : Node {
 		BreakType type;
 
-		BreakNode(BreakType type) : type{type} {
-			group = NodeGroup::break_;;
-		}
-	
-		virtual std::string toString() override {
-			return "break " + std::to_string(static_cast<int>(type));
-		}
+		BreakNode(BreakType type);
+
+		virtual std::string toString() override;
 	};
 
 	enum class ListType {
 		bullet,
 		index,
-		checkbox,
+		check,
 	};
 
 	struct ListNode : Node {
 		ListType type;
 
-		ListNode(ListType type) : type{type} {
-			group = NodeGroup::list;
-		}
-	
-		virtual std::string toString() override {
-			return "list " + std::to_string(static_cast<int>(type));
-		}
+		ListNode(ListType type);
+
+		virtual std::string toString() override;
+	};
+
+	enum class ListItemState {
+		none,
+		todo,
+		done,
+		canceled,
 	};
 
 	struct ListItemNode : Node {
-		size_t state = 0;
+		ListItemState state;
+		size_t index;
 
-		ListItemNode() {
-			group = NodeGroup::listItem;
-		}
+		ListItemNode(size_t index);
 
-		ListItemNode(size_t state) : state{state} {
-			group = NodeGroup::listItem;
-		}
-	
-		virtual std::string toString() override {
-			return "listItem state: " + std::to_string(static_cast<int>(state));
-		}
+		ListItemNode(size_t index, ListItemState state);
+
+		virtual std::string toString() override;
 	};
 
 	enum class Alignment {
@@ -285,39 +225,16 @@ namespace Gularen {
 		size_t header = 0;
 		size_t footer = 0;
 		std::vector<Alignment> alignments;
-		
-		TableNode() {
-			group = NodeGroup::table;
-		}
 
-		virtual std::string toString() override {
-			std::string string =  "table";
-			if (header > 0) {
-				string += " header: " + std::to_string(header);
-			}
-			if (footer > 0) {
-				string += " footer: " + std::to_string(footer);
-			}
+		TableNode();
 
-			if (!alignments.empty()) {
-				string += " alignments: ";
-				for (Alignment alignment : alignments) {
-					string += std::to_string(static_cast<int>(alignment)) + " ";
-				}
-			}
-
-			return string;
-		}
+		virtual std::string toString() override;
 	};
 
 	struct TableRowNode : Node {
-		TableRowNode() {
-			group = NodeGroup::tableRow;
-		}
+		TableRowNode();
 
-		virtual std::string toString() override {
-			return "tableRow";
-		}
+		virtual std::string toString() override;
 	};
 
 	struct TableCellNode : Node {
@@ -325,9 +242,7 @@ namespace Gularen {
 			group = NodeGroup::tableCell;
 		}
 
-		virtual std::string toString() override {
-			return "tableCell";
-		}
+		virtual std::string toString() override;
 	};
 
 	enum class ResourceType {
@@ -342,28 +257,10 @@ namespace Gularen {
 		std::string value;
 		std::string id;
 		std::string label;
-		
-		ResourceNode(ResourceType type, const std::string& value) : type{type}, value{value} {
-			group = NodeGroup::resource;
-		}
 
-		virtual std::string toString() override {
-			std::string string = "resource " + std::to_string(static_cast<int>(type));
+		ResourceNode(ResourceType type, const std::string& value);
 
-			if (!value.empty()) {
-				string += " value: " + value;
-			}
-
-			if (!id.empty()) {
-				string += " id: " + id;
-			}
-
-			if (!label.empty()) {
-				string += " label: " + label;
-			}
-			
-			return string;
-		}
+		virtual std::string toString() override;
 	};
 
 	struct CodeNode : Node {
@@ -374,19 +271,6 @@ namespace Gularen {
 			group = NodeGroup::code;
 		}
 
-		virtual std::string toString() override {
-			std::string string = "code";
-
-			if (!lang.empty()) {
-				string += " lang: " + lang;
-			}
-
-			if (!source.empty()) {
-				string += " source: ";
-				escapeYAML(source, string);
-			}
-
-			return string;
-		}
+		virtual std::string toString() override;
 	};
 }

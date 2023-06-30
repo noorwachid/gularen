@@ -74,6 +74,12 @@ namespace Gularen {
 		this->path = path;
 		this->previousPaths.clear();
 		this->previousPaths.push_back(path);
+
+		if (std::filesystem::is_directory(path)) {
+			lexer.set("");
+			return;
+		}
+
 		std::ifstream file(path);
 
 		if (!file.is_open()) {
@@ -148,7 +154,7 @@ namespace Gularen {
 	}
 
 	void Parser::visit(const Visitor& visitor, const NodePtr& node) {
-		if (!visitor) return;
+		if (!visitor || !node) return;
 
 		visitor(node);
 		
@@ -436,7 +442,7 @@ namespace Gularen {
 				if (getScope()->group != NodeGroup::list) {
 					addScope(std::make_shared<ListNode>(ListType::bullet));
 				}
-				addScope(std::make_shared<ListItemNode>());
+				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1));
 				advance(0);
 				break;
 
@@ -448,13 +454,22 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::checkbox:
+			case TokenType::checkbox: {
 				if (getScope()->group != NodeGroup::list) {
 					addScope(std::make_shared<ListNode>(ListType::index));
 				}
-				addScope(std::make_shared<ListItemNode>(get(0).count));
+				
+				ListItemState state = ListItemState::none;
+				switch (get(0).count) {
+					case 0: state = ListItemState::todo;
+					case 1: state = ListItemState::done;
+					case 2: state = ListItemState::canceled;
+				}
+				
+				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1, state));
 				advance(0);
 				break;
+			}
 
 			case TokenType::pipe:
 				if (getScope()->group != NodeGroup::table) {

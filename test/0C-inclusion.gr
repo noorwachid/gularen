@@ -1,22 +1,24 @@
 >>> Inclusion
 
-~ >> 1 Level Inclusion
-~ --- gr
-~ ?[content/1.gr]
-~ ?[content/2.gr]
-~ ---
-~ --- yaml
-~ file:
-~   file: content/1.gr
-~     paragraph
-~       text: hello world
-~   file: content/2.gr
-~     code lang: tsv source: 1\t2\n3\t4
-~ ---
-~ 
-~ >> Include Itself
-~ --- gr
-~ ?[0C-inclusion.gr]
-~ ---
-~ ---
-~ ---
+>> 1 Level Inclusion
+--- gr
+?[content/1.gr]
+?[content/2.gr]
+---
+--- gr-tree
+file
+  file content/1.gr
+    paragraph
+      text hello world
+  file content/2.gr
+    code lang:tsv source:1\t2\n3\t4
+---
+
+>> Include Itself
+--- gr
+?[0C-inclusion.gr]
+---
+--- gr-tree
+file
+  file 0C-inclusion.gr
+---

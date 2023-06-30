@@ -3,17 +3,6 @@
 #include <fstream>
 
 namespace Gularen {
-	void Lexer::load(const std::string& path) {
-		std::ifstream file(path);
-		file.seekg(0, std::ios::end);   
-		content.reserve(file.tellg());
-		file.seekg(0, std::ios::beg);
-		content.assign(
-			std::istreambuf_iterator<char>(file),
-			std::istreambuf_iterator<char>()
-		);
-	}
-
 	void Lexer::set(const std::string& content) {
 		this->content = content;
 	}
