@@ -27,7 +27,7 @@ namespace Gularen {
 
 		const NodePtr& getScope();
 
-		void parse();
+		void parseInline();
 
 		void parseBlock();
 
@@ -41,5 +41,6 @@ namespace Gularen {
 		size_t lastNewline;
 		size_t lastIndent;
 		size_t lastIndentCall;
+		NodePtr lastScope = nullptr;
 	};
 }

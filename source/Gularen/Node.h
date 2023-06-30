@@ -25,6 +25,11 @@ namespace Gularen {
 
 		punct,
 		emoji,
+
+		admon,
+
+		footnoteJump,
+		footnoteDescribe,
 	};
 
 	struct Node;
@@ -145,6 +150,47 @@ namespace Gularen {
 	
 		virtual std::string toString() override {
 			return "paragraph";
+		}
+	};
+
+	enum class AdmonType {
+		note,
+		hint,
+		important,
+		warning,
+		danger,
+		seeAlso
+	};
+
+	struct AdmonNode : Node {
+		AdmonType type;
+		AdmonNode(AdmonType type) : type{type} {
+			group = NodeGroup::admon;
+		}
+
+		virtual std::string toString() override {
+			return "admonition " + std::to_string(static_cast<int>(type));
+		}
+	};
+
+	struct FootnoteJumpNode : Node {
+		std::string value;
+		FootnoteJumpNode(const std::string& value) : value{value} {
+			group = NodeGroup::footnoteJump;
+		}
+
+		virtual std::string toString() override {
+			return "footnoteJump " + value;
+		}
+	};
+
+	struct FootnoteDescribeNode : Node {
+		FootnoteDescribeNode() {
+			group = NodeGroup::footnoteDescribe;
+		}
+
+		virtual std::string toString() override {
+			return "footnoteDescribe";
 		}
 	};
 

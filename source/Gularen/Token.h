@@ -42,7 +42,7 @@ namespace Gularen {
 
 		blockquote,
 
-		admonition,
+		admon,
 
 		emoji,
 

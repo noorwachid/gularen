@@ -484,37 +484,37 @@ namespace Gularen {
 					if (is(1, '/')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admonition, 1, "</>");
+						add(TokenType::admon, 1, "</>");
 						break;
 					}
 					if (is(1, '?')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admonition, 2, "<?>");
+						add(TokenType::admon, 2, "<?>");
 						break;
 					}
 					if (is(1, '!')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admonition, 3, "<!>");
+						add(TokenType::admon, 3, "<!>");
 						break;
 					}
 					if (is(1, '^')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admonition, 4, "<^>");
+						add(TokenType::admon, 4, "<^>");
 						break;
 					}
 					if (is(1, '@')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admonition, 5, "<@>");
+						add(TokenType::admon, 5, "<@>");
 						break;
 					}
 					if (is(1, '&')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admonition, 6, "<&>");
+						add(TokenType::admon, 6, "<&>");
 						break;
 					}
 				}

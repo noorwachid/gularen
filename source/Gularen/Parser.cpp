@@ -1,5 +1,6 @@
 #include <Gularen/Parser.h>
 #include <iostream>
+#include <csignal>
 
 namespace Gularen {
 	bool hasNetProtocol(const std::string& reference) {
@@ -52,8 +53,8 @@ namespace Gularen {
 	}
 
 	void Parser::removeScope() {
-		if (scopes.size() == 1) return;
-		scopes.pop();
+		if (scopes.size() > 1)
+			scopes.pop();
 	}
 
 	const NodePtr& Parser::getScope() {
@@ -76,7 +77,7 @@ namespace Gularen {
 		parseBlock();
 
 		while (check(0)) {
-			parse();
+			parseInline();
 		}
 
 		return root;
@@ -86,7 +87,7 @@ namespace Gularen {
 		return root;
 	}
 
-	void Parser::parse() {
+	void Parser::parseInline() {
 		switch (get(0).type) {
 			case TokenType::text:
 				add(std::make_shared<TextNode>(get(0).value));
@@ -250,10 +251,24 @@ namespace Gularen {
 				break;
 			}
 
+			case TokenType::jumpMarker:
+				if (check(1) && is(1, TokenType::resource)) {
+					add(std::make_shared<FootnoteJumpNode>(get(1).value));
+					advance(1);
+					break;
+				}
+				// see default inline
+				break;
+
 			case TokenType::newline:
-				lastNewline = get(0).count;
-				advance(0);
-				parseBlock();
+				lastNewline = 0;
+				while (check(0) && is(0, TokenType::newline)) {
+					lastNewline += get(0).count;
+					advance(0);
+				}
+				if (check(0)) {
+					parseBlock();
+				}
 				break;
 				
 			default:
@@ -266,6 +281,7 @@ namespace Gularen {
 	void Parser::parseBlock() {
 		switch (getScope()->group) {
 			case NodeGroup::listItem:
+				lastScope = getScope();
 				removeScope();
 
 				if (lastNewline > 1 || 
@@ -274,14 +290,17 @@ namespace Gularen {
 					is(0, TokenType::headingMarker)
 					) {
 					removeScope();
+					lastScope = nullptr;
 				}
 				break;
 
 			case NodeGroup::heading:
+				lastScope = getScope();
 				removeScope();
 				break;
 
 			case NodeGroup::paragraph:
+				lastScope = nullptr;
 				if (lastNewline > 1 || 
 					is(0, TokenType::bullet) ||
 					is(0, TokenType::index) ||
@@ -294,10 +313,17 @@ namespace Gularen {
 				break;
 
 			case NodeGroup::tableRow:
+				lastScope = nullptr;
+				removeScope();
+				break;
+
+			case NodeGroup::footnoteDescribe:
+				lastScope = getScope();
 				removeScope();
 				break;
 			
 			default:
+				lastScope = nullptr;
 				break;
 		}
 
@@ -381,12 +407,35 @@ namespace Gularen {
 				}
 				if (check(3) && is(1, TokenType::codeLang) && is(2, TokenType::codeSource) && is(3, TokenType::codeMarker)) {
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
+					codeNode->lang = get(1).value;
 					codeNode->source = get(2).value;
 					add(codeNode);
 					advance(3);
 					break;
 				}
+
 				// see default inline 
+				break;
+			}
+
+			case TokenType::describeMarker:
+				addScope(std::make_shared<FootnoteDescribeNode>());
+				advance(1);
+				break;
+
+			case TokenType::admon: {
+				AdmonType type = AdmonType::note;
+				switch (get(0).count) {
+					case 1: type = AdmonType::note;
+					case 2: type = AdmonType::hint;
+					case 3: type = AdmonType::important;
+					case 4: type = AdmonType::warning;
+					case 5: type = AdmonType::danger;
+					case 6: type = AdmonType::seeAlso;
+					default: break;
+				}
+				add(std::make_shared<AdmonNode>(type));
+				advance(1);
 				break;
 			}
 
@@ -404,15 +453,24 @@ namespace Gularen {
 	void Parser::parseIndent(size_t indent) {
 		if (lastIndent > indent) {
 			while (scopes.size() > 1 && lastIndent + 1 > indent) {
-				removeScope();
 				if (getScope()->group == NodeGroup::indent) {
-					--lastIndent;
+					if (lastIndent > 0) --lastIndent;
 				}
+				removeScope();
 			}
 			lastIndent = indent;
 		} else if (lastIndent < indent) {
-			if (getScope()->group == NodeGroup::list && lastIndent + 1 == indent) {
-				addScope(getScope()->children.back());
+			if (lastIndent + 1 == indent) {
+				// list is guarantied to have one listItem
+				if (lastScope && (
+					lastScope->group == NodeGroup::listItem ||
+					lastScope->group == NodeGroup::footnoteDescribe ||
+					lastScope->group == NodeGroup::admon
+					)) {
+					// NOTE: not using helper addScope to avoid circular reference,
+					//       it took me 2 days to find the bug
+					scopes.push(lastScope);
+				}
 			}
 
 			while (lastIndent < indent) {
