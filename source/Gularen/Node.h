@@ -169,7 +169,7 @@ namespace Gularen {
 		}
 
 		virtual std::string toString() override {
-			return "admonition " + std::to_string(static_cast<int>(type));
+			return "admon " + std::to_string(static_cast<int>(type));
 		}
 	};
 
@@ -185,7 +185,9 @@ namespace Gularen {
 	};
 
 	struct FootnoteDescribeNode : Node {
-		FootnoteDescribeNode() {
+		std::string value;
+
+		FootnoteDescribeNode(const std::string& value) : value{value} {
 			group = NodeGroup::footnoteDescribe;
 		}
 

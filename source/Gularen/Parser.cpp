@@ -321,6 +321,11 @@ namespace Gularen {
 				lastScope = getScope();
 				removeScope();
 				break;
+
+			case NodeGroup::admon:
+				lastScope = getScope();
+				removeScope();
+				break;
 			
 			default:
 				lastScope = nullptr;
@@ -419,23 +424,27 @@ namespace Gularen {
 			}
 
 			case TokenType::describeMarker:
-				addScope(std::make_shared<FootnoteDescribeNode>());
-				advance(1);
+				if (check(1) && is(1, TokenType::resource)) {
+					addScope(std::make_shared<FootnoteDescribeNode>(get(1).value));
+					advance(1);
+				}
+
+				// see default inline
 				break;
 
 			case TokenType::admon: {
 				AdmonType type = AdmonType::note;
 				switch (get(0).count) {
-					case 1: type = AdmonType::note;
-					case 2: type = AdmonType::hint;
-					case 3: type = AdmonType::important;
-					case 4: type = AdmonType::warning;
-					case 5: type = AdmonType::danger;
-					case 6: type = AdmonType::seeAlso;
+					case 1: type = AdmonType::note; break;
+					case 2: type = AdmonType::hint; break;
+					case 3: type = AdmonType::important; break;
+					case 4: type = AdmonType::warning; break;
+					case 5: type = AdmonType::danger; break;
+					case 6: type = AdmonType::seeAlso; break;
 					default: break;
 				}
-				add(std::make_shared<AdmonNode>(type));
-				advance(1);
+				addScope(std::make_shared<AdmonNode>(type));
+				advance(0);
 				break;
 			}
 
