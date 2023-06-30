@@ -1,18 +1,33 @@
 >>> Code
 
 >> Blank
+---- gr
 ---
+---
+----
+--- gr-tree
+code
 ---
 
 >> One line
+---- gr
 ---
 
+---
+----
+--- gr-tree
+code
 ---
 
 >> Triming
+---- gr
 ---
 
 some
 
+---
+----
+--- gr-tree
+code source:some
 ---
 

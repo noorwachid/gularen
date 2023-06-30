@@ -9,7 +9,7 @@ namespace Gularen {
 
 	class Parser {
 	public:
-		void set(const std::string& content, const std::string& path);
+		void set(const std::string& content, const std::string& path = "");
 
 		void load(const std::string& path);
 

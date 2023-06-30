@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en-us" data-theme="dark">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Gularen</title>
+	<style>
+		#split {
+			display: flex;
+			flex-direction: row;
+		}
+
+		#input,
+		#output {
+			overflow-y: scroll;
+			padding: 12px 16px;
+			width: 50%;
+			flex-basis: 50%;
+			height: 100vh;
+		}
+
+		#input {
+			font-family: monospace;
+			outline: 0;
+			border: 0;
+			border-right: 1px solid #333;
+		}
+
+		body {
+			display: block !important;
+		}
+
+		.indent {
+			padding-left: 32px;
+		}
+	</style>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+</head>
+
+<body>
+	<div id="split">
+		<textarea id="input" placeholder="type here..."></textarea>
+		<div id="output">
+		</div>
+	</div>
+
+	<script src="gularen.js"></script>
+	<script>
+		function transpile() {
+			outputNode.innerHTML = Module.transpile(inputNode.value);
+		}
+
+		Module.onRuntimeInitialized = () => {
+			transpile();
+		};
+
+		const inputNode = document.getElementById("input");
+		const outputNode = document.getElementById("output");
+
+		inputNode.value = `
+>>> Gularen
+Well-thought markup language
+
+>> Comment
+Now you see me ~ now you dont
+
+>> Font Style
+Hello *darkness* _my old_ \`friend\`.
+
+I've come *to _talk \`with\` you_ again*.
+
+>> Indentation
+	I believe I can fly!
+		Look mom no hand!
+
+>> List
+- One
+- Two
+- Three
+
+1. One
+2. Two
+3. Three
+
+>> Table
+| ID | Name |
+|---:|------|
+|  1 | Noor | 
+|  2 | Dori | 
+
+
+>> Code
+--- js
+console.log('hello world');
+---
+`;
+
+		inputNode.addEventListener('input', transpile);
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

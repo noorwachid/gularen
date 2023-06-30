@@ -16,6 +16,13 @@ add_library(gularen ${gularen_sources})
 target_include_directories(gularen PUBLIC source)
 set_target_properties(gularen PROPERTIES CXX_STANDARD 17)
 
-add_executable(gularen-test source/test.cpp)
+add_executable(gularen-test source/Gularen/CLI/test.cpp)
 set_target_properties(gularen-test PROPERTIES CXX_STANDARD 17)
 target_link_libraries(gularen-test gularen)
+
+add_executable(gularen-html 
+	source/Gularen/Transpiler/HTML.cpp
+	source/Gularen/CLI/transpilerHTML.cpp
+)
+set_target_properties(gularen-html PROPERTIES CXX_STANDARD 17)
+target_link_libraries(gularen-html gularen)
