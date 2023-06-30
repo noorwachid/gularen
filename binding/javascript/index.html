@@ -7,6 +7,8 @@
 	<title>Gularen</title>
 	<style>
 		#split {
+			margin: 0 auto;
+			max-width: 1200px;
 			display: flex;
 			flex-direction: row;
 		}
@@ -29,19 +31,27 @@
 
 		body {
 			display: block !important;
+			overflow: hidden;
 		}
 
 		.indent {
 			padding-left: 32px;
 		}
+		ul.checklist {
+			list-style: none;
+		}
+		ul.checklist>li>input[type=checkbox] {
+			margin-bottom: 0;
+		}
 	</style>
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
 </head>
 
 <body>
 	<div id="split">
-		<textarea id="input" placeholder="type here..."></textarea>
+		<textarea id="input" placeholder="type here..." autofocus></textarea>
 		<div id="output">
 		</div>
 	</div>
@@ -50,6 +60,7 @@
 	<script>
 		function transpile() {
 			outputNode.innerHTML = Module.transpile(inputNode.value);
+			console.log(Module.transpile(inputNode.value));
 		}
 
 		Module.onRuntimeInitialized = () => {
@@ -73,7 +84,7 @@ I've come *to _talk \`with\` you_ again*.
 
 >> Indentation
 	I believe I can fly!
-		Look mom no hand!
+	    Look mom no hand!
 
 >> List
 - One
@@ -84,23 +95,49 @@ I've come *to _talk \`with\` you_ again*.
 2. Two
 3. Three
 
+[ ] Todo
+[v] Done
+[x] Cancelled
+
 >> Table
 | ID | Name |
 |---:|------|
 |  1 | Noor | 
 |  2 | Dori | 
 
+>> Resource
+A link [https://github.com/noorwachid]
+
+![https://i.imgur.com/R3o5F6T.jpeg]
+
 
 >> Code
 --- js
 console.log('hello world');
+---
+
+--- mermaid
+graph TD;
+    A-->B
+    A-->C
+    B-->D
+    C-->D
 ---
 `;
 
 		inputNode.addEventListener('input', transpile);
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-	<script>hljs.initHighlightingOnLoad();</script>
+	<script>hljs.highlightAll();</script>
+	<script type="module">
+		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+		mermaid.initialize({ 
+			startOnLoad: true 
+		});
+		document.getElementById('input').addEventListener('input', () => {
+			mermaid.init(undefined, '.mermaid');
+		})
+	</script>
 </body>
 
 </html>

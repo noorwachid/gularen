@@ -43,6 +43,11 @@ namespace Gularen {
 		NodeGroup group;
 		NodeChildren children;
 
+		template<class T>
+		const T& as() {
+			return *static_cast<T*>(this);
+		}
+
 		virtual std::string toString();
 
 		static std::string escape(const std::string& from);

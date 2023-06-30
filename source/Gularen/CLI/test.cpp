@@ -29,14 +29,15 @@ void print(const Gularen::NodePtr& node) {
 	build(std::cout, node);
 }
 
-void test(const std::string& path, bool showTree) {
+void test(const std::string& path, bool showTree, bool showToken) {
 	std::string prevSection;
 	std::string prevCode;
+	std::string prevCodeLexer;
 
 	Gularen::Parser parser;
 	parser.load(path);
 	parser.parse();
-	parser.visit([&prevSection, &prevCode, path, showTree](const Gularen::NodePtr& node) {
+	parser.visit([&prevSection, &prevCode, &prevCodeLexer, path, showTree, showToken](const Gularen::NodePtr& node) {
 		if (node->group == Gularen::NodeGroup::heading) {
 			Gularen::HeadingType type = static_cast<Gularen::HeadingNode*>(node.get())->type;
 			std::ostringstream out;
@@ -64,6 +65,16 @@ void test(const std::string& path, bool showTree) {
 				std::ostringstream out;
 				build(out, parser.get());
 				prevCode = out.str();
+
+				if (showToken) {
+					Gularen::Lexer lexer;
+					lexer.set(codeNode->source);
+					lexer.parse();
+					prevCodeLexer.clear();
+					for (const Gularen::Token& token : lexer.get()) {
+						prevCodeLexer += token.toString() + '\n';
+					}
+				}
 				return;
 			}
 
@@ -72,6 +83,10 @@ void test(const std::string& path, bool showTree) {
 				bool passed = prevCode == codeNode->source;
 
 				std::cout << (passed ? "[\x1B[38:5:10mPASS\x1B[0m]" : "[\x1B[38:5:9mFAILED\x1B[0m]") << ' ' << prevSection << '\n';
+
+				if (showToken) {
+					std::cout << prevCodeLexer << '\n';
+				}
 
 				if (showTree) {
 					std::cout << "\x1B[38:5:247m--- eval\n";
@@ -91,15 +106,16 @@ void test(const std::string& path, bool showTree) {
 int main(int argc, char** argv) {
 	if (argc > 1) {
 		bool showTree = argc > 2 && argv[2] == std::string("show-tree");
+		bool showToken = argc > 2 && argv[2] == std::string("show-token");
 
 		if (std::filesystem::is_directory(argv[1])) {
 			for (const auto& entry : std::filesystem::directory_iterator(argv[1])) {
 				if (entry.is_regular_file()) {
-					test(entry.path().string(), showTree);
+					test(entry.path().string(), showTree, showToken);
 				}
 			}
 		} else {
-			test(argv[1], showTree);
+			test(argv[1], showTree, showToken);
 		}
 
 		return 0;

@@ -530,7 +530,8 @@ ol,
 p,
 pre,
 table,
-ul {
+ul,
+div.mermaid {
   margin-bottom: 2.5rem;
 }
 

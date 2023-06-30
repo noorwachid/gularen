@@ -402,6 +402,16 @@ namespace Gularen {
 			case NodeGroup::tableRow:
 				lastScope = nullptr;
 				removeScope();
+
+				if (lastNewline > 1 || 
+					is(0, TokenType::text) ||
+					is(0, TokenType::bullet) ||
+					is(0, TokenType::index) ||
+					is(0, TokenType::checkbox) ||
+					is(0, TokenType::headingMarker)
+					) {
+					removeScope();
+				}
 				break;
 
 			case NodeGroup::footnoteDescribe:
@@ -456,14 +466,14 @@ namespace Gularen {
 
 			case TokenType::checkbox: {
 				if (getScope()->group != NodeGroup::list) {
-					addScope(std::make_shared<ListNode>(ListType::index));
+					addScope(std::make_shared<ListNode>(ListType::check));
 				}
 				
 				ListItemState state = ListItemState::none;
 				switch (get(0).count) {
-					case 0: state = ListItemState::todo;
-					case 1: state = ListItemState::done;
-					case 2: state = ListItemState::canceled;
+					case 0: state = ListItemState::todo; break;
+					case 1: state = ListItemState::done; break;
+					case 2: state = ListItemState::canceled; break;
 				}
 				
 				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1, state));

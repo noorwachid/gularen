@@ -439,14 +439,17 @@ namespace Gularen {
 				if (check(2) && is(2, ']')) {
 					if (is(1, ' ')) {
 						add(TokenType::checkbox, 0, "[ ]");
+						advance(2);
 						break;
 					}
 					if (is(1, 'v')) {
 						add(TokenType::checkbox, 1, "[v]");
+						advance(2);
 						break;
 					}
 					if (is(1, 'x')) {
 						add(TokenType::checkbox, 2, "[x]");
+						advance(2);
 						break;
 					}
 				}
