@@ -37,9 +37,11 @@
 		.indent {
 			padding-left: 32px;
 		}
+
 		ul.checklist {
 			list-style: none;
 		}
+
 		ul.checklist>li>input[type=checkbox] {
 			margin-bottom: 0;
 		}
@@ -47,6 +49,8 @@
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+		integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
 </head>
 
 <body>
@@ -60,7 +64,7 @@
 	<script>
 		function transpile() {
 			outputNode.innerHTML = Module.transpile(inputNode.value);
-			console.log(Module.transpile(inputNode.value));
+			// console.log(Module.transpile(inputNode.value));
 		}
 
 		Module.onRuntimeInitialized = () => {
@@ -112,16 +116,23 @@ A link [https://github.com/noorwachid]
 
 
 >> Code
+> Syntax Highlighting
 --- js
 console.log('hello world');
 ---
 
+> UML Diagram
 --- mermaid
 graph TD;
     A-->B
     A-->C
     B-->D
     C-->D
+---
+
+> Math Notation
+--- katex
+2+\\frac{1}{x}
 ---
 `;
 
@@ -131,12 +142,26 @@ graph TD;
 	<script>hljs.highlightAll();</script>
 	<script type="module">
 		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-		mermaid.initialize({ 
-			startOnLoad: true 
+		mermaid.initialize({
+			startOnLoad: true
 		});
 		document.getElementById('input').addEventListener('input', () => {
-			mermaid.init(undefined, '.mermaid');
+			mermaid.init(undefined, '.language-presenter.mermaid');
 		})
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
+		integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx"
+		crossorigin="anonymous"></script>
+	<script>
+		function renderKatex() {
+			document.querySelectorAll('.language-presenter.katex').forEach(node => {
+				katex.render(node.innerHTML, node);
+			})
+		}
+		document.getElementById('input').addEventListener('input', renderKatex)
+		document.addEventListener("DOMContentLoaded", () => {
+			renderKatex();
+		});
 	</script>
 </body>
 

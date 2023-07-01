@@ -372,7 +372,7 @@ namespace Gularen {
 				removeScope();
 
 				if (lastNewline > 1 || 
-					is(0, TokenType::text) ||
+					!(is(0, TokenType::bullet) || is(0, TokenType::index) || is(0, TokenType::checkbox)) ||
 					is(0, TokenType::pipe) ||
 					is(0, TokenType::headingMarker)
 					) {
@@ -404,10 +404,10 @@ namespace Gularen {
 				removeScope();
 
 				if (lastNewline > 1 || 
-					is(0, TokenType::text) ||
 					is(0, TokenType::bullet) ||
 					is(0, TokenType::index) ||
 					is(0, TokenType::checkbox) ||
+					!is(0, TokenType::pipe) ||
 					is(0, TokenType::headingMarker)
 					) {
 					removeScope();
@@ -554,13 +554,10 @@ namespace Gularen {
 				break;
 			}
 
-			case TokenType::text:
+			default:
 				if (getScope()->group != NodeGroup::paragraph) {
 					addScope(std::make_shared<ParagraphNode>());
 				}
-				break;
-
-			default:
 				break;
 		}
 	}

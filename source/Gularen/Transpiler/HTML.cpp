@@ -95,9 +95,9 @@ namespace Gularen::Transpiler {
 
 				case NodeGroup::code: {
 					const CodeNode& codeNode = node->as<CodeNode>();
-					if (codeNode.lang == "mermaid") {
+					if (codeNode.lang == "mermaid" || codeNode.lang == "katex") {
 						if (before) {
-							return "<div class=\"mermaid\">" + codeNode.source;
+							return "<div class=\"language-presenter " + codeNode.lang + "\">" + codeNode.source;
 						}
 						return "</div>";
 					}
