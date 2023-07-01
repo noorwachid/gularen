@@ -85,7 +85,7 @@ namespace Gularen::Transpiler::HTML {
 					case HeadingType::chapter: tagName = "h1"; break;
 					case HeadingType::section: tagName = "h2"; break;
 					case HeadingType::subsection: tagName = "h3"; break;
-					case HeadingType::subtitle: tagName = "span"; break;
+					case HeadingType::subtitle: tagName = "small"; break;
 				}
 				if (!headingNode.id.empty()) {
 					return tag(before, tagName, "id=\"" + headingNode.id + "\"", true);

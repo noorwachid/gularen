@@ -245,23 +245,6 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::headingMarker:
-				if (get(0).count == 3) {
-					addScope(std::make_shared<HeadingNode>(HeadingType::chapter));
-				}
-				if (get(0).count == 2) {
-					addScope(std::make_shared<HeadingNode>(HeadingType::section));
-				}
-				if (get(0).count == 1) {
-					if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading && lastNewline == 1) {
-						addScope(std::make_shared<HeadingNode>(HeadingType::subtitle));
-					} else {
-						addScope(std::make_shared<HeadingNode>(HeadingType::subsection));
-					}
-				}
-				advance(0);
-				break;
-
 			case TokenType::headingIDMarker:
 				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::heading) {
 					static_cast<HeadingNode*>(getScope().get())->id = get(1).value;
@@ -388,6 +371,9 @@ namespace Gularen {
 				break;
 
 			case NodeGroup::heading:
+				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
+					removeScope();
+				}
 				lastScope = getScope();
 				removeScope();
 				break;
@@ -561,10 +547,29 @@ namespace Gularen {
 				break;
 			}
 
+			case TokenType::headingMarker:
+				if (get(0).count == 3) {
+					addScope(std::make_shared<HeadingNode>(HeadingType::chapter));
+				}
+				if (get(0).count == 2) {
+					addScope(std::make_shared<HeadingNode>(HeadingType::section));
+				}
+				if (get(0).count == 1) {
+					if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading && lastNewline == 1) {
+						scopes.push(getScope()->children.back());
+						addScope(std::make_shared<HeadingNode>(HeadingType::subtitle));
+					} else {
+						addScope(std::make_shared<HeadingNode>(HeadingType::subsection));
+					}
+				}
+				advance(0);
+				break;
+
+
 			default:
 				if (getScope()->group != NodeGroup::paragraph) {
 					addScope(std::make_shared<ParagraphNode>());
-				} else {
+				} else if (getScope()->group == NodeGroup::paragraph) {
 					addText("\n");
 				}
 				break;
