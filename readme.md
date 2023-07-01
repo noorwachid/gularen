@@ -1,5 +1,5 @@
 # Gularen
-A well-thought lightweight markup language that makes sense
+A sweet-spot of markup language
 
 ## Overview
 ~~~ gr
