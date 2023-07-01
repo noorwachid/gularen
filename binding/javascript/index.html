@@ -151,7 +151,11 @@
 	<script>
 		function transpile() {
 			outputNode.innerHTML = Module.transpile(inputNode.value);
-			// console.log(Module.transpile(inputNode.value));
+			dispatchEvent(new Event('gularentranspile', {
+				bubbles: true,
+				cancelable: true,
+				composed: false
+			}));
 		}
 
 		Module.onRuntimeInitialized = () => {
@@ -334,13 +338,9 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 		});
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-	<script>hljs.highlightAll();</script>
 	<script type="module">
 		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-		mermaid.initialize({
-			startOnLoad: true
-		});
-		document.getElementById('input').addEventListener('input', () => {
+		addEventListener('gularentranspile', () => {
 			mermaid.init(undefined, '.language-presenter.mermaid');
 		})
 	</script>
@@ -348,15 +348,11 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 		integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx"
 		crossorigin="anonymous"></script>
 	<script>
-		function renderKatex() {
+		addEventListener('gularentranspile', () => {
 			document.querySelectorAll('.language-presenter.katex').forEach(node => {
 				katex.render(node.innerHTML, node);
-				hljs.highlightAll();
 			})
-		}
-		document.getElementById('input').addEventListener('input', renderKatex)
-		document.addEventListener("DOMContentLoaded", () => {
-			renderKatex();
+			hljs.highlightAll();
 		});
 	</script>
 </body>
