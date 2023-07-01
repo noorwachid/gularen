@@ -15,8 +15,8 @@ namespace Gularen::Transpiler::HTML {
 
 		for (char c : from) {
 			switch (c) {
-				case '<': to += "&lt;";
-				case '>': to += "&gt;";
+				case '<': to += "&lt;"; break;
+				case '>': to += "&gt;"; break;
 				default: to += c;
 			}
 		}
@@ -122,8 +122,7 @@ namespace Gularen::Transpiler::HTML {
 				const CodeNode& codeNode = node->as<CodeNode>();
 				if (codeNode.lang == "mermaid" || codeNode.lang == "katex") {
 					if (before) {
-						// WARN: validate the katex and mermaid symbols for html tags
-						return "<div class=\"language-presenter " + codeNode.lang + "\">" + codeNode.source;
+						return "<div class=\"language-presenter " + codeNode.lang + "\">" + escape(codeNode.source);
 					}
 					return "</div>";
 				}
