@@ -49,7 +49,6 @@ namespace Gularen {
 		minus,
 		hyphen,
 		enDash,
-		emDash,
 		
 		lsQuo,
 		rsQuo,

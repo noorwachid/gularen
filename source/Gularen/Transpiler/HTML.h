@@ -2,8 +2,6 @@
 
 #include <string>
 
-namespace Gularen::Transpiler {
-	namespace HTML {
-		std::string transpile(const std::string& content);
-	}
+namespace Gularen::Transpiler::HTML {
+	std::string transpile(const std::string& content);
 }

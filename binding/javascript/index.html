@@ -27,6 +27,7 @@
 			outline: 0;
 			border: 0;
 			border-right: 1px solid #333;
+			tab-size: 4;
 		}
 
 		body {
@@ -36,6 +37,15 @@
 
 		.indent {
 			padding-left: 32px;
+		}
+		.align-left {
+			text-align: left;
+		}
+		.align-center {
+			text-align: center;
+		}
+		.align-right {
+			text-align: right;
 		}
 
 		ul.checklist {
@@ -81,59 +91,94 @@ Well-thought markup language
 >> Comment
 Now you see me ~ now you dont
 
->> Font Style
-Hello *darkness* _my old_ \`friend\`.
-
+>> Style, Punctuation Mark, And Line Break
+Hello *darkness* _my old_ \`friend\`. <
 I've come *to _talk \`with\` you_ again*.
+
+"Hold the flashlight steady!" <
+-- My Dad
+
+>> Paragraph
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Nullam ac magna et lectus tincidunt fermentum a in purus.
+Nunc vel eros bibendum leo aliquet faucibus.
+
+Cras tincidunt consequat vulputate.
+Sed non bibendum erat, ut porta odio.
+Aenean non libero non nisi hendrerit pretium.
+Nulla euismod neque magna.
+Aliquam congue velit ut felis suscipit fermentum.
+Nulla aliquet eget sapien ac ultrices.
+
+Sed lobortis libero id malesuada elementum.
+Nam sagittis enim iaculis, ultricies ipsum vitae, eleifend libero.
+Quisque luctus velit consectetur tellus feugiat porttitor.
+Integer ut pulvinar nunc, quis dictum dolor.
+Donec bibendum nec orci at fringilla.
+Nulla quis sagittis nisl.
+Aliquam quis ex eu purus blandit ornare.
 
 >> Indentation
 	I believe I can fly!
-	    Look mom no hand!
+		Look mom no hand!
 
 >> List
+
+> Bullet List
 - One
 - Two
 - Three
 
+> Index List
 1. One
 2. Two
 3. Three
 
+> Check List
 [ ] Todo
 [v] Done
 [x] Cancelled
 
 >> Table
-| ID | Name |
-|---:|------|
-|  1 | Noor | 
-|  2 | Dori | 
+| First Name | Last Name | Age |
+|------------|-----------|----:|
+| Noor       |  Wachid   |  20 |
+| Dori       |  Lorean   |  19 |
 
 >> Resource
+
+> Link
 A link [https://github.com/noorwachid]
+A labeled link [https://github.com/noorwachid](here)
 
-![https://i.imgur.com/R3o5F6T.jpeg]
-
+> Image
+![https://i.imgflip.com/7r6vdk.jpg]
 
 >> Code
 
 > Syntax Highlighting
 --- js
-console.log('hello world');
+function loadWebAssemblyFromURL(url) {
+  return fetch(url)
+    .then(response => response.arrayBuffer())
+    .then(buffer => WebAssembly.instantiate(buffer))
+    .then(module => module.instance);
+}
 ---
 
 > UML Diagram
 --- mermaid
-graph TD
-	A-->B
-	A-->C
-	B-->D
-	C-->D
+flowchart LR
+    A[Hungry] --> B{Eat}
+    B -- Yes --> C[Stuffed]
+    B -- No --> D[Starving]
+    C --> E[Dead]
+    D --> E
 ---
 
 > Math Notation
 --- katex
-2+\\frac{1}{x}
+F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 ---
 `;
 
@@ -147,6 +192,7 @@ graph TD
 				this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
 
 				this.selectionStart = this.selectionEnd = start + 1;
+				transpile();
 			}
 		});
 	</script>

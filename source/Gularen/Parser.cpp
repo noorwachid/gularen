@@ -47,6 +47,16 @@ namespace Gularen {
 		scopes.top()->children.push_back(node);
 	}
 
+
+	void Parser::addText(const std::string& value) {
+		if (!scopes.top()->children.empty() && scopes.top()->children.back()->group == NodeGroup::text) {
+			Node* node = scopes.top()->children.back().get();
+			static_cast<TextNode*>(node)->value += value;
+		} else {
+			add(std::make_shared<TextNode>(value));
+		}
+	}
+
 	void Parser::addScope(const NodePtr& node) {
 		add(node);
 		scopes.push(node);
@@ -166,7 +176,7 @@ namespace Gularen {
 	void Parser::parseInline() {
 		switch (get(0).type) {
 			case TokenType::text:
-				add(std::make_shared<TextNode>(get(0).value));
+				addText(get(0).value);
 				advance(0);
 				break;
 
@@ -197,10 +207,6 @@ namespace Gularen {
 				break;
 			case TokenType::enDash:
 				add(std::make_shared<PunctNode>(PunctType::enDash, get(0).value));
-				advance(0);
-				break;
-			case TokenType::emDash:
-				add(std::make_shared<PunctNode>(PunctType::emDash, get(0).value));
 				advance(0);
 				break;
 
@@ -262,7 +268,7 @@ namespace Gularen {
 					advance(1);
 					break;
 				} 
-				add(std::make_shared<TextNode>(">"));
+				addText(">");
 				break;
 
 			case TokenType::break_:
@@ -359,7 +365,7 @@ namespace Gularen {
 				break;
 				
 			default:
-				add(std::make_shared<TextNode>(get(0).value));
+				addText(get(0).value);
 				advance(0);
 				break;
 		}
@@ -490,6 +496,7 @@ namespace Gularen {
 					TableNode* tableNode = static_cast<TableNode*>(getScope().get());
 					if (tableNode->header == 0) {
 						tableNode->header = tableNode->children.size();
+						tableNode->footer = tableNode->children.size();
 					} else {
 						tableNode->footer = tableNode->children.size();
 					}
@@ -557,6 +564,8 @@ namespace Gularen {
 			default:
 				if (getScope()->group != NodeGroup::paragraph) {
 					addScope(std::make_shared<ParagraphNode>());
+				} else {
+					addText("\n");
 				}
 				break;
 		}

@@ -175,11 +175,6 @@ namespace Gularen {
 					advance(0);
 					break;
 				}
-				if (check(2) && is(1, '-') && is(2, '-')) {
-					advance(2);
-					add(TokenType::emDash, 1, "—");
-					break;
-				}
 				if (check(1) && is(1, '-')) {
 					advance(1);
 					add(TokenType::enDash, 1, "–");
@@ -341,6 +336,14 @@ namespace Gularen {
 				break;
 
 			case '|':
+				// trim right
+				if (!tokens.empty() && tokens.back().type == TokenType::text) {
+					size_t blankCount = 0;
+					for (size_t i = tokens.back().value.size(); i >= 0 && tokens.back().value[i - 1] == ' '; --i) {
+						++blankCount;
+					}
+					tokens.back().value = tokens.back().value.substr(0, tokens.back().value.size() - blankCount);
+				}
 				add(TokenType::pipe, 1, "|");
 				advance(0);
 				parseSpace();
@@ -676,7 +679,7 @@ namespace Gularen {
 		advance(0);
 		parseSpace();
 
-		if (!is(0, ':') && !is(0, '-')) {
+		if (!is(0, ':') && !is(0, '-') && !is(0, ' ')) {
 			return;
 		}
 
@@ -710,6 +713,11 @@ namespace Gularen {
 
 			if (is(0, '|')) {
 				add(TokenType::pipe, 1, "|");
+				advance(0);
+				continue;
+			}
+
+			if (is(0, ' ')) {
 				advance(0);
 				continue;
 			}

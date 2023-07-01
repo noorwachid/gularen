@@ -73,7 +73,6 @@ namespace Gularen {
 		minus,
 		hyphen,
 		enDash,
-		emDash,
 		
 		lsQuo,
 		rsQuo,
@@ -221,9 +220,9 @@ namespace Gularen {
 	};
 
 	enum class Alignment {
-		left,
-		center,
-		right,
+		left = 0,
+		center = 1,
+		right = 2,
 	};
 
 	struct TableNode : Node {

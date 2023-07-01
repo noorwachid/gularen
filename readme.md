@@ -26,7 +26,7 @@ Mungkin karena kau sedang cantik-cantiknya.
 * [06 Breaking](spec/06-breaking.gr)
 * [07 List](spec/07-list.gr)
 * [08 Table](spec/08-table.gr)
-* [09 Column](spec/09-column.gr)
+* [09 Column](spec/09-column.gr) -- [implementation is in progress]
 * [0A Linker](spec/0A-linker.gr)
 * [0B Presenter](spec/0B-presenter.gr)
 * [0C Inclusion](spec/0C-inclusion.gr)
@@ -34,5 +34,5 @@ Mungkin karena kau sedang cantik-cantiknya.
 * [0E Code](spec/0E-code.gr)
 * [0F Punctuation Mark](spec/0F-punctuation-mark.gr)
 * [10 Emoji](spec/10-emoji.gr)
-* [11 Blockquote](spec/11-blockquote.gr)
+* [11 Blockquote](spec/11-blockquote.gr) -- [implementation is in progress]
 * [12 Admonition](spec/12-admonition.gr)

@@ -30,6 +30,8 @@ namespace Gularen {
 
 		void add(const NodePtr& node);
 
+		void addText(const std::string& value);
+
 		void addScope(const NodePtr& node);
 
 		void removeScope();
