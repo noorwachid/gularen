@@ -203,6 +203,11 @@
 				mode.node.classList.add('active');
 			}
 			splitNode.classList.add('mode-' + modeName);
+			localStorage.setItem('mode', modeName);
+		}
+
+		if (localStorage.hasOwnProperty('mode')) {
+			switchMode(localStorage.getItem('mode'));
 		}
 
 		inputNode.value = `
