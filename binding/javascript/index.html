@@ -149,6 +149,9 @@
 
 	<script src="gularen.js"></script>
 	<script>
+		window.gularen = {}
+		gularen.transpiled = false;
+
 		function transpile() {
 			outputNode.innerHTML = Module.transpile(inputNode.value);
 			dispatchEvent(new Event('gularentranspile', {
@@ -156,6 +159,7 @@
 				cancelable: true,
 				composed: false
 			}));
+			gularen.transpiled = true;
 		}
 
 		Module.onRuntimeInitialized = () => {
@@ -337,23 +341,42 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 			}
 		});
 	</script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+	<script>
+		function parseHighlight() {
+			hljs.highlightAll();
+		}
+		addEventListener('gularentranspile', parseHighlight);
+		if (gularen.transpiled) {
+			parseHighlight();
+		}
+	</script>
+
 	<script type="module">
 		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-		addEventListener('gularentranspile', () => {
+		function parseMermaid() {
 			mermaid.init(undefined, '.language-presenter.mermaid');
-		})
+		}
+		addEventListener('gularentranspile', parseMermaid)
+		if (gularen.transpiled) {
+			parseMermaid();
+		}
 	</script>
+
 	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
 		integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx"
 		crossorigin="anonymous"></script>
 	<script>
-		addEventListener('gularentranspile', () => {
+		function parseKatex() {
 			document.querySelectorAll('.language-presenter.katex').forEach(node => {
 				katex.render(node.innerHTML, node);
 			})
-			hljs.highlightAll();
-		});
+		}
+		addEventListener('gularentranspile', parseKatex);
+		if (gularen.transpiled) {
+			parseKatex();
+		}
 	</script>
 </body>
 
