@@ -168,6 +168,7 @@ graph TD
 		function renderKatex() {
 			document.querySelectorAll('.language-presenter.katex').forEach(node => {
 				katex.render(node.innerHTML, node);
+				hljs.highlightAll();
 			})
 		}
 		document.getElementById('input').addEventListener('input', renderKatex)
