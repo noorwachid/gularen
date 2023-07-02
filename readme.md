@@ -14,8 +14,8 @@ Mungkin karena kau sedang cantik-cantiknya.
 =[1] Ketika waktu fajar.
 ~~~
 
-## Demo
-[Right over here](https://noorwach.id/gularen/binding/javascript/)
+## Live Demo
+[Right over here](https://noorwach.id/gularen/editor/)
 
 ## Language Specification
 * [01 Comment](spec/01-comment.gr)
