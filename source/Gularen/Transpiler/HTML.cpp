@@ -2,7 +2,7 @@
 #include <filesystem>
 
 namespace Gularen::Transpiler::HTML {
-	// Contributor to refactor this code are very welcome
+	// A contributor to refactor this code is very welcome
 
 	struct Context {
 		NodePtr tableNode;
