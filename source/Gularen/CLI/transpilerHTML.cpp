@@ -1,3 +1,4 @@
+#include <Gularen/Lexer.h>
 #include <Gularen/Transpiler/HTML.h>
 #include <fstream>
 #include <iostream>
@@ -22,6 +23,20 @@ int main(int argc, char** argv) {
 		std::istreambuf_iterator<char>(file),
 		std::istreambuf_iterator<char>()
 	);
+
+	if (argc == 3) {
+		if (argv[2][0] == 'x') {
+			Gularen::Lexer lexer;
+			lexer.set(content);
+			lexer.parse();
+
+			for (const Gularen::Token& token : lexer.get()) {
+				std::cout << token.toString() << '\n';
+			}
+
+			return 0;
+		}
+	}
 
 	std::string out = Gularen::Transpiler::HTML::transpile(content);
 	std::cout << out << '\n';

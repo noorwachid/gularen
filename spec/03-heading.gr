@@ -9,7 +9,7 @@
 ---
 
 >> Heading Subtitle
-If the segment modifier placed after one line any headings. It will be parsed as subtitle.
+If the subsection modifier is placed in the next line of any headings. It will be parsed as subtitle.
 
 --- gr
 >>> Chapter
@@ -30,4 +30,11 @@ If the segment modifier placed after one line any headings. It will be parsed as
 See [>chapter-one](chapter 1)
 
 If on another file [chapter-1.gr>chapter-one](chapter 1)
+---
+
+--- gr-rule
+chapter = greaterThan greaterThan greaterThan any [greaterThan symbol] newline
+section = greaterThan greaterThan any [greaterThan symbol] newline
+subsection = greaterThan any [greaterThan symbol] newline
+subtitle = (chapter|section|subsection) subsection
 ---

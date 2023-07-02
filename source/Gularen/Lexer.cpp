@@ -32,6 +32,11 @@ namespace Gularen {
 		return content[index + offset] == c;
 	}
 
+	bool Lexer::isSymbol(size_t offset) {
+		char c = content[index + offset];
+		return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-';
+	}
+
 	char Lexer::get(size_t offset) {
 		return content[index + offset];
 	}
@@ -170,9 +175,9 @@ namespace Gularen {
 				break;
 
 			case '-':
-				if (check(1) && get(1) >= '0' && get(1) <= '9') {
-					add(TokenType::minus, 1, "−");
-					advance(0);
+				if (check(2) && is(1, '-') && is(2, '-')) {
+					advance(2);
+					add(TokenType::emDash, 1, "–");
 					break;
 				}
 				if (check(1) && is(1, '-')) {
@@ -314,26 +319,31 @@ namespace Gularen {
 				break;
 
 			case '^':
-				if (check(1) && is(1, '[')) {
+			case '=': {
+				std::string original(1, get(0));
+				if (check(2) && is(1, '[') && isSymbol(2)) {
+					advance(1);
+					size_t idIndex = 0;
+					size_t idSize = 0;
+					while (check(0) && isSymbol(0)) {
+						++idSize;
+						advance(0);
+					}
+					if (idSize > 0 && check(0) && is(0, ']')) {
+						add(original == "^" ? TokenType::jumpMarker : TokenType::describeMarker, 1, original);
+						add(TokenType::jumpID, 1, content.substr(idIndex, idSize));
+						advance(0);
+						break;
+					}
+					addText(original);
 					advance(0);
-					add(TokenType::jumpMarker, 1, "^");
-					// see inline [
+					index -= (idSize + 1);
 					break;
 				}
 				advance(0);
-				addText("!");
+				addText(original);
 				break;
-
-			case '=':
-				if (check(1) && is(1, '[')) {
-					advance(0);
-					add(TokenType::describeMarker, 1, "=");
-					// see inline [
-					break;
-				}
-				advance(0);
-				addText("!");
-				break;
+			}
 
 			case '|':
 				// trim right
@@ -389,7 +399,7 @@ namespace Gularen {
 					size_t idIndex = index;
 					size_t idSize = 0;
 
-					while (check(0) && !is(0, '\n')) {
+					while (check(0) && !is(0, '\n') && isSymbol(0)) {
 						++idSize;
 						advance(0);
 					}
@@ -591,23 +601,33 @@ namespace Gularen {
 			return;
 		}
 
-		add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
-		parseSpace();
+		bool hasSpace = is(0, ' ');
+		size_t spaceCounter = count(' ');
 
-		size_t langIndex = index;
-		size_t langSize = 0;
+		if (hasSpace) {
+			size_t langIndex = index;
+			size_t langSize = 0;
 
-		while (check(0) && !is(0, '\n')) {
-			++langSize;
-			advance(0);
-		}
-		
-		if (langSize > 0) {
+			while (check(0) && !is(0, '\n') && isSymbol(0)) {
+				++langSize;
+				advance(0);
+			}
+			
+			if (langSize == 0 || !is(0, '\n')) {
+				index -= (openingCounter + spaceCounter + langSize);
+				return;
+			}
+
+			add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
 			add(TokenType::codeLang, 1, content.substr(langIndex, langSize));
-		}
-		
-		if (!is(0, '\n')) {
-			return;
+		} else {
+			if (!is(0, '\n')) {
+				index -= (openingCounter + spaceCounter);
+				// see inline -
+				return;
+			}
+
+			add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
 		}
 
 		std::string source;

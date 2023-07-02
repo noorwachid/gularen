@@ -17,6 +17,8 @@ namespace Gularen {
 
 		bool is(size_t offset, char c);
 
+		bool isSymbol(size_t offset);
+
 		char get(size_t offset);
 
 		void advance(size_t offset);

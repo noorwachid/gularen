@@ -38,6 +38,7 @@ namespace Gularen {
 		presentMarker,
 		includeMarker,
 		jumpMarker,
+		jumpID,
 		describeMarker,
 
 		blockquote,
@@ -46,9 +47,9 @@ namespace Gularen {
 
 		emoji,
 
-		minus,
 		hyphen,
 		enDash,
+		emDash,
 		
 		lsQuo,
 		rsQuo,

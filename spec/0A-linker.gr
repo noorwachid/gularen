@@ -27,3 +27,7 @@
 ~ With specify heading ID
 [another-document.gr>legal-section]
 ---
+
+--- gr-rule
+linker = squareOpen any squareClose [parenOpen any parenClose]
+---

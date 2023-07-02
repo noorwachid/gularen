@@ -312,7 +312,7 @@ function loadWebAssemblyFromURL(url) {
 ---
 
 > UML Diagram
---- mermaid
+--- mermaid-pr
 flowchart LR
     A[Hungry] --> B{Eat}
     B -- Yes --> C[Stuffed]
@@ -322,7 +322,7 @@ flowchart LR
 ---
 
 > Math Notation
---- katex
+--- katex-pr
 F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 ---
 `;
@@ -356,7 +356,7 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 	<script type="module">
 		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 		function parseMermaid() {
-			mermaid.init(undefined, '.language-presenter.mermaid');
+			mermaid.init(undefined, '.language-presenter.mermaid-pr');
 		}
 		addEventListener('gularentranspile', parseMermaid)
 		if (gularen.transpiled) {
@@ -369,7 +369,7 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 		crossorigin="anonymous"></script>
 	<script>
 		function parseKatex() {
-			document.querySelectorAll('.language-presenter.katex').forEach(node => {
+			document.querySelectorAll('.language-presenter.katex-pr').forEach(node => {
 				katex.render(node.innerHTML, node);
 			})
 		}

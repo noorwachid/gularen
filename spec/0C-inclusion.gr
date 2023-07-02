@@ -7,3 +7,7 @@ Include file and parse the content as gularen markup.
 ?[chapter-1.gr]
 ?[chapter-2.gr]
 ---
+
+--- gr-rule
+inclusion = quesMark linker
+---

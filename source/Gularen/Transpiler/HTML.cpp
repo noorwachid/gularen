@@ -38,9 +38,9 @@ namespace Gularen::Transpiler::HTML {
 					case PunctType::rdQuo: return "&rdquo;";
 					case PunctType::lsQuo: return "&lsquo;";
 					case PunctType::rsQuo: return "&rsquo;";
-					case PunctType::minus: return "&minus;";
 					case PunctType::hyphen: return "&dash;";
 					case PunctType::enDash: return "&ndash;";
+					case PunctType::emDash: return "&mdash;";
 				}
 			}
 			case NodeGroup::resource: {
@@ -71,7 +71,7 @@ namespace Gularen::Transpiler::HTML {
 					}
 				}
 			}
-			case NodeGroup::paragraph: return tag(before, "p");
+			case NodeGroup::paragraph: return tag(before, "p", "", true);
 			case NodeGroup::fs: 
 				switch (node->as<FSNode>().type) {
 					case FSType::bold: return tag(before, "b");
@@ -94,6 +94,9 @@ namespace Gularen::Transpiler::HTML {
 			}
 			case NodeGroup::indent: return tag(before, "div", "class=\"indent\"");
 			case NodeGroup::break_: return before ? "<br>" : "";
+
+			case NodeGroup::footnoteJump: return before ? "<a href=\"#footnote-" + node->as<FootnoteJumpNode>().value + "\">" + node->as<FootnoteJumpNode>().value + "</a>" : "";
+			case NodeGroup::footnoteDescribe: return before ? "<dd id=\"footnote-" + node->as<FootnoteDescribeNode>().value + "\">" : "</dd>\n";
 
 			case NodeGroup::table: return before ? "<table>\n" : "</table>\n";
 			case NodeGroup::tableRow: return before ? "<tr>\n" : "</tr>\n";
@@ -120,7 +123,7 @@ namespace Gularen::Transpiler::HTML {
 
 			case NodeGroup::code: {
 				const CodeNode& codeNode = node->as<CodeNode>();
-				if (codeNode.lang == "mermaid" || codeNode.lang == "katex") {
+				if (codeNode.lang.size() > 2 && codeNode.lang.substr(codeNode.lang.size() - 3) == "-pr") {
 					if (before) {
 						return "<div class=\"language-presenter " + codeNode.lang + "\">" + escape(codeNode.source);
 					}
@@ -128,7 +131,8 @@ namespace Gularen::Transpiler::HTML {
 				}
 
 				if (before) {
-					return "<pre><code class=\"language-" + codeNode.lang + "\">" + escape(codeNode.source);
+					if (!codeNode.lang.empty()) return "<pre><code class=\"language-" + codeNode.lang + "\">" + escape(codeNode.source);
+					return "<pre><code>" + escape(codeNode.source);
 				}
 				return "</code></pre>\n";
 			}

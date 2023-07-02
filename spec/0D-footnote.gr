@@ -8,5 +8,10 @@ Here's a simple footnote,^[1] and here's a longer one.^[bignote]
 =[bignote] Very important part.
 	Every +1 indent after footnote modifier will be subcontent of this footnote.
 	Including this one.
+---
 
+--- gr-rule
+footnoteJump = bracket squareOpen symbol squareClose
+footnoteDescribe = equal squareOpen symbol squareClose any newline
+footnoteDescribeBody = footnoteDescribe (indent++)+
 ---

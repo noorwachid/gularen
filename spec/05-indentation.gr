@@ -7,3 +7,7 @@ Level 0 indentation.
 		Level 2 indentation.
 			Level 3 indentation.
 ---
+
+--- gr-rule
+indent = (tab+ any newline)+
+---

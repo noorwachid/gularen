@@ -70,9 +70,9 @@ namespace Gularen {
 	};
 	
 	enum class PunctType {
-		minus,
 		hyphen,
 		enDash,
+		emDash,
 		
 		lsQuo,
 		rsQuo,

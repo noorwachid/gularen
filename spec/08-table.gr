@@ -36,3 +36,10 @@ Footer only works if the heading is defined.
 |----|--------|
 | ID | Name   |
 ---
+
+--- gr-rule
+tableAlignment = (minus+|colon minus+|colon minus+|minus+ colon)
+tableRow = pipe any pipe newline
+tableRowSeparator = pipe (tableAlignment|pipe)+ pipe
+table = (tableRow|tableRowSeparator)+
+---

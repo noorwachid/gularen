@@ -5,3 +5,6 @@ First column | Second column | Third column
 First column | So on         | So forth
 ---
 
+--- gr-rule
+column = (any pipe [(pipe|any)] any newline)+
+---

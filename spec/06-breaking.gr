@@ -14,3 +14,8 @@ This will create<line-break.
 --- gr
 <<
 ---
+
+--- gr-rule
+lineBreak = lessThan
+pageBreak = lessThan lessThan
+---

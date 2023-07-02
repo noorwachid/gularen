@@ -6,3 +6,7 @@ Single new line won't make new paragraph.
 
 Only double or more will create new paragraph.
 ---
+
+--- gr-rule
+paragraph = !(chapter | section | subsection | bulletListItem | indexListItem | checkListItem | table | footnoteDescribe)
+---

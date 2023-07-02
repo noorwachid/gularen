@@ -197,16 +197,16 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::minus:
-				add(std::make_shared<PunctNode>(PunctType::minus, get(0).value));
-				advance(0);
-				break;
 			case TokenType::hyphen:
 				add(std::make_shared<PunctNode>(PunctType::hyphen, get(0).value));
 				advance(0);
 				break;
 			case TokenType::enDash:
 				add(std::make_shared<PunctNode>(PunctType::enDash, get(0).value));
+				advance(0);
+				break;
+			case TokenType::emDash:
+				add(std::make_shared<PunctNode>(PunctType::emDash, get(0).value));
 				advance(0);
 				break;
 
@@ -252,6 +252,7 @@ namespace Gularen {
 					break;
 				} 
 				addText(">");
+				advance(0);
 				break;
 
 			case TokenType::break_:
@@ -317,7 +318,7 @@ namespace Gularen {
 			}
 
 			case TokenType::jumpMarker:
-				if (check(1) && is(1, TokenType::resource)) {
+				if (check(1) && is(1, TokenType::jumpID)) {
 					add(std::make_shared<FootnoteJumpNode>(get(1).value));
 					advance(1);
 					break;
@@ -363,7 +364,8 @@ namespace Gularen {
 				if (lastNewline > 1 || 
 					!(is(0, TokenType::bullet) || is(0, TokenType::index) || is(0, TokenType::checkbox)) ||
 					is(0, TokenType::pipe) ||
-					is(0, TokenType::headingMarker)
+					is(0, TokenType::headingMarker) ||
+					is(0, TokenType::describeMarker)
 					) {
 					removeScope();
 					lastScope = nullptr;
@@ -385,7 +387,8 @@ namespace Gularen {
 					is(0, TokenType::index) ||
 					is(0, TokenType::checkbox) ||
 					is(0, TokenType::pipe) ||
-					is(0, TokenType::headingMarker)
+					is(0, TokenType::headingMarker) ||
+					is(0, TokenType::describeMarker)
 					) {
 					removeScope();
 				}
@@ -400,7 +403,8 @@ namespace Gularen {
 					is(0, TokenType::index) ||
 					is(0, TokenType::checkbox) ||
 					!is(0, TokenType::pipe) ||
-					is(0, TokenType::headingMarker)
+					is(0, TokenType::headingMarker) ||
+					is(0, TokenType::describeMarker)
 					) {
 					removeScope();
 				}
@@ -523,7 +527,7 @@ namespace Gularen {
 			}
 
 			case TokenType::describeMarker:
-				if (check(1) && is(1, TokenType::resource)) {
+				if (check(1) && is(1, TokenType::jumpID)) {
 					addScope(std::make_shared<FootnoteDescribeNode>(get(1).value));
 					advance(1);
 				}

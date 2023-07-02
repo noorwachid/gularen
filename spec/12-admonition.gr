@@ -19,3 +19,8 @@ Avaliable levels are:
 <!> Something here
 	Every +1 indent after admonition modifier will be subcontent of this admonition.
 ---
+
+--- gr-rule
+admon = angleOpen (slash|quesMark|exclMark|caret|at|amp) angleClose any newline
+admonBody = admon (indent++)+
+---
