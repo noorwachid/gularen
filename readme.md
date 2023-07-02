@@ -2,17 +2,7 @@
 A sweet-spot of markup language
 
 ## Overview
-~~~ gr
->>> Chapter 1
-> Untuk Perempuan Yang Sedang Di Pelukan
-
-Tak terasa gelap pun jatuh^[1].
-Diujung malam menuju pagi yang dingin.
-Hanya ada sedikit bintang malam ini.
-Mungkin karena kau sedang cantik-cantiknya.
-
-=[1] Ketika waktu fajar.
-~~~
+![image](https://github.com/noorwachid/gularen/assets/42460975/5da92c29-fff5-4357-addb-e626c7f7f92b)
 
 ## Live Demo
 [Right over here](https://noorwach.id/gularen/editor/)
