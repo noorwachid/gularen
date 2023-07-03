@@ -439,6 +439,9 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 
 	<script type="module">
 		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+		mermaid.initialize({
+			theme: 'dark',
+		});
 		function parseMermaid() {
 			mermaid.init(undefined, '.language-presenter.mermaid-pr');
 		}
