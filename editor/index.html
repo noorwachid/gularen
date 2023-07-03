@@ -240,9 +240,9 @@
 
 		shareNode.addEventListener('click', () => {
 			shareNode.textContent = 'Copied';
-			setTimeout(() => { shareNode.textContent = 'Share via URL'; }, 800);
+			setTimeout(() => {shareNode.textContent = 'Share via URL';}, 800);
 
-			copyTextToClipboard('https://noorwach.id/gularen/editor/?data=' + Base64
+			copyTextToClipboard('https://noorwach.id/gularen/editor/#/' + Base64
 				.encode(inputNode.value)
 				.replaceAll('+', '-')
 				.replaceAll('/', '_')
@@ -395,11 +395,21 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 `;
 		const urlParams = new URLSearchParams(window.location.search);
 
-		inputNode.value = !urlParams.has('data') ? defaultContent : Base64.decode(urlParams.get('data')
-			.replaceAll('-', '+')
-			.replaceAll('_', '/')
-			.replaceAll('.', '=')
-		);
+		if (urlParams.has('data')) {
+			inputNode.value = Base64.decode(urlParams.get('data')
+				.replaceAll('-', '+')
+				.replaceAll('_', '/')
+				.replaceAll('.', '=')
+			);
+		} else if (location.hash.substr(0, 2) == '#/') {
+			inputNode.value = Base64.decode(location.hash.substr(2)
+				.replaceAll('-', '+')
+				.replaceAll('_', '/')
+				.replaceAll('.', '=')
+			);
+		} else {
+			inputNode.value = defaultContent;
+		}
 
 		inputNode.addEventListener('input', transpile);
 		inputNode.addEventListener('keydown', function (e) {
