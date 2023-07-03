@@ -161,6 +161,18 @@ ul {
   padding-left: 0;
 }
 
+dl dl,
+dl ol,
+dl ul,
+ol dl,
+ol ol,
+ol ul,
+ul dl,
+ul ol,
+ul ul {
+  margin: 0.4rem 0 0.4rem 0;
+}
+
 ol {
   list-style: decimal inside;
 }

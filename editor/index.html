@@ -207,7 +207,7 @@
 		gularen.transpiled = false;
 
 		function transpile() {
-			outputNode.innerHTML = Module.transpile(inputNode.value + '\n' /* temporary fix hehe */);
+			outputNode.innerHTML = Module.transpile(inputNode.value);
 			dispatchEvent(new Event('gularentranspile', {
 				bubbles: true,
 				cancelable: true,
