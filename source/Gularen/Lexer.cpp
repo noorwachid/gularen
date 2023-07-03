@@ -4,7 +4,16 @@
 
 namespace Gularen {
 	void Lexer::set(const std::string& content) {
-		this->content = content;
+		if (content.empty()) return;
+
+		this->content.clear();
+		this->content.reserve(content.size() + 1);
+
+		for (size_t i = 0; i < content.size(); ++i) {
+			this->content.push_back(content[i]);
+		}
+
+		this->content.push_back('\n');
 	}
 
 	void Lexer::parse() {
@@ -440,6 +449,7 @@ namespace Gularen {
 					add(TokenType::headingMarker, counter, std::string(counter, '>'));
 					break;
 				}
+				addText(std::string(counter, '>'));
 				break;
 			}
 
@@ -449,10 +459,10 @@ namespace Gularen {
 			}
 
 			case '[':
-				if (check(2) && is(2, ']')) {
+				if (check(3) && is(2, ']') && is(3, ' ')) {
 					if (is(1, ' ')) {
 						add(TokenType::checkbox, 0, "[ ]");
-						advance(2);
+						advance(3);
 						break;
 					}
 					if (is(1, 'v')) {
@@ -472,13 +482,14 @@ namespace Gularen {
 
 			case '.': {
 				if (check(2) && is(1, '.') && is(2, ' ')) {
-					advance(1);
+					advance(2);
 					parseSpace();
 					add(TokenType::index, 1, "..");
 					break;
 				}
 				
 				addText(".");
+				advance(0);
 				break;
 			}
 
@@ -697,13 +708,12 @@ namespace Gularen {
 	void Lexer::parseTable() {
 		add(TokenType::pipe, 1, "|");
 		advance(0);
-		parseSpace();
 
-		if (!is(0, ':') && !is(0, '-') && !is(0, ' ')) {
+		if (!(is(0, '-') || is(0, ':'))) {
 			return;
 		}
 
-		while (check(0) && !is(0, '\n')) {
+		while (check(0) && (is(0, '-') || is(0, ':') || is(0, '|')) && !is(0, '\n')) {
 			if (check(1) && is(0, ':') && is(1, '-')) {
 				advance(0);
 				size_t lineCounter = count('-');
@@ -733,11 +743,6 @@ namespace Gularen {
 
 			if (is(0, '|')) {
 				add(TokenType::pipe, 1, "|");
-				advance(0);
-				continue;
-			}
-
-			if (is(0, ' ')) {
 				advance(0);
 				continue;
 			}

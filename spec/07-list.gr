@@ -55,8 +55,8 @@
 ---
 
 --- gr-rule
-bulletListItem = minus space+ any newline
-indexListItem = (number period|period period) space+ any newline
-checkListItem = squareOpen (space|'v'|'x') squareClose space+ any newline
+bulletListItem = minus space any newline
+indexListItem = (number period|period period) space any newline
+checkListItem = squareOpen (space|'v'|'x') squareClose space any newline
 listItemBody = (bulletListItem|indexListItem|checkListItem) (indent++)+
 ---

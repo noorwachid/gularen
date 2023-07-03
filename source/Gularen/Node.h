@@ -48,7 +48,7 @@ namespace Gularen {
 			return *static_cast<T*>(this);
 		}
 
-		virtual std::string toString();
+		virtual std::string toString() const;
 
 		static std::string escape(const std::string& from);
 	};
@@ -58,7 +58,7 @@ namespace Gularen {
 
 		FileNode(const std::string& path);
 
-		virtual std::string toString();
+		virtual std::string toString() const override;
 	};
 
 	struct TextNode : Node {
@@ -66,7 +66,7 @@ namespace Gularen {
 
 		TextNode(const std::string& value);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 	
 	enum class PunctType {
@@ -86,7 +86,7 @@ namespace Gularen {
 
 		PunctNode(PunctType type, const std::string& value);
 
-		virtual std::string toString();
+		virtual std::string toString() const override;
 	};
 
 	struct EmojiNode : Node {
@@ -94,7 +94,7 @@ namespace Gularen {
 
 		EmojiNode(const std::string& value);
 
-		virtual std::string toString();
+		virtual std::string toString() const override;
 	};
 	
 	enum class FSType {
@@ -108,7 +108,7 @@ namespace Gularen {
 
 		FSNode(FSType type);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	enum class HeadingType {
@@ -124,13 +124,13 @@ namespace Gularen {
 
 		HeadingNode(HeadingType type);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 	
 	struct ParagraphNode : Node {
 		ParagraphNode();
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	enum class AdmonType {
@@ -147,7 +147,7 @@ namespace Gularen {
 
 		AdmonNode(AdmonType type);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	struct FootnoteJumpNode : Node {
@@ -155,7 +155,7 @@ namespace Gularen {
 
 		FootnoteJumpNode(const std::string& value);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	struct FootnoteDescribeNode : Node {
@@ -163,7 +163,7 @@ namespace Gularen {
 
 		FootnoteDescribeNode(const std::string& value);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	struct IndentNode : Node {
@@ -171,7 +171,7 @@ namespace Gularen {
 			group = NodeGroup::indent;
 		}
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	enum class BreakType {
@@ -184,7 +184,7 @@ namespace Gularen {
 
 		BreakNode(BreakType type);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	enum class ListType {
@@ -198,7 +198,7 @@ namespace Gularen {
 
 		ListNode(ListType type);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	enum class ListItemState {
@@ -216,7 +216,7 @@ namespace Gularen {
 
 		ListItemNode(size_t index, ListItemState state);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	enum class Alignment {
@@ -232,13 +232,13 @@ namespace Gularen {
 
 		TableNode();
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	struct TableRowNode : Node {
 		TableRowNode();
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	struct TableCellNode : Node {
@@ -246,7 +246,7 @@ namespace Gularen {
 			group = NodeGroup::tableCell;
 		}
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	enum class ResourceType {
@@ -264,7 +264,7 @@ namespace Gularen {
 
 		ResourceNode(ResourceType type, const std::string& value);
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 
 	struct CodeNode : Node {
@@ -275,6 +275,6 @@ namespace Gularen {
 			group = NodeGroup::code;
 		}
 
-		virtual std::string toString() override;
+		virtual std::string toString() const override;
 	};
 }

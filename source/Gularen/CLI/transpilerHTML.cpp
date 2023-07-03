@@ -1,7 +1,18 @@
-#include <Gularen/Lexer.h>
+#include <Gularen/Parser.h>
 #include <Gularen/Transpiler/HTML.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+
+void build(std::ostream& out, const Gularen::NodePtr& node, size_t depth = 0) {
+	if (!node) return;
+
+	out << std::string(depth * 2, ' ') << node->toString() << '\n';
+
+	for (const Gularen::NodePtr& childNode : node->children) {
+		build(out, childNode, depth + 1);
+	}
+}
 
 int main(int argc, char** argv) {
 	if (argc <= 1) {
@@ -33,6 +44,19 @@ int main(int argc, char** argv) {
 			for (const Gularen::Token& token : lexer.get()) {
 				std::cout << token.toString() << '\n';
 			}
+
+			return 0;
+		}
+
+		if (argv[2][0] == 'y') {
+			Gularen::Parser parser;
+			parser.set(content);
+			parser.parse();
+			std::ostringstream out;
+
+			build(out, parser.get());
+
+			std::cout << out.str();
 
 			return 0;
 		}

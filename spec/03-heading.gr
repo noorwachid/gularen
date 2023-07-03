@@ -33,8 +33,9 @@ If on another file [chapter-1.gr>chapter-one](chapter 1)
 ---
 
 --- gr-rule
-chapter = greaterThan greaterThan greaterThan any [greaterThan symbol] newline
-section = greaterThan greaterThan any [greaterThan symbol] newline
-subsection = greaterThan any [greaterThan symbol] newline
-subtitle = (chapter|section|subsection) subsection
+id = ('a'..'z'|'0'..'9'|'-')
+chapter = gt gt gt space any [gt id] newline
+section = gt gt space any [gt id] newline
+subsection = gt space any [gt id] newline
+subtitle = (chapter|section|subsection) gt space any newline
 ---

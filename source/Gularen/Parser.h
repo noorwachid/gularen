@@ -60,5 +60,7 @@ namespace Gularen {
 		size_t lastIndent;
 		size_t lastIndentCall;
 		NodePtr lastScope = nullptr;
+
+		bool lastListDeadBecauseNewlines;
 	};
 }

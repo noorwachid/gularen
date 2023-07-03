@@ -247,7 +247,13 @@ namespace Gularen {
 
 			case TokenType::headingIDMarker:
 				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::heading) {
-					static_cast<HeadingNode*>(getScope().get())->id = get(1).value;
+					HeadingNode* headingNode = static_cast<HeadingNode*>(getScope().get());
+					if (headingNode->type == HeadingType::subtitle) {
+						addText("> " + get(1).value);
+						advance(1);
+						break;
+					}
+					headingNode->id = get(1).value;
 					advance(1);
 					break;
 				} 
@@ -357,20 +363,24 @@ namespace Gularen {
 
 	void Parser::parseBlock() {
 		switch (getScope()->group) {
-			case NodeGroup::listItem:
+			case NodeGroup::listItem: {
 				lastScope = getScope();
 				removeScope();
+				ListType type = getScope()->as<ListNode>().type;
 
-				if (lastNewline > 1 || 
-					!(is(0, TokenType::bullet) || is(0, TokenType::index) || is(0, TokenType::checkbox)) ||
-					is(0, TokenType::pipe) ||
-					is(0, TokenType::headingMarker) ||
-					is(0, TokenType::describeMarker)
-					) {
+				if (lastNewline > 1 || (
+					check(0) && !(
+						(is(0, TokenType::indent)) ||
+						(is(0, TokenType::bullet)   && type == ListType::bullet) ||
+						(is(0, TokenType::index)    && type == ListType::index) ||
+						(is(0, TokenType::checkbox) && type == ListType::check) 
+					)
+				)) {
+					lastListDeadBecauseNewlines = lastNewline > 1;
 					removeScope();
-					lastScope = nullptr;
 				}
 				break;
+			}
 
 			case NodeGroup::heading:
 				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
@@ -382,14 +392,17 @@ namespace Gularen {
 
 			case NodeGroup::paragraph:
 				lastScope = nullptr;
-				if (lastNewline > 1 || 
+				if (getScope()->children.empty()) {
+					removeScope();
+					getScope()->children.pop_back();
+				} else if (lastNewline > 1 || (check(0) &&
 					is(0, TokenType::bullet) ||
 					is(0, TokenType::index) ||
 					is(0, TokenType::checkbox) ||
 					is(0, TokenType::pipe) ||
 					is(0, TokenType::headingMarker) ||
 					is(0, TokenType::describeMarker)
-					) {
+				)) {
 					removeScope();
 				}
 				break;
@@ -398,14 +411,7 @@ namespace Gularen {
 				lastScope = nullptr;
 				removeScope();
 
-				if (lastNewline > 1 || 
-					is(0, TokenType::bullet) ||
-					is(0, TokenType::index) ||
-					is(0, TokenType::checkbox) ||
-					!is(0, TokenType::pipe) ||
-					is(0, TokenType::headingMarker) ||
-					is(0, TokenType::describeMarker)
-					) {
+				if (lastNewline > 1 || (check(0) && !(is(0, TokenType::indent) || is(0, TokenType::pipe)))) {
 					removeScope();
 				}
 				break;
@@ -446,7 +452,14 @@ namespace Gularen {
 
 			case TokenType::bullet:
 				if (getScope()->group != NodeGroup::list) {
-					addScope(std::make_shared<ListNode>(ListType::bullet));
+					if (!getScope()->children.empty() && 
+						getScope()->children.back()->group == NodeGroup::list &&
+						getScope()->children.back()->as<ListNode>().type == ListType::bullet &&
+						!lastListDeadBecauseNewlines) {
+						scopes.push(getScope()->children.back());
+					} else {
+						addScope(std::make_shared<ListNode>(ListType::bullet));
+					}
 				}
 				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1));
 				advance(0);
@@ -454,7 +467,14 @@ namespace Gularen {
 
 			case TokenType::index:
 				if (getScope()->group != NodeGroup::list) {
-					addScope(std::make_shared<ListNode>(ListType::index));
+					if (!getScope()->children.empty() && 
+						getScope()->children.back()->group == NodeGroup::list &&
+						getScope()->children.back()->as<ListNode>().type == ListType::index &&
+						!lastListDeadBecauseNewlines) {
+						scopes.push(getScope()->children.back());
+					} else {
+						addScope(std::make_shared<ListNode>(ListType::index));
+					}
 				}
 				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1));
 				advance(0);
@@ -462,7 +482,14 @@ namespace Gularen {
 
 			case TokenType::checkbox: {
 				if (getScope()->group != NodeGroup::list) {
-					addScope(std::make_shared<ListNode>(ListType::check));
+					if (!getScope()->children.empty() && 
+						getScope()->children.back()->group == NodeGroup::list &&
+						getScope()->children.back()->as<ListNode>().type == ListType::check &&
+						!lastListDeadBecauseNewlines) {
+						scopes.push(getScope()->children.back());
+					} else {
+						addScope(std::make_shared<ListNode>(ListType::check));
+					}
 				}
 				
 				ListItemState state = ListItemState::none;

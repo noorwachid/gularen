@@ -18,5 +18,5 @@ int main()
 ----
 
 --- gr-rule
-code = minus minus minus+ [space+ symbol] any minus minus minus+
+code = minus minus minus+ [space symbol] any minus minus minus+
 ---

@@ -55,9 +55,3 @@ rule = space+
 ---
 rule = indent++
 ---
-
->> Global Rules
---- gr-rule
-number = ('0-9')
-symbol = ('a'..'z'|'0'..'9'|'-')
----

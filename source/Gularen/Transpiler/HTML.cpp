@@ -80,19 +80,23 @@ namespace Gularen::Transpiler::HTML {
 				}
 			case NodeGroup::heading: {
 				std::string tagName = "";
-				const HeadingNode& headingNode = node->as<HeadingNode>().type;
+				const HeadingNode& headingNode = node->as<HeadingNode>();
 				switch (headingNode.type) {
 					case HeadingType::chapter: tagName = "h1"; break;
 					case HeadingType::section: tagName = "h2"; break;
 					case HeadingType::subsection: tagName = "h3"; break;
 					case HeadingType::subtitle: tagName = "small"; break;
 				}
+				if (headingNode.type == HeadingType::subtitle) {
+					if (before) return " <small>";
+					return "</small>";
+				}
 				if (!headingNode.id.empty()) {
 					return tag(before, tagName, "id=\"" + headingNode.id + "\"", true);
 				}
 				return tag(before, tagName, "", true);
 			}
-			case NodeGroup::indent: return tag(before, "div", "class=\"indent\"");
+			case NodeGroup::indent: return before ? "\n<div class=\"indent\">\n" : "</div>\n";
 			case NodeGroup::break_: return before ? "<br>" : "";
 
 			case NodeGroup::footnoteJump: return before ? "<a href=\"#footnote-" + node->as<FootnoteJumpNode>().value + "\">" + node->as<FootnoteJumpNode>().value + "</a>" : "";
@@ -140,24 +144,24 @@ namespace Gularen::Transpiler::HTML {
 			case NodeGroup::list: {
 				const ListNode& listNode = node->as<ListNode>();
 				switch (listNode.type) {
-					case ListType::bullet: return tag(before, "ul", "", true);
-					case ListType::index: return tag(before, "ol", "", true);
-					case ListType::check: return tag(before, "ul", "class=\"checklist\"", true);
+					case ListType::bullet: return before ? "<ul>\n" : "</ul>\n";
+					case ListType::index: return before ? "<ol>\n" : "</ol>\n";
+					case ListType::check: return before ? "<ul class=\"checklist\">\n" : "</ul>\n";
 				}
 			}
 			case NodeGroup::listItem: {
 				const ListItemNode& listItemNode = node->as<ListItemNode>();
 				switch (listItemNode.state) {
-					case ListItemState::none: return tag(before, "li");
+					case ListItemState::none: return tag(before, "li", "", true);
 					case ListItemState::todo: {
 						if (before)
 							return "<li><input type=\"checkbox\"> ";
-						return "</li>";
+						return "</li>\n";
 					}
 					case ListItemState::done: {
 						if (before)
 							return "<li><input type=\"checkbox\" checked> ";
-						return "</li>";
+						return "</li>\n";
 					}
 					case ListItemState::canceled: {
 						if (before)

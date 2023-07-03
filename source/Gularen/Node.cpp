@@ -9,8 +9,6 @@ namespace Gularen {
 				to += "\\t";
 			} else if (c == '\n') {
 				to += "\\n";
-			} else if (c == ':') {
-				to += "\\:";
 			} else if (c < ' ') {
 				to += "\\d" + std::to_string(c);
 			} else {
@@ -92,32 +90,32 @@ namespace Gularen {
 
 	// toStrings
 
-	std::string Node::toString() {
+	std::string Node::toString() const {
 		return "base";
 	}
 
-	std::string FileNode::toString() {
+	std::string FileNode::toString() const {
 		if (path.empty())
 			return "file";
 
 		return "file " + escape(path);
 	}
 
-	std::string TextNode::toString() {
+	std::string TextNode::toString() const {
 		return "text " + escape(value);
 	}
 
-	std::string PunctNode::toString() {
+	std::string PunctNode::toString() const {
 		std::string typeString;
 
 		return "punct " + value;
 	}
 
-	std::string EmojiNode::toString() {
+	std::string EmojiNode::toString() const {
 		return "emoji " + value;
 	}
 
-	std::string FSNode::toString() {
+	std::string FSNode::toString() const {
 		std::string string = "fs ";
 
 		switch (type) {
@@ -137,21 +135,21 @@ namespace Gularen {
 		return string;
 	}
 
-	std::string HeadingNode::toString() {
+	std::string HeadingNode::toString() const {
 		std::string string;
 
 		switch (type) {
 			case HeadingType::chapter:
-				string = "chapter ";
+				string = "chapter";
 				break;
 			case HeadingType::section:
-				string = "section ";
+				string = "section";
 				break;
 			case HeadingType::subsection:
-				string = "subsection ";
+				string = "subsection";
 				break;
 			case HeadingType::subtitle:
-				string = "subtitle ";
+				string = "subtitle";
 				break;
 		}
 
@@ -162,11 +160,11 @@ namespace Gularen {
 		return string;
 	}
 
-	std::string ParagraphNode::toString() {
+	std::string ParagraphNode::toString() const {
 		return "paragraph";
 	}
 
-	std::string AdmonNode::toString() {
+	std::string AdmonNode::toString() const {
 		std::string string = "admon ";
 
 		switch (type) {
@@ -192,19 +190,19 @@ namespace Gularen {
 		return string;
 	}
 
-	std::string FootnoteJumpNode::toString() {
+	std::string FootnoteJumpNode::toString() const {
 		return "footnoteJump " + value;
 	}
 
-	std::string FootnoteDescribeNode::toString() {
+	std::string FootnoteDescribeNode::toString() const {
 		return "footnoteDescribe " + value;
 	}
 
-	std::string IndentNode::toString() {
+	std::string IndentNode::toString() const {
 		return "indent";
 	}
 
-	std::string BreakNode::toString() {
+	std::string BreakNode::toString() const {
 		switch (type) {
 			case BreakType::line:
 				return "lineBreak";
@@ -213,7 +211,7 @@ namespace Gularen {
 		}
 	}
 
-	std::string ListNode::toString() {
+	std::string ListNode::toString() const {
 		switch (type) {
 			case ListType::bullet:
 				return "bulletList";
@@ -224,7 +222,7 @@ namespace Gularen {
 		}
 	}
 
-	std::string ListItemNode::toString() {
+	std::string ListItemNode::toString() const {
 		std::string string = "listItem ";
 
 		switch (state) {
@@ -244,7 +242,7 @@ namespace Gularen {
 		return string;
 	}
 
-	std::string TableNode::toString() {
+	std::string TableNode::toString() const {
 		std::string string = "table";
 		if (header > 0) {
 			string += " header:" + std::to_string(header);
@@ -274,15 +272,15 @@ namespace Gularen {
 		return string;
 	}
 
-	std::string TableRowNode::toString() {
+	std::string TableRowNode::toString() const {
 		return "tableRow";
 	}
 
-	std::string TableCellNode::toString() {
+	std::string TableCellNode::toString() const {
 		return "tableCell";
 	}
 
-	std::string ResourceNode::toString() {
+	std::string ResourceNode::toString() const {
 		std::string string;
 
 		switch (type) {
@@ -315,7 +313,7 @@ namespace Gularen {
 		return string;
 	}
 
-	std::string CodeNode::toString() {
+	std::string CodeNode::toString() const {
 		std::string string = "code";
 
 		if (!lang.empty()) {
