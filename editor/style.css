@@ -86,6 +86,7 @@ select {
   height: 3.8rem;
   padding: .6rem 1.0rem .7rem;
   width: 100%;
+  font-size: 1.6em;
 }
 
 input[type='color']:focus,
