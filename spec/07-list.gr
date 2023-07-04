@@ -16,14 +16,6 @@
 3. Three
 ---
 
->> Auto-Countering Ordered List
-
---- gr
-.. One 
-.. Two 
-.. Three
---- 
-
 >> Check List
 
 --- gr
@@ -56,7 +48,7 @@
 
 --- gr-rule
 bulletListItem = minus space any newline
-indexListItem = (number period|period period) space any newline
+indexListItem = number period space any newline
 checkListItem = squareOpen (space|'v'|'x') squareClose space any newline
 listItemBody = (bulletListItem|indexListItem|checkListItem) (indent++)+
 ---

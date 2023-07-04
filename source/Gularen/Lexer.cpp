@@ -480,19 +480,6 @@ namespace Gularen {
 				// see inline [
 				break;
 
-			case '.': {
-				if (check(2) && is(1, '.') && is(2, ' ')) {
-					advance(2);
-					parseSpace();
-					add(TokenType::index, 1, "..");
-					break;
-				}
-				
-				addText(".");
-				advance(0);
-				break;
-			}
-
 			case '|':
 				parseTable();
 				break;

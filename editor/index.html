@@ -29,6 +29,8 @@
 		#split.mode-in>#input {
 			display: block;
 			width: 100%;
+			margin: 0 auto;
+			max-width: 800px;
 		}
 
 		#split.mode-in>#output {
@@ -52,6 +54,8 @@
 		#split.mode-out>#output {
 			display: block;
 			width: 100%;
+			margin: 0 auto;
+			max-width: 800px;
 		}
 
 		#input,
@@ -207,7 +211,9 @@
 		gularen.transpiled = false;
 
 		function transpile() {
-			outputNode.innerHTML = Module.transpile(inputNode.value);
+			const html = Module.transpile(inputNode.value);
+			console.log(html);
+			outputNode.innerHTML = html;
 			dispatchEvent(new Event('gularentranspile', {
 				bubbles: true,
 				cancelable: true,
@@ -345,7 +351,7 @@ Aliquam quis ex eu purus blandit ornare.
 > Index List
 1. One
 2. Two
-.. Three
+3. Three
 
 > Check List
 [ ] Todo

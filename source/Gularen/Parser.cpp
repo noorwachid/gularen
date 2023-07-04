@@ -452,14 +452,7 @@ namespace Gularen {
 
 			case TokenType::bullet:
 				if (getScope()->group != NodeGroup::list) {
-					if (!getScope()->children.empty() && 
-						getScope()->children.back()->group == NodeGroup::list &&
-						getScope()->children.back()->as<ListNode>().type == ListType::bullet &&
-						!lastListDeadBecauseNewlines) {
-						scopes.push(getScope()->children.back());
-					} else {
-						addScope(std::make_shared<ListNode>(ListType::bullet));
-					}
+					addScope(std::make_shared<ListNode>(ListType::bullet));
 				}
 				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1));
 				advance(0);
@@ -609,12 +602,21 @@ namespace Gularen {
 
 	void Parser::parseIndent(size_t indent) {
 		if (lastIndent > indent) {
+			size_t copyLastIndent = lastIndent;
+
 			while (scopes.size() > 1 && lastIndent + 1 > indent) {
 				if (getScope()->group == NodeGroup::indent) {
 					if (lastIndent > 0) --lastIndent;
 				}
 				removeScope();
 			}
+
+			if (copyLastIndent == indent + 1) {
+				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::list) {
+					scopes.push(getScope()->children.back());
+				}
+			}
+
 			lastIndent = indent;
 		} else if (lastIndent < indent) {
 			if (lastIndent + 1 == indent) {

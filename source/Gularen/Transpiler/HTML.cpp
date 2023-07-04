@@ -8,6 +8,7 @@ namespace Gularen::Transpiler::HTML {
 		NodePtr tableNode;
 		size_t rowCounter;
 		size_t cellCounter;
+		size_t indent = 0;
 	};
 
 	std::string escape(const std::string& from) {
@@ -185,6 +186,10 @@ namespace Gularen::Transpiler::HTML {
 			context.cellCounter = 0;
 		}
 
+		if (node->group == NodeGroup::indent) {
+			++context.indent;
+		}
+
 		out += decorate(true, context, node, depth);
 
 		for (const NodePtr& childNode : node->children) {
@@ -192,6 +197,10 @@ namespace Gularen::Transpiler::HTML {
 		}
 
 		out += decorate(false, context, node, depth);
+
+		if (node->group == NodeGroup::indent) {
+			--context.indent;
+		}
 
 		if (node->group == NodeGroup::tableRow) {
 			++context.rowCounter;
