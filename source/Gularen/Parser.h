@@ -42,8 +42,6 @@ namespace Gularen {
 
 		void parseBlock();
 
-		void parseIndent(size_t indent);
-
 		NodePtr recursiveLoad(const std::string& directory, const std::string& nextPath);
 
 		void visit(const Visitor& visitor, const NodePtr& node);
@@ -57,8 +55,6 @@ namespace Gularen {
 		std::vector<std::string> previousPaths;
 		size_t index;
 		size_t lastNewline;
-		size_t lastIndent;
-		size_t lastIndentCall;
 		NodePtr lastScope = nullptr;
 
 		bool lastListDeadBecauseNewlines;

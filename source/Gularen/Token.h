@@ -4,8 +4,13 @@
 
 namespace Gularen {
 	enum class TokenType {
-		indent,
+		comment,
+
+		indentIncr,
+		indentDecr,
+
 		newline,
+		newlinePlus,
 
 		text,
 
@@ -45,6 +50,7 @@ namespace Gularen {
 
 		admon,
 
+		emojiDeli,
 		emoji,
 
 		hyphen,
@@ -55,15 +61,27 @@ namespace Gularen {
 		rsQuo,
 		ldQuo,
 		rdQuo,
+
+		eof,
+	};
+
+	struct Position {
+		size_t line;
+		size_t column;
 	};
 
 	struct Token {
 		TokenType type;
 		size_t count;
+		Position begin;
+		Position end;
 		std::string value;
 		
 		std::string toString() const {
-			return std::to_string(static_cast<int>(type)) + '\t' + std::to_string(count) + '\t' + value;
+			return std::to_string(static_cast<int>(type)) + 
+				'\t' + std::to_string(begin.line) + ',' + std::to_string(begin.column) + 
+				" - " + std::to_string(end.line) + ',' + std::to_string(end.column) + 
+				'\t' + value;
 		}
 	};
 	

@@ -27,6 +27,10 @@ namespace Gularen {
 
 		void add(TokenType type, size_t count, const std::string& value);
 
+		void add(TokenType type, const std::string& value);
+
+		void add(TokenType type, const std::string& value, Position begin);
+
 		void addText(const std::string value);
 
 		void parseBlock();
@@ -45,6 +49,8 @@ namespace Gularen {
 
 	private:
 		size_t index;
+		size_t indent = 0;
+		Position position;
 		std::string content;
 		Tokens tokens;
 	};

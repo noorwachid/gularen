@@ -139,7 +139,6 @@ namespace Gularen {
 
 		index = 0;
 		lastNewline = 0;
-		lastIndent = 0;
 		
 		while (!scopes.empty()) {
 			scopes.pop();
@@ -362,6 +361,19 @@ namespace Gularen {
 	}
 
 	void Parser::parseBlock() {
+		while (check(0) && is(0, TokenType::indentIncr)) {
+			addScope(std::make_shared<IndentNode>());
+			advance(0);
+		}
+
+		while (check(0) && scopes.size() > 1 && is(0, TokenType::indentDecr)) {
+			while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
+				removeScope();
+			}
+			removeScope();
+			advance(0);
+		}
+
 		switch (getScope()->group) {
 			case NodeGroup::listItem: {
 				lastScope = getScope();
@@ -370,7 +382,6 @@ namespace Gularen {
 
 				if (lastNewline > 1 || (
 					check(0) && !(
-						(is(0, TokenType::indent)) ||
 						(is(0, TokenType::bullet)   && type == ListType::bullet) ||
 						(is(0, TokenType::index)    && type == ListType::index) ||
 						(is(0, TokenType::checkbox) && type == ListType::check) 
@@ -411,7 +422,7 @@ namespace Gularen {
 				lastScope = nullptr;
 				removeScope();
 
-				if (lastNewline > 1 || (check(0) && !(is(0, TokenType::indent) || is(0, TokenType::pipe)))) {
+				if (lastNewline > 1 || (check(0) && !is(0, TokenType::pipe))) {
 					removeScope();
 				}
 				break;
@@ -431,25 +442,7 @@ namespace Gularen {
 				break;
 		}
 
-		if (!lastIndentCall && get(0).type != TokenType::indent) {
-			parseIndent(0);
-		}
-
-		if (lastIndentCall) {
-			lastIndentCall = false;
-		}
-
 		switch (get(0).type) {
-			case TokenType::indent:
-				parseIndent(get(0).count);
-				advance(0);
-
-				if (check(0)) {
-					lastIndentCall = true;
-					parseBlock();
-				}
-				break;
-
 			case TokenType::bullet:
 				if (getScope()->group != NodeGroup::list) {
 					addScope(std::make_shared<ListNode>(ListType::bullet));
@@ -597,45 +590,6 @@ namespace Gularen {
 					addText("\n");
 				}
 				break;
-		}
-	}
-
-	void Parser::parseIndent(size_t indent) {
-		if (lastIndent > indent) {
-			size_t copyLastIndent = lastIndent;
-
-			while (scopes.size() > 1 && lastIndent + 1 > indent) {
-				if (getScope()->group == NodeGroup::indent) {
-					if (lastIndent > 0) --lastIndent;
-				}
-				removeScope();
-			}
-
-			if (copyLastIndent == indent + 1) {
-				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::list) {
-					scopes.push(getScope()->children.back());
-				}
-			}
-
-			lastIndent = indent;
-		} else if (lastIndent < indent) {
-			if (lastIndent + 1 == indent) {
-				// list is guarantied to have one listItem
-				if (lastScope && (
-					lastScope->group == NodeGroup::listItem ||
-					lastScope->group == NodeGroup::footnoteDescribe ||
-					lastScope->group == NodeGroup::admon
-					)) {
-					// NOTE: not using helper addScope to avoid circular reference,
-					//       it took me 2 days to find the bug
-					scopes.push(lastScope);
-				}
-			}
-
-			while (lastIndent < indent) {
-				++lastIndent;
-				addScope(std::make_shared<IndentNode>());
-			}
 		}
 	}
 }

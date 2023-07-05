@@ -4,16 +4,7 @@
 
 namespace Gularen {
 	void Lexer::set(const std::string& content) {
-		if (content.empty()) return;
-
-		this->content.clear();
-		this->content.reserve(content.size() + 1);
-
-		for (size_t i = 0; i < content.size(); ++i) {
-			this->content.push_back(content[i]);
-		}
-
-		this->content.push_back('\n');
+		this->content = content;
 	}
 
 	void Lexer::parse() {
@@ -21,11 +12,20 @@ namespace Gularen {
 
 		this->tokens.clear();
 		this->index = 0;
+		this->position.line = 0;
+		this->position.column = 0;
 
 		parseBlock();
 
 		while (check(0)) {
 			parseInline();
+		}
+
+		if (!tokens.empty() && (tokens.back().type == TokenType::newline || tokens.back().type == TokenType::newlinePlus)) {
+			tokens.back().type = TokenType::eof;
+			tokens.back().value = "\\0";
+		} else {
+			add(TokenType::eof, "\\0");
 		}
 	}
 
@@ -52,6 +52,7 @@ namespace Gularen {
 
 	void Lexer::advance(size_t offset) {
 		index += 1 + offset;
+		position.column += 1 + offset;
 	}
 
 	size_t Lexer::count(char c) {
@@ -68,14 +69,45 @@ namespace Gularen {
 		token.type = type;
 		token.value = value;
 		token.count = count;
+		token.begin = position;
+		token.end = position;
+		tokens.push_back(token);
+	}
+
+	void Lexer::add(TokenType type, const std::string& value, Position begin) {
+		Token token;
+		token.type = type;
+		token.value = value;
+		token.count = 0;
+		token.begin = begin;
+		token.end = position;
+		--token.end.column;
+		tokens.push_back(token);
+	}
+
+	void Lexer::add(TokenType type, const std::string& value) {
+		Token token;
+		token.type = type;
+		token.value = value;
+		token.count = 0;
+		token.begin = position;
+		token.end = position;
 		tokens.push_back(token);
 	}
 
 	void Lexer::addText(const std::string value) {
 		if (!tokens.empty() && tokens.back().type == TokenType::text) {
 			tokens.back().value += value;
+			tokens.back().end.column += value.size();
 		} else {
-			add(TokenType::text, 1, value);
+			Position beginPosition = position;
+			beginPosition.column -= value.size() - 1;
+			Token token;
+			token.type = TokenType::text;
+			token.value = value;
+			token.begin = beginPosition;
+			token.end = position;
+			tokens.push_back(token);
 		}
 	}
 
@@ -147,15 +179,21 @@ namespace Gularen {
 				parseText();
 				break;
 
-			case '\n':
-				// from comment
-				if (!tokens.empty() && tokens.back().type == TokenType::newline) {
-					tokens.back().count += count('\n');
+			case '\n': {
+				Position beginPosition = position;
+				size_t counter = count('\n');
+
+				if (counter == 1) {
+					add(TokenType::newline, "\\n", beginPosition);
 				} else {
-					add(TokenType::newline, count('\n'), "\\n");
+					add(TokenType::newlinePlus, "\\n", beginPosition);
 				}
+
+				position.line += counter;
+				position.column = 0;
 				parseBlock();
 				break;
+			}
 
 			case '\\':
 				advance(0);
@@ -165,13 +203,17 @@ namespace Gularen {
 				}
 				break;
 
-			case '~':
+			case '~': {
+				size_t commentIndex = index;
+				size_t commentSize = 1;
 				advance(0);
-
 				while (check(0) && !is(0, '\n')) {
+					++commentSize;
 					advance(0);
 				}
+				add(TokenType::comment, content.substr(commentIndex, commentSize));
 				break;
+			}
 			
 			case '\'':
 				parseQuoMark(tokens.empty() || tokens.back().type == TokenType::ldQuo, TokenType::lsQuo, "‘", TokenType::rsQuo, "’");
@@ -185,20 +227,21 @@ namespace Gularen {
 
 			case '-':
 				if (check(2) && is(1, '-') && is(2, '-')) {
-					advance(2);
 					add(TokenType::emDash, 1, "–");
+					advance(2);
 					break;
 				}
 				if (check(1) && is(1, '-')) {
-					advance(1);
 					add(TokenType::enDash, 1, "–");
+					advance(1);
 					break;
 				}
-				advance(0);
 				add(TokenType::hyphen, 1, "-");
+				advance(0);
 				break;
 
 			case ':': {
+				Position emojiDeliPosition = position;
 				advance(0);
 
 				if (check(0)) {
@@ -210,13 +253,15 @@ namespace Gularen {
 							break;
 						}
 
-						advance(0);
 						++emojiSize;
+						advance(0);
 					}
 
 					if (is(0, ':') && emojiSize > 0) {
-						advance(0);
+						add(TokenType::emojiDeli, ":", emojiDeliPosition);
 						add(TokenType::emoji, 1, content.substr(emojiIndex, emojiSize));
+						advance(0);
+						add(TokenType::emojiDeli, ":");
 						break;
 					}
 
@@ -431,12 +476,23 @@ namespace Gularen {
 	}
 
 	void Lexer::parseBlock() {
-		switch (get(0)) {
-			case '\t':
-				add(TokenType::indent, count('\t'), "\\t");
-				parseBlock();
-				break;
+		size_t currentIndent = is(0, '\t') ? count('\t') : 0;
 
+		if (currentIndent > indent) {
+			while (currentIndent > indent) {
+				add(TokenType::indentIncr, 1, ">+");
+				++indent;
+			}
+		}
+
+		if (currentIndent < indent) {
+			while (currentIndent < indent) {
+				add(TokenType::indentDecr, 1, ">-");
+				--indent;
+			}
+		}
+
+		switch (get(0)) {
 			case '>': {
 				size_t counter = count('>');
 				if (counter > 3) {
@@ -577,13 +633,15 @@ namespace Gularen {
 	}
 
 	void Lexer::parseCode() {
-		size_t openingIndent = !tokens.empty() && tokens.back().type == TokenType::indent ? tokens.back().count : 0;
+		Position beginPosition = position;
+
+		size_t openingIndent = !tokens.empty() && tokens.back().type == TokenType::indentIncr ? tokens.back().count : 0;
 		size_t openingCounter = count('-');
 
 		if (openingCounter == 1) {
 			if (is(0, ' ')) {
-				parseSpace();
-				add(TokenType::bullet, 1, "-");
+				advance(0);
+				add(TokenType::bullet, "-", beginPosition);
 				return;
 			}
 
@@ -637,7 +695,7 @@ namespace Gularen {
 
 				if (check(2) && is(0, '-') && is(1, '-') && is(2, '-')) {
 					size_t closingCounter = count('-');
-					if (check(0) && is(0, '\n') && closingCounter == openingCounter) {
+					if ((index >= content.size() || check(0) && is(0, '\n')) && closingCounter == openingCounter) {
 						break;
 					}
 
