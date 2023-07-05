@@ -54,9 +54,8 @@ namespace Gularen {
 		std::string path;
 		std::vector<std::string> previousPaths;
 		size_t index;
-		size_t lastNewline;
-		NodePtr lastScope = nullptr;
+		TokenType lastEnding;
 
-		bool lastListDeadBecauseNewlines;
+		bool lastListDeadBecauseNewlinePlus;
 	};
 }

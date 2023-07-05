@@ -6,7 +6,7 @@
 
 namespace Gularen {
 	enum class NodeGroup {
-		file,
+		document,
 
 		text,
 		fs,
@@ -53,10 +53,10 @@ namespace Gularen {
 		static std::string escape(const std::string& from);
 	};
 
-	struct FileNode : Node {
+	struct DocumentNode : Node {
 		std::string path;
 
-		FileNode(const std::string& path);
+		DocumentNode(const std::string& path);
 
 		virtual std::string toString() const override;
 	};

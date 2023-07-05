@@ -185,12 +185,21 @@ namespace Gularen {
 
 				if (counter == 1) {
 					add(TokenType::newline, "\\n", beginPosition);
+					position.line += counter;
+					position.column = 0;
 				} else {
-					add(TokenType::newlinePlus, "\\n", beginPosition);
+					position.line += counter - 1;
+					position.column = 0;
+					Token token;
+					token.type = TokenType::newlinePlus;
+					token.value = "\\n";
+					token.count = 0;
+					token.begin = beginPosition;
+					token.end = position;
+					tokens.push_back(token);
+					position.line += 1;
 				}
 
-				position.line += counter;
-				position.column = 0;
 				parseBlock();
 				break;
 			}
@@ -444,11 +453,12 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case '>':
+			case '>': {
+				Position beginPosition = position;
+
 				if (check(1) && is(1, ' ')) {
-					advance(0);
-					parseSpace();
-					add(TokenType::headingIDMarker, 1, ">");
+					advance(1);
+					add(TokenType::headingIDOper, ">", beginPosition);
 
 					size_t idIndex = index;
 					size_t idSize = 0;
@@ -467,6 +477,7 @@ namespace Gularen {
 				addText(">");
 				advance(0);
 				break;
+			}
 
 			default:
 				addText(content.substr(index, 1));
@@ -494,6 +505,8 @@ namespace Gularen {
 
 		switch (get(0)) {
 			case '>': {
+				Position beginPosition = position;
+
 				size_t counter = count('>');
 				if (counter > 3) {
 					addText(std::string(counter, '>'));
@@ -501,8 +514,18 @@ namespace Gularen {
 				}
 
 				if (is(0, ' ')) {
-					parseSpace();
-					add(TokenType::headingMarker, counter, std::string(counter, '>'));
+					advance(0);
+					switch (counter) {
+						case 3:
+							add(TokenType::chapterOper, ">>>", beginPosition);
+							break;
+						case 2:
+							add(TokenType::sectionOper, ">>", beginPosition);
+							break;
+						case 1:
+							add(TokenType::subsectionOper, ">", beginPosition);
+							break;
+					}
 					break;
 				}
 				addText(std::string(counter, '>'));

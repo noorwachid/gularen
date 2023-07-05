@@ -18,9 +18,12 @@ namespace Gularen {
 		codeLang,
 		codeSource,
 		
-		headingMarker,
+		chapterOper,
+		sectionOper,
+		subsectionOper,
+	
 		headingID,
-		headingIDMarker,
+		headingIDOper,
 
 		fsBold,
 		fsItalic,

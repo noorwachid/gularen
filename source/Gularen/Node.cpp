@@ -20,8 +20,8 @@ namespace Gularen {
 
 	// constructors
 
-	FileNode::FileNode(const std::string& path) : path{path} {
-		group = NodeGroup::file;
+	DocumentNode::DocumentNode(const std::string& path) : path{path} {
+		group = NodeGroup::document;
 	}
 
 	TextNode::TextNode(const std::string& value) : value{value} {
@@ -94,9 +94,9 @@ namespace Gularen {
 		return "base";
 	}
 
-	std::string FileNode::toString() const {
+	std::string DocumentNode::toString() const {
 		if (path.empty())
-			return "file";
+			return "document";
 
 		return "file " + escape(path);
 	}

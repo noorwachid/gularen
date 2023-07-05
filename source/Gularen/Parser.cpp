@@ -125,7 +125,7 @@ namespace Gularen {
 		NodePtr node = parser.get();
 		
 		if (node) {
-			static_cast<FileNode*>(node.get())->path = nextPath;
+			static_cast<DocumentNode*>(node.get())->path = nextPath;
 		}
 
 		return node;
@@ -138,13 +138,13 @@ namespace Gularen {
 		if (lexer.get().empty()) return;
 
 		index = 0;
-		lastNewline = 0;
+		lastEnding = TokenType::newline;
 		
 		while (!scopes.empty()) {
 			scopes.pop();
 		}
 
-		root = std::make_shared<FileNode>(pathVirtual ? "" : path);
+		root = std::make_shared<DocumentNode>(pathVirtual ? "" : path);
 		scopes.push(root);
 
 		parseBlock();
@@ -244,7 +244,7 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::headingIDMarker:
+			case TokenType::headingIDOper:
 				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::heading) {
 					HeadingNode* headingNode = static_cast<HeadingNode*>(getScope().get());
 					if (headingNode->type == HeadingType::subtitle) {
@@ -335,7 +335,7 @@ namespace Gularen {
 				if (check(1) && is(1, TokenType::resource)) {
 					std::string directory = path == "" ? std::filesystem::current_path().string() : std::filesystem::path(path).parent_path().string();
 					NodePtr fileNode = recursiveLoad(directory, get(1).value);
-					add(fileNode ? fileNode : std::make_shared<FileNode>(get(1).value));
+					add(fileNode ? fileNode : std::make_shared<DocumentNode>(get(1).value));
 					advance(1);
 					break;
 				}
@@ -343,11 +343,11 @@ namespace Gularen {
 				break;
 
 			case TokenType::newline:
-				lastNewline = 0;
-				while (check(0) && is(0, TokenType::newline)) {
-					lastNewline += get(0).count;
-					advance(0);
-				}
+			case TokenType::newlinePlus:
+			case TokenType::eof:
+				lastEnding = get(0).type;
+				advance(0);
+
 				if (check(0)) {
 					parseBlock();
 				}
@@ -376,18 +376,17 @@ namespace Gularen {
 
 		switch (getScope()->group) {
 			case NodeGroup::listItem: {
-				lastScope = getScope();
 				removeScope();
 				ListType type = getScope()->as<ListNode>().type;
 
-				if (lastNewline > 1 || (
+				if (lastEnding == TokenType::newlinePlus || (
 					check(0) && !(
 						(is(0, TokenType::bullet)   && type == ListType::bullet) ||
 						(is(0, TokenType::index)    && type == ListType::index) ||
 						(is(0, TokenType::checkbox) && type == ListType::check) 
 					)
 				)) {
-					lastListDeadBecauseNewlines = lastNewline > 1;
+					lastListDeadBecauseNewlinePlus = lastEnding == TokenType::newlinePlus;
 					removeScope();
 				}
 				break;
@@ -397,21 +396,19 @@ namespace Gularen {
 				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
 					removeScope();
 				}
-				lastScope = getScope();
 				removeScope();
 				break;
 
 			case NodeGroup::paragraph:
-				lastScope = nullptr;
 				if (getScope()->children.empty()) {
 					removeScope();
 					getScope()->children.pop_back();
-				} else if (lastNewline > 1 || (check(0) &&
+				} else if (lastEnding == TokenType::newlinePlus || (check(0) &&
 					is(0, TokenType::bullet) ||
 					is(0, TokenType::index) ||
 					is(0, TokenType::checkbox) ||
 					is(0, TokenType::pipe) ||
-					is(0, TokenType::headingMarker) ||
+					is(0, TokenType::chapterOper) ||
 					is(0, TokenType::describeMarker)
 				)) {
 					removeScope();
@@ -419,26 +416,22 @@ namespace Gularen {
 				break;
 
 			case NodeGroup::tableRow:
-				lastScope = nullptr;
 				removeScope();
 
-				if (lastNewline > 1 || (check(0) && !is(0, TokenType::pipe))) {
+				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
 					removeScope();
 				}
 				break;
 
 			case NodeGroup::footnoteDescribe:
-				lastScope = getScope();
 				removeScope();
 				break;
 
 			case NodeGroup::admon:
-				lastScope = getScope();
 				removeScope();
 				break;
 			
 			default:
-				lastScope = nullptr;
 				break;
 		}
 
@@ -456,7 +449,7 @@ namespace Gularen {
 					if (!getScope()->children.empty() && 
 						getScope()->children.back()->group == NodeGroup::list &&
 						getScope()->children.back()->as<ListNode>().type == ListType::index &&
-						!lastListDeadBecauseNewlines) {
+						!lastListDeadBecauseNewlinePlus) {
 						scopes.push(getScope()->children.back());
 					} else {
 						addScope(std::make_shared<ListNode>(ListType::index));
@@ -471,7 +464,7 @@ namespace Gularen {
 					if (!getScope()->children.empty() && 
 						getScope()->children.back()->group == NodeGroup::list &&
 						getScope()->children.back()->as<ListNode>().type == ListType::check &&
-						!lastListDeadBecauseNewlines) {
+						!lastListDeadBecauseNewlinePlus) {
 						scopes.push(getScope()->children.back());
 					} else {
 						addScope(std::make_shared<ListNode>(ListType::check));
@@ -564,20 +557,22 @@ namespace Gularen {
 				break;
 			}
 
-			case TokenType::headingMarker:
-				if (get(0).count == 3) {
-					addScope(std::make_shared<HeadingNode>(HeadingType::chapter));
-				}
-				if (get(0).count == 2) {
-					addScope(std::make_shared<HeadingNode>(HeadingType::section));
-				}
-				if (get(0).count == 1) {
-					if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading && lastNewline == 1) {
-						scopes.push(getScope()->children.back());
-						addScope(std::make_shared<HeadingNode>(HeadingType::subtitle));
-					} else {
-						addScope(std::make_shared<HeadingNode>(HeadingType::subsection));
-					}
+			case TokenType::chapterOper:
+				addScope(std::make_shared<HeadingNode>(HeadingType::chapter));
+				advance(0);
+				break;
+
+			case TokenType::sectionOper:
+				addScope(std::make_shared<HeadingNode>(HeadingType::section));
+				advance(0);
+				break;
+
+			case TokenType::subsectionOper:
+				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading && lastEnding == TokenType::newline) {
+					scopes.push(getScope()->children.back());
+					addScope(std::make_shared<HeadingNode>(HeadingType::subtitle));
+				} else {
+					addScope(std::make_shared<HeadingNode>(HeadingType::subsection));
 				}
 				advance(0);
 				break;
