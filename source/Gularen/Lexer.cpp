@@ -24,6 +24,7 @@ namespace Gularen {
 		if (!tokens.empty() && (tokens.back().type == TokenType::newline || tokens.back().type == TokenType::newlinePlus)) {
 			tokens.back().type = TokenType::eof;
 			tokens.back().value = "\\0";
+			tokens.back().end = tokens.back().begin;
 		} else {
 			add(TokenType::eof, "\\0");
 		}
@@ -422,7 +423,7 @@ namespace Gularen {
 				
 			case '<':
 				if (check(1) && is(1, '<')) {
-					add(TokenType::break_, "<<");
+					add(TokenType::break_, "<<", position, Position(position.line, position.column + 1));
 					advance(1);
 					break;
 				}

@@ -71,6 +71,10 @@ namespace Gularen {
 	struct Position {
 		size_t line;
 		size_t column;
+
+		Position() = default;
+
+		Position(size_t line, size_t column) : line{line}, column{column} {}
 	};
 
 	struct Token {
