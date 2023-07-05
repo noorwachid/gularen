@@ -64,13 +64,12 @@ namespace Gularen {
 		return count;
 	}
 
-	void Lexer::add(TokenType type, size_t count, const std::string& value) {
+	void Lexer::add(TokenType type, const std::string& value, Position begin, Position end) {
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.count = count;
-		token.begin = position;
-		token.end = position;
+		token.begin = begin;
+		token.end = end;
 		tokens.push_back(token);
 	}
 
@@ -78,7 +77,6 @@ namespace Gularen {
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.count = 0;
 		token.begin = begin;
 		token.end = position;
 		--token.end.column;
@@ -89,7 +87,6 @@ namespace Gularen {
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.count = 0;
 		token.begin = position;
 		token.end = position;
 		tokens.push_back(token);
@@ -193,7 +190,6 @@ namespace Gularen {
 					Token token;
 					token.type = TokenType::newlinePlus;
 					token.value = "\\n";
-					token.count = 0;
 					token.begin = beginPosition;
 					token.end = position;
 					tokens.push_back(token);
@@ -213,6 +209,7 @@ namespace Gularen {
 				break;
 
 			case '~': {
+				Position beginPosition = position;
 				size_t commentIndex = index;
 				size_t commentSize = 1;
 				advance(0);
@@ -220,7 +217,7 @@ namespace Gularen {
 					++commentSize;
 					advance(0);
 				}
-				add(TokenType::comment, content.substr(commentIndex, commentSize));
+				add(TokenType::comment, content.substr(commentIndex, commentSize), beginPosition);
 				break;
 			}
 			
@@ -236,16 +233,16 @@ namespace Gularen {
 
 			case '-':
 				if (check(2) && is(1, '-') && is(2, '-')) {
-					add(TokenType::emDash, 1, "–");
+					add(TokenType::emDash, "–");
 					advance(2);
 					break;
 				}
 				if (check(1) && is(1, '-')) {
-					add(TokenType::enDash, 1, "–");
+					add(TokenType::enDash, "–");
 					advance(1);
 					break;
 				}
-				add(TokenType::hyphen, 1, "-");
+				add(TokenType::hyphen, "-");
 				advance(0);
 				break;
 
@@ -268,7 +265,7 @@ namespace Gularen {
 
 					if (is(0, ':') && emojiSize > 0) {
 						add(TokenType::emojiDeli, ":", emojiDeliPosition);
-						add(TokenType::emoji, 1, content.substr(emojiIndex, emojiSize));
+						add(TokenType::emoji, content.substr(emojiIndex, emojiSize));
 						advance(0);
 						add(TokenType::emojiDeli, ":");
 						break;
@@ -315,10 +312,10 @@ namespace Gularen {
 					}
 
 					if (idMarkerExists) {
-						add(TokenType::resource, 1, resource.substr(0, idMarkerIndex));
-						add(TokenType::resourceID, 1, resource.substr(idMarkerIndex + 1));
+						add(TokenType::resource, resource.substr(0, idMarkerIndex));
+						add(TokenType::resourceID, resource.substr(idMarkerIndex + 1));
 					} else {
-						add(TokenType::resource, 1, resource);
+						add(TokenType::resource, resource);
 					}
 					
 					if (is(0, '(')) {
@@ -346,7 +343,7 @@ namespace Gularen {
 								advance(0);
 							}
 
-							add(TokenType::resourceLabel, 1, label);
+							add(TokenType::resourceLabel, label);
 							break;
 						} else {
 							addText("(");
@@ -362,7 +359,7 @@ namespace Gularen {
 			case '!':
 				if (check(1) && is(1, '[')) {
 					advance(0);
-					add(TokenType::presentMarker, 1, "!");
+					add(TokenType::presentMarker, "!");
 					// see inline [
 					break;
 				}
@@ -373,7 +370,7 @@ namespace Gularen {
 			case '?':
 				if (check(1) && is(1, '[')) {
 					advance(0);
-					add(TokenType::includeMarker, 1, "?");
+					add(TokenType::includeMarker, "?");
 					// see inline [
 					break;
 				}
@@ -393,8 +390,8 @@ namespace Gularen {
 						advance(0);
 					}
 					if (idSize > 0 && check(0) && is(0, ']')) {
-						add(original == "^" ? TokenType::jumpMarker : TokenType::describeMarker, 1, original);
-						add(TokenType::jumpID, 1, content.substr(idIndex, idSize));
+						add(original == "^" ? TokenType::jumpMarker : TokenType::describeMarker, original);
+						add(TokenType::jumpID, content.substr(idIndex, idSize));
 						advance(0);
 						break;
 					}
@@ -417,7 +414,7 @@ namespace Gularen {
 					}
 					tokens.back().value = tokens.back().value.substr(0, tokens.back().value.size() - blankCount);
 				}
-				add(TokenType::pipe, 1, "|");
+				add(TokenType::pipe, "|");
 				advance(0);
 				parseSpace();
 				break;
@@ -425,31 +422,31 @@ namespace Gularen {
 				
 			case '<':
 				if (check(1) && is(1, '<')) {
-					add(TokenType::break_, 2, "<<");
+					add(TokenType::break_, "<<");
 					advance(1);
 					break;
 				}
-				add(TokenType::break_, 1, "<");
+				add(TokenType::break_, "<");
 				advance(0);
 				break;
 
 			case '*':
 				if (check(2) && is(1, '*') && is(2, '*')) {
-					add(TokenType::dinkus, 1, "***");
+					add(TokenType::dinkus, "***");
 					advance(2);
 					break;
 				}
-				add(TokenType::fsBold, 1, "*");
+				add(TokenType::fsBold, "*");
 				advance(0);
 				break;
 
 			case '_':
-				add(TokenType::fsItalic, 1, "_");
+				add(TokenType::fsItalic, "_");
 				advance(0);
 				break;
 
 			case '`':
-				add(TokenType::fsMonospace, 1, "`");
+				add(TokenType::fsMonospace, "`");
 				advance(0);
 				break;
 
@@ -469,7 +466,7 @@ namespace Gularen {
 					}
 					
 					if (idSize > 0) {
-						add(TokenType::headingID, 1, content.substr(idIndex, idSize));
+						add(TokenType::headingID, content.substr(idIndex, idSize));
 					}
 					break;
 				}
@@ -487,19 +484,23 @@ namespace Gularen {
 	}
 
 	void Lexer::parseBlock() {
+		Position beginPosition = position;
+
 		size_t currentIndent = is(0, '\t') ? count('\t') : 0;
 
 		if (currentIndent > indent) {
 			while (currentIndent > indent) {
-				add(TokenType::indentIncr, 1, ">+");
+				beginPosition.column = indent;
+				add(TokenType::indentIncr, ">+", beginPosition, beginPosition);
 				++indent;
 			}
 		}
 
 		if (currentIndent < indent) {
 			while (currentIndent < indent) {
-				add(TokenType::indentDecr, 1, ">-");
 				--indent;
+				// indentDecr has no symbol
+				add(TokenType::indentDecr, ">-", tokens.back().begin, tokens.back().begin);
 			}
 		}
 
@@ -540,17 +541,17 @@ namespace Gularen {
 			case '[':
 				if (check(3) && is(2, ']') && is(3, ' ')) {
 					if (is(1, ' ')) {
-						add(TokenType::checkbox, 0, "[ ]");
+						add(TokenType::checkbox, "[ ]");
 						advance(3);
 						break;
 					}
 					if (is(1, 'v')) {
-						add(TokenType::checkbox, 1, "[v]");
+						add(TokenType::checkbox, "[v]");
 						advance(2);
 						break;
 					}
 					if (is(1, 'x')) {
-						add(TokenType::checkbox, 2, "[x]");
+						add(TokenType::checkbox, "[x]");
 						advance(2);
 						break;
 					}
@@ -563,18 +564,6 @@ namespace Gularen {
 				parseTable();
 				break;
 
-			case '/': {
-				size_t depth = 0;
-				while (check(0) && (is(0, '/') || is(0, ' '))) {
-					if (is(0, '/')) {
-						++depth;
-					}
-					advance(0);
-				}
-				add(TokenType::blockquote, depth, "/");
-				break;
-			}
-
 			case '<':
 				if (check(3) && is(2, '>') && is(3, ' ')) {
 					// </> Note
@@ -586,37 +575,37 @@ namespace Gularen {
 					if (is(1, '/')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, 1, "</>");
+						add(TokenType::admon, "</>");
 						break;
 					}
 					if (is(1, '?')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, 2, "<?>");
+						add(TokenType::admon, "<?>");
 						break;
 					}
 					if (is(1, '!')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, 3, "<!>");
+						add(TokenType::admon, "<!>");
 						break;
 					}
 					if (is(1, '^')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, 4, "<^>");
+						add(TokenType::admon, "<^>");
 						break;
 					}
 					if (is(1, '@')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, 5, "<@>");
+						add(TokenType::admon, "<@>");
 						break;
 					}
 					if (is(1, '&')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, 6, "<&>");
+						add(TokenType::admon, "<&>");
 						break;
 					}
 				}
@@ -641,7 +630,7 @@ namespace Gularen {
 				if (check(1) && is(0, '.') && is(1, ' ')) {
 					advance(0);
 					parseSpace();
-					add(TokenType::index, std::stoi(number), number + ".");
+					add(TokenType::index, number + ".");
 					break;
 				}
 				
@@ -658,7 +647,7 @@ namespace Gularen {
 	void Lexer::parseCode() {
 		Position beginPosition = position;
 
-		size_t openingIndent = !tokens.empty() && tokens.back().type == TokenType::indentIncr ? tokens.back().count : 0;
+		size_t openingIndent = indent;
 		size_t openingCounter = count('-');
 
 		if (openingCounter == 1) {
@@ -697,8 +686,8 @@ namespace Gularen {
 				return;
 			}
 
-			add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
-			add(TokenType::codeLang, 1, content.substr(langIndex, langSize));
+			add(TokenType::codeMarker, std::string(openingCounter, '-'));
+			add(TokenType::codeLang, content.substr(langIndex, langSize));
 		} else {
 			if (!is(0, '\n')) {
 				index -= (openingCounter + spaceCounter);
@@ -706,7 +695,7 @@ namespace Gularen {
 				return;
 			}
 
-			add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
+			add(TokenType::codeMarker, std::string(openingCounter, '-'));
 		}
 
 		std::string source;
@@ -761,8 +750,8 @@ namespace Gularen {
 
 		size_t trimSize = trimEnd == source.size() ? source.size() : source.size() - trimBegin - trimEnd;
 
-		add(TokenType::codeSource, 1, source.substr(trimBegin, trimSize));
-		add(TokenType::codeMarker, 1, std::string(openingCounter, '-'));
+		add(TokenType::codeSource, source.substr(trimBegin, trimSize));
+		add(TokenType::codeMarker, std::string(openingCounter, '-'));
 	}
 
 	void Lexer::parseSpace() {
@@ -774,7 +763,7 @@ namespace Gularen {
 	}
 
 	void Lexer::parseTable() {
-		add(TokenType::pipe, 1, "|");
+		add(TokenType::pipe, "|");
 		advance(0);
 
 		if (!(is(0, '-') || is(0, ':'))) {
@@ -788,11 +777,11 @@ namespace Gularen {
 
 				if (get(0) == ':') {
 					advance(0);
-					add(TokenType::pipeConnector, 1, ":-:");
+					add(TokenType::pipeConnector, ":-:");
 					continue;
 				}
 
-				add(TokenType::pipeConnector, 0, ":--");
+				add(TokenType::pipeConnector, ":--");
 				continue;
 			}
 
@@ -801,16 +790,16 @@ namespace Gularen {
 
 				if (get(0) == ':') {
 					advance(0);
-					add(TokenType::pipeConnector, 2, "--:");
+					add(TokenType::pipeConnector, "--:");
 					continue;
 				}
 
-				add(TokenType::pipeConnector, 0, ":--");
+				add(TokenType::pipeConnector, ":--");
 				continue;
 			}
 
 			if (is(0, '|')) {
-				add(TokenType::pipe, 1, "|");
+				add(TokenType::pipe, "|");
 				advance(0);
 				continue;
 			}
@@ -905,10 +894,10 @@ namespace Gularen {
             content[index - 1] == '\0')
             
         {
-            add(leftType, 1, leftValue);
+            add(leftType, leftValue);
             return;
         }
 
-        add(rightType, 1, rightValue);
+        add(rightType, rightValue);
 	}
 }

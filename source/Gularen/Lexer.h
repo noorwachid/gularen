@@ -25,11 +25,11 @@ namespace Gularen {
 
 		size_t count(char c);
 
-		void add(TokenType type, size_t count, const std::string& value);
-
 		void add(TokenType type, const std::string& value);
 
 		void add(TokenType type, const std::string& value, Position begin);
+
+		void add(TokenType type, const std::string& value, Position begin, Position end);
 
 		void addText(const std::string value);
 

@@ -75,7 +75,6 @@ namespace Gularen {
 
 	struct Token {
 		TokenType type;
-		size_t count;
 		Position begin;
 		Position end;
 		std::string value;

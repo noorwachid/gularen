@@ -261,7 +261,7 @@ namespace Gularen {
 				break;
 
 			case TokenType::break_:
-				if (get(0).count == 2) {
+				if (get(0).value.size() == 2) {
 					add(std::make_shared<BreakNode>(BreakType::page));
 					advance(0);
 					break;
@@ -351,6 +351,10 @@ namespace Gularen {
 				if (check(0)) {
 					parseBlock();
 				}
+				break;
+
+			case TokenType::comment:
+				advance(0);
 				break;
 				
 			default:
@@ -472,10 +476,10 @@ namespace Gularen {
 				}
 				
 				ListItemState state = ListItemState::none;
-				switch (get(0).count) {
-					case 0: state = ListItemState::todo; break;
-					case 1: state = ListItemState::done; break;
-					case 2: state = ListItemState::canceled; break;
+				switch (get(0).value[1]) {
+					case ' ': state = ListItemState::todo; break;
+					case 'v': state = ListItemState::done; break;
+					case 'x': state = ListItemState::canceled; break;
 				}
 				
 				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1, state));
@@ -499,7 +503,13 @@ namespace Gularen {
 
 					while (check(0) && (is(0, TokenType::pipe) || is(0, TokenType::pipeConnector))) {
 						if (is(0, TokenType::pipeConnector)) {
-							tableNode->alignments.push_back(static_cast<Alignment>(get(0).count));
+							if (get(0).value == ":--") {
+								tableNode->alignments.push_back(Alignment::left);
+							} else if (get(0).value == "--:") {
+								tableNode->alignments.push_back(Alignment::right);
+							} else {
+								tableNode->alignments.push_back(Alignment::center);
+							}
 						}
 						advance(0);
 					}
@@ -543,13 +553,13 @@ namespace Gularen {
 
 			case TokenType::admon: {
 				AdmonType type = AdmonType::note;
-				switch (get(0).count) {
-					case 1: type = AdmonType::note; break;
-					case 2: type = AdmonType::hint; break;
-					case 3: type = AdmonType::important; break;
-					case 4: type = AdmonType::warning; break;
-					case 5: type = AdmonType::danger; break;
-					case 6: type = AdmonType::seeAlso; break;
+				switch (get(0).value[1]) {
+					case '/': type = AdmonType::note; break;
+					case '?': type = AdmonType::hint; break;
+					case '!': type = AdmonType::important; break;
+					case '^': type = AdmonType::warning; break;
+					case '@': type = AdmonType::danger; break;
+					case '&': type = AdmonType::seeAlso; break;
 					default: break;
 				}
 				addScope(std::make_shared<AdmonNode>(type));
