@@ -254,7 +254,7 @@ namespace Gularen {
 			}
 
 			case ':': {
-				Position emojiDeliPosition = position;
+				Position emojiMarkerPosition = position;
 				advance(0);
 
 				if (check(0)) {
@@ -271,10 +271,10 @@ namespace Gularen {
 					}
 
 					if (is(0, ':') && emojiSize > 0) {
-						add(TokenType::emojiDeli, ":", emojiDeliPosition);
-						add(TokenType::emoji, content.substr(emojiIndex, emojiSize));
+						add(TokenType::emojiMarker, ":", emojiMarkerPosition, emojiMarkerPosition);
+						add(TokenType::emojiCode, content.substr(emojiIndex, emojiSize), Position(emojiMarkerPosition.line, emojiMarkerPosition.column + 1));
+						add(TokenType::emojiMarker, ":");
 						advance(0);
-						add(TokenType::emojiDeli, ":");
 						break;
 					}
 

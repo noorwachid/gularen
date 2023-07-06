@@ -209,9 +209,13 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::emoji:
-				add(std::make_shared<EmojiNode>(get(0).value));
-				advance(0);
+			case TokenType::emojiMarker:
+				if (check(2) && is(1, TokenType::emojiCode) && is(2, TokenType::emojiMarker)) {
+					add(std::make_shared<EmojiNode>(get(1).value));
+					advance(2);
+					break;
+				}
+				addText(get(0).value);
 				break;
 
 			case TokenType::fsBold:

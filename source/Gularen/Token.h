@@ -53,8 +53,8 @@ namespace Gularen {
 
 		admon,
 
-		emojiDeli,
-		emoji,
+		emojiMarker,
+		emojiCode,
 
 		hyphen,
 		enDash,
