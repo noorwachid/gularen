@@ -682,6 +682,8 @@ namespace Gularen {
 			size_t langIndex = index;
 			size_t langSize = 0;
 
+			Position beginLangPosition = position;
+
 			while (check(0) && !is(0, '\n') && isSymbol(0)) {
 				++langSize;
 				advance(0);
@@ -692,8 +694,8 @@ namespace Gularen {
 				return;
 			}
 
-			add(TokenType::codeMarker, std::string(openingCounter, '-'));
-			add(TokenType::codeLang, content.substr(langIndex, langSize));
+			add(TokenType::codeMarker, std::string(openingCounter, '-'), beginPosition, Position(beginLangPosition.line, beginLangPosition.column - 1));
+			add(TokenType::codeLang, content.substr(langIndex, langSize), beginLangPosition);
 		} else {
 			if (!is(0, '\n')) {
 				retreat(openingCounter + spaceCounter);
@@ -701,15 +703,27 @@ namespace Gularen {
 				return;
 			}
 
-			add(TokenType::codeMarker, std::string(openingCounter, '-'));
+			add(TokenType::codeMarker, std::string(openingCounter, '-'), beginPosition);
 		}
 
+		beginPosition = position;
+		beginPosition.line += 1;
+		beginPosition.column = indent;
+
+		Position endPosition = beginPosition;
+
 		std::string source;
+		position.column = indent;
 
 		while (check(0)) {
 			if (is(0, '\n')) {
+				endPosition = position;
+
 				size_t newline = count('\n');
 				size_t indent = count('\t');
+
+				position.line += newline;
+				position.column = indent;
 
 				if (check(2) && is(0, '-') && is(1, '-') && is(2, '-')) {
 					size_t closingCounter = count('-');
@@ -756,8 +770,8 @@ namespace Gularen {
 
 		size_t trimSize = trimEnd == source.size() ? source.size() : source.size() - trimBegin - trimEnd;
 
-		add(TokenType::codeSource, source.substr(trimBegin, trimSize));
-		add(TokenType::codeMarker, std::string(openingCounter, '-'));
+		add(TokenType::codeSource, source.substr(trimBegin, trimSize), beginPosition, endPosition);
+		add(TokenType::codeMarker, std::string(openingCounter, '-'), Position(position.line, indent));
 	}
 
 	void Lexer::parseSpace() {

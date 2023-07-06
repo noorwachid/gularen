@@ -1,0 +1,12 @@
+---
+---
+
+---
+direct
+---
+
+	--- js
+	function cat() {
+		return '^._.^';
+	}
+	---
