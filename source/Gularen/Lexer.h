@@ -23,6 +23,8 @@ namespace Gularen {
 
 		void advance(size_t offset);
 
+		void retreat(size_t offset);
+
 		size_t count(char c);
 
 		void add(TokenType type, const std::string& value);

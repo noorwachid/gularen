@@ -56,6 +56,11 @@ namespace Gularen {
 		position.column += 1 + offset;
 	}
 
+	void Lexer::retreat(size_t offset) {
+		index -= offset;
+		position.column -= offset;
+	}
+
 	size_t Lexer::count(char c) {
 		size_t count = 0;
 		while (check(0) && is(0, c)) {
@@ -232,20 +237,21 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case '-':
+			case '-': {
 				if (check(2) && is(1, '-') && is(2, '-')) {
-					add(TokenType::emDash, "–");
+					add(TokenType::emDash, "–", Position(position.line, position.column), Position(position.line, position.column + 2));
 					advance(2);
 					break;
 				}
 				if (check(1) && is(1, '-')) {
-					add(TokenType::enDash, "–");
+					add(TokenType::enDash, "–", Position(position.line, position.column), Position(position.line, position.column + 1));
 					advance(1);
 					break;
 				}
 				add(TokenType::hyphen, "-");
 				advance(0);
 				break;
+			}
 
 			case ':': {
 				Position emojiDeliPosition = position;
@@ -398,7 +404,7 @@ namespace Gularen {
 					}
 					addText(original);
 					advance(0);
-					index -= (idSize + 1);
+					retreat(idSize + 1);
 					break;
 				}
 				advance(0);
@@ -658,14 +664,13 @@ namespace Gularen {
 				return;
 			}
 
-			--index;
+			retreat(1);
 			// see inline -
 			return;
 		}
 		
 		if (openingCounter == 2) {
-			--index;
-			--index;
+			retreat(2);
 			// see inline -
 			return;
 		}
@@ -683,7 +688,7 @@ namespace Gularen {
 			}
 			
 			if (langSize == 0 || !is(0, '\n')) {
-				index -= (openingCounter + spaceCounter + langSize);
+				retreat(openingCounter + spaceCounter + langSize);
 				return;
 			}
 
@@ -691,7 +696,7 @@ namespace Gularen {
 			add(TokenType::codeLang, content.substr(langIndex, langSize));
 		} else {
 			if (!is(0, '\n')) {
-				index -= (openingCounter + spaceCounter);
+				retreat(openingCounter + spaceCounter);
 				// see inline -
 				return;
 			}
