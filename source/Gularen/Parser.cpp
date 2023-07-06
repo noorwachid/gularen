@@ -274,6 +274,13 @@ namespace Gularen {
 				if (getScope()->group == NodeGroup::tableCell) {
 					removeScope();
 				}
+
+				if (check(1) && (is(1, TokenType::newline) || is(1, TokenType::eof))) {
+					removeScope();
+					advance(0);
+					break;
+				}
+
 				if (check(1) && !is(1, TokenType::newline) && getScope()->group == NodeGroup::tableRow) {
 					addScope(std::make_shared<TableCellNode>());
 				}

@@ -772,17 +772,19 @@ namespace Gularen {
 		}
 
 		while (check(0) && (is(0, '-') || is(0, ':') || is(0, '|')) && !is(0, '\n')) {
+			Position beginPosition = position;
+
 			if (check(1) && is(0, ':') && is(1, '-')) {
 				advance(0);
 				size_t lineCounter = count('-');
 
 				if (get(0) == ':') {
 					advance(0);
-					add(TokenType::pipeConnector, ":-:");
+					add(TokenType::pipeConnector, ":-:", beginPosition);
 					continue;
 				}
 
-				add(TokenType::pipeConnector, ":--");
+				add(TokenType::pipeConnector, ":--", beginPosition);
 				continue;
 			}
 
@@ -791,11 +793,11 @@ namespace Gularen {
 
 				if (get(0) == ':') {
 					advance(0);
-					add(TokenType::pipeConnector, "--:");
+					add(TokenType::pipeConnector, "--:", beginPosition);
 					continue;
 				}
 
-				add(TokenType::pipeConnector, ":--");
+				add(TokenType::pipeConnector, ":--", beginPosition);
 				continue;
 			}
 
