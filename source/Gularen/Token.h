@@ -51,7 +51,12 @@ namespace Gularen {
 
 		blockquote,
 
-		admon,
+		admonNote,
+		admonHint,
+		admonImportant,
+		admonWarning,
+		admonDanger,
+		admonSeeAlso,
 
 		emojiMarker,
 		emojiCode,

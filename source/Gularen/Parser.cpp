@@ -562,21 +562,35 @@ namespace Gularen {
 				// see default inline
 				break;
 
-			case TokenType::admon: {
-				AdmonType type = AdmonType::note;
-				switch (get(0).value[1]) {
-					case '/': type = AdmonType::note; break;
-					case '?': type = AdmonType::hint; break;
-					case '!': type = AdmonType::important; break;
-					case '^': type = AdmonType::warning; break;
-					case '@': type = AdmonType::danger; break;
-					case '&': type = AdmonType::seeAlso; break;
-					default: break;
-				}
-				addScope(std::make_shared<AdmonNode>(type));
+			case TokenType::admonNote:
+				addScope(std::make_shared<AdmonNode>(AdmonType::note));
 				advance(0);
 				break;
-			}
+
+			case TokenType::admonHint:
+				addScope(std::make_shared<AdmonNode>(AdmonType::hint));
+				advance(0);
+				break;
+
+			case TokenType::admonImportant:
+				addScope(std::make_shared<AdmonNode>(AdmonType::important));
+				advance(0);
+				break;
+
+			case TokenType::admonWarning:
+				addScope(std::make_shared<AdmonNode>(AdmonType::warning));
+				advance(0);
+				break;
+
+			case TokenType::admonDanger:
+				addScope(std::make_shared<AdmonNode>(AdmonType::danger));
+				advance(0);
+				break;
+
+			case TokenType::admonSeeAlso:
+				addScope(std::make_shared<AdmonNode>(AdmonType::seeAlso));
+				advance(0);
+				break;
 
 			case TokenType::chapterOper:
 				addScope(std::make_shared<HeadingNode>(HeadingType::chapter));

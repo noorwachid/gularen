@@ -573,6 +573,7 @@ namespace Gularen {
 
 			case '<':
 				if (check(3) && is(2, '>') && is(3, ' ')) {
+					Position beginPosition = position;
 					// </> Note
 					// <?> Hint
 					// <!> Important
@@ -582,37 +583,37 @@ namespace Gularen {
 					if (is(1, '/')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, "</>");
+						add(TokenType::admonNote, "</>", beginPosition);
 						break;
 					}
 					if (is(1, '?')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, "<?>");
+						add(TokenType::admonHint, "<?>", beginPosition);
 						break;
 					}
 					if (is(1, '!')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, "<!>");
+						add(TokenType::admonImportant, "<!>", beginPosition);
 						break;
 					}
 					if (is(1, '^')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, "<^>");
+						add(TokenType::admonWarning, "<^>", beginPosition);
 						break;
 					}
 					if (is(1, '@')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, "<@>");
+						add(TokenType::admonDanger, "<@>", beginPosition);
 						break;
 					}
 					if (is(1, '&')) {
 						advance(2);
 						parseSpace();
-						add(TokenType::admon, "<&>");
+						add(TokenType::admonSeeAlso, "<&>", beginPosition);
 						break;
 					}
 				}
