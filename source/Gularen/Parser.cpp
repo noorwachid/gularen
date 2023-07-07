@@ -291,43 +291,61 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::resource: {
-				ResourceType type = hasNetProtocol(get(0).value) ? ResourceType::linker : ResourceType::linkerLocal;
-				std::shared_ptr<ResourceNode> linkNode = std::make_shared<ResourceNode>(type, get(0).value);
-				add(linkNode);
-				advance(0);
+			case TokenType::squareOpen: {
+				std::shared_ptr<ResourceNode> linkNode = nullptr;
 
-				if (check(0) && is(0, TokenType::resourceID)) {
-					linkNode->id = get(0).value;
-					advance(0);
+				if (check(2) && 
+					is(1, TokenType::resource) && 
+					is(2, TokenType::squareClose)) {
+					linkNode = std::make_shared<ResourceNode>(
+						hasNetProtocol(get(1).value) ? ResourceType::linker : ResourceType::linkerLocal, 
+						get(1).value
+					);
+					add(linkNode);
+					advance(2);
+				} else if (check(4) && 
+					is(1, TokenType::resource) && 
+					is(2, TokenType::resourceIDMarker) && 
+					is(3, TokenType::resourceID) && 
+					is(4, TokenType::squareClose)) {
+					linkNode = std::make_shared<ResourceNode>(ResourceType::linkerLocal, get(1).value);
+					linkNode->id = get(3).value;
+					add(linkNode);
+					advance(4);
 				}
 
-				if (check(0) && is(0, TokenType::resourceLabel)) {
-					linkNode->label = get(0).value;
+				if (linkNode) {
+					if (check(2) && is(0, TokenType::parenOpen) && is(1, TokenType::resourceLabel) && is(2, TokenType::parenClose)) {
+						linkNode->label = get(1).value;
+						advance(2);
+					}
+				} else {
 					advance(0);
 				}
 				break;
 			}
 
 			case TokenType::presentMarker: {
-				advance(0);
+				std::shared_ptr<ResourceNode> presentNode = nullptr;
 
-				if (!check(0) || !is(0, TokenType::resource)) {
-					break;
+				if (check(3) && 
+					is(1, TokenType::squareOpen) && 
+					is(2, TokenType::resource) && 
+					is(3, TokenType::squareClose)) {
+					presentNode = std::make_shared<ResourceNode>(
+						hasNetProtocol(get(2).value) ? ResourceType::presenter : ResourceType::presenterLocal, 
+						get(2).value
+					);
+					add(presentNode);
+					advance(3);
 				}
 
-				ResourceType type = hasNetProtocol(get(0).value) ? ResourceType::presenter : ResourceType::presenterLocal;
-				std::shared_ptr<ResourceNode> linkNode = std::make_shared<ResourceNode>(type, get(0).value);
-				add(linkNode);
-				advance(0);
-
-				if (check(0) && is(0, TokenType::resourceID)) {
-					linkNode->id = get(0).value;
-					advance(0);
-				}
-
-				if (check(0) && is(0, TokenType::resourceLabel)) {
-					linkNode->label = get(0).value;
+				if (presentNode) {
+					if (check(2) && is(0, TokenType::parenOpen) && is(1, TokenType::resourceLabel) && is(2, TokenType::parenClose)) {
+						presentNode->label = get(1).value;
+						advance(2);
+					}
+				} else {
 					advance(0);
 				}
 				break;

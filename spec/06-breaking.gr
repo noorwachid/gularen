@@ -16,6 +16,6 @@ This will create<line-break.
 ---
 
 --- gr-rule
-lineBreak = lessThan
-pageBreak = lessThan lessThan
+lineBreak = lt
+pageBreak = lt lt
 ---

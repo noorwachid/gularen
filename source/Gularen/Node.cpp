@@ -285,16 +285,16 @@ namespace Gularen {
 
 		switch (type) {
 			case ResourceType::linker:
-				string = "linker ";
+				string = "linker";
 				break;
 			case ResourceType::linkerLocal:
-				string = "linkerLocal ";
+				string = "linkerLocal";
 				break;
 			case ResourceType::presenter:
-				string = "presenter ";
+				string = "presenter";
 				break;
 			case ResourceType::presenterLocal:
-				string = "presenterLocal ";
+				string = "presenterLocal";
 				break;
 		}
 

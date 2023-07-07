@@ -1,0 +1,9 @@
+[file]
+[file>heading]
+[>heading]
+[https://www.org]
+
+[file](label)
+[file>heading](label)
+[>heading](label)
+[https://www.org](label)

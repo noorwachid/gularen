@@ -39,8 +39,16 @@ namespace Gularen {
 		pipe,
 		pipeConnector,
 
+		squareOpen,
+		squareClose,
+
 		resource,
+		resourceIDMarker,
 		resourceID,
+
+		parenOpen,
+		parenClose,
+
 		resourceLabel,
 
 		presentMarker,
