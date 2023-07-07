@@ -395,8 +395,8 @@ namespace Gularen {
 
 			case '!':
 				if (check(1) && is(1, '[')) {
-					advance(0);
 					add(TokenType::presentMarker, "!");
+					advance(0);
 					// see inline [
 					break;
 				}
