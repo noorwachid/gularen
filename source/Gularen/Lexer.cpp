@@ -516,7 +516,7 @@ namespace Gularen {
 
 				if (check(1) && is(1, ' ')) {
 					advance(1);
-					add(TokenType::headingIDOper, ">", beginPosition);
+					add(TokenType::headingIDOper, ">", beginPosition, beginPosition);
 
 					size_t idIndex = index;
 					size_t idSize = 0;
@@ -579,13 +579,13 @@ namespace Gularen {
 					advance(0);
 					switch (counter) {
 						case 3:
-							add(TokenType::chapterOper, ">>>", beginPosition);
+							add(TokenType::chapterOper, ">>>", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
 							break;
 						case 2:
-							add(TokenType::sectionOper, ">>", beginPosition);
+							add(TokenType::sectionOper, ">>", beginPosition, Position(beginPosition.line, beginPosition.column + 1));
 							break;
 						case 1:
-							add(TokenType::subsectionOper, ">", beginPosition);
+							add(TokenType::subsectionOper, ">", beginPosition, beginPosition);
 							break;
 					}
 					break;
@@ -599,20 +599,21 @@ namespace Gularen {
 				break;
 			}
 
-			case '[':
+			case '[': {
+				Position beginPosition = position;
 				if (check(3) && is(2, ']') && is(3, ' ')) {
 					if (is(1, ' ')) {
-						add(TokenType::checkbox, "[ ]");
+						add(TokenType::checkbox, "[ ]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
 						advance(3);
 						break;
 					}
 					if (is(1, 'v')) {
-						add(TokenType::checkbox, "[v]");
+						add(TokenType::checkbox, "[v]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
 						advance(2);
 						break;
 					}
 					if (is(1, 'x')) {
-						add(TokenType::checkbox, "[x]");
+						add(TokenType::checkbox, "[x]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
 						advance(2);
 						break;
 					}
@@ -620,6 +621,7 @@ namespace Gularen {
 				
 				// see inline [
 				break;
+			}
 
 			case '|':
 				parseTable();
@@ -683,6 +685,7 @@ namespace Gularen {
 			case '7':
 			case '8':
 			case '9': {
+				Position beginPosition = position;
 				std::string number;
 				while (check(0) && get(0) >= '0' && get(0) <= '9') {
 					number += get(0);
@@ -692,7 +695,7 @@ namespace Gularen {
 				if (check(1) && is(0, '.') && is(1, ' ')) {
 					advance(0);
 					parseSpace();
-					add(TokenType::index, number + ".");
+					add(TokenType::index, number + ".", beginPosition, Position(beginPosition.line, beginPosition.column + number.size()));
 					break;
 				}
 				
@@ -715,7 +718,7 @@ namespace Gularen {
 		if (openingCounter == 1) {
 			if (is(0, ' ')) {
 				advance(0);
-				add(TokenType::bullet, "-", beginPosition);
+				add(TokenType::bullet, "-", beginPosition, beginPosition);
 				return;
 			}
 
