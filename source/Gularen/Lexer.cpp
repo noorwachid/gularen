@@ -430,20 +430,31 @@ namespace Gularen {
 				std::string original(1, get(0));
 				if (check(2) && is(1, '[') && isSymbol(2)) {
 					advance(1);
-					size_t idIndex = 0;
+					size_t idIndex = index;
 					size_t idSize = 0;
 					while (check(0) && isSymbol(0)) {
 						++idSize;
 						advance(0);
 					}
 					if (idSize > 0 && check(0) && is(0, ']')) {
-						add(original == "^" ? TokenType::jumpMarker : TokenType::describeMarker, original);
-						add(TokenType::jumpID, content.substr(idIndex, idSize));
-						advance(0);
-						break;
+						if (original[0] == '^') {
+							add(TokenType::jumpMarker, original);
+							add(TokenType::squareOpen, "[");
+							add(TokenType::jumpID, content.substr(idIndex, idSize));
+							add(TokenType::squareClose, "]");
+							advance(0);
+							break;
+						}
+						if (check(1) && is(1, ' ')) {
+							add(TokenType::describeMarker, original);
+							add(TokenType::squareOpen, "[");
+							add(TokenType::jumpID, content.substr(idIndex, idSize));
+							add(TokenType::squareClose, "]");
+							advance(1);
+							break;
+						}
 					}
 					addText(original);
-					advance(0);
 					retreat(idSize + 1);
 					break;
 				}

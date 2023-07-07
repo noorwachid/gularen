@@ -319,9 +319,11 @@ namespace Gularen {
 						linkNode->label = get(1).value;
 						advance(2);
 					}
-				} else {
-					advance(0);
+					break;
 				}
+
+				addText("[");
+				advance(0);
 				break;
 			}
 
@@ -345,30 +347,43 @@ namespace Gularen {
 						presentNode->label = get(1).value;
 						advance(2);
 					}
-				} else {
-					advance(0);
+					break;
 				}
+
+				addText("!");
+				advance(0);
 				break;
 			}
 
 			case TokenType::jumpMarker:
-				if (check(1) && is(1, TokenType::jumpID)) {
-					add(std::make_shared<FootnoteJumpNode>(get(1).value));
-					advance(1);
+				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::jumpID) && is(3, TokenType::squareClose)) {
+					add(std::make_shared<FootnoteJumpNode>(get(2).value));
+					advance(3);
 					break;
 				}
-				// see default inline
+				addText("^");
+				advance(0);
 				break;
 
 			case TokenType::includeMarker:
-				if (check(1) && is(1, TokenType::resource)) {
+				#ifndef __EMSCRIPTEN__
+				if (check(3) && 
+					is(1, TokenType::squareOpen) &&
+					is(2, TokenType::resource) &&
+					is(3, TokenType::squareClose) &&
+					!hasNetProtocol(get(2).value)
+					) {
 					std::string directory = path == "" ? std::filesystem::current_path().string() : std::filesystem::path(path).parent_path().string();
-					NodePtr fileNode = recursiveLoad(directory, get(1).value);
-					add(fileNode ? fileNode : std::make_shared<DocumentNode>(get(1).value));
-					advance(1);
+					
+					NodePtr fileNode = recursiveLoad(directory, get(2).value);
+					add(fileNode ? fileNode : std::make_shared<DocumentNode>(get(2).value));
+					advance(3);
 					break;
 				}
-				// see default inline
+				#endif
+
+				addText("?");
+				advance(0);
 				break;
 
 			case TokenType::newline:
@@ -572,9 +587,9 @@ namespace Gularen {
 			}
 
 			case TokenType::describeMarker:
-				if (check(1) && is(1, TokenType::jumpID)) {
-					addScope(std::make_shared<FootnoteDescribeNode>(get(1).value));
-					advance(1);
+				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::jumpID) && is(3, TokenType::squareClose)) {
+					addScope(std::make_shared<FootnoteDescribeNode>(get(2).value));
+					advance(3);
 				}
 
 				// see default inline

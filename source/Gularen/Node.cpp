@@ -98,7 +98,7 @@ namespace Gularen {
 		if (path.empty())
 			return "document";
 
-		return "file " + escape(path);
+		return "document " + escape(path);
 	}
 
 	std::string TextNode::toString() const {
