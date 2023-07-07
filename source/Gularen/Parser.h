@@ -42,6 +42,10 @@ namespace Gularen {
 
 		void parseBlock();
 
+		void parseBlockEnding();
+
+		void parseIndent();
+
 		NodePtr recursiveLoad(const std::string& directory, const std::string& nextPath);
 
 		void visit(const Visitor& visitor, const NodePtr& node);

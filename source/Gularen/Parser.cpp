@@ -152,6 +152,8 @@ namespace Gularen {
 		while (check(0)) {
 			parseInline();
 		}
+
+		parseBlockEnding();
 	}
 
 	const NodePtr& Parser::get() const {
@@ -279,12 +281,6 @@ namespace Gularen {
 					removeScope();
 				}
 
-				if (check(1) && (is(1, TokenType::newline) || is(1, TokenType::eof))) {
-					removeScope();
-					advance(0);
-					break;
-				}
-
 				if (check(1) && !is(1, TokenType::newline) && getScope()->group == NodeGroup::tableRow) {
 					addScope(std::make_shared<TableCellNode>());
 				}
@@ -408,7 +404,19 @@ namespace Gularen {
 		}
 	}
 
-	void Parser::parseBlock() {
+	void Parser::parseIndent() {
+		switch (getScope()->group) {
+			case NodeGroup::heading:
+				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
+					removeScope();
+				}
+				removeScope();
+				break;
+
+			default:
+				break;
+		}
+
 		while (check(0) && is(0, TokenType::indentIncr)) {
 			addScope(std::make_shared<IndentNode>());
 			advance(0);
@@ -421,7 +429,9 @@ namespace Gularen {
 			removeScope();
 			advance(0);
 		}
-
+	}
+	
+	void Parser::parseBlockEnding() {
 		switch (getScope()->group) {
 			case NodeGroup::listItem: {
 				removeScope();
@@ -440,13 +450,6 @@ namespace Gularen {
 				break;
 			}
 
-			case NodeGroup::heading:
-				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
-					removeScope();
-				}
-				removeScope();
-				break;
-
 			case NodeGroup::paragraph:
 				if (getScope()->children.empty()) {
 					removeScope();
@@ -459,6 +462,22 @@ namespace Gularen {
 					is(0, TokenType::chapterOper) ||
 					is(0, TokenType::describeMarker)
 				)) {
+					removeScope();
+				}
+				break;
+			
+			case NodeGroup::tableCell:
+				if (getScope()->children.empty()) {
+					removeScope();
+					getScope()->children.pop_back();
+				} else {
+					removeScope();
+				}
+				
+				// tableRow
+				removeScope();
+
+				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
 					removeScope();
 				}
 				break;
@@ -482,6 +501,11 @@ namespace Gularen {
 			default:
 				break;
 		}
+	}
+
+	void Parser::parseBlock() {
+		parseIndent();
+		parseBlockEnding();
 
 		switch (get(0).type) {
 			case TokenType::bullet:

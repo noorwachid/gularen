@@ -1,0 +1,12 @@
+>> Table
+| First Name | Last Name | Age |
+|------------|-----------|----:|
+| Noor       |  Wachid   |  20 |
+| Dori       |  Lorean   |  19 |
+
+>> Resource
+
+> Link
+A link [https://github.com/noorwachid].
+A labeled link [https://github.com/noorwachid](here).
+
