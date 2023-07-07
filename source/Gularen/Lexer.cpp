@@ -300,7 +300,6 @@ namespace Gularen {
 
 			case '[': {
 				Position beginPosition = position;
-				Position idMarkerPosition = position;
 
 				advance(0);
 				
@@ -323,7 +322,6 @@ namespace Gularen {
 						if (is(0, '>')) {
 							idMarkerExists = true;
 							idMarkerIndex = resource.size();
-							idMarkerPosition = position;
 						}
 						
 						if (is(0, '\\')) {
@@ -334,27 +332,22 @@ namespace Gularen {
 						advance(0);
 					}
 
-					Position endPosition(position.line, position.column - 1);
-
 					if (idMarkerExists) {
 						add(TokenType::squareOpen, "[", beginPosition, beginPosition);
-						add(TokenType::resource, resource.substr(0, idMarkerIndex), 
-							Position(beginPosition.line, beginPosition.column + 1), 
-							Position(idMarkerPosition.line, idMarkerPosition.column)
-						);
-						add(TokenType::resourceIDMarker, ">", idMarkerPosition, idMarkerPosition);
-						add(TokenType::resourceID, resource.substr(idMarkerIndex + 1), 
-							Position(idMarkerPosition.line, idMarkerPosition.column), 
-							Position(endPosition.line, endPosition.column - 1)
-						);
-						add(TokenType::squareClose, "]", endPosition, endPosition);
+						++beginPosition.column;
+						add(TokenType::resource, resource.substr(0, idMarkerIndex), beginPosition, Position(beginPosition.line, beginPosition.column + idMarkerIndex - 1));
+						beginPosition.column += idMarkerIndex;
+						add(TokenType::resourceIDMarker, ">", beginPosition, beginPosition);
+						++beginPosition.column;
+						add(TokenType::resourceID, resource.substr(idMarkerIndex + 1), beginPosition, Position(beginPosition.line, beginPosition.column + resource.size() - idMarkerIndex - 2));
+						beginPosition.column += resource.size() - idMarkerIndex - 1;
+						add(TokenType::squareClose, "]", beginPosition, beginPosition);
 					} else {
 						add(TokenType::squareOpen, "[", beginPosition, beginPosition);
-						add(TokenType::resource, resource,
-							Position(beginPosition.line, beginPosition.column + 1),
-							Position(endPosition.line, endPosition.column - 1)
-						);
-						add(TokenType::squareClose, "]", endPosition, endPosition);
+						++beginPosition.column;
+						add(TokenType::resource, resource, beginPosition, Position(beginPosition.line, beginPosition.column + resource.size() - 1));
+						beginPosition.column += resource.size();
+						add(TokenType::squareClose, "]", beginPosition, beginPosition);
 					}
 					
 					if (is(0, '(')) {
@@ -382,9 +375,12 @@ namespace Gularen {
 								advance(0);
 							}
 
-							add(TokenType::parenOpen, "(");
-							add(TokenType::resourceLabel, label);
-							add(TokenType::parenClose, ")");
+							++beginPosition.column;
+							add(TokenType::parenOpen, "(", beginPosition, beginPosition);
+							++beginPosition.column;
+							add(TokenType::resourceLabel, label, beginPosition, Position(beginPosition.line, beginPosition.column + label.size() - 1));
+							beginPosition.column += label.size();
+							add(TokenType::parenClose, ")", beginPosition, beginPosition);
 							break;
 						} else {
 							addText("(");
