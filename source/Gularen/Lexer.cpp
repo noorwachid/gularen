@@ -302,12 +302,6 @@ namespace Gularen {
 				Position beginPosition = position;
 				Position idMarkerPosition = position;
 
-				if (check(1) && is(1, ']')) {
-					advance(1);
-					addText("[]");
-					break;
-				}
-
 				advance(0);
 				
 				if (check(0)) {
@@ -416,8 +410,8 @@ namespace Gularen {
 
 			case '?':
 				if (check(1) && is(1, '[')) {
-					advance(0);
 					add(TokenType::includeMarker, "?");
+					advance(0);
 					// see inline [
 					break;
 				}
