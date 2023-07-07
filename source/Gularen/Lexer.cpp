@@ -421,6 +421,7 @@ namespace Gularen {
 
 			case '^':
 			case '=': {
+				Position beginPosition = position;
 				std::string original(1, get(0));
 				if (check(2) && is(1, '[') && isSymbol(2)) {
 					advance(1);
@@ -432,17 +433,25 @@ namespace Gularen {
 					}
 					if (idSize > 0 && check(0) && is(0, ']')) {
 						if (original[0] == '^') {
-							add(TokenType::jumpMarker, original);
-							add(TokenType::squareOpen, "[");
-							add(TokenType::jumpID, content.substr(idIndex, idSize));
+							add(TokenType::jumpMarker, original, beginPosition, beginPosition);
+							++beginPosition.column;
+							add(TokenType::squareOpen, "[", beginPosition, beginPosition);
+							++beginPosition.column;
+							add(TokenType::jumpID, content.substr(idIndex, idSize), beginPosition, Position(beginPosition.line, beginPosition.column + idSize - 1));
+							beginPosition.column += idSize;
+							++beginPosition.column;
 							add(TokenType::squareClose, "]");
 							advance(0);
 							break;
 						}
 						if (check(1) && is(1, ' ')) {
-							add(TokenType::describeMarker, original);
-							add(TokenType::squareOpen, "[");
-							add(TokenType::jumpID, content.substr(idIndex, idSize));
+							add(TokenType::describeMarker, original, beginPosition, beginPosition);
+							++beginPosition.column;
+							add(TokenType::squareOpen, "[", beginPosition, beginPosition);
+							++beginPosition.column;
+							add(TokenType::jumpID, content.substr(idIndex, idSize), beginPosition, Position(beginPosition.line, beginPosition.column + idSize - 1));
+							beginPosition.column += idSize;
+							++beginPosition.column;
 							add(TokenType::squareClose, "]");
 							advance(1);
 							break;
