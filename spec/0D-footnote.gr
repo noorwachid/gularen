@@ -11,7 +11,7 @@ Here's a simple footnote,^[1] and here's a longer one.^[bignote]
 ---
 
 --- gr-rule
-footnoteJump = bracket squareOpen symbol squareClose
+footnoteJump = caret squareOpen symbol squareClose
 footnoteDescribe = equal squareOpen symbol squareClose any newline
 footnoteDescribeBody = footnoteDescribe (indent++)+
 ---
