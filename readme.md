@@ -30,3 +30,12 @@ A sweet-spot of markup language
 - [10 Emoji](spec/10-emoji.gr)
 - [11 Blockquote](spec/11-blockquote.gr)
 - [12 Admonition](spec/12-admonition.gr)
+
+## Why?
+The problem with Markdown was, too many ways to do something. 
+And Markdown was designed in mind to be parsed with regex.
+Instead of character by character scanner. 
+The dirties one in my opinion is formating bold-italic.
+
+The purpose of Gularen is to create smallest possible footprint of additional characters while writing visually pleasing plain text document.
+
