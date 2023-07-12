@@ -4,6 +4,14 @@
 Anything between three or more equals will be considered as code.
 And make sure to have same equals count between opening and ending.
 
+> Anonymous Block
+---- gr
+---
+plain text or do fancy syntax detection here
+---
+----
+
+> Labeled Block
 ---- gr
 --- cpp
 #include <iostream>
@@ -18,5 +26,20 @@ int main()
 ----
 
 --- gr-rule
-code = minus minus minus+ [space symbol] any minus minus minus+
+code-block = minus minus minus+ [space symbol] any minus minus minus+
 ---
+
+>> Inline Code
+
+> Anonymous Inline
+--- gr
+Why do we use {console.log} instead of the majestic 
+---
+
+> Labeled Inline
+--- gr
+let's say {\pi = 3}(katex) then the building is likely collapsed
+---
+
+--- gr-rule
+code-inline = curlyOpen any curlyClose [parenOpen any parenClose]
