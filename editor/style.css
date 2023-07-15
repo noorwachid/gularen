@@ -22,10 +22,11 @@ body {
 }
 
 blockquote {
-  padding-left: 1rem;
+  padding-left: 2rem;
 }
 
 blockquote.bordered {
+  padding-left: 1rem;
   border-left: 0.3rem solid #d1d1d1;
   margin-left: 0;
   margin-right: 0;
