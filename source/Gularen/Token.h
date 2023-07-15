@@ -42,6 +42,9 @@ namespace Gularen {
 		squareOpen,
 		squareClose,
 
+		curlyOpen,
+		curlyClose,
+
 		resource,
 		resourceIDMarker,
 		resourceID,
@@ -88,6 +91,10 @@ namespace Gularen {
 		Position() = default;
 
 		Position(size_t line, size_t column) : line{line}, column{column} {}
+
+		bool operator==(const Position& other) const {
+			return line == other.line && column == other.column;
+		}
 	};
 
 	struct Token {
@@ -96,12 +103,7 @@ namespace Gularen {
 		Position end;
 		std::string value;
 		
-		std::string toString() const {
-			return std::to_string(static_cast<int>(type)) + 
-				'\t' + std::to_string(begin.line) + ',' + std::to_string(begin.column) + 
-				" - " + std::to_string(end.line) + ',' + std::to_string(end.column) + 
-				'\t' + value;
-		}
+		std::string toString() const;
 	};
 	
 	using Tokens = std::vector<Token>;

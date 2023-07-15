@@ -77,7 +77,7 @@ namespace Gularen::Transpiler::HTML {
 				switch (node->as<FSNode>().type) {
 					case FSType::bold: return tag(before, "b");
 					case FSType::italic: return tag(before, "i");
-					case FSType::monospace: return tag(before, "code");
+					case FSType::monospace: return tag(before, "samp");
 				}
 			case NodeGroup::heading: {
 				std::string tagName = "";
@@ -129,17 +129,32 @@ namespace Gularen::Transpiler::HTML {
 			case NodeGroup::code: {
 				const CodeNode& codeNode = node->as<CodeNode>();
 				if (codeNode.lang.size() > 2 && codeNode.lang.substr(codeNode.lang.size() - 3) == "-pr") {
-					if (before) {
-						return "<div class=\"language-presenter " + codeNode.lang + "\">" + escape(codeNode.source);
+					if (codeNode.type == CodeType::block) {
+						if (before) {
+							return "<div class=\"language-presenter " + codeNode.lang + "\">" + escape(codeNode.source);
+						}
+						return "</div>";
 					}
-					return "</div>";
+
+					if (before) {
+						return "<span class=\"language-presenter " + codeNode.lang + "\">" + escape(codeNode.source);
+					}
+					return "</span>";
+				}
+
+				if (codeNode.type == CodeType::block) {
+					if (before) {
+						if (!codeNode.lang.empty()) return "<pre><code class=\"language-" + codeNode.lang + "\">" + escape(codeNode.source);
+						return "<pre><code>" + escape(codeNode.source);
+					}
+					return "</code></pre>\n";
 				}
 
 				if (before) {
-					if (!codeNode.lang.empty()) return "<pre><code class=\"language-" + codeNode.lang + "\">" + escape(codeNode.source);
-					return "<pre><code>" + escape(codeNode.source);
+					if (!codeNode.lang.empty()) return "<code class=\"language-" + codeNode.lang + "\">" + escape(codeNode.source);
+					return "<code>" + escape(codeNode.source);
 				}
-				return "</code></pre>\n";
+				return "</code>\n";
 			}
 
 			case NodeGroup::list: {

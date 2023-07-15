@@ -1,23 +1,7 @@
 #include <Gularen/Node.h>
+#include <Gularen/Helper/escape.h>
 
 namespace Gularen {
-	std::string Node::escape(const std::string& from) {
-		std::string to;
-
-		for (char c : from) {
-			if (c == '\t') {
-				to += "\\t";
-			} else if (c == '\n') {
-				to += "\\n";
-			} else if (c < ' ') {
-				to += "\\d" + std::to_string(c);
-			} else {
-				to += c;
-			}
-		}
-		return to;
-	}
-
 	// constructors
 
 	DocumentNode::DocumentNode(const std::string& path) : path{path} {
@@ -98,11 +82,11 @@ namespace Gularen {
 		if (path.empty())
 			return "document";
 
-		return "document " + escape(path);
+		return "document " + Helper::escape(path);
 	}
 
 	std::string TextNode::toString() const {
-		return "text " + escape(value);
+		return "text " + Helper::escape(value);
 	}
 
 	std::string PunctNode::toString() const {
@@ -299,7 +283,7 @@ namespace Gularen {
 		}
 
 		if (!value.empty()) {
-			string += " value:" + escape(value);
+			string += " value:" + Helper::escape(value);
 		}
 
 		if (!id.empty()) {
@@ -307,21 +291,21 @@ namespace Gularen {
 		}
 
 		if (!label.empty()) {
-			string += " label:" + escape(label);
+			string += " label:" + Helper::escape(label);
 		}
 
 		return string;
 	}
 
 	std::string CodeNode::toString() const {
-		std::string string = "code";
+		std::string string = type == CodeType::block ? "codeblock" : "code";
 
 		if (!lang.empty()) {
 			string += " lang:" + lang;
 		}
 
 		if (!source.empty()) {
-			string += " source:" + escape(source);
+			string += " source:" + Helper::escape(source);
 		}
 
 		return string;

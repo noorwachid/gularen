@@ -1,3 +1,7 @@
+The client API in javascript is {new WebSocket()}.
+
+With highlight {console.log('mystring')}(js).
+
 ---
 ---
 

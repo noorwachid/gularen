@@ -144,6 +144,14 @@
 			background-color: #eb6434;
 			border-radius: 3px;
 		}
+
+		pre code.hljs {
+			display: block;
+		}
+
+		code.hljs {
+			display: inline;
+		}
 	</style>
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<link rel="stylesheet"
@@ -212,7 +220,6 @@
 
 		function transpile() {
 			const html = Module.transpile(inputNode.value);
-			console.log(html);
 			outputNode.innerHTML = html;
 			dispatchEvent(new Event('gularentranspile', {
 				bubbles: true,
@@ -359,10 +366,10 @@ Aliquam quis ex eu purus blandit ornare.
 [x] Cancelled
 
 >> Table
-| First Name | Last Name | Age |
-|------------|-----------|----:|
-| Noor       |  Wachid   |  20 |
-| Dori       |  Lorean   |  19 |
+| Name | Chromosome | Age |
+|:-----|:----------:|----:|
+| Noor |     XY     |  22 |
+| Dori |     XX     |  19 |
 
 >> Resource
 
@@ -376,6 +383,8 @@ A labeled link [https://github.com/noorwachid](here).
 >> Code
 
 > Syntax Highlighting
+Say {console.log('my name')}(js) !
+
 --- js
 function loadWebAssemblyFromURL(url) {
   return fetch(url)
@@ -396,6 +405,8 @@ flowchart LR
 ---
 
 > Math Notation
+Muh {x}(katex-pr) is pretty.
+
 --- katex-pr
 F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 ---
@@ -436,7 +447,9 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 	<script>
 		function parseHighlight() {
-			hljs.highlightAll();
+			document.querySelectorAll('code').forEach(el => {
+				hljs.highlightElement(el);
+			});
 		}
 		addEventListener('gularentranspile', parseHighlight);
 		if (gularen.transpiled) {

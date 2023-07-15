@@ -267,7 +267,14 @@ namespace Gularen {
 		virtual std::string toString() const override;
 	};
 
+	enum class CodeType {
+		inline_,
+		block,
+	};
+
 	struct CodeNode : Node {
+		CodeType type;
+		
 		std::string lang;
 		std::string source;
 		

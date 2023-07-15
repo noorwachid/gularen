@@ -69,7 +69,7 @@ void test(const std::string& path, bool showTree, bool showToken) {
 				if (showToken) {
 					Gularen::Lexer lexer;
 					lexer.set(codeNode->source);
-					lexer.parse();
+					lexer.tokenize();
 					prevCodeLexer.clear();
 					for (const Gularen::Token& token : lexer.get()) {
 						prevCodeLexer += token.toString() + '\n';

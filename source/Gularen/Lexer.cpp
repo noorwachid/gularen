@@ -7,7 +7,7 @@ namespace Gularen {
 		this->content = content;
 	}
 
-	void Lexer::parse() {
+	void Lexer::tokenize() {
 		if (content.empty()) return;
 
 		this->tokens.clear();
@@ -15,10 +15,10 @@ namespace Gularen {
 		this->position.line = 0;
 		this->position.column = 0;
 
-		parseBlock();
+		tokenizeBlock();
 
 		while (check(0)) {
-			parseInline();
+			tokenizeInline();
 		}
 
 		if (!tokens.empty() && (tokens.back().type == TokenType::newline || tokens.back().type == TokenType::newlinePlus)) {
@@ -126,7 +126,7 @@ namespace Gularen {
 		}
 	}
 
-	void Lexer::parseInline() {
+	void Lexer::tokenizeInline() {
 		switch (get(0)) {
 			case ' ':
 			case 'a':
@@ -191,7 +191,7 @@ namespace Gularen {
 			case '7':
 			case '8':
 			case '9':
-				parseText();
+				tokenizeText();
 				break;
 
 			case '\n': {
@@ -214,7 +214,7 @@ namespace Gularen {
 					position.line += 1;
 				}
 
-				parseBlock();
+				tokenizeBlock();
 				break;
 			}
 
@@ -240,12 +240,12 @@ namespace Gularen {
 			}
 			
 			case '\'':
-				parseQuoMark(tokens.empty() || tokens.back().type == TokenType::ldQuo, TokenType::lsQuo, "‘", TokenType::rsQuo, "’");
+				tokenizeQuoMark(tokens.empty() || tokens.back().type == TokenType::ldQuo, TokenType::lsQuo, "‘", TokenType::rsQuo, "’");
 				advance(0);
 				break;
 
 			case '"':
-				parseQuoMark(tokens.empty() || tokens.back().type == TokenType::lsQuo, TokenType::ldQuo, "“", TokenType::rdQuo, "”");
+				tokenizeQuoMark(tokens.empty() || tokens.back().type == TokenType::lsQuo, TokenType::ldQuo, "“", TokenType::rdQuo, "”");
 				advance(0);
 				break;
 
@@ -296,6 +296,81 @@ namespace Gularen {
 
 				addText(":");
 				break;
+			}
+
+			case '{': {
+				Position beginPosition = position;
+
+				advance(0);
+				
+				if (check(0)) {
+					size_t depth = 0;
+					std::string source;
+
+					while (check(0)) {
+						if (is(0, '}') && depth == 0) {
+							advance(0);
+							break;
+						}
+
+						if (is(0, '{')) {
+							++depth;
+						}
+
+						if (is(0, '\\')) {
+							advance(0);
+						}
+
+						source += get(0);
+						advance(0);
+					}
+
+					add(TokenType::curlyOpen, "{", beginPosition, beginPosition);
+					++beginPosition.column;
+					add(TokenType::codeSource, source, beginPosition, Position(beginPosition.line, beginPosition.column + source.size() - 1));
+					beginPosition.column += source.size();
+					add(TokenType::curlyClose, "}", beginPosition, beginPosition);
+
+					if (is(0, '(')) {
+						advance(0);
+
+						if (check(0)) {
+							size_t depth = 0;
+							std::string label;
+
+							while (check(0)) {
+								if (is(0, ')') && depth == 0) {
+									advance(0);
+									break;
+								}
+
+								if (is(0, '(')) {
+									++depth;
+								}
+								
+								if (is(0, '\\')) {
+									advance(0);
+								}
+
+								label += get(0);
+								advance(0);
+							}
+
+							++beginPosition.column;
+							add(TokenType::parenOpen, "(", beginPosition, beginPosition);
+							++beginPosition.column;
+							add(TokenType::resourceLabel, label, beginPosition, Position(beginPosition.line, beginPosition.column + label.size() - 1));
+							beginPosition.column += label.size();
+							add(TokenType::parenClose, ")", beginPosition, beginPosition);
+							break;
+						} else {
+							addText("(");
+						}
+					}
+					break;
+				}
+
+				addText("{");
 			}
 
 			case '[': {
@@ -473,7 +548,7 @@ namespace Gularen {
 				}
 				add(TokenType::pipe, "|");
 				advance(0);
-				parseSpace();
+				tokenizeSpace();
 				break;
 
 				
@@ -540,7 +615,7 @@ namespace Gularen {
 		}
 	}
 
-	void Lexer::parseBlock() {
+	void Lexer::tokenizeBlock() {
 		Position beginPosition = position;
 
 		size_t currentIndent = is(0, '\t') ? count('\t') : 0;
@@ -591,7 +666,7 @@ namespace Gularen {
 			}
 
 			case '-': {
-				parseCode();
+				tokenizeCode();
 				break;
 			}
 
@@ -619,8 +694,13 @@ namespace Gularen {
 				break;
 			}
 
+			case '{': {
+				// see inline [
+				break;
+			}
+
 			case '|':
-				parseTable();
+				tokenizeTable();
 				break;
 
 			case '<':
@@ -634,37 +714,37 @@ namespace Gularen {
 					// <&> See also
 					if (is(1, '/')) {
 						advance(2);
-						parseSpace();
+						tokenizeSpace();
 						add(TokenType::admonNote, "</>", beginPosition);
 						break;
 					}
 					if (is(1, '?')) {
 						advance(2);
-						parseSpace();
+						tokenizeSpace();
 						add(TokenType::admonHint, "<?>", beginPosition);
 						break;
 					}
 					if (is(1, '!')) {
 						advance(2);
-						parseSpace();
+						tokenizeSpace();
 						add(TokenType::admonImportant, "<!>", beginPosition);
 						break;
 					}
 					if (is(1, '^')) {
 						advance(2);
-						parseSpace();
+						tokenizeSpace();
 						add(TokenType::admonWarning, "<^>", beginPosition);
 						break;
 					}
 					if (is(1, '@')) {
 						advance(2);
-						parseSpace();
+						tokenizeSpace();
 						add(TokenType::admonDanger, "<@>", beginPosition);
 						break;
 					}
 					if (is(1, '&')) {
 						advance(2);
-						parseSpace();
+						tokenizeSpace();
 						add(TokenType::admonSeeAlso, "<&>", beginPosition);
 						break;
 					}
@@ -690,7 +770,7 @@ namespace Gularen {
 
 				if (check(1) && is(0, '.') && is(1, ' ')) {
 					advance(0);
-					parseSpace();
+					tokenizeSpace();
 					add(TokenType::index, number + ".", beginPosition, Position(beginPosition.line, beginPosition.column + number.size()));
 					break;
 				}
@@ -705,7 +785,7 @@ namespace Gularen {
 		}
 	}
 
-	void Lexer::parseCode() {
+	void Lexer::tokenizeCode() {
 		Position beginPosition = position;
 
 		size_t openingIndent = indent;
@@ -828,7 +908,7 @@ namespace Gularen {
 		add(TokenType::codeMarker, std::string(openingCounter, '-'), Position(position.line, indent));
 	}
 
-	void Lexer::parseSpace() {
+	void Lexer::tokenizeSpace() {
 		while (check(0) && is(0, ' ')) {
 			advance(0);
 		}
@@ -836,7 +916,7 @@ namespace Gularen {
 		return;
 	}
 
-	void Lexer::parseTable() {
+	void Lexer::tokenizeTable() {
 		add(TokenType::pipe, "|");
 		advance(0);
 
@@ -885,7 +965,7 @@ namespace Gularen {
 		}
 	}
 
-	void Lexer::parseText() {
+	void Lexer::tokenizeText() {
 		while (check(0)) {
 			switch (get(0)) {
 				case ' ':
@@ -961,7 +1041,7 @@ namespace Gularen {
 		}
 	}
 
-	void Lexer::parseQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue) {
+	void Lexer::tokenizeQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue) {
 		if (should || 
 			index == 0 ||
 			content[index - 1] == ' ' || 

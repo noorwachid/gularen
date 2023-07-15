@@ -8,7 +8,7 @@ namespace Gularen {
 	public:
 		void set(const std::string& content);
 
-		void parse();
+		void tokenize();
 		
 		const Tokens& get() const;
 
@@ -35,19 +35,19 @@ namespace Gularen {
 
 		void addText(const std::string value);
 
-		void parseBlock();
+		void tokenizeBlock();
 		
-		void parseCode();
+		void tokenizeInline();
 
-		void parseInline();
+		void tokenizeCode();
 
-		void parseText();
+		void tokenizeText();
 
-		void parseSpace();
+		void tokenizeSpace();
 
-		void parseTable();
+		void tokenizeTable();
 
-		void parseQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue);
+		void tokenizeQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue);
 
 	private:
 		size_t index;

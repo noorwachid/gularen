@@ -132,7 +132,7 @@ namespace Gularen {
 	}
 
 	void Parser::parse() {
-		lexer.parse();
+		lexer.tokenize();
 		root = nullptr;
 
 		if (lexer.get().empty()) return;
@@ -286,6 +286,31 @@ namespace Gularen {
 				}
 				advance(0);
 				break;
+
+			case TokenType::curlyOpen: {
+				if (check(5) && is(1, TokenType::codeSource) && is(2, TokenType::curlyClose) &&
+					is(3, TokenType::parenOpen) && is(4, TokenType::resourceLabel) && is(5, TokenType::parenClose)) {
+					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
+					codeNode->type = CodeType::inline_;
+					codeNode->lang = get(4).value;
+					codeNode->source = get(1).value;
+					add(codeNode);
+					advance(5);
+					break;
+				}
+
+				if (check(2) && is(1, TokenType::codeSource) && is(2, TokenType::curlyClose)) {
+					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
+					codeNode->type = CodeType::inline_;
+					codeNode->source = get(1).value;
+					add(codeNode);
+					advance(2);
+					break;
+				}
+
+				addText("{");
+				advance(0);
+			}
 
 			case TokenType::squareOpen: {
 				std::shared_ptr<ResourceNode> linkNode = nullptr;
@@ -589,16 +614,24 @@ namespace Gularen {
 				}
 				break;
 
+			case TokenType::curlyOpen: {
+				// see default inline
+				break;
+			}
+
 			case TokenType::codeMarker: {
 				if (check(2) && is(1, TokenType::codeSource) && is(2, TokenType::codeMarker)) {
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
+					codeNode->type = CodeType::block;
 					codeNode->source = get(1).value;
 					add(codeNode);
 					advance(2);
 					break;
 				}
+
 				if (check(3) && is(1, TokenType::codeLang) && is(2, TokenType::codeSource) && is(3, TokenType::codeMarker)) {
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
+					codeNode->type = CodeType::block;
 					codeNode->lang = get(1).value;
 					codeNode->source = get(2).value;
 					add(codeNode);
