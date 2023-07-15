@@ -186,6 +186,10 @@ namespace Gularen {
 		return "indent";
 	}
 
+	std::string BQNode::toString() const {
+		return "bq";
+	}
+
 	std::string BreakNode::toString() const {
 		switch (type) {
 			case BreakType::line:

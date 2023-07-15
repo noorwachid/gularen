@@ -35,6 +35,8 @@ namespace Gularen {
 
 		void addText(const std::string value);
 
+		void tokenizePrefix();
+
 		void tokenizeBlock();
 		
 		void tokenizeInline();
@@ -54,6 +56,7 @@ namespace Gularen {
 		size_t indent = 0;
 		Position position;
 		std::string content;
+		std::basic_string<TokenType> prefix;
 		Tokens tokens;
 	};
 }

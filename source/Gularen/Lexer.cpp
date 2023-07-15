@@ -1,3 +1,4 @@
+#include "Gularen/Token.h"
 #include <Gularen/Lexer.h>
 #include <iostream>
 #include <fstream>
@@ -615,26 +616,98 @@ namespace Gularen {
 		}
 	}
 
-	void Lexer::tokenizeBlock() {
+	void Lexer::tokenizePrefix() {
 		Position beginPosition = position;
 
-		size_t currentIndent = is(0, '\t') ? count('\t') : 0;
+		std::basic_string<TokenType> currentPrefix;
+		size_t currentIndent = 0;
 
-		if (currentIndent > indent) {
-			while (currentIndent > indent) {
-				beginPosition.column = indent;
-				add(TokenType::indentIncr, ">+", beginPosition, beginPosition);
-				++indent;
+		while (is(0, '\t') || is(0, '/')) {
+			if (is(0, '\t')) {
+				currentPrefix += TokenType::indentIncr;
+				++currentIndent;
+				advance(0);
+				continue;
+			}
+
+			if (check(1) && is(0, '/') && is(1, ' ')) {
+				currentPrefix += TokenType::bqIncr;
+				advance(1);
+				continue;
+			}
+
+			if (
+				(is(0, '/') && is(1, '\0')) ||
+				(is(0, '/') && is(1, '\n')) ||
+				(is(0, '/') && is(1, '\t'))
+			) {
+				currentPrefix += TokenType::bqIncr;
+				advance(0);
+				continue;
+			}
+
+			break;
+		}
+
+		size_t lowerBound = std::min(prefix.size(), currentPrefix.size());
+
+		for (size_t i = 0; i < lowerBound; ++i) {
+			if (currentPrefix[i] != prefix[i]) {
+				lowerBound = i;
+				break;
 			}
 		}
 
-		if (currentIndent < indent) {
-			while (currentIndent < indent) {
-				--indent;
-				// indentDecr has no symbol
-				add(TokenType::indentDecr, ">-", tokens.back().begin, tokens.back().begin);
+		if (prefix.size() > lowerBound) {
+			while (prefix.size() > lowerBound) {
+				add(
+					currentPrefix[lowerBound] == TokenType::indentIncr ? TokenType::indentDecr : TokenType::bqDecr, 
+					currentPrefix[lowerBound] == TokenType::indentIncr ? "I-" : "B-", 
+					beginPosition, 
+					beginPosition
+				);
+				prefix.pop_back();
 			}
 		}
+
+		if (currentPrefix.size() > lowerBound) {
+			while (lowerBound < currentPrefix.size()) {
+				add(
+					currentPrefix[lowerBound],
+					currentPrefix[lowerBound] == TokenType::indentIncr ? "I+" : "B+", 
+					beginPosition, 
+					beginPosition
+				);
+				++lowerBound;
+			}
+		}
+
+		prefix = currentPrefix;
+		indent = currentIndent;
+
+		/* size_t currentIndent = is(0, '\t') ? count('\t') : 0; */
+
+		/* if (currentIndent > indent) { */
+		/* 	while (currentIndent > indent) { */
+		/* 		beginPosition.column = indent; */
+		/* 		add(TokenType::indentIncr, "I+", beginPosition, beginPosition); */
+		/* 		++indent; */
+		/* 	} */
+		/* } */
+
+		/* if (currentIndent < indent) { */
+		/* 	while (currentIndent < indent) { */
+		/* 		--indent; */
+		/* 		// indentDecr has no symbol */
+		/* 		add(TokenType::indentDecr, "I-", tokens.back().begin, tokens.back().begin); */
+		/* 	} */
+		/* } */
+	}
+
+	void Lexer::tokenizeBlock() {
+		tokenizePrefix();
+
+		Position beginPosition = position;
 
 		switch (get(0)) {
 			case '>': {

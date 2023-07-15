@@ -9,6 +9,9 @@ namespace Gularen {
 		indentIncr,
 		indentDecr,
 
+		bqIncr,
+		bqDecr,
+
 		newline,
 		newlinePlus,
 
@@ -59,8 +62,6 @@ namespace Gularen {
 		jumpMarker,
 		jumpID,
 		describeMarker,
-
-		blockquote,
 
 		admonNote,
 		admonHint,

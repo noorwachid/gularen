@@ -442,17 +442,44 @@ namespace Gularen {
 				break;
 		}
 
-		while (check(0) && is(0, TokenType::indentIncr)) {
-			addScope(std::make_shared<IndentNode>());
-			advance(0);
-		}
+		while (check(0) && (
+			is(0, TokenType::indentIncr) || 
+			is(0, TokenType::indentDecr) || 
+			is(0, TokenType::bqIncr) || 
+			is(0, TokenType::bqDecr)
+			)) {
 
-		while (check(0) && scopes.size() > 1 && is(0, TokenType::indentDecr)) {
-			while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
-				removeScope();
+			if (is(0, TokenType::indentIncr)) {
+				addScope(std::make_shared<IndentNode>());
+				advance(0);
+				continue;
 			}
-			removeScope();
-			advance(0);
+
+			if (is(0, TokenType::indentDecr)) {
+				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
+					removeScope();
+				}
+				removeScope();
+				advance(0);
+				continue;
+			}
+
+			if (is(0, TokenType::bqIncr)) {
+				addScope(std::make_shared<BQNode>());
+				advance(0);
+				continue;
+			}
+
+			if (is(0, TokenType::bqDecr)) {
+				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::bq) {
+					removeScope();
+				}
+				removeScope();
+				advance(0);
+				continue;
+			}
+
+			break;
 		}
 	}
 	

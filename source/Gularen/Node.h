@@ -13,6 +13,7 @@ namespace Gularen {
 		heading,
 		paragraph,
 		indent,
+		bq,
 		break_,
 		list,
 		listItem,
@@ -169,6 +170,14 @@ namespace Gularen {
 	struct IndentNode : Node {
 		IndentNode() {
 			group = NodeGroup::indent;
+		}
+
+		virtual std::string toString() const override;
+	};
+
+	struct BQNode : Node {
+		BQNode() {
+			group = NodeGroup::bq;
 		}
 
 		virtual std::string toString() const override;

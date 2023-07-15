@@ -97,13 +97,14 @@ namespace Gularen::Transpiler::HTML {
 				}
 				return tag(before, tagName, "", true);
 			}
-			case NodeGroup::indent: return before ? "\n<div class=\"indent\">\n" : "</div>\n";
+			case NodeGroup::indent: return before ? "\n<blockquote>\n" : "</blockquote>\n";
+			case NodeGroup::bq: return before ? "\n<blockquote class=\"bordered\">\n" : "</blockquote>\n";
 			case NodeGroup::break_: return before ? "<br>" : "";
 
 			case NodeGroup::footnoteJump: return before ? "<a href=\"#footnote-" + node->as<FootnoteJumpNode>().value + "\">" + node->as<FootnoteJumpNode>().value + "</a>" : "";
 			case NodeGroup::footnoteDescribe: return before ? "<dd id=\"footnote-" + node->as<FootnoteDescribeNode>().value + "\">" : "</dd>\n";
 
-			case NodeGroup::table: return before ? "<table>\n" : "</table>\n";
+			case NodeGroup::table: return before ? "<table class=\"bordered\">\n" : "</table>\n";
 			case NodeGroup::tableRow: return before ? "<tr>\n" : "</tr>\n";
 			case NodeGroup::tableCell: {
 				if (context.tableNode) {
