@@ -33,7 +33,7 @@ code-block = minus minus minus+ [space symbol] any minus minus minus+
 
 > Anonymous Inline
 --- gr
-Why do we use {console.log} instead of the majestic 
+Why do we use {console.log('here')} instead of the majestic breakpoint?
 ---
 
 > Labeled Inline
