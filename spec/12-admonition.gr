@@ -5,8 +5,8 @@ Avaliable levels are:
 <?> Hint
 <!> Important
 <^> Warning
-<@> Danger
 <&> See also
+<+> Tip
 ---
 
 >> One Line Admonition
@@ -21,6 +21,6 @@ Avaliable levels are:
 ---
 
 --- gr-rule
-admon = angleOpen (slash|quesMark|exclMark|caret|at|amp) angleClose any newline
+admon = angleOpen (slash|quesMark|exclMark|caret|percent|amp) angleClose any newline
 admonBody = admon (indent++)+
 ---

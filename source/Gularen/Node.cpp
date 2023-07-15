@@ -164,11 +164,11 @@ namespace Gularen {
 			case AdmonType::warning:
 				string += "warning";
 				break;
-			case AdmonType::danger:
-				string += "danger";
-				break;
 			case AdmonType::seeAlso:
 				string += "seeAlso";
+				break;
+			case AdmonType::tip:
+				string += "tip";
 				break;
 		}
 		return string;

@@ -699,13 +699,13 @@ namespace Gularen {
 				advance(0);
 				break;
 
-			case TokenType::admonDanger:
-				addScope(std::make_shared<AdmonNode>(AdmonType::danger));
+			case TokenType::admonSeeAlso:
+				addScope(std::make_shared<AdmonNode>(AdmonType::seeAlso));
 				advance(0);
 				break;
 
-			case TokenType::admonSeeAlso:
-				addScope(std::make_shared<AdmonNode>(AdmonType::seeAlso));
+			case TokenType::admonTip:
+				addScope(std::make_shared<AdmonNode>(AdmonType::tip));
 				advance(0);
 				break;
 

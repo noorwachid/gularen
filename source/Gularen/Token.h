@@ -67,8 +67,8 @@ namespace Gularen {
 		admonHint,
 		admonImportant,
 		admonWarning,
-		admonDanger,
 		admonSeeAlso,
+		admonTip,
 
 		emojiMarker,
 		emojiCode,

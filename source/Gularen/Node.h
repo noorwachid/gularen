@@ -139,8 +139,8 @@ namespace Gularen {
 		hint,
 		important,
 		warning,
-		danger,
-		seeAlso
+		seeAlso,
+		tip,
 	};
 
 	struct AdmonNode : Node {

@@ -209,7 +209,13 @@ p,
 pre,
 table,
 ul,
-div.language-presenter {
+.admon-note,
+.admon-hint,
+.admon-important,
+.admon-warning,
+.admon-seealso,
+.admon-tip,
+.language-presenter {
   margin-bottom: 1.2rem;
 }
 
@@ -299,5 +305,80 @@ h3>small {
 
 img {
   max-width: 100%;
+}
+
+.admon-note,
+.admon-hint,
+.admon-important,
+.admon-warning,
+.admon-seealso,
+.admon-tip {
+  background: #222;
+  padding: 1rem 1.3rem;
+}
+
+.admon-note::before,
+.admon-hint::before,
+.admon-important::before,
+.admon-warning::before,
+.admon-seealso::before,
+.admon-tip::before {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 1.
+}
+
+.admon-note::before {
+  content: "Note";
+  color: #59a0ff;
+ }
+
+.admon-note {
+  border: 2px solid #4990ef;
+}
+
+.admon-hint::before {
+  content: "Hint";
+  color: #8059ff;
+ }
+
+.admon-hint {
+  border: 2px solid #6049ef;
+}
+
+.admon-important::before {
+  content: "Important";
+  color: #ff4444;
+ }
+
+.admon-important {
+  border: 2px solid #ef4949;
+}
+
+.admon-warning::before {
+  content: "Warning";
+  color: #dfbf33;
+ }
+
+.admon-warning {
+  border: 2px solid #cfaf22;
+}
+
+.admon-seealso::before {
+  content: "See Also";
+  color: #ff3980;
+ }
+
+.admon-seealso {
+  border: 2px solid #ef2990;
+}
+
+.admon-tip::before {
+  content: "Tip";
+  color: #59dd59;
+ }
+
+.admon-tip {
+  border: 2px solid #33af33;
 }
 

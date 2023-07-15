@@ -783,8 +783,8 @@ namespace Gularen {
 					// <?> Hint
 					// <!> Important
 					// <^> Warning
-					// <@> Danger
 					// <&> See also
+					// <+> Tip
 					if (is(1, '/')) {
 						advance(2);
 						tokenizeSpace();
@@ -809,16 +809,16 @@ namespace Gularen {
 						add(TokenType::admonWarning, "<^>", beginPosition);
 						break;
 					}
-					if (is(1, '@')) {
-						advance(2);
-						tokenizeSpace();
-						add(TokenType::admonDanger, "<@>", beginPosition);
-						break;
-					}
 					if (is(1, '&')) {
 						advance(2);
 						tokenizeSpace();
 						add(TokenType::admonSeeAlso, "<&>", beginPosition);
+						break;
+					}
+					if (is(1, '+')) {
+						advance(2);
+						tokenizeSpace();
+						add(TokenType::admonTip, "<+>", beginPosition);
 						break;
 					}
 				}

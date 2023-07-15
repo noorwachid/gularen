@@ -101,6 +101,17 @@ namespace Gularen::Transpiler::HTML {
 			case NodeGroup::bq: return before ? "\n<blockquote class=\"bordered\">\n" : "</blockquote>\n";
 			case NodeGroup::break_: return before ? "<br>" : "";
 
+			case NodeGroup::admon: {
+				switch (node->as<AdmonNode>().type) {
+					case AdmonType::note: return before ? "<div class=\"admon-note\">\n" : "</div>\n";
+					case AdmonType::hint: return before ? "<div class=\"admon-hint\">\n" : "</div>\n";
+					case AdmonType::important: return before ? "<div class=\"admon-important\">\n" : "</div>\n";
+					case AdmonType::warning: return before ? "<div class=\"admon-warning\">\n" : "</div>\n";
+					case AdmonType::seeAlso: return before ? "<div class=\"admon-seealso\">\n" : "</div>\n";
+					case AdmonType::tip: return before ? "<div class=\"admon-tip\">\n" : "</div>\n";
+				}
+			}
+
 			case NodeGroup::footnoteJump: return before ? "<a href=\"#footnote-" + node->as<FootnoteJumpNode>().value + "\">" + node->as<FootnoteJumpNode>().value + "</a>" : "";
 			case NodeGroup::footnoteDescribe: return before ? "<dd id=\"footnote-" + node->as<FootnoteDescribeNode>().value + "\">" : "</dd>\n";
 
