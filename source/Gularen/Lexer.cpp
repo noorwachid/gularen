@@ -661,8 +661,8 @@ namespace Gularen {
 		if (prefix.size() > lowerBound) {
 			while (prefix.size() > lowerBound) {
 				add(
-					currentPrefix[lowerBound] == TokenType::indentIncr ? TokenType::indentDecr : TokenType::bqDecr, 
-					currentPrefix[lowerBound] == TokenType::indentIncr ? "I-" : "B-", 
+					prefix.back() == TokenType::indentIncr ? TokenType::indentDecr : TokenType::bqDecr, 
+					prefix.back() == TokenType::indentIncr ? "I-" : "B-", 
 					beginPosition, 
 					beginPosition
 				);
