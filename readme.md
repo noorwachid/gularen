@@ -20,16 +20,15 @@ A sweet-spot of markup language
 - [06 Breaking](spec/06-breaking.gr)
 - [07 List](spec/07-list.gr)
 - [08 Table](spec/08-table.gr)
-- [09 Column](spec/09-column.gr)
+- [09 Code](spec/09-code.gr)
 - [0A Linker](spec/0A-linker.gr)
 - [0B Presenter](spec/0B-presenter.gr)
 - [0C Inclusion](spec/0C-inclusion.gr)
 - [0D Footnote](spec/0D-footnote.gr)
-- [0E Code](spec/0E-code.gr)
-- [0F Punctuation Mark](spec/0F-punctuation-mark.gr)
-- [10 Emoji](spec/10-emoji.gr)
-- [11 Blockquote](spec/11-blockquote.gr)
-- [12 Admonition](spec/12-admonition.gr)
+- [0E Punctuation Mark](spec/0E-punctuation-mark.gr)
+- [0F Emoji](spec/0F-emoji.gr)
+- [10 Blockquote](spec/10-blockquote.gr)
+- [11 Admonition](spec/11-admonition.gr)
 
 ## Why?
 The problem with Markdown was, too many ways to do something. 
