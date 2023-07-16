@@ -334,35 +334,26 @@ namespace Gularen {
 
 					if (is(0, '(')) {
 						advance(0);
+						std::string lang;
 
-						if (check(0)) {
-							size_t depth = 0;
-							std::string label;
-
-							while (check(0)) {
-								if (is(0, ')') && depth == 0) {
-									advance(0);
-									break;
-								}
-
-								if (is(0, '(')) {
-									++depth;
-								}
-								
-								if (is(0, '\\')) {
-									advance(0);
-								}
-
-								label += get(0);
+						if (check(0) && isSymbol(0)) {
+							while (check(0) && isSymbol(0)) {
+								lang += get(0);
 								advance(0);
 							}
 
-							++beginPosition.column;
-							add(TokenType::parenOpen, "(", beginPosition, beginPosition);
-							++beginPosition.column;
-							add(TokenType::resourceLabel, label, beginPosition, Position(beginPosition.line, beginPosition.column + label.size() - 1));
-							beginPosition.column += label.size();
-							add(TokenType::parenClose, ")", beginPosition, beginPosition);
+							if (is(0, ')')) {
+								++beginPosition.column;
+								add(TokenType::parenOpen, "(", beginPosition, beginPosition);
+								++beginPosition.column;
+								add(TokenType::resourceLabel, lang, beginPosition, Position(beginPosition.line, beginPosition.column + lang.size() - 1));
+								beginPosition.column += lang.size();
+								add(TokenType::parenClose, ")", beginPosition, beginPosition);
+								advance(0);
+								break;
+							}
+
+							addText("(" + lang);
 							break;
 						} else {
 							addText("(");
