@@ -11,6 +11,7 @@ file(GLOB gularen_sources
 	source/Gularen/Node.cpp
 	source/Gularen/Parser.cpp
 	source/Gularen/Helper/escape.cpp
+	source/Gularen/Helper/emoji.cpp
 )
 
 add_library(gularen ${gularen_sources})

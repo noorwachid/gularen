@@ -1,4 +1,5 @@
 #include <Gularen/Parser.h>
+#include <Gularen/Helper/emoji.h>
 #include <filesystem>
 
 namespace Gularen::Transpiler::HTML {
@@ -43,6 +44,9 @@ namespace Gularen::Transpiler::HTML {
 					case PunctType::enDash: return "&ndash;";
 					case PunctType::emDash: return "&mdash;";
 				}
+			}
+			case NodeGroup::emoji: {
+				if (!before) return Helper::toEmoji(node->as<EmojiNode>().value);
 			}
 			case NodeGroup::resource: {
 				if (!before) return "";
