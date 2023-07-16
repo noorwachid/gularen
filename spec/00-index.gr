@@ -1,25 +1,25 @@
->>> Gularen Markup Language Specification Implementation
+>>> Gularen Markup Language Specification
 
-[v] [01-comment.gr](01 comment)
-[v] [02-font-style.gr](02 font-style)
-[v] [03-heading.gr](03 heading)
-[v] [04-paragraph.gr](04 paragraph)
-[v] [05-indentation.gr](05 indentation)
-[v] [06-breaking.gr](06 breaking)
-[v] [07-list.gr](07 list)
-[v] [08-table.gr](08 table)
-[ ] [09-column.gr](09 column)
-[v] [0A-linker.gr](0A linker)
-[v] [0B-presenter.gr](0B presenter)
-[v] [0C-inclusion.gr](0C inclusion)
-[v] [0D-footnote.gr](0D footnote)
-[v] [0E-code.gr](0E code)
-[v] [0F-punctuation-mark.gr](0F punctuation-mark)
-[v] [10-emoji.gr](10 emoji)
-[ ] [11-blockquote.gr](11 blockquote)
-[v] [12-admonition.gr](12 admonition)
+>> Table of Contents
+- [01-comment.gr]
+- [02-font-style.gr]
+- [03-heading.gr]
+- [04-paragraph.gr]
+- [05-indentation.gr]
+- [06-breaking.gr]
+- [07-list.gr]
+- [08-table.gr]
+- [09-code.gr]
+- [0A-linker.gr]
+- [0B-presenter.gr]
+- [0C-inclusion.gr]
+- [0D-footnote.gr]
+- [0E-punctuation-mark.gr]
+- [0F-emoji.gr]
+- [10-blockquote.gr]
+- [11-admonition.gr]
 
->> How to read `gr-rule`
+>> How To Read 
 
 > Dependency
 ---
