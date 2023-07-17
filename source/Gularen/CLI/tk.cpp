@@ -1,4 +1,5 @@
 #include <Gularen/Parser.h>
+#include <Gularen/Helper/emoji.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -13,22 +14,10 @@ void build(std::ostream& out, const Gularen::NodePtr& node, size_t depth = 0) {
 	}
 }
 
-int main(int argc, char** argv) {
-	if (argc <= 2) {
-		std::cout << "please specify the command and input file\n";
-		return 0;
-	}
-
-	std::string command(argv[1]);
-	std::string filePath(argv[2]);
-
-	if (std::filesystem::is_directory(filePath)) {
-		std::cout << "please specify the input file, make sure its not a directory\n";
-		return 0;
-	}
-
+std::string getContent(const std::string& filePath) {
 	std::ifstream file(filePath);
 	std::string content;
+
 	file.seekg(0, std::ios::end);   
 	content.reserve(file.tellg());
 	file.seekg(0, std::ios::beg);
@@ -37,9 +26,27 @@ int main(int argc, char** argv) {
 		std::istreambuf_iterator<char>()
 	);
 
+	return content;
+}
+
+
+int main(int argc, char** argv) {
+	if (argc <= 2) {
+		std::cout << "please specify the command and input file\n";
+		return 0;
+	}
+
+	std::string command(argv[1]);
+	std::string input(argv[2]);
+
 	if (command == "tokenize") {
+		if (std::filesystem::is_directory(input)) {
+			std::cout << "please specify the input file, make sure its not a directory\n";
+			return 0;
+		}
+
 		Gularen::Lexer lexer;
-		lexer.set(content);
+		lexer.set(getContent(input));
 		lexer.tokenize();
 
 		for (const Gularen::Token& token : lexer.get()) {
@@ -49,8 +56,13 @@ int main(int argc, char** argv) {
 		return 0;
 
 	} else if (command == "parse") {
+		if (std::filesystem::is_directory(input)) {
+			std::cout << "please specify the input file, make sure its not a directory\n";
+			return 0;
+		}
+
 		Gularen::Parser parser;
-		parser.set(content);
+		parser.set(getContent(input));
 		parser.parse();
 		std::ostringstream out;
 
@@ -58,6 +70,9 @@ int main(int argc, char** argv) {
 
 		std::cout << out.str();
 
+		return 0;
+	} else if (command == "to-emoji") {
+		std::cout << Gularen::Helper::toEmoji(input);
 		return 0;
 	} else {
 		std::cout << "unknown command\n";
