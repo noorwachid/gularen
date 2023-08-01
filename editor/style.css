@@ -404,6 +404,10 @@ ul.checklist>li>input[type=checkbox] {
 	margin-right: 4px;
 }
 
+.footnote>sup {
+	margin-right: 4px;
+}
+
 pre code.hljs {
 	display: block;
 }

@@ -190,6 +190,42 @@ namespace Gularen::Transpiler::HTML {
 				}
 
 				case NodeGroup::resource: {
+					const ResourceNode& resourceNode = node->as<ResourceNode>();
+					std::string value = resourceNode.value;
+					if (!resourceNode.id.empty()) {
+						value += "#" + slugify(resourceNode.id);
+					}
+					std::string label = resourceNode.label.empty() ? value : resourceNode.label;
+
+					switch (resourceNode.type) {
+						case ResourceType::presenter:
+						case ResourceType::presenterLocal:
+							return;
+					}
+
+					addOpenTag(node, "a href=\"" + value + "\"");
+					addText(node, label);
+					addCloseTag(node, "a");
+					return;
+				}
+
+				case NodeGroup::footnoteJump: {
+					const FootnoteJumpNode& jumpNode = node->as<FootnoteJumpNode>();
+					addOpenTag(node, "sup");
+					addOpenTag(node, "a href=\"#footnote-" + slugify(jumpNode.value) + "\"");
+					addText(node, jumpNode.value);
+					addCloseTag(node, "a");
+					addCloseTag(node, "sup");
+					return;
+				}
+
+				case NodeGroup::footnoteDescribe: {
+					const FootnoteDescribeNode& describeNode = node->as<FootnoteDescribeNode>();
+					addOpenTagWithClassAttr(node, "div id=\"footnote-" + slugify(describeNode.value) + "\"", "footnote");
+					addOpenTag(node, "sup");
+					addText(node, describeNode.value);
+					addCloseTag(node, "sup");
+					return;
 				}
 
 				case NodeGroup::admon:
@@ -222,7 +258,7 @@ namespace Gularen::Transpiler::HTML {
 				case NodeGroup::emoji:
 					return add(node, Helper::toEmoji(node->as<EmojiNode>().value));
 
-				default: return;
+				default: break;;
 			}
 		}
 
@@ -301,13 +337,16 @@ namespace Gularen::Transpiler::HTML {
 					}
 				}
 
+				case NodeGroup::footnoteDescribe:
+					return addCloseTagLF(node, "div");
+
 				case NodeGroup::admon:
 					return addCloseTagLF(node, "div");
 
 				case NodeGroup::bq:
 					return addCloseTagLF(node, "blockquote");
 
-				default: return;
+				default: break;
 			}
 		}
 
