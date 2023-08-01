@@ -739,17 +739,20 @@ namespace Gularen {
 				if (check(3) && is(2, ']') && is(3, ' ')) {
 					if (is(1, ' ')) {
 						add(TokenType::checkbox, "[ ]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
-						advance(3);
+						advance(2);
+						tokenizeSpace();
 						break;
 					}
 					if (is(1, 'v')) {
 						add(TokenType::checkbox, "[v]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
 						advance(2);
+						tokenizeSpace();
 						break;
 					}
 					if (is(1, 'x')) {
 						add(TokenType::checkbox, "[x]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
 						advance(2);
+						tokenizeSpace();
 						break;
 					}
 				}

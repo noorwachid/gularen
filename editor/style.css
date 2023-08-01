@@ -382,3 +382,32 @@ img {
   border: 2px solid #33af33;
 }
 
+
+td.cell-left {
+	text-align: left;
+}
+
+td.cell-center {
+	text-align: center;
+}
+
+td.cell-right {
+	text-align: right;
+}
+
+ul.checklist {
+	list-style: none;
+}
+
+ul.checklist>li>input[type=checkbox] {
+	margin-bottom: 0;
+	margin-right: 4px;
+}
+
+pre code.hljs {
+	display: block;
+}
+
+code.hljs {
+	display: inline;
+}

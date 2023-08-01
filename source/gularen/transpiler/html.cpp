@@ -9,13 +9,13 @@ namespace Gularen::Transpiler::HTML {
 	
 	class Transpiler {
 	public:
-		const std::string& transpile(const std::string& input, const std::unordered_map<std::string, std::string>& options) {
+		const std::string& transpile(const std::string& input, const Options& options) {
 			Parser parser;
 			parser.set(input);
 			parser.parse();
 
+			this->options = options;
 			std::shared_ptr<Node> root = parser.get();
-			parseOptions(options);
 			visit(root);
 			return output;
 		}
@@ -98,7 +98,7 @@ namespace Gularen::Transpiler::HTML {
 				}
 
 				case NodeGroup::indent:
-					return addOpenTagWithClassAttrLF(node, "div", "indent");
+					return addOpenTag(node, "blockquote");
 
 				case NodeGroup::break_:
 					switch (node->as<BreakNode>().type) {
@@ -113,7 +113,7 @@ namespace Gularen::Transpiler::HTML {
 					switch (node->as<ListNode>().type) {
 						case ListType::bullet: return addOpenTagLF(node, "ul");
 						case ListType::index: return addOpenTagLF(node, "ol");
-						case ListType::check: return addOpenTagWithClassAttrLF(node, "div", "checklist");
+						case ListType::check: return addOpenTagWithClassAttrLF(node, "ul", "checklist");
 					}
 					return;
 
@@ -121,18 +121,101 @@ namespace Gularen::Transpiler::HTML {
 					switch (node->as<ListItemNode>().state) {
 						case ListItemState::none: return addOpenTag(node, "li");
 						case ListItemState::todo:
-							addOpenTag(node, "div");
+							addOpenTag(node, "li");
 							addOpenTag(node, "input type=\"checkbox\"");
 							return;
 						case ListItemState::done:
-							addOpenTag(node, "div");
+							addOpenTag(node, "li");
 							addOpenTag(node, "input type=\"checkbox\" checked");
 							return;
 						case ListItemState::canceled:
-							addOpenTag(node, "div");
+							addOpenTag(node, "li");
 							addOpenTag(node, "input type=\"checkbox\" disabled");
 							addOpenTag(node, "del");
 							return;
+					}
+					return;
+
+				case NodeGroup::table:
+					tableNode = static_cast<TableNode*>(node.get());
+					tableRowCount = 0;
+					return addOpenTagLF(node, "table");
+
+				case NodeGroup::tableRow:
+					tableColumnCount = 0;
+					return addOpenTagLF(node, "tr");
+
+				case NodeGroup::tableCell: {
+					std::string alignment = "cell-left";
+					switch (tableNode->alignments[tableColumnCount]) {
+						case Alignment::left: alignment = "cell-left"; break;
+						case Alignment::center: alignment = "cell-center"; break;
+						case Alignment::right: alignment = "cell-right"; break;
+					}
+					if (tableRowCount < tableNode->header || (tableNode->footer > tableNode->header && tableRowCount >= tableNode->footer)) {
+						return addOpenTagWithClassAttr(node, "th", alignment);
+					} else {
+						return addOpenTagWithClassAttr(node, "td", alignment);
+					}
+				}
+
+				case NodeGroup::code: {
+					const CodeNode& codeNode = node->as<CodeNode>();
+					if (codeNode.lang.empty()) {
+						switch (codeNode.type) {
+							case CodeType::inline_: 
+								addOpenTag(node, "code");
+								addText(node, codeNode.source);
+								return;
+							case CodeType::block: 
+								addOpenTag(node, "pre");
+								addOpenTag(node, "code");
+								addText(node, codeNode.source);
+								return;
+						}
+					}
+					switch (codeNode.type) {
+						case CodeType::inline_:
+							addOpenTagWithClassAttr(node, "code", "language-" + codeNode.lang);
+							addText(node, codeNode.source);
+							return;
+
+						case CodeType::block: 
+							addOpenTag(node, "pre");
+							addOpenTagWithClassAttr(node, "code", "language-" + codeNode.lang);
+							addText(node, codeNode.source);
+							return;
+					}
+					return;
+				}
+
+				case NodeGroup::resource: {
+				}
+
+				case NodeGroup::admon:
+					switch (node->as<AdmonNode>().type) {
+						case AdmonType::note: return addOpenTagWithClassAttr(node, "div", "admon-note");
+						case AdmonType::hint: return addOpenTagWithClassAttr(node, "div", "admon-hint");
+						case AdmonType::important: return addOpenTagWithClassAttr(node, "div", "admon-important");
+						case AdmonType::warning: return addOpenTagWithClassAttr(node, "div", "admon-warning");
+						case AdmonType::seeAlso: return addOpenTagWithClassAttr(node, "div", "admon-seealso");
+						case AdmonType::tip: return addOpenTagWithClassAttr(node, "div", "admon-tip");
+					}
+					return;
+
+				case NodeGroup::bq:
+					return addOpenTagWithClassAttr(node, "blockquote", "bordered");
+
+				case NodeGroup::punct:
+					switch (node->as<PunctNode>().type) {
+						case PunctType::hyphen: return add(node, "&dash;");
+						case PunctType::enDash: return add(node, "&ndash;");
+						case PunctType::emDash: return add(node, "&mdash;");
+
+						case PunctType::lsQuo: return add(node, "&lsquo;");
+						case PunctType::rsQuo: return add(node, "&rsquo;");
+						case PunctType::ldQuo: return add(node, "&ldquo;");
+						case PunctType::rdQuo: return add(node, "&rdquo;");
 					}
 					return;
 
@@ -174,7 +257,7 @@ namespace Gularen::Transpiler::HTML {
 					return;
 
 				case NodeGroup::indent:
-					return addCloseTagLF(node, "div");
+					return addCloseTagLF(node, "blockquote");
 
 				case NodeGroup::list:
 					switch (node->as<ListNode>().type) {
@@ -187,14 +270,42 @@ namespace Gularen::Transpiler::HTML {
 				case NodeGroup::listItem:
 					switch (node->as<ListItemNode>().state) {
 						case ListItemState::none: return addCloseTagLF(node, "li");
-						case ListItemState::todo: return addCloseTagLF(node, "div");
-						case ListItemState::done: return addCloseTagLF(node, "div");
+						case ListItemState::todo: return addCloseTagLF(node, "li");
+						case ListItemState::done: return addCloseTagLF(node, "li");
 						case ListItemState::canceled:
 							addCloseTag(node, "del");
-							addCloseTagLF(node, "div");
+							addCloseTagLF(node, "li");
 							return;
 					}
 					return;
+
+				case NodeGroup::table:
+					tableNode = nullptr;
+					return addCloseTagLF(node, "table");
+
+				case NodeGroup::tableRow:
+					++tableRowCount;
+					return addCloseTagLF(node, "tr");
+
+				case NodeGroup::tableCell:
+					++tableColumnCount;
+					return addCloseTagLF(node, "td");
+
+				case NodeGroup::code: {
+					switch (node->as<CodeNode>().type) {
+						case CodeType::inline_: return addCloseTag(node, "code");
+						case CodeType::block: 
+							addCloseTag(node, "code");
+							addCloseTagLF(node, "pre");
+							return;
+					}
+				}
+
+				case NodeGroup::admon:
+					return addCloseTagLF(node, "div");
+
+				case NodeGroup::bq:
+					return addCloseTagLF(node, "blockquote");
 
 				default: return;
 			}
@@ -212,12 +323,6 @@ namespace Gularen::Transpiler::HTML {
 			}
 
 			return text;
-		}
-
-		void parseOptions(const std::unordered_map<std::string, std::string>& options) {
-			if (options.count("range") && options.at("range") == "true") {
-				this->options.rangeEnabled = true;
-			}
 		}
 
 		void add(const std::shared_ptr<Node>& node, const std::string& buffer) {
@@ -253,12 +358,22 @@ namespace Gularen::Transpiler::HTML {
 		}
 
 	private:
+		TableNode* tableNode = nullptr;
+		size_t tableRowCount = 0;
+		size_t tableColumnCount = 0;
 		Options options;
 		std::string output;
 	};
 
-	std::string transpile(const std::string& content, const std::unordered_map<std::string, std::string>& options) {
+	std::string transpile(const std::string& content) {
 		Transpiler transpiler;
+		return transpiler.transpile(content, Options{});
+	}
+
+	std::string transpileWithRange(const std::string& content) {
+		Transpiler transpiler;
+		Options options;
+		options.rangeEnabled = true;
 		return transpiler.transpile(content, options);
 	}
 }
