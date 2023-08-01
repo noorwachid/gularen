@@ -31,15 +31,16 @@ std::string getContent(const std::string& filePath) {
 
 
 int main(int argc, char** argv) {
-	if (argc <= 2) {
-		std::cout << "please specify the command and input file\n";
+	if (argc <= 1) {
+		std::cout << "please specify the command\n";
 		return 0;
 	}
 
 	std::string command(argv[1]);
-	std::string input(argv[2]);
 
-	if (command == "tokenize") {
+	if (command == "tokenize" && argc > 2) {
+		std::string input(argv[2]);
+
 		if (std::filesystem::is_directory(input)) {
 			std::cout << "please specify the input file, make sure its not a directory\n";
 			return 0;
@@ -55,7 +56,9 @@ int main(int argc, char** argv) {
 
 		return 0;
 
-	} else if (command == "parse") {
+	} else if (command == "parse" && argc > 2) {
+		std::string input(argv[2]);
+
 		if (std::filesystem::is_directory(input)) {
 			std::cout << "please specify the input file, make sure its not a directory\n";
 			return 0;
@@ -71,8 +74,13 @@ int main(int argc, char** argv) {
 		std::cout << out.str();
 
 		return 0;
-	} else if (command == "to-emoji") {
-		std::cout << Gularen::Helper::toEmoji(input);
+	} else if (command == "shortcode-to-emoji" && argc > 2) {
+		std::cout << Gularen::Helper::toEmoji(argv[2]);
+		return 0;
+	} else if (command == "get-shortcodes") {
+		for (const std::string& shortcode : Gularen::Helper::getShortcodes()) {
+			std::cout << shortcode << '\n';
+		}
 		return 0;
 	} else {
 		std::cout << "unknown command\n";
