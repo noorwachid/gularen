@@ -1,4 +1,4 @@
-#include <Gularen/Helper/escape.h>
+#include <gularen/helper/escape.h>
 
 namespace Gularen::Helper {
 	std::string escape(const std::string& from) {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Gularen/Lexer.h>
-#include <Gularen/Node.h>
+#include <gularen/lexer.h>
+#include <gularen/node.h>
 #include <functional>
 
 namespace Gularen {

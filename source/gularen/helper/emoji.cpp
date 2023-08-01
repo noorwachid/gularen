@@ -1,4 +1,4 @@
-#include <Gularen/Helper/emoji.h>
+#include <gularen/helper/emoji.h>
 #include <unordered_map>
 #include <vector>
 

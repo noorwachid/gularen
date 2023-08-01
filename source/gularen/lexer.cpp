@@ -1,5 +1,5 @@
-#include "Gularen/Token.h"
-#include <Gularen/Lexer.h>
+#include <gularen/token.h>
+#include <gularen/lexer.h>
 #include <iostream>
 #include <fstream>
 
@@ -222,7 +222,7 @@ namespace Gularen {
 			case '\\':
 				advance(0);
 				if (check(0)) {
-					addText(content.substr(index));
+					addText(content.substr(index, 1));
 					advance(0);
 				}
 				break;

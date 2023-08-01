@@ -1,5 +1,5 @@
-#include <Gularen/Token.h>
-#include <Gularen/Helper/escape.h>
+#include <gularen/token.h>
+#include <gularen/helper/escape.h>
 
 namespace Gularen {
 	std::string Token::toString() const {

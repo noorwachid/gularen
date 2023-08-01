@@ -1,5 +1,5 @@
-#include <Gularen/Parser.h>
-#include <Gularen/Helper/emoji.h>
+#include <gularen/parser.h>
+#include <gularen/helper/emoji.h>
 #include <filesystem>
 
 namespace Gularen::Transpiler::HTML {

@@ -1,5 +1,5 @@
 #include <emscripten/bind.h>
-#include <Gularen/Transpiler/HTML.h>
+#include <gularen/transpiler/html.h>
 
 
 EMSCRIPTEN_BINDINGS(my_module) {

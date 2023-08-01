@@ -1,5 +1,5 @@
-#include <Gularen/Node.h>
-#include <Gularen/Helper/escape.h>
+#include <gularen/node.h>
+#include <gularen/helper/escape.h>
 
 namespace Gularen {
 	// constructors

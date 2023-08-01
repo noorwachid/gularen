@@ -1,10 +1,10 @@
 em++ --bind  -std=c++17 -O3 -Isource \
 	-o binding/javascript/gularen.js \
 	binding/javascript/binding.cpp \
-	source/Gularen/Helper/escape.cpp \
-	source/Gularen/Helper/emoji.cpp \
-	source/Gularen/Token.cpp \
-	source/Gularen/Lexer.cpp \
-	source/Gularen/Node.cpp \
-	source/Gularen/Parser.cpp \
-	source/Gularen/Transpiler/HTML.cpp
+	source/gularen/helper/escape.cpp \
+	source/gularen/helper/emoji.cpp \
+	source/gularen/token.cpp \
+	source/gularen/lexer.cpp \
+	source/gularen/node.cpp \
+	source/gularen/parser.cpp \
+	source/gularen/transpiler/html.cpp

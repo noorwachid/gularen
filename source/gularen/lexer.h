@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Gularen/Token.h>
+#include <gularen/token.h>
 #include <vector>
 
 namespace Gularen {

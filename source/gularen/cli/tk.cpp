@@ -1,5 +1,6 @@
-#include <Gularen/Parser.h>
-#include <Gularen/Helper/emoji.h>
+#include <gularen/parser.h>
+#include <gularen/helper/emoji.h>
+#include <gularen/transpiler/html.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -81,6 +82,16 @@ int main(int argc, char** argv) {
 		for (const std::string& shortcode : Gularen::Helper::getShortcodes()) {
 			std::cout << shortcode << '\n';
 		}
+		return 0;
+	} else if (command == "to-html") {
+		std::string input(argv[2]);
+
+		if (std::filesystem::is_directory(input)) {
+			std::cout << "please specify the input file, make sure its not a directory\n";
+			return 0;
+		}
+
+		std::cout << Gularen::Transpiler::HTML::transpile(getContent(input));
 		return 0;
 	} else {
 		std::cout << "unknown command\n";
