@@ -43,26 +43,27 @@ namespace Gularen {
 		index += 1 + offset;
 	}
 
-	void Parser::add(const NodePtr& node) {
+	void Parser::add(const NodePtr& node, const Range& range) {
+		node->range = range;
 		scopes.top()->children.push_back(node);
 	}
 
 
-	void Parser::addText(const std::string& value) {
+	void Parser::addText(const std::string& value, const Range& range) {
 		if (!scopes.top()->children.empty() && scopes.top()->children.back()->group == NodeGroup::text) {
 			Node* node = scopes.top()->children.back().get();
 			static_cast<TextNode*>(node)->value += value;
 		} else {
-			add(std::make_shared<TextNode>(value));
+			add(std::make_shared<TextNode>(value), range);
 		}
 	}
 
-	void Parser::addScope(const NodePtr& node) {
-		add(node);
+	void Parser::addScope(const NodePtr& node, const Range& range) {
+		add(node, range);
 		scopes.push(node);
 	}
 
-	void Parser::removeScope() {
+	void Parser::removeScope(const Range& range) {
 		if (scopes.size() > 1)
 			scopes.pop();
 	}
@@ -177,76 +178,76 @@ namespace Gularen {
 	void Parser::parseInline() {
 		switch (get(0).type) {
 			case TokenType::text:
-				addText(get(0).value);
+				addText(get(0).value, get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::lsQuo:
-				add(std::make_shared<PunctNode>(PunctType::lsQuo, get(0).value));
+				add(std::make_shared<PunctNode>(PunctType::lsQuo, get(0).value), get(0).range);
 				advance(0);
 				break;
 			case TokenType::rsQuo:
-				add(std::make_shared<PunctNode>(PunctType::rsQuo, get(0).value));
+				add(std::make_shared<PunctNode>(PunctType::rsQuo, get(0).value), get(0).range);
 				advance(0);
 				break;
 			case TokenType::ldQuo:
-				add(std::make_shared<PunctNode>(PunctType::ldQuo, get(0).value));
+				add(std::make_shared<PunctNode>(PunctType::ldQuo, get(0).value), get(0).range);
 				advance(0);
 				break;
 			case TokenType::rdQuo:
-				add(std::make_shared<PunctNode>(PunctType::rdQuo, get(0).value));
+				add(std::make_shared<PunctNode>(PunctType::rdQuo, get(0).value), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::hyphen:
-				add(std::make_shared<PunctNode>(PunctType::hyphen, get(0).value));
+				add(std::make_shared<PunctNode>(PunctType::hyphen, get(0).value), get(0).range);
 				advance(0);
 				break;
 			case TokenType::enDash:
-				add(std::make_shared<PunctNode>(PunctType::enDash, get(0).value));
+				add(std::make_shared<PunctNode>(PunctType::enDash, get(0).value), get(0).range);
 				advance(0);
 				break;
 			case TokenType::emDash:
-				add(std::make_shared<PunctNode>(PunctType::emDash, get(0).value));
+				add(std::make_shared<PunctNode>(PunctType::emDash, get(0).value), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::emojiMarker:
 				if (check(2) && is(1, TokenType::emojiCode) && is(2, TokenType::emojiMarker)) {
-					add(std::make_shared<EmojiNode>(get(1).value));
+					add(std::make_shared<EmojiNode>(get(1).value), get(0).range);
 					advance(2);
 					break;
 				}
-				addText(get(0).value);
+				addText(get(0).value, get(0).range);
 				break;
 
 			case TokenType::fsBold:
 				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::bold) {
-					removeScope();
+					removeScope(get(0).range);
 					advance(0);
 					break;
 				}
-				addScope(std::make_shared<FSNode>(FSType::bold));
+				addScope(std::make_shared<FSNode>(FSType::bold), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::fsItalic:
 				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::italic) {
-					removeScope();
+					removeScope(get(0).range);
 					advance(0);
 					break;
 				}
-				addScope(std::make_shared<FSNode>(FSType::italic));
+				addScope(std::make_shared<FSNode>(FSType::italic), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::fsMonospace:
 				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::monospace) {
-					removeScope();
+					removeScope(get(0).range);
 					advance(0);
 					break;
 				}
-				addScope(std::make_shared<FSNode>(FSType::monospace));
+				addScope(std::make_shared<FSNode>(FSType::monospace), get(0).range);
 				advance(0);
 				break;
 
@@ -254,7 +255,7 @@ namespace Gularen {
 				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::heading) {
 					HeadingNode* headingNode = static_cast<HeadingNode*>(getScope().get());
 					if (headingNode->type == HeadingType::subtitle) {
-						addText("> " + get(1).value);
+						addText("> " + get(1).value, get(0).range);
 						advance(1);
 						break;
 					}
@@ -262,27 +263,22 @@ namespace Gularen {
 					advance(1);
 					break;
 				} 
-				addText(">");
+				addText(">", get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::break_:
-				if (get(0).value.size() == 2) {
-					add(std::make_shared<BreakNode>(BreakType::page));
-					advance(0);
-					break;
-				}
-				add(std::make_shared<BreakNode>(BreakType::line));
+				add(std::make_shared<BreakNode>(BreakType::line), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::pipe:
 				if (getScope()->group == NodeGroup::tableCell) {
-					removeScope();
+					removeScope(get(0).range);
 				}
 
 				if (check(1) && !is(1, TokenType::newline) && getScope()->group == NodeGroup::tableRow) {
-					addScope(std::make_shared<TableCellNode>());
+					addScope(std::make_shared<TableCellNode>(), get(0).range);
 				}
 				advance(0);
 				break;
@@ -294,7 +290,7 @@ namespace Gularen {
 					codeNode->type = CodeType::inline_;
 					codeNode->lang = get(4).value;
 					codeNode->source = get(1).value;
-					add(codeNode);
+					add(codeNode, get(0).range);
 					advance(5);
 					break;
 				}
@@ -303,12 +299,12 @@ namespace Gularen {
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
 					codeNode->type = CodeType::inline_;
 					codeNode->source = get(1).value;
-					add(codeNode);
+					add(codeNode, get(0).range);
 					advance(2);
 					break;
 				}
 
-				addText("{");
+				addText("{", get(0).range);
 				advance(0);
 			}
 
@@ -322,7 +318,7 @@ namespace Gularen {
 						hasNetProtocol(get(1).value) ? ResourceType::linker : ResourceType::linkerLocal, 
 						get(1).value
 					);
-					add(linkNode);
+					add(linkNode, get(0).range);
 					advance(2);
 				} else if (check(4) && 
 					is(1, TokenType::resource) && 
@@ -331,7 +327,7 @@ namespace Gularen {
 					is(4, TokenType::squareClose)) {
 					linkNode = std::make_shared<ResourceNode>(ResourceType::linkerLocal, get(1).value);
 					linkNode->id = get(3).value;
-					add(linkNode);
+					add(linkNode, get(0).range);
 					advance(4);
 				}
 
@@ -343,7 +339,7 @@ namespace Gularen {
 					break;
 				}
 
-				addText("[");
+				addText("[", get(0).range);
 				advance(0);
 				break;
 			}
@@ -359,7 +355,7 @@ namespace Gularen {
 						hasNetProtocol(get(2).value) ? ResourceType::presenter : ResourceType::presenterLocal, 
 						get(2).value
 					);
-					add(presentNode);
+					add(presentNode, get(0).range);
 					advance(3);
 				}
 
@@ -371,18 +367,18 @@ namespace Gularen {
 					break;
 				}
 
-				addText("!");
+				addText("!", get(0).range);
 				advance(0);
 				break;
 			}
 
 			case TokenType::jumpMarker:
 				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::jumpID) && is(3, TokenType::squareClose)) {
-					add(std::make_shared<FootnoteJumpNode>(get(2).value));
+					add(std::make_shared<FootnoteJumpNode>(get(2).value), get(0).range);
 					advance(3);
 					break;
 				}
-				addText("^");
+				addText("^", get(0).range);
 				advance(0);
 				break;
 
@@ -397,13 +393,13 @@ namespace Gularen {
 					std::string directory = path == "" ? std::filesystem::current_path().string() : std::filesystem::path(path).parent_path().string();
 					
 					NodePtr fileNode = recursiveLoad(directory, get(2).value);
-					add(fileNode ? fileNode : std::make_shared<DocumentNode>(get(2).value));
+					add(fileNode ? fileNode : std::make_shared<DocumentNode>(get(2).value), get(0).range);
 					advance(3);
 					break;
 				}
 				#endif
 
-				addText("?");
+				addText("?", get(0).range);
 				advance(0);
 				break;
 
@@ -423,7 +419,7 @@ namespace Gularen {
 				break;
 				
 			default:
-				addText(get(0).value);
+				addText(get(0).value, get(0).range);
 				advance(0);
 				break;
 		}
@@ -433,9 +429,9 @@ namespace Gularen {
 		switch (getScope()->group) {
 			case NodeGroup::heading:
 				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
-					removeScope();
+					removeScope(get(0).range);
 				}
-				removeScope();
+				removeScope(get(0).range);
 				break;
 
 			default:
@@ -450,31 +446,31 @@ namespace Gularen {
 			)) {
 
 			if (is(0, TokenType::indentIncr)) {
-				addScope(std::make_shared<IndentNode>());
+				addScope(std::make_shared<IndentNode>(), get(0).range);
 				advance(0);
 				continue;
 			}
 
 			if (is(0, TokenType::indentDecr)) {
 				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
-					removeScope();
+					removeScope(get(0).range);
 				}
-				removeScope();
+				removeScope(get(0).range);
 				advance(0);
 				continue;
 			}
 
 			if (is(0, TokenType::bqIncr)) {
-				addScope(std::make_shared<BQNode>());
+				addScope(std::make_shared<BQNode>(), get(0).range);
 				advance(0);
 				continue;
 			}
 
 			if (is(0, TokenType::bqDecr)) {
 				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::bq) {
-					removeScope();
+					removeScope(get(0).range);
 				}
-				removeScope();
+				removeScope(get(0).range);
 				advance(0);
 				continue;
 			}
@@ -486,7 +482,7 @@ namespace Gularen {
 	void Parser::parseBlockEnding() {
 		switch (getScope()->group) {
 			case NodeGroup::listItem: {
-				removeScope();
+				removeScope(get(0).range);
 				ListType type = getScope()->as<ListNode>().type;
 
 				if (lastEnding == TokenType::newlinePlus || (
@@ -497,14 +493,14 @@ namespace Gularen {
 					)
 				)) {
 					lastListDeadBecauseNewlinePlus = lastEnding == TokenType::newlinePlus;
-					removeScope();
+					removeScope(get(0).range);
 				}
 				break;
 			}
 
 			case NodeGroup::paragraph:
 				if (getScope()->children.empty()) {
-					removeScope();
+					removeScope(get(0).range);
 					getScope()->children.pop_back();
 				} else if (lastEnding == TokenType::newlinePlus || (check(0) &&
 					is(0, TokenType::bullet) ||
@@ -514,40 +510,40 @@ namespace Gularen {
 					is(0, TokenType::chapterOper) ||
 					is(0, TokenType::describeMarker)
 				)) {
-					removeScope();
+					removeScope(get(0).range);
 				}
 				break;
 			
 			case NodeGroup::tableCell:
 				if (getScope()->children.empty()) {
-					removeScope();
+					removeScope(get(0).range);
 					getScope()->children.pop_back();
 				} else {
-					removeScope();
+					removeScope(get(0).range);
 				}
 				
 				// tableRow
-				removeScope();
+				removeScope(get(0).range);
 
 				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
-					removeScope();
+					removeScope(get(0).range);
 				}
 				break;
 
 			case NodeGroup::tableRow:
-				removeScope();
+				removeScope(get(0).range);
 
 				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
-					removeScope();
+					removeScope(get(0).range);
 				}
 				break;
 
 			case NodeGroup::footnoteDescribe:
-				removeScope();
+				removeScope(get(0).range);
 				break;
 
 			case NodeGroup::admon:
-				removeScope();
+				removeScope(get(0).range);
 				break;
 			
 			default:
@@ -562,9 +558,9 @@ namespace Gularen {
 		switch (get(0).type) {
 			case TokenType::bullet:
 				if (getScope()->group != NodeGroup::list) {
-					addScope(std::make_shared<ListNode>(ListType::bullet));
+					addScope(std::make_shared<ListNode>(ListType::bullet), get(0).range);
 				}
-				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1));
+				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1), get(0).range);
 				advance(0);
 				break;
 
@@ -576,10 +572,10 @@ namespace Gularen {
 						!lastListDeadBecauseNewlinePlus) {
 						scopes.push(getScope()->children.back());
 					} else {
-						addScope(std::make_shared<ListNode>(ListType::index));
+						addScope(std::make_shared<ListNode>(ListType::index), get(0).range);
 					}
 				}
-				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1));
+				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1), get(0).range);
 				advance(0);
 				break;
 
@@ -591,7 +587,7 @@ namespace Gularen {
 						!lastListDeadBecauseNewlinePlus) {
 						scopes.push(getScope()->children.back());
 					} else {
-						addScope(std::make_shared<ListNode>(ListType::check));
+						addScope(std::make_shared<ListNode>(ListType::check), get(0).range);
 					}
 				}
 				
@@ -602,14 +598,14 @@ namespace Gularen {
 					case 'x': state = ListItemState::canceled; break;
 				}
 				
-				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1, state));
+				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1, state), get(0).range);
 				advance(0);
 				break;
 			}
 
 			case TokenType::pipe:
 				if (getScope()->group != NodeGroup::table) {
-					addScope(std::make_shared<TableNode>());
+					addScope(std::make_shared<TableNode>(), get(0).range);
 				}
 
 				if (check(1) && is(1, TokenType::pipeConnector)) {
@@ -637,7 +633,7 @@ namespace Gularen {
 				}
 
 				if (getScope()->group == NodeGroup::table) {
-					addScope(std::make_shared<TableRowNode>());
+					addScope(std::make_shared<TableRowNode>(), get(0).range);
 				}
 				break;
 
@@ -651,7 +647,7 @@ namespace Gularen {
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
 					codeNode->type = CodeType::block;
 					codeNode->source = get(1).value;
-					add(codeNode);
+					add(codeNode, get(0).range);
 					advance(2);
 					break;
 				}
@@ -661,7 +657,7 @@ namespace Gularen {
 					codeNode->type = CodeType::block;
 					codeNode->lang = get(1).value;
 					codeNode->source = get(2).value;
-					add(codeNode);
+					add(codeNode, get(0).range);
 					advance(3);
 					break;
 				}
@@ -672,7 +668,7 @@ namespace Gularen {
 
 			case TokenType::describeMarker:
 				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::jumpID) && is(3, TokenType::squareClose)) {
-					addScope(std::make_shared<FootnoteDescribeNode>(get(2).value));
+					addScope(std::make_shared<FootnoteDescribeNode>(get(2).value), get(0).range);
 					advance(3);
 				}
 
@@ -680,61 +676,74 @@ namespace Gularen {
 				break;
 
 			case TokenType::admonNote:
-				addScope(std::make_shared<AdmonNode>(AdmonType::note));
+				addScope(std::make_shared<AdmonNode>(AdmonType::note), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::admonHint:
-				addScope(std::make_shared<AdmonNode>(AdmonType::hint));
+				addScope(std::make_shared<AdmonNode>(AdmonType::hint), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::admonImportant:
-				addScope(std::make_shared<AdmonNode>(AdmonType::important));
+				addScope(std::make_shared<AdmonNode>(AdmonType::important), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::admonWarning:
-				addScope(std::make_shared<AdmonNode>(AdmonType::warning));
+				addScope(std::make_shared<AdmonNode>(AdmonType::warning), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::admonSeeAlso:
-				addScope(std::make_shared<AdmonNode>(AdmonType::seeAlso));
+				addScope(std::make_shared<AdmonNode>(AdmonType::seeAlso), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::admonTip:
-				addScope(std::make_shared<AdmonNode>(AdmonType::tip));
+				addScope(std::make_shared<AdmonNode>(AdmonType::tip), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::chapterOper:
-				addScope(std::make_shared<HeadingNode>(HeadingType::chapter));
+				addScope(std::make_shared<HeadingNode>(HeadingType::chapter), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::sectionOper:
-				addScope(std::make_shared<HeadingNode>(HeadingType::section));
+				addScope(std::make_shared<HeadingNode>(HeadingType::section), get(0).range);
 				advance(0);
 				break;
 
 			case TokenType::subsectionOper:
 				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading && lastEnding == TokenType::newline) {
 					scopes.push(getScope()->children.back());
-					addScope(std::make_shared<HeadingNode>(HeadingType::subtitle));
+					addScope(std::make_shared<HeadingNode>(HeadingType::subtitle), get(0).range);
 				} else {
-					addScope(std::make_shared<HeadingNode>(HeadingType::subsection));
+					addScope(std::make_shared<HeadingNode>(HeadingType::subsection), get(0).range);
 				}
 				advance(0);
 				break;
 
+			case TokenType::break_:
+				if (get(0).value.size() == 2) {
+					add(std::make_shared<BreakNode>(BreakType::page), get(0).range);
+					advance(0);
+					break;
+				}
+				// see inline break_
+				break;
+
+			case TokenType::dinkus:
+				add(std::make_shared<BreakNode>(BreakType::thematic), get(0).range);
+				advance(0);
+				break;
 
 			default:
 				if (getScope()->group != NodeGroup::paragraph) {
-					addScope(std::make_shared<ParagraphNode>());
+					addScope(std::make_shared<ParagraphNode>(), get(0).range);
 				} else if (getScope()->group == NodeGroup::paragraph) {
-					addText("\n");
+					addText("\n", get(0).range);
 				}
 				break;
 		}

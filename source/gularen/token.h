@@ -96,12 +96,20 @@ namespace Gularen {
 		bool operator==(const Position& other) const {
 			return line == other.line && column == other.column;
 		}
+
+		std::string toString() const;
+	};
+
+	struct Range {
+		Position begin;
+		Position end;
+		
+		std::string toString() const;
 	};
 
 	struct Token {
 		TokenType type;
-		Position begin;
-		Position end;
+		Range range;
 		std::string value;
 		
 		std::string toString() const;

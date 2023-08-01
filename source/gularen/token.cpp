@@ -2,15 +2,28 @@
 #include <gularen/helper/escape.h>
 
 namespace Gularen {
-	std::string Token::toString() const {
-		std::string repr = std::to_string(static_cast<int>(type)) + '\t';
-		repr += std::to_string(begin.line) + ',' + std::to_string(begin.column);
+	std::string Position::toString() const {
+		return std::to_string(line) + ":" + std::to_string(column);
+	}
 
-		if (!(begin == end)) {
-			repr += " - " + std::to_string(end.line) + ',' + std::to_string(end.column);
+	std::string Range::toString() const {
+		if (begin == end) {
+			return begin.toString();
 		}
 
-		repr += '\t' + Helper::escape(value);
+		return begin.toString() + "-" + end.toString();
+	}
+
+	std::string Token::toString() const {
+		std::string repr;
+		size_t rangePad = 16;
+		size_t typePad = 4;
+		std::string rangeS = range.toString();
+		std::string typeS = std::to_string(static_cast<int>(type));
+
+		repr += rangeS + std::string(rangePad - rangeS.size(), ' ');
+		repr += typeS + std::string(typePad - typeS.size(), ' ');
+		repr += Helper::escape(value);
 
 		return repr;
 	}

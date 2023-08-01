@@ -11,7 +11,6 @@ file(GLOB gularen_sources
 	source/gularen/node.cpp
 	source/gularen/parser.cpp
 	source/gularen/helper/escape.cpp
-	source/gularen/helper/emoji.cpp
 )
 
 add_library(gularen ${gularen_sources})
@@ -26,6 +25,7 @@ target_link_libraries(gularen-test gularen)
 add_executable(gularen-tk
 	source/gularen/cli/tk.cpp
 	source/gularen/transpiler/html.cpp
+	source/gularen/helper/emoji.cpp
 )
 
 set_target_properties(gularen-tk PROPERTIES CXX_STANDARD 17)

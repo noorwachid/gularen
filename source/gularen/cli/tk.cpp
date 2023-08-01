@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 
-		std::cout << Gularen::Transpiler::HTML::transpile(getContent(input));
+		std::cout << Gularen::Transpiler::HTML::transpile(getContent(input), {});
 		return 0;
 	} else {
 		std::cout << "unknown command\n";

@@ -25,7 +25,7 @@ namespace Gularen {
 		if (!tokens.empty() && (tokens.back().type == TokenType::newline || tokens.back().type == TokenType::newlinePlus)) {
 			tokens.back().type = TokenType::eof;
 			tokens.back().value = "\\0";
-			tokens.back().end = tokens.back().begin;
+			tokens.back().range.end = tokens.back().range.begin;
 		} else {
 			add(TokenType::eof, "\\0");
 		}
@@ -75,8 +75,8 @@ namespace Gularen {
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.begin = begin;
-		token.end = end;
+		token.range.begin = begin;
+		token.range.end = end;
 		tokens.push_back(token);
 	}
 
@@ -84,9 +84,9 @@ namespace Gularen {
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.begin = begin;
-		token.end = position;
-		--token.end.column;
+		token.range.begin = begin;
+		token.range.end = position;
+		--token.range.end.column;
 		tokens.push_back(token);
 	}
 
@@ -94,15 +94,15 @@ namespace Gularen {
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.begin = position;
-		token.end = position;
+		token.range.begin = position;
+		token.range.end = position;
 		tokens.push_back(token);
 	}
 
 	void Lexer::addText(const std::string value) {
 		if (!tokens.empty() && tokens.back().type == TokenType::text) {
 			tokens.back().value += value;
-			tokens.back().end.column += value.size();
+			tokens.back().range.end.column += value.size();
 		} else {
 			if (!tokens.empty()) {
 				Position beginPosition = position;
@@ -110,8 +110,8 @@ namespace Gularen {
 				Token token;
 				token.type = TokenType::text;
 				token.value = value;
-				token.begin = beginPosition;
-				token.end = position;
+				token.range.begin = beginPosition;
+				token.range.end = position;
 				tokens.push_back(token);
 			} else {
 				Position beginPosition = position;
@@ -119,9 +119,9 @@ namespace Gularen {
 				Token token;
 				token.type = TokenType::text;
 				token.value = value;
-				token.begin = beginPosition;
-				token.end = position;
-				token.end.column -= 1;
+				token.range.begin = beginPosition;
+				token.range.end = position;
+				token.range.end.column -= 1;
 				tokens.push_back(token);
 			}
 		}
@@ -209,8 +209,8 @@ namespace Gularen {
 					Token token;
 					token.type = TokenType::newlinePlus;
 					token.value = "\\n";
-					token.begin = beginPosition;
-					token.end = position;
+					token.range.begin = beginPosition;
+					token.range.end = position;
 					tokens.push_back(token);
 					position.line += 1;
 				}

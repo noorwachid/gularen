@@ -28,13 +28,13 @@ namespace Gularen {
 
 		void advance(size_t offset);
 
-		void add(const NodePtr& node);
+		void add(const NodePtr& node, const Range& range);
 
-		void addText(const std::string& value);
+		void addText(const std::string& value, const Range& range);
 
-		void addScope(const NodePtr& node);
+		void addScope(const NodePtr& node, const Range& range);
 
-		void removeScope();
+		void removeScope(const Range& range);
 
 		const NodePtr& getScope();
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include <gularen/token.h>
 #include <memory>
 #include <stack>
 
@@ -43,6 +43,8 @@ namespace Gularen {
 	struct Node {
 		NodeGroup group;
 		NodeChildren children;
+
+		Range range;
 
 		template<class T>
 		const T& as() {
@@ -186,6 +188,7 @@ namespace Gularen {
 	enum class BreakType {
 		line,
 		page,
+		thematic,
 	};
 
 	struct BreakNode : Node {
