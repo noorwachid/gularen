@@ -439,7 +439,7 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 			theme: 'dark',
 		});
 		function parseMermaid() {
-			mermaid.init(undefined, '.language-presenter.mermaid-pr');
+			mermaid.init(undefined, '.language-presenter.language-presenter-mermaid');
 		}
 		addEventListener('gularentranspile', parseMermaid)
 		if (gularen.transpiled) {
@@ -452,7 +452,7 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 		crossorigin="anonymous"></script>
 	<script>
 		function parseKatex() {
-			document.querySelectorAll('.language-presenter.katex-pr').forEach(node => {
+			document.querySelectorAll('.language-presenter.language-presenter-katex').forEach(node => {
 				katex.render(node.innerHTML, node);
 			})
 		}

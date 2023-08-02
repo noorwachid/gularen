@@ -166,24 +166,47 @@ namespace Gularen::Transpiler::HTML {
 							case CodeType::inline_: 
 								addOpenTag(node, "code");
 								addText(node, codeNode.source);
+								addCloseTag(node, "code");
 								return;
 							case CodeType::block: 
 								addOpenTag(node, "pre");
 								addOpenTag(node, "code");
 								addText(node, codeNode.source);
+								addCloseTag(node, "code");
+								addCloseTagLF(node, "pre");
 								return;
 						}
 					}
+					if (codeNode.lang.size() > 3 && (codeNode.lang.substr(codeNode.lang.size() - 3, 3) == "-pr")) {
+						std::string lang = codeNode.lang.substr(0, codeNode.lang.size() - 3);
+						switch (codeNode.type) {
+							case CodeType::inline_:
+								addOpenTagWithClassAttr(node, "span", "language-presenter language-presenter-" + lang);
+								addText(node, codeNode.source);
+								addCloseTag(node, "span");
+								return;
+
+							case CodeType::block: 
+								addOpenTagWithClassAttr(node, "div", "language-presenter language-presenter-" + lang);
+								addText(node, codeNode.source);
+								addCloseTag(node, "div");
+								return;
+						}
+					}
+
 					switch (codeNode.type) {
 						case CodeType::inline_:
 							addOpenTagWithClassAttr(node, "code", "language-" + codeNode.lang);
 							addText(node, codeNode.source);
+							addCloseTag(node, "code");
 							return;
 
 						case CodeType::block: 
 							addOpenTag(node, "pre");
 							addOpenTagWithClassAttr(node, "code", "language-" + codeNode.lang);
 							addText(node, codeNode.source);
+							addCloseTag(node, "code");
+							addCloseTagLF(node, "pre");
 							return;
 					}
 					return;
@@ -199,8 +222,26 @@ namespace Gularen::Transpiler::HTML {
 
 					switch (resourceNode.type) {
 						case ResourceType::presenter:
-						case ResourceType::presenterLocal:
-							return;
+						case ResourceType::presenterLocal: {
+							std::string extension = std::filesystem::path(resourceNode.value).extension();
+							if (extension == ".jpg" ||
+								extension == ".jpeg" ||
+								extension == ".png" ||
+								extension == ".gif" ||
+								extension == ".bmp") {
+								if (resourceNode.label.empty()) {
+									return addOpenTag(node, "img src=\"" + value + "\"");
+								}
+								addOpenTagLF(node, "figure");
+								addOpenTagLF(node, "img src=\"" + value + "\"");
+								addOpenTag(node, "figcaption");
+								addText(node, resourceNode.label);
+								addCloseTagLF(node, "figcaption");
+								addCloseTagLF(node, "figure");
+								return;
+							}
+						}
+						default: break;
 					}
 
 					addOpenTag(node, "a href=\"" + value + "\"");
@@ -326,16 +367,6 @@ namespace Gularen::Transpiler::HTML {
 				case NodeGroup::tableCell:
 					++tableColumnCount;
 					return addCloseTagLF(node, "td");
-
-				case NodeGroup::code: {
-					switch (node->as<CodeNode>().type) {
-						case CodeType::inline_: return addCloseTag(node, "code");
-						case CodeType::block: 
-							addCloseTag(node, "code");
-							addCloseTagLF(node, "pre");
-							return;
-					}
-				}
 
 				case NodeGroup::footnoteDescribe:
 					return addCloseTagLF(node, "div");
