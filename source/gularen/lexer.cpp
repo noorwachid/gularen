@@ -479,7 +479,7 @@ namespace Gularen {
 					break;
 				}
 				advance(0);
-				addText("!");
+				addText("?");
 				break;
 
 			case '^':
