@@ -5,5 +5,5 @@
 EMSCRIPTEN_BINDINGS(my_module) {
 	emscripten::function("transpile", &Gularen::Transpiler::HTML::transpile);
 
-	emscripten::function("transpileWithRange", &Gularen::Transpiler::HTML::transpileWithRange);
+	emscripten::function("transpileLS", &Gularen::Transpiler::HTML::transpileLS);
 }

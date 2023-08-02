@@ -187,7 +187,7 @@
 		gularen.transpiled = false;
 
 		function transpile() {
-			const html = Module.transpile(inputNode.value);
+			const html = Module.transpileLS(inputNode.value);
 			outputNode.innerHTML = html;
 			dispatchEvent(new Event('gularentranspile', {
 				bubbles: true,
@@ -195,6 +195,46 @@
 				composed: false
 			}));
 			gularen.transpiled = true;
+		}
+
+		function getCursorPos(node) {
+			var pos = 0;
+			if (node.selectionStart) {
+				pos = node.selectionStart;
+			} else if (document.selection) {
+				node.focus();
+
+				var r = document.selection.createRange();
+				if (r == null) {
+					pos = 0;
+				} else {
+
+					var re = node.createTextRange(),
+					rc = re.duplicate();
+					re.moveToBookmark(r.getBookmark());
+					rc.setEndPoint('EndToStart', re);
+
+					pos = rc.text.length;
+				}
+			}
+
+			return node.value.substr(0, pos).split("\n").length;
+		}
+
+		function followCursor() {
+			let previewNode = null;
+			let line = getCursorPos(inputNode) - 1;
+
+			while (!previewNode && line >= 0) {
+				previewNode = document.querySelector(`[data-line="${line}"]`);
+				--line;
+			}
+
+			if (previewNode) {
+				previewNode.scrollIntoView({
+					behavior: "smooth"
+				});
+			}
 		}
 
 		Module.onRuntimeInitialized = () => {
@@ -278,8 +318,7 @@
 			switchMode(localStorage.getItem('mode'));
 		}
 
-		const defaultContent = `
->>> Gularen
+		const defaultContent = `>>> Gularen
 > A sweet-spot of markup language 
 
 >> Comment
@@ -385,8 +424,8 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 <?> A hint
 <&> A reference
 <!> Important stuff
-<^> Warning stuff
-`;
+<^> Warning stuff`;
+
 		const urlParams = new URLSearchParams(window.location.search);
 
 		if (urlParams.has('data')) {
@@ -403,10 +442,17 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 			);
 		} else {
 			inputNode.value = defaultContent;
+			inputNode.focus();
+			inputNode.setSelectionRange(0, 0);
 		}
 
 		inputNode.addEventListener('input', transpile);
+		inputNode.addEventListener('click', function(e) {
+			followCursor();
+		});
 		inputNode.addEventListener('keydown', function (e) {
+			followCursor();
+
 			if (e.key == 'Tab') {
 				e.preventDefault();
 				var start = this.selectionStart;

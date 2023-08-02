@@ -93,6 +93,16 @@ int main(int argc, char** argv) {
 
 		std::cout << Gularen::Transpiler::HTML::transpile(getContent(input));
 		return 0;
+	} else if (command == "to-html-ls") {
+		std::string input(argv[2]);
+
+		if (std::filesystem::is_directory(input)) {
+			std::cout << "please specify the input file, make sure its not a directory\n";
+			return 0;
+		}
+
+		std::cout << Gularen::Transpiler::HTML::transpileLS(getContent(input));
+		return 0;
 	} else {
 		std::cout << "unknown command\n";
 		return 1;

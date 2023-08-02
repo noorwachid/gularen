@@ -4,7 +4,7 @@
 
 namespace Gularen::Transpiler::HTML {
 	struct Options {
-		bool rangeEnabled = false;
+		bool lineSync = false;
 	};
 	
 	class Transpiler {
@@ -395,6 +395,14 @@ namespace Gularen::Transpiler::HTML {
 			return text;
 		}
 
+		std::string createLS(const std::shared_ptr<Node>& node) {
+			if (!options.lineSync) {
+				return "";
+			}
+
+			return " data-line=\"" + std::to_string(node->range.begin.line) + "\"";
+		}
+
 		void add(const std::shared_ptr<Node>& node, const std::string& buffer) {
 			output += buffer;
 		}
@@ -404,19 +412,19 @@ namespace Gularen::Transpiler::HTML {
 		}
 
 		void addOpenTag(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			output += "<" + buffer + ">";
+			output += "<" + buffer + createLS(node) + ">";
 		}
 
 		void addOpenTagLF(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			output += "<" + buffer + ">\n";
+			output += "<" + buffer + createLS(node) + ">\n";
 		}
 
 		void addOpenTagWithClassAttr(const std::shared_ptr<Node>& node, const std::string& buffer, const std::string& classAttr) {
-			output += "<" + buffer + " class=\"" + classAttr + "\">";
+			output += "<" + buffer + " class=\"" + classAttr + "\"" + createLS(node) + ">";
 		}
 
 		void addOpenTagWithClassAttrLF(const std::shared_ptr<Node>& node, const std::string& buffer, const std::string& classAttr) {
-			output += "<" + buffer + " class=\"" + classAttr + "\">\n";
+			output += "<" + buffer + " class=\"" + classAttr + "\"" + createLS(node) + ">\n";
 		}
 
 		void addCloseTag(const std::shared_ptr<Node>& node, const std::string& buffer) {
@@ -440,10 +448,10 @@ namespace Gularen::Transpiler::HTML {
 		return transpiler.transpile(content, Options{});
 	}
 
-	std::string transpileWithRange(const std::string& content) {
+	std::string transpileLS(const std::string& content) {
 		Transpiler transpiler;
 		Options options;
-		options.rangeEnabled = true;
+		options.lineSync = true;
 		return transpiler.transpile(content, options);
 	}
 }
