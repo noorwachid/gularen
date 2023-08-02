@@ -340,7 +340,7 @@ namespace Gularen::Transpiler::HTML {
 					switch (node->as<ListNode>().type) {
 						case ListType::bullet: return addCloseTagLF(node, "ul");
 						case ListType::index: return addCloseTagLF(node, "ol");
-						case ListType::check: return addCloseTagLF(node, "div");
+						case ListType::check: return addCloseTagLF(node, "ul");
 					}
 					return;
 
