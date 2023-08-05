@@ -13,7 +13,7 @@ A sweet-spot of markup language
 
 ## Language Specification
 - [01 Comment](spec/01-comment.gr)
-- [02 Font Style](spec/02-font-style.gr)
+- [02 Font style](spec/02-font-style.gr)
 - [03 Heading](spec/03-heading.gr)
 - [04 Paragraph](spec/04-paragraph.gr)
 - [05 Indentation](spec/05-indentation.gr)
@@ -25,11 +25,11 @@ A sweet-spot of markup language
 - [0B Presenter](spec/0B-presenter.gr)
 - [0C Inclusion](spec/0C-inclusion.gr)
 - [0D Footnote](spec/0D-footnote.gr)
-- [0E Punctuation Mark](spec/0E-punctuation-mark.gr)
+- [0E Punctuation mark](spec/0E-punctuation-mark.gr)
 - [0F Emoji](spec/0F-emoji.gr)
 - [10 Blockquote](spec/10-blockquote.gr)
 - [11 Admonition](spec/11-admonition.gr)
-- [12 Date-time](spec/11-datetime.gr)
+- [12 Date-time](spec/12-datetime.gr)
 
 ## Why?
 The problem with Markdown was, too many ways to do something. 
