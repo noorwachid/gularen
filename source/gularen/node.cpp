@@ -317,4 +317,18 @@ namespace Gularen {
 
 		return string;
 	}
+
+	std::string DateTimeNode::toString() const {
+		std::string string = range.toString() + " datetime";
+
+		if (!date.empty()) {
+			string += " date:" + date;
+		}
+
+		if (!time.empty()) {
+			string += " time:" + time;
+		}
+
+		return string;
+	}
 }

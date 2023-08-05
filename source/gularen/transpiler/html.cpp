@@ -20,7 +20,6 @@ namespace Gularen::Transpiler::HTML {
 			return output;
 		}
 
-	private:
 		std::string slugify(const std::string& from) {
 			std::string to;
 
@@ -279,6 +278,22 @@ namespace Gularen::Transpiler::HTML {
 						case AdmonType::tip: return addOpenTagWithClassAttr(node, "div", "admon-tip");
 					}
 					return;
+
+				case NodeGroup::dateTime: {
+					const DateTimeNode& dateTimeNode = node->as<DateTimeNode>();
+					if (dateTimeNode.time.empty()) {
+						output += "<time datetime=\"" + dateTimeNode.date + "\">" + dateTimeNode.date + "</time>";
+						return;
+					}
+					if (dateTimeNode.date.empty()) {
+						output += "<time datetime=\"" + dateTimeNode.time + "\">" + dateTimeNode.time + "</time>";
+						return;
+					}
+					output += "<time datetime=\"" + dateTimeNode.date + " " + dateTimeNode.time + "\">";
+					output += dateTimeNode.date + " " + dateTimeNode.time;
+					output += "</time>";
+					return;
+				}
 
 				case NodeGroup::bq:
 					return addOpenTagWithClassAttr(node, "blockquote", "bordered");

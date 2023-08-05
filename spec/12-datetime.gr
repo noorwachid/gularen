@@ -10,7 +10,7 @@ He said his first word today.
 ~ NOTE: If you want to mention day of the week you should include outside the date marker like Sunday <2022-01-01>
 
 --- gr-rule
-date = digit digit digit digit+ minus digit digit minus digit digit
+date = digit digit digit digit minus digit digit minus digit digit
 time = digit digit colon digit digit [colon digit digit]
 dateMark = angleOpen date angleClose
 timeMark = angleOpen time angleClose

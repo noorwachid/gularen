@@ -267,6 +267,31 @@ namespace Gularen {
 				advance(0);
 				break;
 
+			case TokenType::date: {
+				std::shared_ptr<DateTimeNode> dateTimeNode = std::make_shared<DateTimeNode>();
+				dateTimeNode->date = get(0).value;
+				add(dateTimeNode, get(0).range);
+				advance(0);
+				break;
+			}
+
+			case TokenType::time: {
+				std::shared_ptr<DateTimeNode> dateTimeNode = std::make_shared<DateTimeNode>();
+				dateTimeNode->time = get(0).value;
+				add(dateTimeNode, get(0).range);
+				advance(0);
+				break;
+			}
+
+			case TokenType::dateTime: {
+				std::shared_ptr<DateTimeNode> dateTimeNode = std::make_shared<DateTimeNode>();
+				dateTimeNode->date = get(0).value.substr(0, 10);
+				dateTimeNode->time = get(0).value.substr(11);
+				add(dateTimeNode, get(0).range);
+				advance(0);
+				break;
+			}
+
 			case TokenType::break_:
 				add(std::make_shared<BreakNode>(BreakType::line), get(0).range);
 				advance(0);
@@ -726,7 +751,7 @@ namespace Gularen {
 				break;
 
 			case TokenType::break_:
-				if (get(0).value.size() == 2) {
+				if (get(0).value.size() == 3) {
 					add(std::make_shared<BreakNode>(BreakType::page), get(0).range);
 					advance(0);
 					break;

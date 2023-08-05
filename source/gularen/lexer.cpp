@@ -4,6 +4,62 @@
 #include <fstream>
 
 namespace Gularen {
+	bool isDigit(char letter) {
+		return letter >= '0' && letter <= '9';
+	}
+
+	bool isDate(std::string_view text) {
+		if (text.size() == 10 &&
+			isDigit(text[0]) &&
+			isDigit(text[1]) &&
+			isDigit(text[2]) &&
+			isDigit(text[3]) &&
+			text[4] == '-' &&
+			isDigit(text[5]) &&
+			isDigit(text[6]) &&
+			text[7] == '-' &&
+			isDigit(text[8]) &&
+			isDigit(text[9])) {
+			return true;
+		}
+		return false;
+	}
+
+	bool isTime(std::string_view text) {
+		if (text.size() == 5 &&
+			isDigit(text[0]) &&
+			isDigit(text[1]) &&
+			text[2] == ':' &&
+			isDigit(text[3]) &&
+			isDigit(text[4])) {
+			return true;
+		}
+
+		if (text.size() == 8 &&
+			isDigit(text[0]) &&
+			isDigit(text[1]) &&
+			text[2] == ':' &&
+			isDigit(text[3]) &&
+			isDigit(text[4]) &&
+			text[5] == ':' &&
+			isDigit(text[6]) &&
+			isDigit(text[7])) {
+			return true;
+		}
+
+		return false;
+	}
+
+	bool isDateTime(std::string_view text) {
+		if (text.size() == 16 && isDate(text.substr(0, 10)) && isTime(text.substr(11, 5))) {
+			return true;
+		}
+		if (text.size() == 19 && isDate(text.substr(0, 10)) && isTime(text.substr(11, 8))) {
+			return true;
+		}
+		return false;
+	}
+
 	void Lexer::set(const std::string& content) {
 		this->content = content;
 	}
@@ -544,15 +600,45 @@ namespace Gularen {
 				break;
 
 				
-			case '<':
+			case '<': {
+				if (check(2) && is(1, '<') && is(2, '<')) {
+					add(TokenType::break_, "<<<", position, Position(position.line, position.column + 1));
+					advance(2);
+					break;
+				}
 				if (check(1) && is(1, '<')) {
 					add(TokenType::break_, "<<", position, Position(position.line, position.column + 1));
 					advance(1);
 					break;
 				}
-				add(TokenType::break_, "<");
 				advance(0);
+				size_t begin = index;
+				size_t size = 0;
+				while (check(0) && !is(0, '>')) {
+					++size;
+					advance(0);
+				}
+				advance(0);
+				std::string_view text = std::string_view(content.data() + begin, size);
+
+				if (isDate(text)) {
+					add(TokenType::date, content.substr(begin, size));
+					break;
+				}
+				if (isTime(text)) {
+					add(TokenType::time, content.substr(begin, size));
+					break;
+				}
+				if (isDateTime(text)) {
+					add(TokenType::dateTime, content.substr(begin, size));
+					break;
+				}
+				
+				addText("<");
+				addText(content.substr(begin, size));
+				addText(">");
 				break;
+			}
 
 			case '*':
 				if (check(2) && is(1, '*') && is(2, '*')) {
@@ -770,54 +856,48 @@ namespace Gularen {
 				tokenizeTable();
 				break;
 
-			case '<':
-				if (check(3) && is(2, '>') && is(3, ' ')) {
-					Position beginPosition = position;
-					// </> Note
-					// <?> Hint
-					// <!> Important
-					// <^> Warning
-					// <&> See also
-					// <+> Tip
-					if (is(1, '/')) {
-						advance(2);
-						tokenizeSpace();
-						add(TokenType::admonNote, "</>", beginPosition);
-						break;
-					}
-					if (is(1, '?')) {
-						advance(2);
-						tokenizeSpace();
-						add(TokenType::admonHint, "<?>", beginPosition);
-						break;
-					}
-					if (is(1, '!')) {
-						advance(2);
-						tokenizeSpace();
-						add(TokenType::admonImportant, "<!>", beginPosition);
-						break;
-					}
-					if (is(1, '^')) {
-						advance(2);
-						tokenizeSpace();
-						add(TokenType::admonWarning, "<^>", beginPosition);
-						break;
-					}
-					if (is(1, '&')) {
-						advance(2);
-						tokenizeSpace();
-						add(TokenType::admonSeeAlso, "<&>", beginPosition);
-						break;
-					}
-					if (is(1, '+')) {
-						advance(2);
-						tokenizeSpace();
-						add(TokenType::admonTip, "<+>", beginPosition);
-						break;
-					}
+			case '<': {
+				size_t previousIndex = index;
+				Position beginPosition = position;
+				advance(0);
+				size_t beginIndex = index;
+				size_t size = 0;
+				while (check(0) && !is(0, '>')) {
+					++size;
+					advance(0);
 				}
+				advance(0);
+				std::string inside = content.substr(beginIndex, size);
+				if (inside == "note") {
+					add(TokenType::admonNote, "<note>", beginPosition);
+					tokenizeSpace();
+					break;
+				} else if (inside == "hint") {
+					add(TokenType::admonHint, "<hint>", beginPosition);
+					tokenizeSpace();
+					break;
+				} else if (inside == "important") {
+					add(TokenType::admonImportant, "<important>", beginPosition);
+					tokenizeSpace();
+					break;
+				} else if (inside == "warning") {
+					add(TokenType::admonWarning, "<warning>", beginPosition);
+					tokenizeSpace();
+					break;
+				} else if (inside == "seealso") {
+					add(TokenType::admonSeeAlso, "<seealso>", beginPosition);
+					tokenizeSpace();
+					break;
+				} else if (inside == "tip") {
+					add(TokenType::admonTip, "<tip>", beginPosition);
+					tokenizeSpace();
+					break;
+				}
+
+				index = previousIndex;
 				// see inline <
 				break;
+			}
 
 			case '1':
 			case '2':

@@ -195,6 +195,13 @@
 				composed: false
 			}));
 			gularen.transpiled = true;
+
+			outputNode.querySelectorAll('time').forEach(timeNode => {
+				const dateTime = timeNode.getAttribute('datetime');
+				if (dateTime) {
+					timeNode.textContent = (new Date(dateTime)).toLocaleString();
+				}
+			});
 		}
 
 		function getCursorPos(node) {
@@ -419,12 +426,15 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 ---
 
 >> Admonition
-<+> A tip
-</> A note
-<?> A hint
-<&> A reference
-<!> Important stuff
-<^> Warning stuff`;
+<tip> A tip
+<note> A note
+<hint> A hint
+<seealso> An interesting suggestion
+<important> Important stuff
+<warning> Warning stuff
+
+>> Date-Time
+Meet me on <2020-10-10 18:00> at Diner`;
 
 		const urlParams = new URLSearchParams(window.location.search);
 

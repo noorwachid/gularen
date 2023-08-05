@@ -1,5 +1,4 @@
 >>> Admonition
-Avaliable levels are:
 --- gr
 <note> Note
 <hint> Hint
@@ -7,16 +6,6 @@ Avaliable levels are:
 <warning> Warning
 <seealso> See also
 <tip> Tip
----
-
->> One Line Admonition
---- gr
-<important> Something here
----
-
->> Multi Line Admonition
---- gr
-<important> Something here
 ---
 
 --- gr-rule

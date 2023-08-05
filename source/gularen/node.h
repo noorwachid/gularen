@@ -33,6 +33,8 @@ namespace Gularen {
 
 		footnoteJump,
 		footnoteDescribe,
+
+		dateTime,
 	};
 
 	struct Node;
@@ -292,6 +294,17 @@ namespace Gularen {
 		
 		CodeNode() {
 			group = NodeGroup::code;
+		}
+
+		virtual std::string toString() const override;
+	};
+
+	struct DateTimeNode : Node {
+		std::string date;
+		std::string time;
+		
+		DateTimeNode() {
+			group = NodeGroup::dateTime;
 		}
 
 		virtual std::string toString() const override;
