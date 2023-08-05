@@ -38,8 +38,8 @@ Why do we use {console.log('here')} instead of the majestic breakpoint?
 
 > Labeled Inline
 --- gr
-let's say {\pi = 3}(katex) then the building is likely collapsed
+Let's say {\pi = 3}(katex) then the building is likely collapsed.
 ---
 
 --- gr-rule
-code-inline = curlyOpen any curlyClose [parenOpen any parenClose]
+code-inline = curlyOpen any curlyClose [parenOpen symbol parenClose]

@@ -1,26 +1,24 @@
 >>> Admonition
 Avaliable levels are:
 --- gr
-</> Note
-<?> Hint
-<!> Important
-<^> Warning
-<&> See also
-<+> Tip
+<note> Note
+<hint> Hint
+<important> Important
+<warning> Warning
+<seealso> See also
+<tip> Tip
 ---
 
 >> One Line Admonition
 --- gr
-<!> Something here
+<important> Something here
 ---
 
 >> Multi Line Admonition
 --- gr
-<!> Something here
-	Every +1 indent after admonition modifier will be subcontent of this admonition.
+<important> Something here
 ---
 
 --- gr-rule
-admon = angleOpen (slash|quesMark|exclMark|caret|percent|amp) angleClose any newline
-admonBody = admon (indent++)+
+admon = angleOpen ("note"|"hint"|"important"|"warning"|"seealso"|"tip") angleClose any newline
 ---

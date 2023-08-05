@@ -7,15 +7,15 @@
 
 >> Line-Break
 --- gr
-This will create<line-break.
+This will create<<line-break.
 ---
 
 >> Page-Break
 --- gr
-<<
+<<<
 ---
 
 --- gr-rule
-lineBreak = lt
-pageBreak = lt lt
+lineBreak = lt lt
+pageBreak = lt lt lt
 ---

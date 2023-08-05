@@ -1,0 +1,18 @@
+>>> Date-Time
+--- gr
+Diary <2018-05-10>
+
+Met Sofia at <10:00> talked about her newborn child.
+He said his first word today.
+---
+
+~ NOTE: Year zero until 999 should be written with leading zeros
+~ NOTE: If you want to mention day of the week you should include outside the date marker like Sunday <2022-01-01>
+
+--- gr-rule
+date = digit digit digit digit+ minus digit digit minus digit digit
+time = digit digit colon digit digit [colon digit digit]
+dateMark = angleOpen date angleClose
+timeMark = angleOpen time angleClose
+datetimeMark = angleOpen date space time angleClose
+---
