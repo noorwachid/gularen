@@ -460,10 +460,14 @@ Meet me on <2020-10-10 18:00> at Diner`;
 		inputNode.addEventListener('click', function(e) {
 			followCursor();
 		});
-		inputNode.addEventListener('keydown', function (e) {
-			followCursor();
+		inputNode.addEventListener('keyup', function (e) {
+			if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+				followCursor();
+			}
+		});
 
-			if (e.key == 'Tab') {
+		inputNode.addEventListener('keydown', function (e) {
+			if (e.key === 'Tab') {
 				e.preventDefault();
 				var start = this.selectionStart;
 				var end = this.selectionEnd;
