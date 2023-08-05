@@ -29,11 +29,34 @@ A sweet-spot of markup language
 - [0F Emoji](spec/0F-emoji.gr)
 - [10 Blockquote](spec/10-blockquote.gr)
 - [11 Admonition](spec/11-admonition.gr)
+- [12 Date-time](spec/11-datetime.gr)
 
 ## Why?
 The problem with Markdown was, too many ways to do something. 
 And Markdown was designed in mind to be parsed with regex.
 Instead of character by character scanner. 
 
-The purpose of Gularen is to create smallest possible footprint of additional characters while writing visually pleasing plain text document.
+The purpose of Gularen is to create smallest possible footprint of additional characters 
+while writing visually pleasing plain text document.
+
+## Changelog
+**2023-08-05:**
+
+New features:
+- Date-time marker:
+    - Date: `<2018-06-12>`
+    - Time: `<10:00>` or `<10:00:12>`
+    - Date-time: `<2018-06-12 10:00>` or `<2018-06-12 10:00:12>`
+
+Breaking changes:
+- Line-break syntax: from `<` into `<<`.
+- Page-break syntax: from `<<` into `<<<`.
+- Admonition syntax:
+    - Tip: from `<+>` to `<tip>`.
+    - Note: from `</>` to `<note>`.
+    - Hint: from `<?>` to `<hint>`.
+    - Reference: from `<&>` to `<reference>`.
+    - Important: from `<!>` to `<important>`.
+    - Warning: from `<^>` to `<warning>`.
+
 
