@@ -42,6 +42,9 @@ namespace Gularen {
 		pipe,
 		pipeConnector,
 
+		angleOpen,
+		angleClose,
+
 		squareOpen,
 		squareClose,
 
