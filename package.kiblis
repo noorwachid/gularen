@@ -1,0 +1,12 @@
+name: gularen
+description: a sweet-spot of markup language
+standard: 17
+type: library
+header-lookups:
+  - source
+sources:
+  - source/gularen/token.cpp
+  - source/gularen/lexer.cpp
+  - source/gularen/node.cpp
+  - source/gularen/parser.cpp
+  - source/gularen/helper/escape.cpp
