@@ -9,7 +9,7 @@ A sweet-spot of markup language
 
 ## Editor Support
 - [Vim (syntax highlighting)](https://github.com/noorwachid/vim-gularen)
-- [Vim (toolkit)](https://github.com/noorwachid/vim-gularen-tk)
+- [Neovim (toolkit)](https://github.com/noorwachid/nvim-gularen)
 
 ## Language Specification
 - [01 Comment](spec/01-comment.gr)
