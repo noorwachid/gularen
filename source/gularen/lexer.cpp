@@ -139,6 +139,9 @@ namespace Gularen
 
 	void Lexer::Add(TokenType type, const std::string& value)
 	{
+		if (!_tokens.empty() && _tokens.back().type == TokenType::Text)
+			_begin.column += 1;
+
 		Token token;
 		token.type = type;
 		token.value = value;
@@ -155,6 +158,7 @@ namespace Gularen
 		{
 			_tokens.back().value += value;
 			_tokens.back().range.end.column += value.size();
+			_begin = _end;
 		}
 		else
 		{
@@ -166,6 +170,7 @@ namespace Gularen
 				token.range.begin = _begin;
 				token.range.end = _end;
 				_tokens.push_back(token);
+				_begin = _end;
 			}
 			else
 			{
@@ -174,13 +179,10 @@ namespace Gularen
 				token.value = value;
 				token.range.begin = _begin;
 				token.range.end = _end;
-				token.range.end.column -= 1;
 				_tokens.push_back(token);
+				_begin = _end;
 			}
 		}
-
-		_begin = _end;
-		_begin.column += 1;
 	}
 
 	void Lexer::TokenizeInline()
@@ -254,27 +256,34 @@ namespace Gularen
 				break;
 
 			case '\n': {
+				size_t originalColumn = _end.column;
 				size_t counter = Count('\n');
 
 				if (counter == 1)
 				{
-					Add(TokenType::Newline, "\\n");
-					_end.line += counter;
+					Token token;
+					token.type = TokenType::Newline;
+					token.value = "\\n";
+					_end.column = originalColumn;
+					token.range.begin = _end;
+					token.range.end = _end;
+					_end.line += 1;
 					_end.column = 1;
 					_begin = _end;
+					_tokens.push_back(token);
 				}
 				else
 				{
 					_end.line += counter - 1;
 					_end.column = 1;
-					_begin = _end;
 					Token token;
 					token.type = TokenType::NewlinePlus;
 					token.value = "\\n";
 					token.range.begin = _begin;
 					token.range.end = _end;
-					_tokens.push_back(token);
 					_end.line += 1;
+					_begin = _end;
+					_tokens.push_back(token);
 				}
 
 				TokenizeBlock();
@@ -697,8 +706,8 @@ namespace Gularen
 			case '>': {
 				if (Check(1) && Is(1, ' '))
 				{
-					Advance(1);
 					Add(TokenType::HeadingIDMark, ">");
+					Advance(1);
 
 					size_t idIndex = _index;
 					size_t idSize = 0;
