@@ -61,10 +61,12 @@ namespace Gularen
 		if (_content.empty())
 			return;
 
-		this->_tokens.clear();
-		this->_index = 0;
-		this->_position.line = 0;
-		this->_position.column = 0;
+		_tokens.clear();
+		_index = 0;
+		_end.line = 1;
+		_end.column = 1;
+		_begin.line = 1;
+		_begin.column = 1;
 
 		TokenizeBlock();
 
@@ -115,13 +117,13 @@ namespace Gularen
 	void Lexer::Advance(size_t offset)
 	{
 		_index += 1 + offset;
-		_position.column += 1 + offset;
+		_end.column += 1 + offset;
 	}
 
 	void Lexer::Retreat(size_t offset)
 	{
 		_index -= offset;
-		_position.column -= offset;
+		_end.column -= offset;
 	}
 
 	size_t Lexer::Count(char c)
@@ -135,35 +137,16 @@ namespace Gularen
 		return count;
 	}
 
-	void Lexer::Add(TokenType type, const std::string& value, Position begin, Position end)
-	{
-		Token token;
-		token.type = type;
-		token.value = value;
-		token.range.begin = begin;
-		token.range.end = end;
-		_tokens.push_back(token);
-	}
-
-	void Lexer::Add(TokenType type, const std::string& value, Position begin)
-	{
-		Token token;
-		token.type = type;
-		token.value = value;
-		token.range.begin = begin;
-		token.range.end = _position;
-		--token.range.end.column;
-		_tokens.push_back(token);
-	}
-
 	void Lexer::Add(TokenType type, const std::string& value)
 	{
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.range.begin = _position;
-		token.range.end = _position;
+		token.range.begin = _begin;
+		token.range.end = _end;
 		_tokens.push_back(token);
+		_begin = _end;
+		_begin.column += 1;
 	}
 
 	void Lexer::AddText(const std::string value)
@@ -177,28 +160,27 @@ namespace Gularen
 		{
 			if (!_tokens.empty())
 			{
-				Position beginPosition = _position;
-				beginPosition.column -= value.size() - 1;
 				Token token;
 				token.type = TokenType::Text;
 				token.value = value;
-				token.range.begin = beginPosition;
-				token.range.end = _position;
+				token.range.begin = _begin;
+				token.range.end = _end;
 				_tokens.push_back(token);
 			}
 			else
 			{
-				Position beginPosition = _position;
-				beginPosition.column -= beginPosition.column > value.size() ? value.size() : 0;
 				Token token;
 				token.type = TokenType::Text;
 				token.value = value;
-				token.range.begin = beginPosition;
-				token.range.end = _position;
+				token.range.begin = _begin;
+				token.range.end = _end;
 				token.range.end.column -= 1;
 				_tokens.push_back(token);
 			}
 		}
+
+		_begin = _end;
+		_begin.column += 1;
 	}
 
 	void Lexer::TokenizeInline()
@@ -272,26 +254,27 @@ namespace Gularen
 				break;
 
 			case '\n': {
-				Position beginPosition = _position;
 				size_t counter = Count('\n');
 
 				if (counter == 1)
 				{
-					Add(TokenType::Newline, "\\n", beginPosition);
-					_position.line += counter;
-					_position.column = 0;
+					Add(TokenType::Newline, "\\n");
+					_end.line += counter;
+					_end.column = 1;
+					_begin = _end;
 				}
 				else
 				{
-					_position.line += counter - 1;
-					_position.column = 0;
+					_end.line += counter - 1;
+					_end.column = 1;
+					_begin = _end;
 					Token token;
 					token.type = TokenType::NewlinePlus;
 					token.value = "\\n";
-					token.range.begin = beginPosition;
-					token.range.end = _position;
+					token.range.begin = _begin;
+					token.range.end = _end;
 					_tokens.push_back(token);
-					_position.line += 1;
+					_end.line += 1;
 				}
 
 				TokenizeBlock();
@@ -308,7 +291,6 @@ namespace Gularen
 				break;
 
 			case '~': {
-				Position beginPosition = _position;
 				size_t commentIndex = _index;
 				size_t commentSize = 1;
 				Advance(0);
@@ -317,7 +299,7 @@ namespace Gularen
 					++commentSize;
 					Advance(0);
 				}
-				Add(TokenType::Comment, _content.substr(commentIndex, commentSize), beginPosition);
+				Add(TokenType::Comment, _content.substr(commentIndex, commentSize));
 				break;
 			}
 
@@ -340,15 +322,13 @@ namespace Gularen
 			case '-': {
 				if (Check(2) && Is(1, '-') && Is(2, '-'))
 				{
-					Add(TokenType::EmDash, "–", Position(_position.line, _position.column),
-						Position(_position.line, _position.column + 2));
+					Add(TokenType::EmDash, "–");
 					Advance(2);
 					break;
 				}
 				if (Check(1) && Is(1, '-'))
 				{
-					Add(TokenType::EnDash, "–", Position(_position.line, _position.column),
-						Position(_position.line, _position.column + 1));
+					Add(TokenType::EnDash, "–");
 					Advance(1);
 					break;
 				}
@@ -358,7 +338,6 @@ namespace Gularen
 			}
 
 			case ':': {
-				Position emojiMarkerPosition = _position;
 				Advance(0);
 
 				if (Check(0))
@@ -379,9 +358,8 @@ namespace Gularen
 
 					if (Is(0, ':') && emojiSize > 0)
 					{
-						Add(TokenType::EmojiMark, ":", emojiMarkerPosition, emojiMarkerPosition);
-						Add(TokenType::EmojiCode, _content.substr(emojiIndex, emojiSize),
-							Position(emojiMarkerPosition.line, emojiMarkerPosition.column + 1));
+						Add(TokenType::EmojiMark, ":");
+						Add(TokenType::EmojiCode, _content.substr(emojiIndex, emojiSize));
 						Add(TokenType::EmojiMark, ":");
 						Advance(0);
 						break;
@@ -396,8 +374,6 @@ namespace Gularen
 			}
 
 			case '{': {
-				Position beginPosition = _position;
-
 				Advance(0);
 
 				if (Check(0))
@@ -427,12 +403,9 @@ namespace Gularen
 						Advance(0);
 					}
 
-					Add(TokenType::CurlyOpen, "{", beginPosition, beginPosition);
-					++beginPosition.column;
-					Add(TokenType::CodeSource, source, beginPosition,
-						Position(beginPosition.line, beginPosition.column + source.size() - 1));
-					beginPosition.column += source.size();
-					Add(TokenType::CurlyClose, "}", beginPosition, beginPosition);
+					Add(TokenType::CurlyOpen, "{");
+					Add(TokenType::CodeSource, source);
+					Add(TokenType::CurlyClose, "}");
 
 					if (Is(0, '('))
 					{
@@ -449,13 +422,9 @@ namespace Gularen
 
 							if (Is(0, ')'))
 							{
-								++beginPosition.column;
-								Add(TokenType::ParenOpen, "(", beginPosition, beginPosition);
-								++beginPosition.column;
-								Add(TokenType::ResourceLabel, lang, beginPosition,
-									Position(beginPosition.line, beginPosition.column + lang.size() - 1));
-								beginPosition.column += lang.size();
-								Add(TokenType::ParenClose, ")", beginPosition, beginPosition);
+								Add(TokenType::ParenOpen, "(");
+								Add(TokenType::ResourceLabel, lang);
+								Add(TokenType::ParenClose, ")");
 								Advance(0);
 								break;
 							}
@@ -475,8 +444,6 @@ namespace Gularen
 			}
 
 			case '[': {
-				Position beginPosition = _position;
-
 				Advance(0);
 
 				if (Check(0))
@@ -516,26 +483,17 @@ namespace Gularen
 
 					if (idMarkerExists)
 					{
-						Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
-						++beginPosition.column;
-						Add(TokenType::Resource, resource.substr(0, idMarkerIndex), beginPosition,
-							Position(beginPosition.line, beginPosition.column + idMarkerIndex - 1));
-						beginPosition.column += idMarkerIndex;
-						Add(TokenType::ResourceIDMark, ">", beginPosition, beginPosition);
-						++beginPosition.column;
-						Add(TokenType::ResourceID, resource.substr(idMarkerIndex + 1), beginPosition,
-							Position(beginPosition.line, beginPosition.column + resource.size() - idMarkerIndex - 2));
-						beginPosition.column += resource.size() - idMarkerIndex - 1;
-						Add(TokenType::SquareClose, "]", beginPosition, beginPosition);
+						Add(TokenType::SquareOpen, "[");
+						Add(TokenType::Resource, resource.substr(0, idMarkerIndex));
+						Add(TokenType::ResourceIDMark, ">");
+						Add(TokenType::ResourceID, resource.substr(idMarkerIndex + 1));
+						Add(TokenType::SquareClose, "]");
 					}
 					else
 					{
-						Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
-						++beginPosition.column;
-						Add(TokenType::Resource, resource, beginPosition,
-							Position(beginPosition.line, beginPosition.column + resource.size() - 1));
-						beginPosition.column += resource.size();
-						Add(TokenType::SquareClose, "]", beginPosition, beginPosition);
+						Add(TokenType::SquareOpen, "[");
+						Add(TokenType::Resource, resource);
+						Add(TokenType::SquareClose, "]");
 					}
 
 					if (Is(0, '('))
@@ -569,13 +527,9 @@ namespace Gularen
 								Advance(0);
 							}
 
-							++beginPosition.column;
-							Add(TokenType::ParenOpen, "(", beginPosition, beginPosition);
-							++beginPosition.column;
-							Add(TokenType::ResourceLabel, label, beginPosition,
-								Position(beginPosition.line, beginPosition.column + label.size() - 1));
-							beginPosition.column += label.size();
-							Add(TokenType::ParenClose, ")", beginPosition, beginPosition);
+							Add(TokenType::ParenOpen, "(");
+							Add(TokenType::ResourceLabel, label);
+							Add(TokenType::ParenClose, ")");
 							break;
 						}
 						else
@@ -616,7 +570,6 @@ namespace Gularen
 
 			case '^':
 			case '=': {
-				Position beginPosition = _position;
 				std::string original(1, Get(0));
 				if (Check(2) && Is(1, '[') && IsSymbol(2))
 				{
@@ -632,28 +585,18 @@ namespace Gularen
 					{
 						if (original[0] == '^')
 						{
-							Add(TokenType::JumpMark, original, beginPosition, beginPosition);
-							++beginPosition.column;
-							Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
-							++beginPosition.column;
-							Add(TokenType::JumpID, _content.substr(idIndex, idSize), beginPosition,
-								Position(beginPosition.line, beginPosition.column + idSize - 1));
-							beginPosition.column += idSize;
-							++beginPosition.column;
+							Add(TokenType::JumpMark, original);
+							Add(TokenType::SquareOpen, "[");
+							Add(TokenType::JumpID, _content.substr(idIndex, idSize));
 							Add(TokenType::SquareClose, "]");
 							Advance(0);
 							break;
 						}
 						if (Check(1) && Is(1, ' '))
 						{
-							Add(TokenType::DescribeMark, original, beginPosition, beginPosition);
-							++beginPosition.column;
-							Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
-							++beginPosition.column;
-							Add(TokenType::JumpID, _content.substr(idIndex, idSize), beginPosition,
-								Position(beginPosition.line, beginPosition.column + idSize - 1));
-							beginPosition.column += idSize;
-							++beginPosition.column;
+							Add(TokenType::DescribeMark, original);
+							Add(TokenType::SquareOpen, "[");
+							Add(TokenType::JumpID, _content.substr(idIndex, idSize));
 							Add(TokenType::SquareClose, "]");
 							Advance(1);
 							break;
@@ -687,13 +630,13 @@ namespace Gularen
 			case '<': {
 				if (Check(2) && Is(1, '<') && Is(2, '<'))
 				{
-					Add(TokenType::Break, "<<<", _position, Position(_position.line, _position.column + 1));
+					Add(TokenType::Break, "<<<");
 					Advance(2);
 					break;
 				}
 				if (Check(1) && Is(1, '<'))
 				{
-					Add(TokenType::Break, "<<", _position, Position(_position.line, _position.column + 1));
+					Add(TokenType::Break, "<<");
 					Advance(1);
 					break;
 				}
@@ -752,12 +695,10 @@ namespace Gularen
 				break;
 
 			case '>': {
-				Position beginPosition = _position;
-
 				if (Check(1) && Is(1, ' '))
 				{
 					Advance(1);
-					Add(TokenType::HeadingIDMark, ">", beginPosition, beginPosition);
+					Add(TokenType::HeadingIDMark, ">");
 
 					size_t idIndex = _index;
 					size_t idSize = 0;
@@ -789,8 +730,6 @@ namespace Gularen
 
 	void Lexer::TokenizePrefix()
 	{
-		Position beginPosition = _position;
-
 		std::basic_string<TokenType> currentPrefix;
 		size_t currentIndent = 0;
 
@@ -837,7 +776,7 @@ namespace Gularen
 			while (_prefix.size() > lowerBound)
 			{
 				Add(_prefix.back() == TokenType::IndentIncr ? TokenType::IndentDecr : TokenType::BQDecr,
-					_prefix.back() == TokenType::IndentIncr ? "I-" : "B-", beginPosition, beginPosition);
+					_prefix.back() == TokenType::IndentIncr ? "I-" : "B-");
 				_prefix.pop_back();
 			}
 		}
@@ -846,45 +785,22 @@ namespace Gularen
 		{
 			while (lowerBound < currentPrefix.size())
 			{
-				Add(currentPrefix[lowerBound], currentPrefix[lowerBound] == TokenType::IndentIncr ? "I+" : "B+",
-					beginPosition, beginPosition);
+				Add(currentPrefix[lowerBound], currentPrefix[lowerBound] == TokenType::IndentIncr ? "I+" : "B+");
 				++lowerBound;
 			}
 		}
 
 		_prefix = currentPrefix;
 		_indent = currentIndent;
-
-		/* size_t currentIndent = is(0, '\t') ? count('\t') : 0; */
-
-		/* if (currentIndent > indent) { */
-		/* 	while (currentIndent > indent) { */
-		/* 		beginPosition.column = indent; */
-		/* 		Add(TokenType::indentIncr, "I+", beginPosition, beginPosition); */
-		/* 		++indent; */
-		/* 	} */
-		/* } */
-
-		/* if (currentIndent < indent) { */
-		/* 	while (currentIndent < indent) { */
-		/* 		--indent; */
-		/* 		// indentDecr has no symbol */
-		/* 		Add(TokenType::indentDecr, "I-", tokens.back().begin, tokens.back().begin); */
-		/* 	} */
-		/* } */
 	}
 
 	void Lexer::TokenizeBlock()
 	{
 		TokenizePrefix();
 
-		Position beginPosition = _position;
-
 		switch (Get(0))
 		{
 			case '>': {
-				Position beginPosition = _position;
-
 				size_t counter = Count('>');
 				if (counter > 3)
 				{
@@ -898,15 +814,13 @@ namespace Gularen
 					switch (counter)
 					{
 						case 3:
-							Add(TokenType::ChapterMark, ">>>", beginPosition,
-								Position(beginPosition.line, beginPosition.column + 2));
+							Add(TokenType::ChapterMark, ">>>");
 							break;
 						case 2:
-							Add(TokenType::SectionMark, ">>", beginPosition,
-								Position(beginPosition.line, beginPosition.column + 1));
+							Add(TokenType::SectionMark, ">>");
 							break;
 						case 1:
-							Add(TokenType::SubsectionMark, ">", beginPosition, beginPosition);
+							Add(TokenType::SubsectionMark, ">");
 							break;
 					}
 					break;
@@ -921,29 +835,25 @@ namespace Gularen
 			}
 
 			case '[': {
-				Position beginPosition = _position;
 				if (Check(3) && Is(2, ']') && Is(3, ' '))
 				{
 					if (Is(1, ' '))
 					{
-						Add(TokenType::Checkbox, "[ ]", beginPosition,
-							Position(beginPosition.line, beginPosition.column + 2));
+						Add(TokenType::Checkbox, "[ ]");
 						Advance(2);
 						TokenizeSpace();
 						break;
 					}
 					if (Is(1, 'v'))
 					{
-						Add(TokenType::Checkbox, "[v]", beginPosition,
-							Position(beginPosition.line, beginPosition.column + 2));
+						Add(TokenType::Checkbox, "[v]");
 						Advance(2);
 						TokenizeSpace();
 						break;
 					}
 					if (Is(1, 'x'))
 					{
-						Add(TokenType::Checkbox, "[x]", beginPosition,
-							Position(beginPosition.line, beginPosition.column + 2));
+						Add(TokenType::Checkbox, "[x]");
 						Advance(2);
 						TokenizeSpace();
 						break;
@@ -965,7 +875,6 @@ namespace Gularen
 
 			case '<': {
 				size_t previousIndex = _index;
-				Position beginPosition = _position;
 				Advance(0);
 				size_t beginIndex = _index;
 				size_t size = 0;
@@ -978,37 +887,37 @@ namespace Gularen
 				std::string inside = _content.substr(beginIndex, size);
 				if (inside == "note")
 				{
-					Add(TokenType::AdmonNote, "<note>", beginPosition);
+					Add(TokenType::AdmonNote, "<note>");
 					TokenizeSpace();
 					break;
 				}
 				else if (inside == "hint")
 				{
-					Add(TokenType::AdmonHint, "<hint>", beginPosition);
+					Add(TokenType::AdmonHint, "<hint>");
 					TokenizeSpace();
 					break;
 				}
 				else if (inside == "important")
 				{
-					Add(TokenType::AdmonImportant, "<important>", beginPosition);
+					Add(TokenType::AdmonImportant, "<important>");
 					TokenizeSpace();
 					break;
 				}
 				else if (inside == "warning")
 				{
-					Add(TokenType::AdmonWarning, "<warning>", beginPosition);
+					Add(TokenType::AdmonWarning, "<warning>");
 					TokenizeSpace();
 					break;
 				}
 				else if (inside == "seealso")
 				{
-					Add(TokenType::AdmonSeeAlso, "<seealso>", beginPosition);
+					Add(TokenType::AdmonSeeAlso, "<seealso>");
 					TokenizeSpace();
 					break;
 				}
 				else if (inside == "tip")
 				{
-					Add(TokenType::AdmonTip, "<tip>", beginPosition);
+					Add(TokenType::AdmonTip, "<tip>");
 					TokenizeSpace();
 					break;
 				}
@@ -1027,7 +936,6 @@ namespace Gularen
 			case '7':
 			case '8':
 			case '9': {
-				Position beginPosition = _position;
 				std::string number;
 				while (Check(0) && Get(0) >= '0' && Get(0) <= '9')
 				{
@@ -1039,8 +947,7 @@ namespace Gularen
 				{
 					Advance(0);
 					TokenizeSpace();
-					Add(TokenType::Index, number + ".", beginPosition,
-						Position(beginPosition.line, beginPosition.column + number.size()));
+					Add(TokenType::Index, number + ".");
 					break;
 				}
 
@@ -1055,8 +962,6 @@ namespace Gularen
 
 	void Lexer::TokenizeCode()
 	{
-		Position beginPosition = _position;
-
 		size_t openingIndent = _indent;
 		size_t openingCounter = Count('-');
 
@@ -1065,7 +970,7 @@ namespace Gularen
 			if (Is(0, ' '))
 			{
 				Advance(0);
-				Add(TokenType::Bullet, "-", beginPosition, beginPosition);
+				Add(TokenType::Bullet, "-");
 				return;
 			}
 
@@ -1089,8 +994,6 @@ namespace Gularen
 			size_t langIndex = _index;
 			size_t langSize = 0;
 
-			Position beginLangPosition = _position;
-
 			while (Check(0) && !Is(0, '\n') && IsSymbol(0))
 			{
 				++langSize;
@@ -1103,9 +1006,8 @@ namespace Gularen
 				return;
 			}
 
-			Add(TokenType::CodeMark, std::string(openingCounter, '-'), beginPosition,
-				Position(beginLangPosition.line, beginLangPosition.column - 1));
-			Add(TokenType::CodeLang, _content.substr(langIndex, langSize), beginLangPosition);
+			Add(TokenType::CodeMark, std::string(openingCounter, '-'));
+			Add(TokenType::CodeLang, _content.substr(langIndex, langSize));
 		}
 		else
 		{
@@ -1116,29 +1018,21 @@ namespace Gularen
 				return;
 			}
 
-			Add(TokenType::CodeMark, std::string(openingCounter, '-'), beginPosition);
+			Add(TokenType::CodeMark, std::string(openingCounter, '-'));
 		}
 
-		beginPosition = _position;
-		beginPosition.line += 1;
-		beginPosition.column = _indent;
-
-		Position endPosition = beginPosition;
-
 		std::string source;
-		_position.column = _indent;
+		_end.column = _indent;
 
 		while (Check(0))
 		{
 			if (Is(0, '\n'))
 			{
-				endPosition = _position;
-
 				size_t newline = Count('\n');
 				size_t indent = Count('\t');
 
-				_position.line += newline;
-				_position.column = indent;
+				_end.line += newline;
+				_end.column = indent;
 
 				if (Check(2) && Is(0, '-') && Is(1, '-') && Is(2, '-'))
 				{
@@ -1195,8 +1089,8 @@ namespace Gularen
 
 		size_t trimSize = trimEnd == source.size() ? source.size() : source.size() - trimBegin - trimEnd;
 
-		Add(TokenType::CodeSource, source.substr(trimBegin, trimSize), beginPosition, endPosition);
-		Add(TokenType::CodeMark, std::string(openingCounter, '-'), Position(_position.line, _indent));
+		Add(TokenType::CodeSource, source.substr(trimBegin, trimSize));
+		Add(TokenType::CodeMark, std::string(openingCounter, '-'));
 	}
 
 	void Lexer::TokenizeSpace()
@@ -1221,8 +1115,6 @@ namespace Gularen
 
 		while (Check(0) && (Is(0, '-') || Is(0, ':') || Is(0, '|')) && !Is(0, '\n'))
 		{
-			Position beginPosition = _position;
-
 			if (Check(1) && Is(0, ':') && Is(1, '-'))
 			{
 				Advance(0);
@@ -1231,11 +1123,11 @@ namespace Gularen
 				if (Get(0) == ':')
 				{
 					Advance(0);
-					Add(TokenType::PipeConnector, ":-:", beginPosition);
+					Add(TokenType::PipeConnector, ":-:");
 					continue;
 				}
 
-				Add(TokenType::PipeConnector, ":--", beginPosition);
+				Add(TokenType::PipeConnector, ":--");
 				continue;
 			}
 
@@ -1246,11 +1138,11 @@ namespace Gularen
 				if (Get(0) == ':')
 				{
 					Advance(0);
-					Add(TokenType::PipeConnector, "--:", beginPosition);
+					Add(TokenType::PipeConnector, "--:");
 					continue;
 				}
 
-				Add(TokenType::PipeConnector, ":--", beginPosition);
+				Add(TokenType::PipeConnector, ":--");
 				continue;
 			}
 

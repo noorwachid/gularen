@@ -11,5 +11,13 @@ sources:
   - source/gularen/helper/escape.cpp
   - source/gularen/helper/emoji.cpp
   - source/gularen/transpiler/html.cpp
+headers:
+  - source/gularen/token.h
+  - source/gularen/lexer.h
+  - source/gularen/node.h
+  - source/gularen/parser.h
+  - source/gularen/helper/escape.h
+  - source/gularen/helper/emoji.h
+  - source/gularen/transpiler/html.h
 headerPaths:
   - source

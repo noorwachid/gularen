@@ -95,9 +95,9 @@ namespace Gularen
 		size_t line;
 		size_t column;
 
-		Position() = default;
+		Position() : line(1), column(1) {}
 
-		Position(size_t line, size_t column) : line{line}, column{column}
+		Position(size_t line, size_t column) : line(line), column(column)
 		{
 		}
 

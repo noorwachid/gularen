@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 			return 0;
 		}
 
-		std::cout << Gularen::Transpiler::HTML::TranspileLS(GetContent(input));
+		std::cout << Gularen::Transpiler::HTML::TranspileSL(GetContent(input));
 		return 0;
 	}
 	else

@@ -11,9 +11,10 @@ namespace Gularen
 	std::string Range::ToString() const
 	{
 		if (begin == end)
-		{
 			return begin.ToString();
-		}
+
+		if (begin.line == end.line) 
+			return std::to_string(begin.line) + ":" + std::to_string(begin.column) + "-" + std::to_string(end.column);
 
 		return begin.ToString() + "-" + end.ToString();
 	}

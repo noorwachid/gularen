@@ -31,10 +31,6 @@ namespace Gularen
 
 		void Add(TokenType type, const std::string& value);
 
-		void Add(TokenType type, const std::string& value, Position begin);
-
-		void Add(TokenType type, const std::string& value, Position begin, Position end);
-
 		void AddText(const std::string value);
 
 		void TokenizePrefix();
@@ -59,7 +55,8 @@ namespace Gularen
 	private:
 		size_t _index;
 		size_t _indent = 0;
-		Position _position;
+		Position _begin;
+		Position _end;
 		std::string _content;
 		std::basic_string<TokenType> _prefix;
 		Tokens _tokens;

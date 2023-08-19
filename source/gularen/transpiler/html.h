@@ -11,5 +11,5 @@ namespace Gularen::Transpiler::HTML
 	// can be accessed using attribute data-line="0"
 	// its using 0-based indexing
 	// index 0 refers to the first line
-	std::string TranspileLS(const std::string& content);
+	std::string TranspileSL(const std::string& content);
 }

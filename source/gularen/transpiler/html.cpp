@@ -6,7 +6,7 @@ namespace Gularen::Transpiler::HTML
 {
 	struct Options
 	{
-		bool lineSync = false;
+		bool sourceLocation = false;
 	};
 
 	class Transpiler
@@ -519,14 +519,14 @@ namespace Gularen::Transpiler::HTML
 			return text;
 		}
 
-		std::string CreateLS(const std::shared_ptr<Node>& node)
+		std::string CreateSL(const std::shared_ptr<Node>& node)
 		{
-			if (!_options.lineSync)
+			if (!_options.sourceLocation)
 			{
 				return "";
 			}
 
-			return " data-line=\"" + std::to_string(node->range.begin.line) + "\"";
+			return " data-sl=\"" + node->range.ToString() + "\"";
 		}
 
 		void Add(const std::shared_ptr<Node>& node, const std::string& buffer)
@@ -541,26 +541,26 @@ namespace Gularen::Transpiler::HTML
 
 		void AddOpenTag(const std::shared_ptr<Node>& node, const std::string& buffer)
 		{
-			_output += "<" + buffer + CreateLS(node) + ">";
+			_output += "<" + buffer + CreateSL(node) + ">";
 		}
 
 		void AddOpenTagLF(const std::shared_ptr<Node>& node, const std::string& buffer)
 		{
-			_output += "<" + buffer + CreateLS(node) + ">\n";
+			_output += "<" + buffer + CreateSL(node) + ">\n";
 		}
 
 		void AddOpenTagWithClassAttr(
 			const std::shared_ptr<Node>& node, const std::string& buffer, const std::string& classAttr
 		)
 		{
-			_output += "<" + buffer + " class=\"" + classAttr + "\"" + CreateLS(node) + ">";
+			_output += "<" + buffer + " class=\"" + classAttr + "\"" + CreateSL(node) + ">";
 		}
 
 		void AddOpenTagWithClassAttrLF(
 			const std::shared_ptr<Node>& node, const std::string& buffer, const std::string& classAttr
 		)
 		{
-			_output += "<" + buffer + " class=\"" + classAttr + "\"" + CreateLS(node) + ">\n";
+			_output += "<" + buffer + " class=\"" + classAttr + "\"" + CreateSL(node) + ">\n";
 		}
 
 		void AddCloseTag(const std::shared_ptr<Node>& node, const std::string& buffer)
@@ -587,11 +587,11 @@ namespace Gularen::Transpiler::HTML
 		return transpiler.Transpile(content, Options{});
 	}
 
-	std::string TranspileLS(const std::string& content)
+	std::string TranspileSL(const std::string& content)
 	{
 		Transpiler transpiler;
 		Options options;
-		options.lineSync = true;
+		options.sourceLocation = true;
 		return transpiler.Transpile(content, options);
 	}
 }
