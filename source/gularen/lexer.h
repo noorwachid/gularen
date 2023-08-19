@@ -1,62 +1,67 @@
 #pragma once
 
-#include <gularen/token.h>
+#include "gularen/token.h"
 #include <vector>
 
-namespace Gularen {
-	class Lexer {
+namespace Gularen
+{
+	class Lexer
+	{
 	public:
-		void set(const std::string& content);
+		void Set(const std::string& content);
 
-		void tokenize();
-		
-		const Tokens& get() const;
+		void Tokenize();
 
-	private:
-		bool check(size_t offset);
-
-		bool is(size_t offset, char c);
-
-		bool isSymbol(size_t offset);
-
-		char get(size_t offset);
-
-		void advance(size_t offset);
-
-		void retreat(size_t offset);
-
-		size_t count(char c);
-
-		void add(TokenType type, const std::string& value);
-
-		void add(TokenType type, const std::string& value, Position begin);
-
-		void add(TokenType type, const std::string& value, Position begin, Position end);
-
-		void addText(const std::string value);
-
-		void tokenizePrefix();
-
-		void tokenizeBlock();
-		
-		void tokenizeInline();
-
-		void tokenizeCode();
-
-		void tokenizeText();
-
-		void tokenizeSpace();
-
-		void tokenizeTable();
-
-		void tokenizeQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue);
+		const Tokens& Get() const;
 
 	private:
-		size_t index;
-		size_t indent = 0;
-		Position position;
-		std::string content;
-		std::basic_string<TokenType> prefix;
-		Tokens tokens;
+		bool Check(size_t offset);
+
+		bool Is(size_t offset, char c);
+
+		bool IsSymbol(size_t offset);
+
+		char Get(size_t offset);
+
+		void Advance(size_t offset);
+
+		void Retreat(size_t offset);
+
+		size_t Count(char c);
+
+		void Add(TokenType type, const std::string& value);
+
+		void Add(TokenType type, const std::string& value, Position begin);
+
+		void Add(TokenType type, const std::string& value, Position begin, Position end);
+
+		void AddText(const std::string value);
+
+		void TokenizePrefix();
+
+		void TokenizeBlock();
+
+		void TokenizeInline();
+
+		void TokenizeCode();
+
+		void TokenizeText();
+
+		void TokenizeSpace();
+
+		void TokenizeTable();
+
+		void TokenizeQuoMark(
+			bool should, TokenType leftType, const std::string& leftValue, TokenType rightType,
+			const std::string& rightValue
+		);
+
+	private:
+		size_t _index;
+		size_t _indent = 0;
+		Position _position;
+		std::string _content;
+		std::basic_string<TokenType> _prefix;
+		Tokens _tokens;
 	};
 }

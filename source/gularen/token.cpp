@@ -1,29 +1,34 @@
-#include <gularen/token.h>
-#include <gularen/helper/escape.h>
+#include "gularen/helper/escape.h"
+#include "gularen/token.h"
 
-namespace Gularen {
-	std::string Position::toString() const {
+namespace Gularen
+{
+	std::string Position::ToString() const
+	{
 		return std::to_string(line) + ":" + std::to_string(column);
 	}
 
-	std::string Range::toString() const {
-		if (begin == end) {
-			return begin.toString();
+	std::string Range::ToString() const
+	{
+		if (begin == end)
+		{
+			return begin.ToString();
 		}
 
-		return begin.toString() + "-" + end.toString();
+		return begin.ToString() + "-" + end.ToString();
 	}
 
-	std::string Token::toString() const {
+	std::string Token::ToString() const
+	{
 		std::string repr;
 		size_t rangePad = 16;
 		size_t typePad = 4;
-		std::string rangeS = range.toString();
-		std::string typeS = std::to_string(static_cast<int>(type));
+		std::string rangeStr = range.ToString();
+		std::string typeStr = std::to_string(static_cast<int>(type));
 
-		repr += rangeS + std::string(rangePad - rangeS.size(), ' ');
-		repr += typeS + std::string(typePad - typeS.size(), ' ');
-		repr += Helper::escape(value);
+		repr += rangeStr + std::string(rangePad - rangeStr.size(), ' ');
+		repr += typeStr + std::string(typePad - typeStr.size(), ' ');
+		repr += Helper::Escape(value);
 
 		return repr;
 	}

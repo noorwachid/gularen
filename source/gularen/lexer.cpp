@@ -1,190 +1,210 @@
-#include <gularen/token.h>
-#include <gularen/lexer.h>
-#include <iostream>
+#include "gularen/lexer.h"
+#include "gularen/token.h"
 #include <fstream>
+#include <iostream>
 
-namespace Gularen {
-	bool isDigit(char letter) {
+namespace Gularen
+{
+	bool IsDigit(char letter)
+	{
 		return letter >= '0' && letter <= '9';
 	}
 
-	bool isDate(std::string_view text) {
-		if (text.size() == 10 &&
-			isDigit(text[0]) &&
-			isDigit(text[1]) &&
-			isDigit(text[2]) &&
-			isDigit(text[3]) &&
-			text[4] == '-' &&
-			isDigit(text[5]) &&
-			isDigit(text[6]) &&
-			text[7] == '-' &&
-			isDigit(text[8]) &&
-			isDigit(text[9])) {
+	bool IsDate(std::string_view text)
+	{
+		if (text.size() == 10 && IsDigit(text[0]) && IsDigit(text[1]) && IsDigit(text[2]) && IsDigit(text[3]) &&
+			text[4] == '-' && IsDigit(text[5]) && IsDigit(text[6]) && text[7] == '-' && IsDigit(text[8]) &&
+			IsDigit(text[9]))
+		{
 			return true;
 		}
 		return false;
 	}
 
-	bool isTime(std::string_view text) {
-		if (text.size() == 5 &&
-			isDigit(text[0]) &&
-			isDigit(text[1]) &&
-			text[2] == ':' &&
-			isDigit(text[3]) &&
-			isDigit(text[4])) {
+	bool IsTime(std::string_view text)
+	{
+		if (text.size() == 5 && IsDigit(text[0]) && IsDigit(text[1]) && text[2] == ':' && IsDigit(text[3]) &&
+			IsDigit(text[4]))
+		{
 			return true;
 		}
 
-		if (text.size() == 8 &&
-			isDigit(text[0]) &&
-			isDigit(text[1]) &&
-			text[2] == ':' &&
-			isDigit(text[3]) &&
-			isDigit(text[4]) &&
-			text[5] == ':' &&
-			isDigit(text[6]) &&
-			isDigit(text[7])) {
+		if (text.size() == 8 && IsDigit(text[0]) && IsDigit(text[1]) && text[2] == ':' && IsDigit(text[3]) &&
+			IsDigit(text[4]) && text[5] == ':' && IsDigit(text[6]) && IsDigit(text[7]))
+		{
 			return true;
 		}
 
 		return false;
 	}
 
-	bool isDateTime(std::string_view text) {
-		if (text.size() == 16 && isDate(text.substr(0, 10)) && isTime(text.substr(11, 5))) {
+	bool IsDateTime(std::string_view text)
+	{
+		if (text.size() == 16 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 5)))
+		{
 			return true;
 		}
-		if (text.size() == 19 && isDate(text.substr(0, 10)) && isTime(text.substr(11, 8))) {
+		if (text.size() == 19 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 8)))
+		{
 			return true;
 		}
 		return false;
 	}
 
-	void Lexer::set(const std::string& content) {
-		this->content = content;
+	void Lexer::Set(const std::string& content)
+	{
+		this->_content = content;
 	}
 
-	void Lexer::tokenize() {
-		if (content.empty()) return;
+	void Lexer::Tokenize()
+	{
+		if (_content.empty())
+			return;
 
-		this->tokens.clear();
-		this->index = 0;
-		this->position.line = 0;
-		this->position.column = 0;
+		this->_tokens.clear();
+		this->_index = 0;
+		this->_position.line = 0;
+		this->_position.column = 0;
 
-		tokenizeBlock();
+		TokenizeBlock();
 
-		while (check(0)) {
-			tokenizeInline();
+		while (Check(0))
+		{
+			TokenizeInline();
 		}
 
-		if (!tokens.empty() && (tokens.back().type == TokenType::newline || tokens.back().type == TokenType::newlinePlus)) {
-			tokens.back().type = TokenType::eof;
-			tokens.back().value = "\\0";
-			tokens.back().range.end = tokens.back().range.begin;
-		} else {
-			add(TokenType::eof, "\\0");
+		if (!_tokens.empty() &&
+			(_tokens.back().type == TokenType::Newline || _tokens.back().type == TokenType::NewlinePlus))
+		{
+			_tokens.back().type = TokenType::End;
+			_tokens.back().value = "\\0";
+			_tokens.back().range.end = _tokens.back().range.begin;
+		}
+		else
+		{
+			Add(TokenType::End, "\\0");
 		}
 	}
 
-	const Tokens& Lexer::get() const {
-		return tokens;
+	const Tokens& Lexer::Get() const
+	{
+		return _tokens;
 	}
 
-	bool Lexer::check(size_t offset) {
-		return index + offset < content.size();
+	bool Lexer::Check(size_t offset)
+	{
+		return _index + offset < _content.size();
 	}
 
-	bool Lexer::is(size_t offset, char c) {
-		return content[index + offset] == c;
+	bool Lexer::Is(size_t offset, char c)
+	{
+		return _content[_index + offset] == c;
 	}
 
-	bool Lexer::isSymbol(size_t offset) {
-		char c = content[index + offset];
+	bool Lexer::IsSymbol(size_t offset)
+	{
+		char c = _content[_index + offset];
 		return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-';
 	}
 
-	char Lexer::get(size_t offset) {
-		return content[index + offset];
+	char Lexer::Get(size_t offset)
+	{
+		return _content[_index + offset];
 	}
 
-	void Lexer::advance(size_t offset) {
-		index += 1 + offset;
-		position.column += 1 + offset;
+	void Lexer::Advance(size_t offset)
+	{
+		_index += 1 + offset;
+		_position.column += 1 + offset;
 	}
 
-	void Lexer::retreat(size_t offset) {
-		index -= offset;
-		position.column -= offset;
+	void Lexer::Retreat(size_t offset)
+	{
+		_index -= offset;
+		_position.column -= offset;
 	}
 
-	size_t Lexer::count(char c) {
+	size_t Lexer::Count(char c)
+	{
 		size_t count = 0;
-		while (check(0) && is(0, c)) {
+		while (Check(0) && Is(0, c))
+		{
 			++count;
-			advance(0);
+			Advance(0);
 		}
 		return count;
 	}
 
-	void Lexer::add(TokenType type, const std::string& value, Position begin, Position end) {
+	void Lexer::Add(TokenType type, const std::string& value, Position begin, Position end)
+	{
 		Token token;
 		token.type = type;
 		token.value = value;
 		token.range.begin = begin;
 		token.range.end = end;
-		tokens.push_back(token);
+		_tokens.push_back(token);
 	}
 
-	void Lexer::add(TokenType type, const std::string& value, Position begin) {
+	void Lexer::Add(TokenType type, const std::string& value, Position begin)
+	{
 		Token token;
 		token.type = type;
 		token.value = value;
 		token.range.begin = begin;
-		token.range.end = position;
+		token.range.end = _position;
 		--token.range.end.column;
-		tokens.push_back(token);
+		_tokens.push_back(token);
 	}
 
-	void Lexer::add(TokenType type, const std::string& value) {
+	void Lexer::Add(TokenType type, const std::string& value)
+	{
 		Token token;
 		token.type = type;
 		token.value = value;
-		token.range.begin = position;
-		token.range.end = position;
-		tokens.push_back(token);
+		token.range.begin = _position;
+		token.range.end = _position;
+		_tokens.push_back(token);
 	}
 
-	void Lexer::addText(const std::string value) {
-		if (!tokens.empty() && tokens.back().type == TokenType::text) {
-			tokens.back().value += value;
-			tokens.back().range.end.column += value.size();
-		} else {
-			if (!tokens.empty()) {
-				Position beginPosition = position;
+	void Lexer::AddText(const std::string value)
+	{
+		if (!_tokens.empty() && _tokens.back().type == TokenType::Text)
+		{
+			_tokens.back().value += value;
+			_tokens.back().range.end.column += value.size();
+		}
+		else
+		{
+			if (!_tokens.empty())
+			{
+				Position beginPosition = _position;
 				beginPosition.column -= value.size() - 1;
 				Token token;
-				token.type = TokenType::text;
+				token.type = TokenType::Text;
 				token.value = value;
 				token.range.begin = beginPosition;
-				token.range.end = position;
-				tokens.push_back(token);
-			} else {
-				Position beginPosition = position;
+				token.range.end = _position;
+				_tokens.push_back(token);
+			}
+			else
+			{
+				Position beginPosition = _position;
 				beginPosition.column -= beginPosition.column > value.size() ? value.size() : 0;
 				Token token;
-				token.type = TokenType::text;
+				token.type = TokenType::Text;
 				token.value = value;
 				token.range.begin = beginPosition;
-				token.range.end = position;
+				token.range.end = _position;
 				token.range.end.column -= 1;
-				tokens.push_back(token);
+				_tokens.push_back(token);
 			}
 		}
 	}
 
-	void Lexer::tokenizeInline() {
-		switch (get(0)) {
+	void Lexer::TokenizeInline()
+	{
+		switch (Get(0))
+		{
 			case ' ':
 			case 'a':
 			case 'b':
@@ -248,526 +268,599 @@ namespace Gularen {
 			case '7':
 			case '8':
 			case '9':
-				tokenizeText();
+				TokenizeText();
 				break;
 
 			case '\n': {
-				Position beginPosition = position;
-				size_t counter = count('\n');
+				Position beginPosition = _position;
+				size_t counter = Count('\n');
 
-				if (counter == 1) {
-					add(TokenType::newline, "\\n", beginPosition);
-					position.line += counter;
-					position.column = 0;
-				} else {
-					position.line += counter - 1;
-					position.column = 0;
+				if (counter == 1)
+				{
+					Add(TokenType::Newline, "\\n", beginPosition);
+					_position.line += counter;
+					_position.column = 0;
+				}
+				else
+				{
+					_position.line += counter - 1;
+					_position.column = 0;
 					Token token;
-					token.type = TokenType::newlinePlus;
+					token.type = TokenType::NewlinePlus;
 					token.value = "\\n";
 					token.range.begin = beginPosition;
-					token.range.end = position;
-					tokens.push_back(token);
-					position.line += 1;
+					token.range.end = _position;
+					_tokens.push_back(token);
+					_position.line += 1;
 				}
 
-				tokenizeBlock();
+				TokenizeBlock();
 				break;
 			}
 
 			case '\\':
-				advance(0);
-				if (check(0)) {
-					addText(content.substr(index, 1));
-					advance(0);
+				Advance(0);
+				if (Check(0))
+				{
+					AddText(_content.substr(_index, 1));
+					Advance(0);
 				}
 				break;
 
 			case '~': {
-				Position beginPosition = position;
-				size_t commentIndex = index;
+				Position beginPosition = _position;
+				size_t commentIndex = _index;
 				size_t commentSize = 1;
-				advance(0);
-				while (check(0) && !is(0, '\n')) {
+				Advance(0);
+				while (Check(0) && !Is(0, '\n'))
+				{
 					++commentSize;
-					advance(0);
+					Advance(0);
 				}
-				add(TokenType::comment, content.substr(commentIndex, commentSize), beginPosition);
+				Add(TokenType::Comment, _content.substr(commentIndex, commentSize), beginPosition);
 				break;
 			}
-			
+
 			case '\'':
-				tokenizeQuoMark(tokens.empty() || tokens.back().type == TokenType::ldQuo, TokenType::lsQuo, "‘", TokenType::rsQuo, "’");
-				advance(0);
+				TokenizeQuoMark(
+					_tokens.empty() || _tokens.back().type == TokenType::LDQuo, TokenType::LSQuo, "‘", TokenType::RSQuo,
+					"’"
+				);
+				Advance(0);
 				break;
 
 			case '"':
-				tokenizeQuoMark(tokens.empty() || tokens.back().type == TokenType::lsQuo, TokenType::ldQuo, "“", TokenType::rdQuo, "”");
-				advance(0);
+				TokenizeQuoMark(
+					_tokens.empty() || _tokens.back().type == TokenType::LSQuo, TokenType::LDQuo, "“", TokenType::RDQuo,
+					"”"
+				);
+				Advance(0);
 				break;
 
 			case '-': {
-				if (check(2) && is(1, '-') && is(2, '-')) {
-					add(TokenType::emDash, "–", Position(position.line, position.column), Position(position.line, position.column + 2));
-					advance(2);
+				if (Check(2) && Is(1, '-') && Is(2, '-'))
+				{
+					Add(TokenType::EmDash, "–", Position(_position.line, _position.column),
+						Position(_position.line, _position.column + 2));
+					Advance(2);
 					break;
 				}
-				if (check(1) && is(1, '-')) {
-					add(TokenType::enDash, "–", Position(position.line, position.column), Position(position.line, position.column + 1));
-					advance(1);
+				if (Check(1) && Is(1, '-'))
+				{
+					Add(TokenType::EnDash, "–", Position(_position.line, _position.column),
+						Position(_position.line, _position.column + 1));
+					Advance(1);
 					break;
 				}
-				add(TokenType::hyphen, "-");
-				advance(0);
+				Add(TokenType::Hyphen, "-");
+				Advance(0);
 				break;
 			}
 
 			case ':': {
-				Position emojiMarkerPosition = position;
-				advance(0);
+				Position emojiMarkerPosition = _position;
+				Advance(0);
 
-				if (check(0)) {
-					size_t emojiIndex = index;
+				if (Check(0))
+				{
+					size_t emojiIndex = _index;
 					size_t emojiSize = 0;
 
-					while (check(0) && (get(0) >= 'a' && get(0) <= 'z' || is(0, '-'))) {
-						if (is(0, ':')) {
+					while (Check(0) && (Get(0) >= 'a' && Get(0) <= 'z' || Is(0, '-')))
+					{
+						if (Is(0, ':'))
+						{
 							break;
 						}
 
 						++emojiSize;
-						advance(0);
+						Advance(0);
 					}
 
-					if (is(0, ':') && emojiSize > 0) {
-						add(TokenType::emojiMarker, ":", emojiMarkerPosition, emojiMarkerPosition);
-						add(TokenType::emojiCode, content.substr(emojiIndex, emojiSize), Position(emojiMarkerPosition.line, emojiMarkerPosition.column + 1));
-						add(TokenType::emojiMarker, ":");
-						advance(0);
+					if (Is(0, ':') && emojiSize > 0)
+					{
+						Add(TokenType::EmojiMark, ":", emojiMarkerPosition, emojiMarkerPosition);
+						Add(TokenType::EmojiCode, _content.substr(emojiIndex, emojiSize),
+							Position(emojiMarkerPosition.line, emojiMarkerPosition.column + 1));
+						Add(TokenType::EmojiMark, ":");
+						Advance(0);
 						break;
 					}
 
-					addText(":" + content.substr(emojiIndex, emojiSize));
+					AddText(":" + _content.substr(emojiIndex, emojiSize));
 					break;
 				}
 
-				addText(":");
+				AddText(":");
 				break;
 			}
 
 			case '{': {
-				Position beginPosition = position;
+				Position beginPosition = _position;
 
-				advance(0);
-				
-				if (check(0)) {
+				Advance(0);
+
+				if (Check(0))
+				{
 					size_t depth = 0;
 					std::string source;
 
-					while (check(0)) {
-						if (is(0, '}') && depth == 0) {
-							advance(0);
+					while (Check(0))
+					{
+						if (Is(0, '}') && depth == 0)
+						{
+							Advance(0);
 							break;
 						}
 
-						if (is(0, '{')) {
+						if (Is(0, '{'))
+						{
 							++depth;
 						}
 
-						if (is(0, '\\')) {
-							advance(0);
+						if (Is(0, '\\'))
+						{
+							Advance(0);
 						}
 
-						source += get(0);
-						advance(0);
+						source += Get(0);
+						Advance(0);
 					}
 
-					add(TokenType::curlyOpen, "{", beginPosition, beginPosition);
+					Add(TokenType::CurlyOpen, "{", beginPosition, beginPosition);
 					++beginPosition.column;
-					add(TokenType::codeSource, source, beginPosition, Position(beginPosition.line, beginPosition.column + source.size() - 1));
+					Add(TokenType::CodeSource, source, beginPosition,
+						Position(beginPosition.line, beginPosition.column + source.size() - 1));
 					beginPosition.column += source.size();
-					add(TokenType::curlyClose, "}", beginPosition, beginPosition);
+					Add(TokenType::CurlyClose, "}", beginPosition, beginPosition);
 
-					if (is(0, '(')) {
-						advance(0);
+					if (Is(0, '('))
+					{
+						Advance(0);
 						std::string lang;
 
-						if (check(0) && isSymbol(0)) {
-							while (check(0) && isSymbol(0)) {
-								lang += get(0);
-								advance(0);
+						if (Check(0) && IsSymbol(0))
+						{
+							while (Check(0) && IsSymbol(0))
+							{
+								lang += Get(0);
+								Advance(0);
 							}
 
-							if (is(0, ')')) {
+							if (Is(0, ')'))
+							{
 								++beginPosition.column;
-								add(TokenType::parenOpen, "(", beginPosition, beginPosition);
+								Add(TokenType::ParenOpen, "(", beginPosition, beginPosition);
 								++beginPosition.column;
-								add(TokenType::resourceLabel, lang, beginPosition, Position(beginPosition.line, beginPosition.column + lang.size() - 1));
+								Add(TokenType::ResourceLabel, lang, beginPosition,
+									Position(beginPosition.line, beginPosition.column + lang.size() - 1));
 								beginPosition.column += lang.size();
-								add(TokenType::parenClose, ")", beginPosition, beginPosition);
-								advance(0);
+								Add(TokenType::ParenClose, ")", beginPosition, beginPosition);
+								Advance(0);
 								break;
 							}
 
-							addText("(" + lang);
+							AddText("(" + lang);
 							break;
-						} else {
-							addText("(");
+						}
+						else
+						{
+							AddText("(");
 						}
 					}
 					break;
 				}
 
-				addText("{");
+				AddText("{");
 			}
 
 			case '[': {
-				Position beginPosition = position;
+				Position beginPosition = _position;
 
-				advance(0);
-				
-				if (check(0)) {
+				Advance(0);
+
+				if (Check(0))
+				{
 					bool idMarkerExists = false;
 					size_t idMarkerIndex = 0;
 					size_t depth = 0;
 					std::string resource;
 
-					while (check(0)) {
-						if (is(0, ']') && depth == 0) {
-							advance(0);
+					while (Check(0))
+					{
+						if (Is(0, ']') && depth == 0)
+						{
+							Advance(0);
 							break;
 						}
 
-						if (is(0, '[')) {
+						if (Is(0, '['))
+						{
 							++depth;
 						}
 
-						if (is(0, '>')) {
+						if (Is(0, '>'))
+						{
 							idMarkerExists = true;
 							idMarkerIndex = resource.size();
 						}
-						
-						if (is(0, '\\')) {
-							advance(0);
+
+						if (Is(0, '\\'))
+						{
+							Advance(0);
 						}
 
-						resource += get(0);
-						advance(0);
+						resource += Get(0);
+						Advance(0);
 					}
 
-					if (idMarkerExists) {
-						add(TokenType::squareOpen, "[", beginPosition, beginPosition);
+					if (idMarkerExists)
+					{
+						Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
 						++beginPosition.column;
-						add(TokenType::resource, resource.substr(0, idMarkerIndex), beginPosition, Position(beginPosition.line, beginPosition.column + idMarkerIndex - 1));
+						Add(TokenType::Resource, resource.substr(0, idMarkerIndex), beginPosition,
+							Position(beginPosition.line, beginPosition.column + idMarkerIndex - 1));
 						beginPosition.column += idMarkerIndex;
-						add(TokenType::resourceIDMarker, ">", beginPosition, beginPosition);
+						Add(TokenType::ResourceIDMark, ">", beginPosition, beginPosition);
 						++beginPosition.column;
-						add(TokenType::resourceID, resource.substr(idMarkerIndex + 1), beginPosition, Position(beginPosition.line, beginPosition.column + resource.size() - idMarkerIndex - 2));
+						Add(TokenType::ResourceID, resource.substr(idMarkerIndex + 1), beginPosition,
+							Position(beginPosition.line, beginPosition.column + resource.size() - idMarkerIndex - 2));
 						beginPosition.column += resource.size() - idMarkerIndex - 1;
-						add(TokenType::squareClose, "]", beginPosition, beginPosition);
-					} else {
-						add(TokenType::squareOpen, "[", beginPosition, beginPosition);
-						++beginPosition.column;
-						add(TokenType::resource, resource, beginPosition, Position(beginPosition.line, beginPosition.column + resource.size() - 1));
-						beginPosition.column += resource.size();
-						add(TokenType::squareClose, "]", beginPosition, beginPosition);
+						Add(TokenType::SquareClose, "]", beginPosition, beginPosition);
 					}
-					
-					if (is(0, '(')) {
-						advance(0);
+					else
+					{
+						Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
+						++beginPosition.column;
+						Add(TokenType::Resource, resource, beginPosition,
+							Position(beginPosition.line, beginPosition.column + resource.size() - 1));
+						beginPosition.column += resource.size();
+						Add(TokenType::SquareClose, "]", beginPosition, beginPosition);
+					}
 
-						if (check(0)) {
+					if (Is(0, '('))
+					{
+						Advance(0);
+
+						if (Check(0))
+						{
 							size_t depth = 0;
 							std::string label;
 
-							while (check(0)) {
-								if (is(0, ')') && depth == 0) {
-									advance(0);
+							while (Check(0))
+							{
+								if (Is(0, ')') && depth == 0)
+								{
+									Advance(0);
 									break;
 								}
 
-								if (is(0, '(')) {
+								if (Is(0, '('))
+								{
 									++depth;
 								}
-								
-								if (is(0, '\\')) {
-									advance(0);
+
+								if (Is(0, '\\'))
+								{
+									Advance(0);
 								}
 
-								label += get(0);
-								advance(0);
+								label += Get(0);
+								Advance(0);
 							}
 
 							++beginPosition.column;
-							add(TokenType::parenOpen, "(", beginPosition, beginPosition);
+							Add(TokenType::ParenOpen, "(", beginPosition, beginPosition);
 							++beginPosition.column;
-							add(TokenType::resourceLabel, label, beginPosition, Position(beginPosition.line, beginPosition.column + label.size() - 1));
+							Add(TokenType::ResourceLabel, label, beginPosition,
+								Position(beginPosition.line, beginPosition.column + label.size() - 1));
 							beginPosition.column += label.size();
-							add(TokenType::parenClose, ")", beginPosition, beginPosition);
+							Add(TokenType::ParenClose, ")", beginPosition, beginPosition);
 							break;
-						} else {
-							addText("(");
+						}
+						else
+						{
+							AddText("(");
 						}
 					}
 					break;
 				}
 
-				addText("[");
+				AddText("[");
 				break;
 			}
 
 			case '!':
-				if (check(1) && is(1, '[')) {
-					add(TokenType::presentMarker, "!");
-					advance(0);
+				if (Check(1) && Is(1, '['))
+				{
+					Add(TokenType::PresentMark, "!");
+					Advance(0);
 					// see inline [
 					break;
 				}
-				advance(0);
-				addText("!");
+				Advance(0);
+				AddText("!");
 				break;
 
 			case '?':
-				if (check(1) && is(1, '[')) {
-					add(TokenType::includeMarker, "?");
-					advance(0);
+				if (Check(1) && Is(1, '['))
+				{
+					Add(TokenType::IncludeMark, "?");
+					Advance(0);
 					// see inline [
 					break;
 				}
-				advance(0);
-				addText("?");
+				Advance(0);
+				AddText("?");
 				break;
 
 			case '^':
 			case '=': {
-				Position beginPosition = position;
-				std::string original(1, get(0));
-				if (check(2) && is(1, '[') && isSymbol(2)) {
-					advance(1);
-					size_t idIndex = index;
+				Position beginPosition = _position;
+				std::string original(1, Get(0));
+				if (Check(2) && Is(1, '[') && IsSymbol(2))
+				{
+					Advance(1);
+					size_t idIndex = _index;
 					size_t idSize = 0;
-					while (check(0) && isSymbol(0)) {
+					while (Check(0) && IsSymbol(0))
+					{
 						++idSize;
-						advance(0);
+						Advance(0);
 					}
-					if (idSize > 0 && check(0) && is(0, ']')) {
-						if (original[0] == '^') {
-							add(TokenType::jumpMarker, original, beginPosition, beginPosition);
+					if (idSize > 0 && Check(0) && Is(0, ']'))
+					{
+						if (original[0] == '^')
+						{
+							Add(TokenType::JumpMark, original, beginPosition, beginPosition);
 							++beginPosition.column;
-							add(TokenType::squareOpen, "[", beginPosition, beginPosition);
+							Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
 							++beginPosition.column;
-							add(TokenType::jumpID, content.substr(idIndex, idSize), beginPosition, Position(beginPosition.line, beginPosition.column + idSize - 1));
+							Add(TokenType::JumpID, _content.substr(idIndex, idSize), beginPosition,
+								Position(beginPosition.line, beginPosition.column + idSize - 1));
 							beginPosition.column += idSize;
 							++beginPosition.column;
-							add(TokenType::squareClose, "]");
-							advance(0);
+							Add(TokenType::SquareClose, "]");
+							Advance(0);
 							break;
 						}
-						if (check(1) && is(1, ' ')) {
-							add(TokenType::describeMarker, original, beginPosition, beginPosition);
+						if (Check(1) && Is(1, ' '))
+						{
+							Add(TokenType::DescribeMark, original, beginPosition, beginPosition);
 							++beginPosition.column;
-							add(TokenType::squareOpen, "[", beginPosition, beginPosition);
+							Add(TokenType::SquareOpen, "[", beginPosition, beginPosition);
 							++beginPosition.column;
-							add(TokenType::jumpID, content.substr(idIndex, idSize), beginPosition, Position(beginPosition.line, beginPosition.column + idSize - 1));
+							Add(TokenType::JumpID, _content.substr(idIndex, idSize), beginPosition,
+								Position(beginPosition.line, beginPosition.column + idSize - 1));
 							beginPosition.column += idSize;
 							++beginPosition.column;
-							add(TokenType::squareClose, "]");
-							advance(1);
+							Add(TokenType::SquareClose, "]");
+							Advance(1);
 							break;
 						}
 					}
-					addText(original);
-					retreat(idSize + 1);
+					AddText(original);
+					Retreat(idSize + 1);
 					break;
 				}
-				advance(0);
-				addText(original);
+				Advance(0);
+				AddText(original);
 				break;
 			}
 
 			case '|':
 				// trim right
-				if (!tokens.empty() && tokens.back().type == TokenType::text) {
+				if (!_tokens.empty() && _tokens.back().type == TokenType::Text)
+				{
 					size_t blankCount = 0;
-					for (size_t i = tokens.back().value.size(); i >= 0 && tokens.back().value[i - 1] == ' '; --i) {
+					for (size_t i = _tokens.back().value.size(); i >= 0 && _tokens.back().value[i - 1] == ' '; --i)
+					{
 						++blankCount;
 					}
-					tokens.back().value = tokens.back().value.substr(0, tokens.back().value.size() - blankCount);
+					_tokens.back().value = _tokens.back().value.substr(0, _tokens.back().value.size() - blankCount);
 				}
-				add(TokenType::pipe, "|");
-				advance(0);
-				tokenizeSpace();
+				Add(TokenType::Pipe, "|");
+				Advance(0);
+				TokenizeSpace();
 				break;
 
-				
 			case '<': {
-				if (check(2) && is(1, '<') && is(2, '<')) {
-					add(TokenType::break_, "<<<", position, Position(position.line, position.column + 1));
-					advance(2);
+				if (Check(2) && Is(1, '<') && Is(2, '<'))
+				{
+					Add(TokenType::Break, "<<<", _position, Position(_position.line, _position.column + 1));
+					Advance(2);
 					break;
 				}
-				if (check(1) && is(1, '<')) {
-					add(TokenType::break_, "<<", position, Position(position.line, position.column + 1));
-					advance(1);
+				if (Check(1) && Is(1, '<'))
+				{
+					Add(TokenType::Break, "<<", _position, Position(_position.line, _position.column + 1));
+					Advance(1);
 					break;
 				}
-				advance(0);
-				size_t begin = index;
+				Advance(0);
+				size_t begin = _index;
 				size_t size = 0;
-				while (check(0) && !is(0, '>')) {
+				while (Check(0) && !Is(0, '>'))
+				{
 					++size;
-					advance(0);
+					Advance(0);
 				}
-				advance(0);
-				std::string_view text = std::string_view(content.data() + begin, size);
+				Advance(0);
+				std::string_view text = std::string_view(_content.data() + begin, size);
 
-				if (isDate(text)) {
-					add(TokenType::date, content.substr(begin, size));
+				if (IsDate(text))
+				{
+					Add(TokenType::Date, _content.substr(begin, size));
 					break;
 				}
-				if (isTime(text)) {
-					add(TokenType::time, content.substr(begin, size));
+				if (IsTime(text))
+				{
+					Add(TokenType::Time, _content.substr(begin, size));
 					break;
 				}
-				if (isDateTime(text)) {
-					add(TokenType::dateTime, content.substr(begin, size));
+				if (IsDateTime(text))
+				{
+					Add(TokenType::DateTime, _content.substr(begin, size));
 					break;
 				}
-				
-				addText("<");
-				addText(content.substr(begin, size));
-				addText(">");
+
+				AddText("<");
+				AddText(_content.substr(begin, size));
+				AddText(">");
 				break;
 			}
 
 			case '*':
-				if (check(2) && is(1, '*') && is(2, '*')) {
-					add(TokenType::dinkus, "***");
-					advance(2);
+				if (Check(2) && Is(1, '*') && Is(2, '*'))
+				{
+					Add(TokenType::Dinkus, "***");
+					Advance(2);
 					break;
 				}
-				add(TokenType::fsBold, "*");
-				advance(0);
+				Add(TokenType::FSBold, "*");
+				Advance(0);
 				break;
 
 			case '_':
-				add(TokenType::fsItalic, "_");
-				advance(0);
+				Add(TokenType::FSItalic, "_");
+				Advance(0);
 				break;
 
 			case '`':
-				add(TokenType::fsMonospace, "`");
-				advance(0);
+				Add(TokenType::FSMonospace, "`");
+				Advance(0);
 				break;
 
 			case '>': {
-				Position beginPosition = position;
+				Position beginPosition = _position;
 
-				if (check(1) && is(1, ' ')) {
-					advance(1);
-					add(TokenType::headingIDOper, ">", beginPosition, beginPosition);
+				if (Check(1) && Is(1, ' '))
+				{
+					Advance(1);
+					Add(TokenType::HeadingIDMark, ">", beginPosition, beginPosition);
 
-					size_t idIndex = index;
+					size_t idIndex = _index;
 					size_t idSize = 0;
 
-					while (check(0) && !is(0, '\n') && isSymbol(0)) {
+					while (Check(0) && !Is(0, '\n') && IsSymbol(0))
+					{
 						++idSize;
-						advance(0);
+						Advance(0);
 					}
-					
-					if (idSize > 0) {
-						add(TokenType::headingID, content.substr(idIndex, idSize));
+
+					if (idSize > 0)
+					{
+						Add(TokenType::HeadingID, _content.substr(idIndex, idSize));
 					}
 					break;
 				}
 
-				addText(">");
-				advance(0);
+				AddText(">");
+				Advance(0);
 				break;
 			}
 
 			default:
-				addText(content.substr(index, 1));
-				advance(0);
+				AddText(_content.substr(_index, 1));
+				Advance(0);
 				break;
 		}
 	}
 
-	void Lexer::tokenizePrefix() {
-		Position beginPosition = position;
+	void Lexer::TokenizePrefix()
+	{
+		Position beginPosition = _position;
 
 		std::basic_string<TokenType> currentPrefix;
 		size_t currentIndent = 0;
 
-		while (is(0, '\t') || is(0, '/')) {
-			if (is(0, '\t')) {
-				currentPrefix += TokenType::indentIncr;
+		while (Is(0, '\t') || Is(0, '/'))
+		{
+			if (Is(0, '\t'))
+			{
+				currentPrefix += TokenType::IndentIncr;
 				++currentIndent;
-				advance(0);
+				Advance(0);
 				continue;
 			}
 
-			if (check(1) && is(0, '/') && is(1, ' ')) {
-				currentPrefix += TokenType::bqIncr;
-				advance(1);
+			if (Check(1) && Is(0, '/') && Is(1, ' '))
+			{
+				currentPrefix += TokenType::BQIncr;
+				Advance(1);
 				continue;
 			}
 
-			if (
-				(is(0, '/') && is(1, '\0')) ||
-				(is(0, '/') && is(1, '\n')) ||
-				(is(0, '/') && is(1, '\t'))
-			) {
-				currentPrefix += TokenType::bqIncr;
-				advance(0);
+			if ((Is(0, '/') && Is(1, '\0')) || (Is(0, '/') && Is(1, '\n')) || (Is(0, '/') && Is(1, '\t')))
+			{
+				currentPrefix += TokenType::BQIncr;
+				Advance(0);
 				continue;
 			}
 
 			break;
 		}
 
-		size_t lowerBound = std::min(prefix.size(), currentPrefix.size());
+		size_t lowerBound = std::min(_prefix.size(), currentPrefix.size());
 
-		for (size_t i = 0; i < lowerBound; ++i) {
-			if (currentPrefix[i] != prefix[i]) {
+		for (size_t i = 0; i < lowerBound; ++i)
+		{
+			if (currentPrefix[i] != _prefix[i])
+			{
 				lowerBound = i;
 				break;
 			}
 		}
 
-		if (prefix.size() > lowerBound) {
-			while (prefix.size() > lowerBound) {
-				add(
-					prefix.back() == TokenType::indentIncr ? TokenType::indentDecr : TokenType::bqDecr, 
-					prefix.back() == TokenType::indentIncr ? "I-" : "B-", 
-					beginPosition, 
-					beginPosition
-				);
-				prefix.pop_back();
+		if (_prefix.size() > lowerBound)
+		{
+			while (_prefix.size() > lowerBound)
+			{
+				Add(_prefix.back() == TokenType::IndentIncr ? TokenType::IndentDecr : TokenType::BQDecr,
+					_prefix.back() == TokenType::IndentIncr ? "I-" : "B-", beginPosition, beginPosition);
+				_prefix.pop_back();
 			}
 		}
 
-		if (currentPrefix.size() > lowerBound) {
-			while (lowerBound < currentPrefix.size()) {
-				add(
-					currentPrefix[lowerBound],
-					currentPrefix[lowerBound] == TokenType::indentIncr ? "I+" : "B+", 
-					beginPosition, 
-					beginPosition
-				);
+		if (currentPrefix.size() > lowerBound)
+		{
+			while (lowerBound < currentPrefix.size())
+			{
+				Add(currentPrefix[lowerBound], currentPrefix[lowerBound] == TokenType::IndentIncr ? "I+" : "B+",
+					beginPosition, beginPosition);
 				++lowerBound;
 			}
 		}
 
-		prefix = currentPrefix;
-		indent = currentIndent;
+		_prefix = currentPrefix;
+		_indent = currentIndent;
 
 		/* size_t currentIndent = is(0, '\t') ? count('\t') : 0; */
 
 		/* if (currentIndent > indent) { */
 		/* 	while (currentIndent > indent) { */
 		/* 		beginPosition.column = indent; */
-		/* 		add(TokenType::indentIncr, "I+", beginPosition, beginPosition); */
+		/* 		Add(TokenType::indentIncr, "I+", beginPosition, beginPosition); */
 		/* 		++indent; */
 		/* 	} */
 		/* } */
@@ -776,73 +869,87 @@ namespace Gularen {
 		/* 	while (currentIndent < indent) { */
 		/* 		--indent; */
 		/* 		// indentDecr has no symbol */
-		/* 		add(TokenType::indentDecr, "I-", tokens.back().begin, tokens.back().begin); */
+		/* 		Add(TokenType::indentDecr, "I-", tokens.back().begin, tokens.back().begin); */
 		/* 	} */
 		/* } */
 	}
 
-	void Lexer::tokenizeBlock() {
-		tokenizePrefix();
+	void Lexer::TokenizeBlock()
+	{
+		TokenizePrefix();
 
-		Position beginPosition = position;
+		Position beginPosition = _position;
 
-		switch (get(0)) {
+		switch (Get(0))
+		{
 			case '>': {
-				Position beginPosition = position;
+				Position beginPosition = _position;
 
-				size_t counter = count('>');
-				if (counter > 3) {
-					addText(std::string(counter, '>'));
+				size_t counter = Count('>');
+				if (counter > 3)
+				{
+					AddText(std::string(counter, '>'));
 					break;
 				}
 
-				if (is(0, ' ')) {
-					advance(0);
-					switch (counter) {
+				if (Is(0, ' '))
+				{
+					Advance(0);
+					switch (counter)
+					{
 						case 3:
-							add(TokenType::chapterOper, ">>>", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
+							Add(TokenType::ChapterMark, ">>>", beginPosition,
+								Position(beginPosition.line, beginPosition.column + 2));
 							break;
 						case 2:
-							add(TokenType::sectionOper, ">>", beginPosition, Position(beginPosition.line, beginPosition.column + 1));
+							Add(TokenType::SectionMark, ">>", beginPosition,
+								Position(beginPosition.line, beginPosition.column + 1));
 							break;
 						case 1:
-							add(TokenType::subsectionOper, ">", beginPosition, beginPosition);
+							Add(TokenType::SubsectionMark, ">", beginPosition, beginPosition);
 							break;
 					}
 					break;
 				}
-				addText(std::string(counter, '>'));
+				AddText(std::string(counter, '>'));
 				break;
 			}
 
 			case '-': {
-				tokenizeCode();
+				TokenizeCode();
 				break;
 			}
 
 			case '[': {
-				Position beginPosition = position;
-				if (check(3) && is(2, ']') && is(3, ' ')) {
-					if (is(1, ' ')) {
-						add(TokenType::checkbox, "[ ]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
-						advance(2);
-						tokenizeSpace();
+				Position beginPosition = _position;
+				if (Check(3) && Is(2, ']') && Is(3, ' '))
+				{
+					if (Is(1, ' '))
+					{
+						Add(TokenType::Checkbox, "[ ]", beginPosition,
+							Position(beginPosition.line, beginPosition.column + 2));
+						Advance(2);
+						TokenizeSpace();
 						break;
 					}
-					if (is(1, 'v')) {
-						add(TokenType::checkbox, "[v]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
-						advance(2);
-						tokenizeSpace();
+					if (Is(1, 'v'))
+					{
+						Add(TokenType::Checkbox, "[v]", beginPosition,
+							Position(beginPosition.line, beginPosition.column + 2));
+						Advance(2);
+						TokenizeSpace();
 						break;
 					}
-					if (is(1, 'x')) {
-						add(TokenType::checkbox, "[x]", beginPosition, Position(beginPosition.line, beginPosition.column + 2));
-						advance(2);
-						tokenizeSpace();
+					if (Is(1, 'x'))
+					{
+						Add(TokenType::Checkbox, "[x]", beginPosition,
+							Position(beginPosition.line, beginPosition.column + 2));
+						Advance(2);
+						TokenizeSpace();
 						break;
 					}
 				}
-				
+
 				// see inline [
 				break;
 			}
@@ -853,48 +960,60 @@ namespace Gularen {
 			}
 
 			case '|':
-				tokenizeTable();
+				TokenizeTable();
 				break;
 
 			case '<': {
-				size_t previousIndex = index;
-				Position beginPosition = position;
-				advance(0);
-				size_t beginIndex = index;
+				size_t previousIndex = _index;
+				Position beginPosition = _position;
+				Advance(0);
+				size_t beginIndex = _index;
 				size_t size = 0;
-				while (check(0) && !is(0, '>')) {
+				while (Check(0) && !Is(0, '>'))
+				{
 					++size;
-					advance(0);
+					Advance(0);
 				}
-				advance(0);
-				std::string inside = content.substr(beginIndex, size);
-				if (inside == "note") {
-					add(TokenType::admonNote, "<note>", beginPosition);
-					tokenizeSpace();
+				Advance(0);
+				std::string inside = _content.substr(beginIndex, size);
+				if (inside == "note")
+				{
+					Add(TokenType::AdmonNote, "<note>", beginPosition);
+					TokenizeSpace();
 					break;
-				} else if (inside == "hint") {
-					add(TokenType::admonHint, "<hint>", beginPosition);
-					tokenizeSpace();
+				}
+				else if (inside == "hint")
+				{
+					Add(TokenType::AdmonHint, "<hint>", beginPosition);
+					TokenizeSpace();
 					break;
-				} else if (inside == "important") {
-					add(TokenType::admonImportant, "<important>", beginPosition);
-					tokenizeSpace();
+				}
+				else if (inside == "important")
+				{
+					Add(TokenType::AdmonImportant, "<important>", beginPosition);
+					TokenizeSpace();
 					break;
-				} else if (inside == "warning") {
-					add(TokenType::admonWarning, "<warning>", beginPosition);
-					tokenizeSpace();
+				}
+				else if (inside == "warning")
+				{
+					Add(TokenType::AdmonWarning, "<warning>", beginPosition);
+					TokenizeSpace();
 					break;
-				} else if (inside == "seealso") {
-					add(TokenType::admonSeeAlso, "<seealso>", beginPosition);
-					tokenizeSpace();
+				}
+				else if (inside == "seealso")
+				{
+					Add(TokenType::AdmonSeeAlso, "<seealso>", beginPosition);
+					TokenizeSpace();
 					break;
-				} else if (inside == "tip") {
-					add(TokenType::admonTip, "<tip>", beginPosition);
-					tokenizeSpace();
+				}
+				else if (inside == "tip")
+				{
+					Add(TokenType::AdmonTip, "<tip>", beginPosition);
+					TokenizeSpace();
 					break;
 				}
 
-				index = previousIndex;
+				_index = previousIndex;
 				// see inline <
 				break;
 			}
@@ -908,213 +1027,251 @@ namespace Gularen {
 			case '7':
 			case '8':
 			case '9': {
-				Position beginPosition = position;
+				Position beginPosition = _position;
 				std::string number;
-				while (check(0) && get(0) >= '0' && get(0) <= '9') {
-					number += get(0);
-					advance(0);
+				while (Check(0) && Get(0) >= '0' && Get(0) <= '9')
+				{
+					number += Get(0);
+					Advance(0);
 				}
 
-				if (check(1) && is(0, '.') && is(1, ' ')) {
-					advance(0);
-					tokenizeSpace();
-					add(TokenType::index, number + ".", beginPosition, Position(beginPosition.line, beginPosition.column + number.size()));
+				if (Check(1) && Is(0, '.') && Is(1, ' '))
+				{
+					Advance(0);
+					TokenizeSpace();
+					Add(TokenType::Index, number + ".", beginPosition,
+						Position(beginPosition.line, beginPosition.column + number.size()));
 					break;
 				}
-				
-				addText(number);
+
+				AddText(number);
 				break;
 			}
 
-			
 			default:
 				break;
 		}
 	}
 
-	void Lexer::tokenizeCode() {
-		Position beginPosition = position;
+	void Lexer::TokenizeCode()
+	{
+		Position beginPosition = _position;
 
-		size_t openingIndent = indent;
-		size_t openingCounter = count('-');
+		size_t openingIndent = _indent;
+		size_t openingCounter = Count('-');
 
-		if (openingCounter == 1) {
-			if (is(0, ' ')) {
-				advance(0);
-				add(TokenType::bullet, "-", beginPosition, beginPosition);
+		if (openingCounter == 1)
+		{
+			if (Is(0, ' '))
+			{
+				Advance(0);
+				Add(TokenType::Bullet, "-", beginPosition, beginPosition);
 				return;
 			}
 
-			retreat(1);
-			// see inline -
-			return;
-		}
-		
-		if (openingCounter == 2) {
-			retreat(2);
+			Retreat(1);
 			// see inline -
 			return;
 		}
 
-		bool hasSpace = is(0, ' ');
-		size_t spaceCounter = count(' ');
+		if (openingCounter == 2)
+		{
+			Retreat(2);
+			// see inline -
+			return;
+		}
 
-		if (hasSpace) {
-			size_t langIndex = index;
+		bool hasSpace = Is(0, ' ');
+		size_t spaceCounter = Count(' ');
+
+		if (hasSpace)
+		{
+			size_t langIndex = _index;
 			size_t langSize = 0;
 
-			Position beginLangPosition = position;
+			Position beginLangPosition = _position;
 
-			while (check(0) && !is(0, '\n') && isSymbol(0)) {
+			while (Check(0) && !Is(0, '\n') && IsSymbol(0))
+			{
 				++langSize;
-				advance(0);
+				Advance(0);
 			}
-			
-			if (langSize == 0 || !is(0, '\n')) {
-				retreat(openingCounter + spaceCounter + langSize);
+
+			if (langSize == 0 || !Is(0, '\n'))
+			{
+				Retreat(openingCounter + spaceCounter + langSize);
 				return;
 			}
 
-			add(TokenType::codeMarker, std::string(openingCounter, '-'), beginPosition, Position(beginLangPosition.line, beginLangPosition.column - 1));
-			add(TokenType::codeLang, content.substr(langIndex, langSize), beginLangPosition);
-		} else {
-			if (!is(0, '\n')) {
-				retreat(openingCounter + spaceCounter);
+			Add(TokenType::CodeMark, std::string(openingCounter, '-'), beginPosition,
+				Position(beginLangPosition.line, beginLangPosition.column - 1));
+			Add(TokenType::CodeLang, _content.substr(langIndex, langSize), beginLangPosition);
+		}
+		else
+		{
+			if (!Is(0, '\n'))
+			{
+				Retreat(openingCounter + spaceCounter);
 				// see inline -
 				return;
 			}
 
-			add(TokenType::codeMarker, std::string(openingCounter, '-'), beginPosition);
+			Add(TokenType::CodeMark, std::string(openingCounter, '-'), beginPosition);
 		}
 
-		beginPosition = position;
+		beginPosition = _position;
 		beginPosition.line += 1;
-		beginPosition.column = indent;
+		beginPosition.column = _indent;
 
 		Position endPosition = beginPosition;
 
 		std::string source;
-		position.column = indent;
+		_position.column = _indent;
 
-		while (check(0)) {
-			if (is(0, '\n')) {
-				endPosition = position;
+		while (Check(0))
+		{
+			if (Is(0, '\n'))
+			{
+				endPosition = _position;
 
-				size_t newline = count('\n');
-				size_t indent = count('\t');
+				size_t newline = Count('\n');
+				size_t indent = Count('\t');
 
-				position.line += newline;
-				position.column = indent;
+				_position.line += newline;
+				_position.column = indent;
 
-				if (check(2) && is(0, '-') && is(1, '-') && is(2, '-')) {
-					size_t closingCounter = count('-');
-					if ((index >= content.size() || check(0) && is(0, '\n')) && closingCounter == openingCounter) {
+				if (Check(2) && Is(0, '-') && Is(1, '-') && Is(2, '-'))
+				{
+					size_t closingCounter = Count('-');
+					if ((_index >= _content.size() || Check(0) && Is(0, '\n')) && closingCounter == openingCounter)
+					{
 						break;
 					}
 
-					if (newline > 0) {
+					if (newline > 0)
+					{
 						source += std::string(newline, '\n');
 					}
 
-					if (indent > openingIndent) {
+					if (indent > openingIndent)
+					{
 						source += std::string(indent - openingIndent, '\t');
 					}
 
 					source += std::string(closingCounter, '-');
 					continue;
-				} else {
-					if (newline > 0) {
+				}
+				else
+				{
+					if (newline > 0)
+					{
 						source += std::string(newline, '\n');
 					}
 
-					if (indent > openingIndent) {
+					if (indent > openingIndent)
+					{
 						source += std::string(indent - openingIndent, '\t');
 					}
 					continue;
 				}
 			}
 
-			source += get(0);
-			advance(0);
+			source += Get(0);
+			Advance(0);
 		}
 
 		size_t trimBegin = 0;
 		size_t trimEnd = 0;
 
-		for (size_t i = 0; i < source.size() && source[i] == '\n'; ++i) {
+		for (size_t i = 0; i < source.size() && source[i] == '\n'; ++i)
+		{
 			++trimBegin;
 		}
 
-		for (size_t i = source.size(); source.size() && i > 0 && source[i] == '\n'; --i) {
+		for (size_t i = source.size(); source.size() && i > 0 && source[i] == '\n'; --i)
+		{
 			++trimEnd;
 		}
 
 		size_t trimSize = trimEnd == source.size() ? source.size() : source.size() - trimBegin - trimEnd;
 
-		add(TokenType::codeSource, source.substr(trimBegin, trimSize), beginPosition, endPosition);
-		add(TokenType::codeMarker, std::string(openingCounter, '-'), Position(position.line, indent));
+		Add(TokenType::CodeSource, source.substr(trimBegin, trimSize), beginPosition, endPosition);
+		Add(TokenType::CodeMark, std::string(openingCounter, '-'), Position(_position.line, _indent));
 	}
 
-	void Lexer::tokenizeSpace() {
-		while (check(0) && is(0, ' ')) {
-			advance(0);
+	void Lexer::TokenizeSpace()
+	{
+		while (Check(0) && Is(0, ' '))
+		{
+			Advance(0);
 		}
 
 		return;
 	}
 
-	void Lexer::tokenizeTable() {
-		add(TokenType::pipe, "|");
-		advance(0);
+	void Lexer::TokenizeTable()
+	{
+		Add(TokenType::Pipe, "|");
+		Advance(0);
 
-		if (!(is(0, '-') || is(0, ':'))) {
+		if (!(Is(0, '-') || Is(0, ':')))
+		{
 			return;
 		}
 
-		while (check(0) && (is(0, '-') || is(0, ':') || is(0, '|')) && !is(0, '\n')) {
-			Position beginPosition = position;
+		while (Check(0) && (Is(0, '-') || Is(0, ':') || Is(0, '|')) && !Is(0, '\n'))
+		{
+			Position beginPosition = _position;
 
-			if (check(1) && is(0, ':') && is(1, '-')) {
-				advance(0);
-				size_t lineCounter = count('-');
+			if (Check(1) && Is(0, ':') && Is(1, '-'))
+			{
+				Advance(0);
+				size_t lineCounter = Count('-');
 
-				if (get(0) == ':') {
-					advance(0);
-					add(TokenType::pipeConnector, ":-:", beginPosition);
+				if (Get(0) == ':')
+				{
+					Advance(0);
+					Add(TokenType::PipeConnector, ":-:", beginPosition);
 					continue;
 				}
 
-				add(TokenType::pipeConnector, ":--", beginPosition);
+				Add(TokenType::PipeConnector, ":--", beginPosition);
 				continue;
 			}
 
-			if (is(0, '-')) {
-				size_t lineCounter = count('-');
+			if (Is(0, '-'))
+			{
+				size_t lineCounter = Count('-');
 
-				if (get(0) == ':') {
-					advance(0);
-					add(TokenType::pipeConnector, "--:", beginPosition);
+				if (Get(0) == ':')
+				{
+					Advance(0);
+					Add(TokenType::PipeConnector, "--:", beginPosition);
 					continue;
 				}
 
-				add(TokenType::pipeConnector, ":--", beginPosition);
+				Add(TokenType::PipeConnector, ":--", beginPosition);
 				continue;
 			}
 
-			if (is(0, '|')) {
-				add(TokenType::pipe, "|");
-				advance(0);
+			if (Is(0, '|'))
+			{
+				Add(TokenType::Pipe, "|");
+				Advance(0);
 				continue;
 			}
 
-			addText(content.substr(index));
+			AddText(_content.substr(_index));
 			return;
 		}
 	}
 
-	void Lexer::tokenizeText() {
-		while (check(0)) {
-			switch (get(0)) {
+	void Lexer::TokenizeText()
+	{
+		while (Check(0))
+		{
+			switch (Get(0))
+			{
 				case ' ':
 				case 'a':
 				case 'b':
@@ -1178,8 +1335,8 @@ namespace Gularen {
 				case '7':
 				case '8':
 				case '9':
-					addText(content.substr(index, 1));
-					advance(0);
+					AddText(_content.substr(_index, 1));
+					Advance(0);
 					break;
 
 				default:
@@ -1188,19 +1345,19 @@ namespace Gularen {
 		}
 	}
 
-	void Lexer::tokenizeQuoMark(bool should, TokenType leftType, const std::string& leftValue, TokenType rightType, const std::string& rightValue) {
-		if (should || 
-			index == 0 ||
-			content[index - 1] == ' ' || 
-            content[index - 1] == '\t' || 
-            content[index - 1] == '\n' || 
-            content[index - 1] == '\0')
-            
-        {
-            add(leftType, leftValue);
-            return;
-        }
+	void Lexer::TokenizeQuoMark(
+		bool should, TokenType leftType, const std::string& leftValue, TokenType rightType,
+		const std::string& rightValue
+	)
+	{
+		if (should || _index == 0 || _content[_index - 1] == ' ' || _content[_index - 1] == '\t' ||
+			_content[_index - 1] == '\n' || _content[_index - 1] == '\0')
 
-        add(rightType, rightValue);
+		{
+			Add(leftType, leftValue);
+			return;
+		}
+
+		Add(rightType, rightValue);
 	}
 }

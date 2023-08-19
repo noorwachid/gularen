@@ -9,6 +9,7 @@ sources:
   - source/gularen/node.cpp
   - source/gularen/parser.cpp
   - source/gularen/helper/escape.cpp
-directories:
-  headers:
-    - source
+  - source/gularen/helper/emoji.cpp
+  - source/gularen/transpiler/html.cpp
+headerPaths:
+  - source

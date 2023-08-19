@@ -1,23 +1,26 @@
-#include <gularen/parser.h>
-#include <iostream>
+#include "gularen/parser.h"
 #include <fstream>
+#include <iostream>
 
-namespace Gularen {
-	bool hasNetProtocol(const std::string& reference) {
-		if (reference.empty()) return false;
+namespace Gularen
+{
+	bool HasNetProtocol(const std::string& reference)
+	{
+		if (reference.empty())
+			return false;
 
-		if (reference[0] >= 'a' && reference[0] <= 'z') {
+		if (reference[0] >= 'a' && reference[0] <= 'z')
+		{
 			size_t i = 0;
 			size_t size = 0;
-			while (i < reference.size() && reference[i] >= 'a' && reference[i] <= 'z') {
+			while (i < reference.size() && reference[i] >= 'a' && reference[i] <= 'z')
+			{
 				++i;
 				++size;
 			}
 
-			if (i + 2 < reference.size() && 
-				reference[i] == ':' && 
-				reference[i + 1] == '/' &&
-				reference[i + 2] == '/') {
+			if (i + 2 < reference.size() && reference[i] == ':' && reference[i + 1] == '/' && reference[i + 2] == '/')
+			{
 				return true;
 			}
 
@@ -27,748 +30,838 @@ namespace Gularen {
 		return false;
 	}
 
-	bool Parser::check(size_t offset) const {
-		return index + offset < lexer.get().size();
+	bool Parser::Check(size_t offset) const
+	{
+		return _index + offset < _lexer.Get().size();
 	}
 
-	bool Parser::is(size_t offset, TokenType type) const {
-		return lexer.get()[index + offset].type == type;
+	bool Parser::Is(size_t offset, TokenType type) const
+	{
+		return _lexer.Get()[_index + offset].type == type;
 	}
 
-	const Token& Parser::get(size_t offset) const {
-		return lexer.get()[index + offset];
+	const Token& Parser::Get(size_t offset) const
+	{
+		return _lexer.Get()[_index + offset];
 	}
 
-	void Parser::advance(size_t offset) {
-		index += 1 + offset;
+	void Parser::Advance(size_t offset)
+	{
+		_index += 1 + offset;
 	}
 
-	void Parser::add(const NodePtr& node, const Range& range) {
+	void Parser::Add(const NodePtr& node, const Range& range)
+	{
 		node->range = range;
-		scopes.top()->children.push_back(node);
+		_scopes.top()->children.push_back(node);
 	}
 
-
-	void Parser::addText(const std::string& value, const Range& range) {
-		if (!scopes.top()->children.empty() && scopes.top()->children.back()->group == NodeGroup::text) {
-			Node* node = scopes.top()->children.back().get();
+	void Parser::AddText(const std::string& value, const Range& range)
+	{
+		if (!_scopes.top()->children.empty() && _scopes.top()->children.back()->group == NodeGroup::Text)
+		{
+			Node* node = _scopes.top()->children.back().get();
 			static_cast<TextNode*>(node)->value += value;
-		} else {
-			add(std::make_shared<TextNode>(value), range);
+		}
+		else
+		{
+			Add(std::make_shared<TextNode>(value), range);
 		}
 	}
 
-	void Parser::addScope(const NodePtr& node, const Range& range) {
-		add(node, range);
-		scopes.push(node);
+	void Parser::AddScope(const NodePtr& node, const Range& range)
+	{
+		Add(node, range);
+		_scopes.push(node);
 	}
 
-	void Parser::removeScope(const Range& range) {
-		if (scopes.size() > 1)
-			scopes.pop();
+	void Parser::RemoveScope(const Range& range)
+	{
+		if (_scopes.size() > 1)
+			_scopes.pop();
 	}
 
-	const NodePtr& Parser::getScope() {
-		return scopes.top();
+	const NodePtr& Parser::GetScope()
+	{
+		return _scopes.top();
 	}
 
-	void Parser::set(const std::string& content, const std::string& path) {
-		lexer.set(content);
-		this->pathVirtual = true;
-		this->path = path;
-		this->previousPaths.clear();
-		this->previousPaths.push_back(path);
+	void Parser::Set(const std::string& content, const std::string& path)
+	{
+		_lexer.Set(content);
+		this->_pathVirtual = true;
+		this->_path = path;
+		this->_previousPaths.clear();
+		this->_previousPaths.push_back(path);
 	}
 
-	void Parser::load(const std::string& path) {
-		this->pathVirtual = false;
-		this->path = path;
-		this->previousPaths.clear();
-		this->previousPaths.push_back(path);
+	void Parser::Load(const std::string& path)
+	{
+		this->_pathVirtual = false;
+		this->_path = path;
+		this->_previousPaths.clear();
+		this->_previousPaths.push_back(path);
 
-		if (std::filesystem::is_directory(path)) {
-			lexer.set("");
+		if (std::filesystem::is_directory(path))
+		{
+			_lexer.Set("");
 			return;
 		}
 
 		std::ifstream file(path);
 
-		if (!file.is_open()) {
-			lexer.set("");
+		if (!file.is_open())
+		{
+			_lexer.Set("");
 			return;
 		}
 
 		std::string content;
-		file.seekg(0, std::ios::end);   
+		file.seekg(0, std::ios::end);
 		content.reserve(file.tellg());
 		file.seekg(0, std::ios::beg);
-		content.assign(
-			std::istreambuf_iterator<char>(file),
-			std::istreambuf_iterator<char>()
-		);
-		
-		lexer.set(content);
+		content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+
+		_lexer.Set(content);
 	}
 
-	NodePtr Parser::recursiveLoad(const std::string& directory, const std::string& nextPath) {
+	NodePtr Parser::RecursiveLoad(const std::string& directory, const std::string& nextPath)
+	{
 		std::string nextFullPath = directory + "/" + nextPath;
-		for (const std::string& previousPath : previousPaths) {
-			if (previousPath == nextFullPath) {
+		for (const std::string& previousPath : _previousPaths)
+		{
+			if (previousPath == nextFullPath)
+			{
 				return nullptr;
 			}
 		}
-		
-		Parser parser;
-		parser.load(nextFullPath);
-		parser.previousPaths.insert(parser.previousPaths.end(), previousPaths.begin(), previousPaths.end());
-		parser.parse();
 
-		NodePtr node = parser.get();
-		
-		if (node) {
+		Parser parser;
+		parser.Load(nextFullPath);
+		parser._previousPaths.insert(parser._previousPaths.end(), _previousPaths.begin(), _previousPaths.end());
+		parser.Parse();
+
+		NodePtr node = parser.Get();
+
+		if (node)
+		{
 			static_cast<DocumentNode*>(node.get())->path = nextPath;
 		}
 
 		return node;
 	}
 
-	void Parser::parse() {
-		lexer.tokenize();
-		root = nullptr;
+	void Parser::Parse()
+	{
+		_lexer.Tokenize();
+		_root = nullptr;
 
-		if (lexer.get().empty()) return;
+		if (_lexer.Get().empty())
+			return;
 
-		index = 0;
-		lastEnding = TokenType::newline;
-		
-		while (!scopes.empty()) {
-			scopes.pop();
+		_index = 0;
+		_lastEnding = TokenType::Newline;
+
+		while (!_scopes.empty())
+		{
+			_scopes.pop();
 		}
 
-		root = std::make_shared<DocumentNode>(pathVirtual ? "" : path);
-		scopes.push(root);
+		_root = std::make_shared<DocumentNode>(_pathVirtual ? "" : _path);
+		_scopes.push(_root);
 
-		parseBlock();
+		ParseBlock();
 
-		while (check(0)) {
-			parseInline();
+		while (Check(0))
+		{
+			ParseInline();
 		}
 
-		parseBlockEnding();
+		ParseBlockEnding();
 	}
 
-	const NodePtr& Parser::get() const {
-		return root;
+	const NodePtr& Parser::Get() const
+	{
+		return _root;
 	}
 
-	void Parser::visit(const Visitor& visitor) {
-		visit(visitor, root);
+	void Parser::Visit(const Visitor& visitor)
+	{
+		RecursiveVisit(visitor, _root);
 	}
 
-	void Parser::visit(const Visitor& visitor, const NodePtr& node) {
-		if (!visitor || !node) return;
+	void Parser::RecursiveVisit(const Visitor& visitor, const NodePtr& node)
+	{
+		if (!visitor || !node)
+			return;
 
 		visitor(node);
-		
-		for (const NodePtr& childNode : node->children) {
-			visit(visitor, childNode);
+
+		for (const NodePtr& childNode : node->children)
+		{
+			RecursiveVisit(visitor, childNode);
 		}
 	}
 
-	void Parser::parseInline() {
-		switch (get(0).type) {
-			case TokenType::text:
-				addText(get(0).value, get(0).range);
-				advance(0);
+	void Parser::ParseInline()
+	{
+		switch (Get(0).type)
+		{
+			case TokenType::Text:
+				AddText(Get(0).value, Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::lsQuo:
-				add(std::make_shared<PunctNode>(PunctType::lsQuo, get(0).value), get(0).range);
-				advance(0);
+			case TokenType::LSQuo:
+				Add(std::make_shared<PunctNode>(PunctType::LSQuo, Get(0).value), Get(0).range);
+				Advance(0);
 				break;
-			case TokenType::rsQuo:
-				add(std::make_shared<PunctNode>(PunctType::rsQuo, get(0).value), get(0).range);
-				advance(0);
+			case TokenType::RSQuo:
+				Add(std::make_shared<PunctNode>(PunctType::RSQuo, Get(0).value), Get(0).range);
+				Advance(0);
 				break;
-			case TokenType::ldQuo:
-				add(std::make_shared<PunctNode>(PunctType::ldQuo, get(0).value), get(0).range);
-				advance(0);
+			case TokenType::LDQuo:
+				Add(std::make_shared<PunctNode>(PunctType::LDQuo, Get(0).value), Get(0).range);
+				Advance(0);
 				break;
-			case TokenType::rdQuo:
-				add(std::make_shared<PunctNode>(PunctType::rdQuo, get(0).value), get(0).range);
-				advance(0);
-				break;
-
-			case TokenType::hyphen:
-				add(std::make_shared<PunctNode>(PunctType::hyphen, get(0).value), get(0).range);
-				advance(0);
-				break;
-			case TokenType::enDash:
-				add(std::make_shared<PunctNode>(PunctType::enDash, get(0).value), get(0).range);
-				advance(0);
-				break;
-			case TokenType::emDash:
-				add(std::make_shared<PunctNode>(PunctType::emDash, get(0).value), get(0).range);
-				advance(0);
+			case TokenType::RDQuo:
+				Add(std::make_shared<PunctNode>(PunctType::RDQuo, Get(0).value), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::emojiMarker:
-				if (check(2) && is(1, TokenType::emojiCode) && is(2, TokenType::emojiMarker)) {
-					add(std::make_shared<EmojiNode>(get(1).value), get(0).range);
-					advance(2);
+			case TokenType::Hyphen:
+				Add(std::make_shared<PunctNode>(PunctType::Hyphen, Get(0).value), Get(0).range);
+				Advance(0);
+				break;
+			case TokenType::EnDash:
+				Add(std::make_shared<PunctNode>(PunctType::EnDash, Get(0).value), Get(0).range);
+				Advance(0);
+				break;
+			case TokenType::EmDash:
+				Add(std::make_shared<PunctNode>(PunctType::EmDash, Get(0).value), Get(0).range);
+				Advance(0);
+				break;
+
+			case TokenType::EmojiMark:
+				if (Check(2) && Is(1, TokenType::EmojiCode) && Is(2, TokenType::EmojiMark))
+				{
+					Add(std::make_shared<EmojiNode>(Get(1).value), Get(0).range);
+					Advance(2);
 					break;
 				}
-				addText(get(0).value, get(0).range);
+				AddText(Get(0).value, Get(0).range);
 				break;
 
-			case TokenType::fsBold:
-				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::bold) {
-					removeScope(get(0).range);
-					advance(0);
+			case TokenType::FSBold:
+				if (GetScope()->group == NodeGroup::FS && static_cast<FSNode*>(GetScope().get())->type == FSType::Bold)
+				{
+					RemoveScope(Get(0).range);
+					Advance(0);
 					break;
 				}
-				addScope(std::make_shared<FSNode>(FSType::bold), get(0).range);
-				advance(0);
+				AddScope(std::make_shared<FSNode>(FSType::Bold), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::fsItalic:
-				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::italic) {
-					removeScope(get(0).range);
-					advance(0);
+			case TokenType::FSItalic:
+				if (GetScope()->group == NodeGroup::FS &&
+					static_cast<FSNode*>(GetScope().get())->type == FSType::Italic)
+				{
+					RemoveScope(Get(0).range);
+					Advance(0);
 					break;
 				}
-				addScope(std::make_shared<FSNode>(FSType::italic), get(0).range);
-				advance(0);
+				AddScope(std::make_shared<FSNode>(FSType::Italic), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::fsMonospace:
-				if (getScope()->group == NodeGroup::fs && static_cast<FSNode*>(getScope().get())->type == FSType::monospace) {
-					removeScope(get(0).range);
-					advance(0);
+			case TokenType::FSMonospace:
+				if (GetScope()->group == NodeGroup::FS &&
+					static_cast<FSNode*>(GetScope().get())->type == FSType::Monospace)
+				{
+					RemoveScope(Get(0).range);
+					Advance(0);
 					break;
 				}
-				addScope(std::make_shared<FSNode>(FSType::monospace), get(0).range);
-				advance(0);
+				AddScope(std::make_shared<FSNode>(FSType::Monospace), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::headingIDOper:
-				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::heading) {
-					HeadingNode* headingNode = static_cast<HeadingNode*>(getScope().get());
-					if (headingNode->type == HeadingType::subtitle) {
-						addText("> " + get(1).value, get(0).range);
-						advance(1);
+			case TokenType::HeadingIDMark:
+				if (Check(1) && Is(1, TokenType::HeadingID) && GetScope()->group == NodeGroup::Heading)
+				{
+					HeadingNode* headingNode = static_cast<HeadingNode*>(GetScope().get());
+					if (headingNode->type == HeadingType::Subtitle)
+					{
+						AddText("> " + Get(1).value, Get(0).range);
+						Advance(1);
 						break;
 					}
-					headingNode->id = get(1).value;
-					advance(1);
+					headingNode->id = Get(1).value;
+					Advance(1);
 					break;
-				} 
-				addText(">", get(0).range);
-				advance(0);
+				}
+				AddText(">", Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::date: {
+			case TokenType::Date: {
 				std::shared_ptr<DateTimeNode> dateTimeNode = std::make_shared<DateTimeNode>();
-				dateTimeNode->date = get(0).value;
-				add(dateTimeNode, get(0).range);
-				advance(0);
+				dateTimeNode->date = Get(0).value;
+				Add(dateTimeNode, Get(0).range);
+				Advance(0);
 				break;
 			}
 
-			case TokenType::time: {
+			case TokenType::Time: {
 				std::shared_ptr<DateTimeNode> dateTimeNode = std::make_shared<DateTimeNode>();
-				dateTimeNode->time = get(0).value;
-				add(dateTimeNode, get(0).range);
-				advance(0);
+				dateTimeNode->time = Get(0).value;
+				Add(dateTimeNode, Get(0).range);
+				Advance(0);
 				break;
 			}
 
-			case TokenType::dateTime: {
+			case TokenType::DateTime: {
 				std::shared_ptr<DateTimeNode> dateTimeNode = std::make_shared<DateTimeNode>();
-				dateTimeNode->date = get(0).value.substr(0, 10);
-				dateTimeNode->time = get(0).value.substr(11);
-				add(dateTimeNode, get(0).range);
-				advance(0);
+				dateTimeNode->date = Get(0).value.substr(0, 10);
+				dateTimeNode->time = Get(0).value.substr(11);
+				Add(dateTimeNode, Get(0).range);
+				Advance(0);
 				break;
 			}
 
-			case TokenType::break_:
-				add(std::make_shared<BreakNode>(BreakType::line), get(0).range);
-				advance(0);
+			case TokenType::Break:
+				Add(std::make_shared<BreakNode>(BreakType::Line), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::pipe:
-				if (getScope()->group == NodeGroup::tableCell) {
-					removeScope(get(0).range);
+			case TokenType::Pipe:
+				if (GetScope()->group == NodeGroup::TableCell)
+				{
+					RemoveScope(Get(0).range);
 				}
 
-				if (check(1) && !is(1, TokenType::newline) && getScope()->group == NodeGroup::tableRow) {
-					addScope(std::make_shared<TableCellNode>(), get(0).range);
+				if (Check(1) && !Is(1, TokenType::Newline) && GetScope()->group == NodeGroup::TableRow)
+				{
+					AddScope(std::make_shared<TableCellNode>(), Get(0).range);
 				}
-				advance(0);
+				Advance(0);
 				break;
 
-			case TokenType::curlyOpen: {
-				if (check(5) && is(1, TokenType::codeSource) && is(2, TokenType::curlyClose) &&
-					is(3, TokenType::parenOpen) && is(4, TokenType::resourceLabel) && is(5, TokenType::parenClose)) {
+			case TokenType::CurlyOpen: {
+				if (Check(5) && Is(1, TokenType::CodeSource) && Is(2, TokenType::CurlyClose) &&
+					Is(3, TokenType::ParenOpen) && Is(4, TokenType::ResourceLabel) && Is(5, TokenType::ParenClose))
+				{
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
-					codeNode->type = CodeType::inline_;
-					codeNode->lang = get(4).value;
-					codeNode->source = get(1).value;
-					add(codeNode, get(0).range);
-					advance(5);
+					codeNode->type = CodeType::Inline;
+					codeNode->lang = Get(4).value;
+					codeNode->source = Get(1).value;
+					Add(codeNode, Get(0).range);
+					Advance(5);
 					break;
 				}
 
-				if (check(2) && is(1, TokenType::codeSource) && is(2, TokenType::curlyClose)) {
+				if (Check(2) && Is(1, TokenType::CodeSource) && Is(2, TokenType::CurlyClose))
+				{
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
-					codeNode->type = CodeType::inline_;
-					codeNode->source = get(1).value;
-					add(codeNode, get(0).range);
-					advance(2);
+					codeNode->type = CodeType::Inline;
+					codeNode->source = Get(1).value;
+					Add(codeNode, Get(0).range);
+					Advance(2);
 					break;
 				}
 
-				addText("{", get(0).range);
-				advance(0);
+				AddText("{", Get(0).range);
+				Advance(0);
 			}
 
-			case TokenType::squareOpen: {
+			case TokenType::SquareOpen: {
 				std::shared_ptr<ResourceNode> linkNode = nullptr;
 
-				if (check(2) && 
-					is(1, TokenType::resource) && 
-					is(2, TokenType::squareClose)) {
+				if (Check(2) && Is(1, TokenType::Resource) && Is(2, TokenType::SquareClose))
+				{
 					linkNode = std::make_shared<ResourceNode>(
-						hasNetProtocol(get(1).value) ? ResourceType::linker : ResourceType::linkerLocal, 
-						get(1).value
+						HasNetProtocol(Get(1).value) ? ResourceType::Link : ResourceType::LinkLocal, Get(1).value
 					);
-					add(linkNode, get(0).range);
-					advance(2);
-				} else if (check(4) && 
-					is(1, TokenType::resource) && 
-					is(2, TokenType::resourceIDMarker) && 
-					is(3, TokenType::resourceID) && 
-					is(4, TokenType::squareClose)) {
-					linkNode = std::make_shared<ResourceNode>(ResourceType::linkerLocal, get(1).value);
-					linkNode->id = get(3).value;
-					add(linkNode, get(0).range);
-					advance(4);
+					Add(linkNode, Get(0).range);
+					Advance(2);
+				}
+				else if (Check(4) && Is(1, TokenType::Resource) && Is(2, TokenType::ResourceIDMark) && Is(3, TokenType::ResourceID) && Is(4, TokenType::SquareClose))
+				{
+					linkNode = std::make_shared<ResourceNode>(ResourceType::LinkLocal, Get(1).value);
+					linkNode->id = Get(3).value;
+					Add(linkNode, Get(0).range);
+					Advance(4);
 				}
 
-				if (linkNode) {
-					if (check(2) && is(0, TokenType::parenOpen) && is(1, TokenType::resourceLabel) && is(2, TokenType::parenClose)) {
-						linkNode->label = get(1).value;
-						advance(2);
+				if (linkNode)
+				{
+					if (Check(2) && Is(0, TokenType::ParenOpen) && Is(1, TokenType::ResourceLabel) &&
+						Is(2, TokenType::ParenClose))
+					{
+						linkNode->label = Get(1).value;
+						Advance(2);
 					}
 					break;
 				}
 
-				addText("[", get(0).range);
-				advance(0);
+				AddText("[", Get(0).range);
+				Advance(0);
 				break;
 			}
 
-			case TokenType::presentMarker: {
+			case TokenType::PresentMark: {
 				std::shared_ptr<ResourceNode> presentNode = nullptr;
 
-				if (check(3) && 
-					is(1, TokenType::squareOpen) && 
-					is(2, TokenType::resource) && 
-					is(3, TokenType::squareClose)) {
+				if (Check(3) && Is(1, TokenType::SquareOpen) && Is(2, TokenType::Resource) &&
+					Is(3, TokenType::SquareClose))
+				{
 					presentNode = std::make_shared<ResourceNode>(
-						hasNetProtocol(get(2).value) ? ResourceType::presenter : ResourceType::presenterLocal, 
-						get(2).value
+						HasNetProtocol(Get(2).value) ? ResourceType::Present : ResourceType::PresentLocal,
+						Get(2).value
 					);
-					add(presentNode, get(0).range);
-					advance(3);
+					Add(presentNode, Get(0).range);
+					Advance(3);
 				}
 
-				if (presentNode) {
-					if (check(2) && is(0, TokenType::parenOpen) && is(1, TokenType::resourceLabel) && is(2, TokenType::parenClose)) {
-						presentNode->label = get(1).value;
-						advance(2);
+				if (presentNode)
+				{
+					if (Check(2) && Is(0, TokenType::ParenOpen) && Is(1, TokenType::ResourceLabel) &&
+						Is(2, TokenType::ParenClose))
+					{
+						presentNode->label = Get(1).value;
+						Advance(2);
 					}
 					break;
 				}
 
-				addText("!", get(0).range);
-				advance(0);
+				AddText("!", Get(0).range);
+				Advance(0);
 				break;
 			}
 
-			case TokenType::jumpMarker:
-				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::jumpID) && is(3, TokenType::squareClose)) {
-					add(std::make_shared<FootnoteJumpNode>(get(2).value), get(0).range);
-					advance(3);
+			case TokenType::JumpMark:
+				if (Check(3) && Is(1, TokenType::SquareOpen) && Is(2, TokenType::JumpID) &&
+					Is(3, TokenType::SquareClose))
+				{
+					Add(std::make_shared<FootnoteJumpNode>(Get(2).value), Get(0).range);
+					Advance(3);
 					break;
 				}
-				addText("^", get(0).range);
-				advance(0);
+				AddText("^", Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::includeMarker:
-				#ifndef __EMSCRIPTEN__
-				if (check(3) && 
-					is(1, TokenType::squareOpen) &&
-					is(2, TokenType::resource) &&
-					is(3, TokenType::squareClose) &&
-					!hasNetProtocol(get(2).value)
-					) {
-					std::string directory = path == "" ? std::filesystem::current_path().string() : std::filesystem::path(path).parent_path().string();
-					
-					NodePtr fileNode = recursiveLoad(directory, get(2).value);
-					add(fileNode ? fileNode : std::make_shared<DocumentNode>(get(2).value), get(0).range);
-					advance(3);
+			case TokenType::IncludeMark:
+#ifndef __EMSCRIPTEN__
+				if (Check(3) && Is(1, TokenType::SquareOpen) && Is(2, TokenType::Resource) &&
+					Is(3, TokenType::SquareClose) && !HasNetProtocol(Get(2).value))
+				{
+					std::string directory = _path == "" ? std::filesystem::current_path().string()
+														: std::filesystem::path(_path).parent_path().string();
+
+					NodePtr fileNode = RecursiveLoad(directory, Get(2).value);
+					Add(fileNode ? fileNode : std::make_shared<DocumentNode>(Get(2).value), Get(0).range);
+					Advance(3);
 					break;
 				}
-				#endif
+#endif
 
-				addText("?", get(0).range);
-				advance(0);
+				AddText("?", Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::newline:
-			case TokenType::newlinePlus:
-			case TokenType::eof:
-				lastEnding = get(0).type;
-				advance(0);
+			case TokenType::Newline:
+			case TokenType::NewlinePlus:
+			case TokenType::End:
+				_lastEnding = Get(0).type;
+				Advance(0);
 
-				if (check(0)) {
-					parseBlock();
+				if (Check(0))
+				{
+					ParseBlock();
 				}
 				break;
 
-			case TokenType::comment:
-				advance(0);
+			case TokenType::Comment:
+				Advance(0);
 				break;
-				
+
 			default:
-				addText(get(0).value, get(0).range);
-				advance(0);
+				AddText(Get(0).value, Get(0).range);
+				Advance(0);
 				break;
 		}
 	}
 
-	void Parser::parseIndent() {
-		switch (getScope()->group) {
-			case NodeGroup::heading:
-				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
-					removeScope(get(0).range);
+	void Parser::ParseIndent()
+	{
+		switch (GetScope()->group)
+		{
+			case NodeGroup::Heading:
+				if (GetScope()->As<HeadingNode>().type == HeadingType::Subtitle)
+				{
+					RemoveScope(Get(0).range);
 				}
-				removeScope(get(0).range);
+				RemoveScope(Get(0).range);
 				break;
 
 			default:
 				break;
 		}
 
-		while (check(0) && (
-			is(0, TokenType::indentIncr) || 
-			is(0, TokenType::indentDecr) || 
-			is(0, TokenType::bqIncr) || 
-			is(0, TokenType::bqDecr)
-			)) {
+		while (Check(0) && (Is(0, TokenType::IndentIncr) || Is(0, TokenType::IndentDecr) || Is(0, TokenType::BQIncr) ||
+							Is(0, TokenType::BQDecr)))
+		{
 
-			if (is(0, TokenType::indentIncr)) {
-				addScope(std::make_shared<IndentNode>(), get(0).range);
-				advance(0);
+			if (Is(0, TokenType::IndentIncr))
+			{
+				AddScope(std::make_shared<IndentNode>(), Get(0).range);
+				Advance(0);
 				continue;
 			}
 
-			if (is(0, TokenType::indentDecr)) {
-				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
-					removeScope(get(0).range);
+			if (Is(0, TokenType::IndentDecr))
+			{
+				while (Check(0) && _scopes.size() > 1 && GetScope()->group != NodeGroup::Indent)
+				{
+					RemoveScope(Get(0).range);
 				}
-				removeScope(get(0).range);
-				advance(0);
+				RemoveScope(Get(0).range);
+				Advance(0);
 				continue;
 			}
 
-			if (is(0, TokenType::bqIncr)) {
-				addScope(std::make_shared<BQNode>(), get(0).range);
-				advance(0);
+			if (Is(0, TokenType::BQIncr))
+			{
+				AddScope(std::make_shared<BQNode>(), Get(0).range);
+				Advance(0);
 				continue;
 			}
 
-			if (is(0, TokenType::bqDecr)) {
-				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::bq) {
-					removeScope(get(0).range);
+			if (Is(0, TokenType::BQDecr))
+			{
+				while (Check(0) && _scopes.size() > 1 && GetScope()->group != NodeGroup::BQ)
+				{
+					RemoveScope(Get(0).range);
 				}
-				removeScope(get(0).range);
-				advance(0);
+				RemoveScope(Get(0).range);
+				Advance(0);
 				continue;
 			}
 
 			break;
 		}
 	}
-	
-	void Parser::parseBlockEnding() {
-		switch (getScope()->group) {
-			case NodeGroup::listItem: {
-				removeScope(get(0).range);
-				ListType type = getScope()->as<ListNode>().type;
 
-				if (lastEnding == TokenType::newlinePlus || (
-					check(0) && !(
-						(is(0, TokenType::bullet)   && type == ListType::bullet) ||
-						(is(0, TokenType::index)    && type == ListType::index) ||
-						(is(0, TokenType::checkbox) && type == ListType::check) 
-					)
-				)) {
-					lastListDeadBecauseNewlinePlus = lastEnding == TokenType::newlinePlus;
-					removeScope(get(0).range);
+	void Parser::ParseBlockEnding()
+	{
+		switch (GetScope()->group)
+		{
+			case NodeGroup::ListItem: {
+				RemoveScope(Get(0).range);
+				ListType type = GetScope()->As<ListNode>().type;
+
+				if (_lastEnding == TokenType::NewlinePlus ||
+					(Check(0) && !((Is(0, TokenType::Bullet) && type == ListType::Bullet) ||
+								   (Is(0, TokenType::Index) && type == ListType::Index) ||
+								   (Is(0, TokenType::Checkbox) && type == ListType::Check))))
+				{
+					_lastListDeadBecauseNewlinePlus = _lastEnding == TokenType::NewlinePlus;
+					RemoveScope(Get(0).range);
 				}
 				break;
 			}
 
-			case NodeGroup::paragraph:
-				if (getScope()->children.empty()) {
-					removeScope(get(0).range);
-					getScope()->children.pop_back();
-				} else if (lastEnding == TokenType::newlinePlus || (check(0) &&
-					is(0, TokenType::bullet) ||
-					is(0, TokenType::index) ||
-					is(0, TokenType::checkbox) ||
-					is(0, TokenType::pipe) ||
-					is(0, TokenType::chapterOper) ||
-					is(0, TokenType::describeMarker)
-				)) {
-					removeScope(get(0).range);
+			case NodeGroup::Paragraph:
+				if (GetScope()->children.empty())
+				{
+					RemoveScope(Get(0).range);
+					GetScope()->children.pop_back();
+				}
+				else if (_lastEnding == TokenType::NewlinePlus || (Check(0) && Is(0, TokenType::Bullet) || Is(0, TokenType::Index) || Is(0, TokenType::Checkbox) || Is(0, TokenType::Pipe) || Is(0, TokenType::ChapterMark) || Is(0, TokenType::DescribeMark)))
+				{
+					RemoveScope(Get(0).range);
 				}
 				break;
-			
-			case NodeGroup::tableCell:
-				if (getScope()->children.empty()) {
-					removeScope(get(0).range);
-					getScope()->children.pop_back();
-				} else {
-					removeScope(get(0).range);
+
+			case NodeGroup::TableCell:
+				if (GetScope()->children.empty())
+				{
+					RemoveScope(Get(0).range);
+					GetScope()->children.pop_back();
 				}
-				
+				else
+				{
+					RemoveScope(Get(0).range);
+				}
+
 				// tableRow
-				removeScope(get(0).range);
+				RemoveScope(Get(0).range);
 
-				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
-					removeScope(get(0).range);
+				if (_lastEnding == TokenType::NewlinePlus || (Check(0) && !Is(0, TokenType::Pipe)))
+				{
+					RemoveScope(Get(0).range);
 				}
 				break;
 
-			case NodeGroup::tableRow:
-				removeScope(get(0).range);
+			case NodeGroup::TableRow:
+				RemoveScope(Get(0).range);
 
-				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
-					removeScope(get(0).range);
+				if (_lastEnding == TokenType::NewlinePlus || (Check(0) && !Is(0, TokenType::Pipe)))
+				{
+					RemoveScope(Get(0).range);
 				}
 				break;
 
-			case NodeGroup::footnoteDescribe:
-				removeScope(get(0).range);
+			case NodeGroup::FootnoteDescribe:
+				RemoveScope(Get(0).range);
 				break;
 
-			case NodeGroup::admon:
-				removeScope(get(0).range);
+			case NodeGroup::Admon:
+				RemoveScope(Get(0).range);
 				break;
-			
+
 			default:
 				break;
 		}
 	}
 
-	void Parser::parseBlock() {
-		parseIndent();
-		parseBlockEnding();
+	void Parser::ParseBlock()
+	{
+		ParseIndent();
+		ParseBlockEnding();
 
-		switch (get(0).type) {
-			case TokenType::bullet:
-				if (getScope()->group != NodeGroup::list) {
-					addScope(std::make_shared<ListNode>(ListType::bullet), get(0).range);
+		switch (Get(0).type)
+		{
+			case TokenType::Bullet:
+				if (GetScope()->group != NodeGroup::List)
+				{
+					AddScope(std::make_shared<ListNode>(ListType::Bullet), Get(0).range);
 				}
-				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1), get(0).range);
-				advance(0);
+				AddScope(std::make_shared<ListItemNode>(GetScope()->children.size() + 1), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::index:
-				if (getScope()->group != NodeGroup::list) {
-					if (!getScope()->children.empty() && 
-						getScope()->children.back()->group == NodeGroup::list &&
-						getScope()->children.back()->as<ListNode>().type == ListType::index &&
-						!lastListDeadBecauseNewlinePlus) {
-						scopes.push(getScope()->children.back());
-					} else {
-						addScope(std::make_shared<ListNode>(ListType::index), get(0).range);
+			case TokenType::Index:
+				if (GetScope()->group != NodeGroup::List)
+				{
+					if (!GetScope()->children.empty() && GetScope()->children.back()->group == NodeGroup::List &&
+						GetScope()->children.back()->As<ListNode>().type == ListType::Index &&
+						!_lastListDeadBecauseNewlinePlus)
+					{
+						_scopes.push(GetScope()->children.back());
+					}
+					else
+					{
+						AddScope(std::make_shared<ListNode>(ListType::Index), Get(0).range);
 					}
 				}
-				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1), get(0).range);
-				advance(0);
+				AddScope(std::make_shared<ListItemNode>(GetScope()->children.size() + 1), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::checkbox: {
-				if (getScope()->group != NodeGroup::list) {
-					if (!getScope()->children.empty() && 
-						getScope()->children.back()->group == NodeGroup::list &&
-						getScope()->children.back()->as<ListNode>().type == ListType::check &&
-						!lastListDeadBecauseNewlinePlus) {
-						scopes.push(getScope()->children.back());
-					} else {
-						addScope(std::make_shared<ListNode>(ListType::check), get(0).range);
+			case TokenType::Checkbox: {
+				if (GetScope()->group != NodeGroup::List)
+				{
+					if (!GetScope()->children.empty() && GetScope()->children.back()->group == NodeGroup::List &&
+						GetScope()->children.back()->As<ListNode>().type == ListType::Check &&
+						!_lastListDeadBecauseNewlinePlus)
+					{
+						_scopes.push(GetScope()->children.back());
+					}
+					else
+					{
+						AddScope(std::make_shared<ListNode>(ListType::Check), Get(0).range);
 					}
 				}
-				
-				ListItemState state = ListItemState::none;
-				switch (get(0).value[1]) {
-					case ' ': state = ListItemState::todo; break;
-					case 'v': state = ListItemState::done; break;
-					case 'x': state = ListItemState::canceled; break;
+
+				ListItemState state = ListItemState::None;
+				switch (Get(0).value[1])
+				{
+					case ' ':
+						state = ListItemState::Todo;
+						break;
+					case 'v':
+						state = ListItemState::Done;
+						break;
+					case 'x':
+						state = ListItemState::Canceled;
+						break;
 				}
-				
-				addScope(std::make_shared<ListItemNode>(getScope()->children.size() + 1, state), get(0).range);
-				advance(0);
+
+				AddScope(std::make_shared<ListItemNode>(GetScope()->children.size() + 1, state), Get(0).range);
+				Advance(0);
 				break;
 			}
 
-			case TokenType::pipe:
-				if (getScope()->group != NodeGroup::table) {
-					addScope(std::make_shared<TableNode>(), get(0).range);
+			case TokenType::Pipe:
+				if (GetScope()->group != NodeGroup::Table)
+				{
+					AddScope(std::make_shared<TableNode>(), Get(0).range);
 				}
 
-				if (check(1) && is(1, TokenType::pipeConnector)) {
-					TableNode* tableNode = static_cast<TableNode*>(getScope().get());
-					if (tableNode->header == 0) {
+				if (Check(1) && Is(1, TokenType::PipeConnector))
+				{
+					TableNode* tableNode = static_cast<TableNode*>(GetScope().get());
+					if (tableNode->header == 0)
+					{
 						tableNode->header = tableNode->children.size();
 						tableNode->footer = tableNode->children.size();
-					} else {
+					}
+					else
+					{
 						tableNode->footer = tableNode->children.size();
 					}
 
-					while (check(0) && (is(0, TokenType::pipe) || is(0, TokenType::pipeConnector))) {
-						if (is(0, TokenType::pipeConnector)) {
-							if (get(0).value == ":--") {
-								tableNode->alignments.push_back(Alignment::left);
-							} else if (get(0).value == "--:") {
-								tableNode->alignments.push_back(Alignment::right);
-							} else {
-								tableNode->alignments.push_back(Alignment::center);
+					while (Check(0) && (Is(0, TokenType::Pipe) || Is(0, TokenType::PipeConnector)))
+					{
+						if (Is(0, TokenType::PipeConnector))
+						{
+							if (Get(0).value == ":--")
+							{
+								tableNode->alignments.push_back(Alignment::Left);
+							}
+							else if (Get(0).value == "--:")
+							{
+								tableNode->alignments.push_back(Alignment::Right);
+							}
+							else
+							{
+								tableNode->alignments.push_back(Alignment::Center);
 							}
 						}
-						advance(0);
+						Advance(0);
 					}
 					break;
 				}
 
-				if (getScope()->group == NodeGroup::table) {
-					addScope(std::make_shared<TableRowNode>(), get(0).range);
+				if (GetScope()->group == NodeGroup::Table)
+				{
+					AddScope(std::make_shared<TableRowNode>(), Get(0).range);
 				}
 				break;
 
-			case TokenType::curlyOpen: {
+			case TokenType::CurlyOpen: {
 				// see default inline
 				break;
 			}
 
-			case TokenType::codeMarker: {
-				if (check(2) && is(1, TokenType::codeSource) && is(2, TokenType::codeMarker)) {
+			case TokenType::CodeMark: {
+				if (Check(2) && Is(1, TokenType::CodeSource) && Is(2, TokenType::CodeMark))
+				{
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
-					codeNode->type = CodeType::block;
-					codeNode->source = get(1).value;
-					add(codeNode, get(0).range);
-					advance(2);
+					codeNode->type = CodeType::Block;
+					codeNode->source = Get(1).value;
+					Add(codeNode, Get(0).range);
+					Advance(2);
 					break;
 				}
 
-				if (check(3) && is(1, TokenType::codeLang) && is(2, TokenType::codeSource) && is(3, TokenType::codeMarker)) {
+				if (Check(3) && Is(1, TokenType::CodeLang) && Is(2, TokenType::CodeSource) &&
+					Is(3, TokenType::CodeMark))
+				{
 					std::shared_ptr<CodeNode> codeNode = std::make_shared<CodeNode>();
-					codeNode->type = CodeType::block;
-					codeNode->lang = get(1).value;
-					codeNode->source = get(2).value;
-					add(codeNode, get(0).range);
-					advance(3);
+					codeNode->type = CodeType::Block;
+					codeNode->lang = Get(1).value;
+					codeNode->source = Get(2).value;
+					Add(codeNode, Get(0).range);
+					Advance(3);
 					break;
 				}
 
-				// see default inline 
+				// see default inline
 				break;
 			}
 
-			case TokenType::describeMarker:
-				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::jumpID) && is(3, TokenType::squareClose)) {
-					addScope(std::make_shared<FootnoteDescribeNode>(get(2).value), get(0).range);
-					advance(3);
+			case TokenType::DescribeMark:
+				if (Check(3) && Is(1, TokenType::SquareOpen) && Is(2, TokenType::JumpID) &&
+					Is(3, TokenType::SquareClose))
+				{
+					AddScope(std::make_shared<FootnoteDescribeNode>(Get(2).value), Get(0).range);
+					Advance(3);
 				}
 
 				// see default inline
 				break;
 
-			case TokenType::admonNote:
-				addScope(std::make_shared<AdmonNode>(AdmonType::note), get(0).range);
-				advance(0);
+			case TokenType::AdmonNote:
+				AddScope(std::make_shared<AdmonNode>(AdmonType::Note), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::admonHint:
-				addScope(std::make_shared<AdmonNode>(AdmonType::hint), get(0).range);
-				advance(0);
+			case TokenType::AdmonHint:
+				AddScope(std::make_shared<AdmonNode>(AdmonType::Hint), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::admonImportant:
-				addScope(std::make_shared<AdmonNode>(AdmonType::important), get(0).range);
-				advance(0);
+			case TokenType::AdmonImportant:
+				AddScope(std::make_shared<AdmonNode>(AdmonType::Important), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::admonWarning:
-				addScope(std::make_shared<AdmonNode>(AdmonType::warning), get(0).range);
-				advance(0);
+			case TokenType::AdmonWarning:
+				AddScope(std::make_shared<AdmonNode>(AdmonType::Warning), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::admonSeeAlso:
-				addScope(std::make_shared<AdmonNode>(AdmonType::seeAlso), get(0).range);
-				advance(0);
+			case TokenType::AdmonSeeAlso:
+				AddScope(std::make_shared<AdmonNode>(AdmonType::SeeAlso), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::admonTip:
-				addScope(std::make_shared<AdmonNode>(AdmonType::tip), get(0).range);
-				advance(0);
+			case TokenType::AdmonTip:
+				AddScope(std::make_shared<AdmonNode>(AdmonType::Tip), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::chapterOper:
-				addScope(std::make_shared<HeadingNode>(HeadingType::chapter), get(0).range);
-				advance(0);
+			case TokenType::ChapterMark:
+				AddScope(std::make_shared<HeadingNode>(HeadingType::Chapter), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::sectionOper:
-				addScope(std::make_shared<HeadingNode>(HeadingType::section), get(0).range);
-				advance(0);
+			case TokenType::SectionMark:
+				AddScope(std::make_shared<HeadingNode>(HeadingType::Section), Get(0).range);
+				Advance(0);
 				break;
 
-			case TokenType::subsectionOper:
-				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading && lastEnding == TokenType::newline) {
-					scopes.push(getScope()->children.back());
-					addScope(std::make_shared<HeadingNode>(HeadingType::subtitle), get(0).range);
-				} else {
-					addScope(std::make_shared<HeadingNode>(HeadingType::subsection), get(0).range);
+			case TokenType::SubsectionMark:
+				if (!GetScope()->children.empty() && GetScope()->children.back()->group == NodeGroup::Heading &&
+					_lastEnding == TokenType::Newline)
+				{
+					_scopes.push(GetScope()->children.back());
+					AddScope(std::make_shared<HeadingNode>(HeadingType::Subtitle), Get(0).range);
 				}
-				advance(0);
+				else
+				{
+					AddScope(std::make_shared<HeadingNode>(HeadingType::Subsection), Get(0).range);
+				}
+				Advance(0);
 				break;
 
-			case TokenType::break_:
-				if (get(0).value.size() == 3) {
-					add(std::make_shared<BreakNode>(BreakType::page), get(0).range);
-					advance(0);
+			case TokenType::Break:
+				if (Get(0).value.size() == 3)
+				{
+					Add(std::make_shared<BreakNode>(BreakType::Page), Get(0).range);
+					Advance(0);
 					break;
 				}
 				// see inline break_
 				break;
 
-			case TokenType::dinkus:
-				add(std::make_shared<BreakNode>(BreakType::thematic), get(0).range);
-				advance(0);
+			case TokenType::Dinkus:
+				Add(std::make_shared<BreakNode>(BreakType::Thematic), Get(0).range);
+				Advance(0);
 				break;
 
 			default:
-				if (getScope()->group != NodeGroup::paragraph) {
-					addScope(std::make_shared<ParagraphNode>(), get(0).range);
-				} else if (getScope()->group == NodeGroup::paragraph) {
-					addText("\n", get(0).range);
+				if (GetScope()->group != NodeGroup::Paragraph)
+				{
+					AddScope(std::make_shared<ParagraphNode>(), Get(0).range);
+				}
+				else if (GetScope()->group == NodeGroup::Paragraph)
+				{
+					AddText("\n", Get(0).range);
 				}
 				break;
 		}

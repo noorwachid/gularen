@@ -5,28 +5,22 @@ project(gularen
 	LANGUAGES CXX
 )
 
-file(GLOB gularen_sources
+add_library(gularen 
 	source/gularen/lexer.cpp
 	source/gularen/token.cpp
 	source/gularen/node.cpp
 	source/gularen/parser.cpp
 	source/gularen/helper/escape.cpp
+	source/gularen/helper/emoji.cpp
+	source/gularen/transpiler/html.cpp
 )
-
-add_library(gularen ${gularen_sources})
 
 target_include_directories(gularen PUBLIC source)
 set_target_properties(gularen PROPERTIES CXX_STANDARD 17)
 
-add_executable(gularen-test source/gularen/cli/test.cpp)
-set_target_properties(gularen-test PROPERTIES CXX_STANDARD 17)
-target_link_libraries(gularen-test gularen)
-
-add_executable(gularen-tk
-	source/gularen/cli/tk.cpp
-	source/gularen/transpiler/html.cpp
-	source/gularen/helper/emoji.cpp
+add_executable(gularen-cli
+	source/main.cpp
 )
 
-set_target_properties(gularen-tk PROPERTIES CXX_STANDARD 17)
-target_link_libraries(gularen-tk gularen)
+set_target_properties(gularen-cli PROPERTIES CXX_STANDARD 17 OUTPUT_NAME gularen)
+target_link_libraries(gularen-cli gularen)

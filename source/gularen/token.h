@@ -2,122 +2,129 @@
 
 #include <string>
 
-namespace Gularen {
-	enum class TokenType {
-		comment,
+namespace Gularen
+{
+	enum class TokenType
+	{
+		Comment,
 
-		indentIncr,
-		indentDecr,
+		IndentIncr,
+		IndentDecr,
 
-		bqIncr,
-		bqDecr,
+		BQIncr,
+		BQDecr,
 
-		newline,
-		newlinePlus,
+		Newline,
+		NewlinePlus,
 
-		text,
+		Text,
 
-		codeMarker,
-		codeLang,
-		codeSource,
-		
-		chapterOper,
-		sectionOper,
-		subsectionOper,
-	
-		headingID,
-		headingIDOper,
+		CodeMark,
+		CodeLang,
+		CodeSource,
 
-		fsBold,
-		fsItalic,
-		fsMonospace,
+		ChapterMark,
+		SectionMark,
+		SubsectionMark,
 
-		bullet,
-		checkbox,
-		index,
+		HeadingID,
+		HeadingIDMark,
 
-		break_,
-		dinkus,
+		FSBold,
+		FSItalic,
+		FSMonospace,
 
-		pipe,
-		pipeConnector,
+		Bullet,
+		Checkbox,
+		Index,
 
-		date,
-		time,
-		dateTime,
+		Break,
+		Dinkus,
 
-		squareOpen,
-		squareClose,
+		Pipe,
+		PipeConnector,
 
-		curlyOpen,
-		curlyClose,
+		Date,
+		Time,
+		DateTime,
 
-		resource,
-		resourceIDMarker,
-		resourceID,
+		SquareOpen,
+		SquareClose,
 
-		parenOpen,
-		parenClose,
+		CurlyOpen,
+		CurlyClose,
 
-		resourceLabel,
+		Resource,
+		ResourceIDMark,
+		ResourceID,
+		ResourceLabel,
 
-		presentMarker,
-		includeMarker,
-		jumpMarker,
-		jumpID,
-		describeMarker,
+		ParenOpen,
+		ParenClose,
 
-		admonNote,
-		admonHint,
-		admonImportant,
-		admonWarning,
-		admonSeeAlso,
-		admonTip,
+		PresentMark,
+		IncludeMark,
+		JumpMark,
+		JumpID,
+		DescribeMark,
 
-		emojiMarker,
-		emojiCode,
+		AdmonNote,
+		AdmonHint,
+		AdmonImportant,
+		AdmonWarning,
+		AdmonSeeAlso,
+		AdmonTip,
 
-		hyphen,
-		enDash,
-		emDash,
-		
-		lsQuo,
-		rsQuo,
-		ldQuo,
-		rdQuo,
+		EmojiMark,
+		EmojiCode,
 
-		eof,
+		Hyphen,
+		EnDash,
+		EmDash,
+
+		LSQuo,
+		RSQuo,
+		LDQuo,
+		RDQuo,
+
+		End,
 	};
 
-	struct Position {
+	struct Position
+	{
 		size_t line;
 		size_t column;
 
 		Position() = default;
 
-		Position(size_t line, size_t column) : line{line}, column{column} {}
+		Position(size_t line, size_t column) : line{line}, column{column}
+		{
+		}
 
-		bool operator==(const Position& other) const {
+		bool operator==(const Position& other) const
+		{
 			return line == other.line && column == other.column;
 		}
 
-		std::string toString() const;
+		std::string ToString() const;
 	};
 
-	struct Range {
+	struct Range
+	{
 		Position begin;
 		Position end;
-		
-		std::string toString() const;
+
+		std::string ToString() const;
 	};
 
-	struct Token {
+	struct Token
+	{
 		TokenType type;
 		Range range;
 		std::string value;
-		
-		std::string toString() const;
+
+		std::string ToString() const;
 	};
-	
+
 	using Tokens = std::vector<Token>;
 }
