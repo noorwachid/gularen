@@ -10,6 +10,7 @@ namespace Gularen
 	{
 		Document,
 
+		Comment,
 		Text,
 		FS,
 		Heading,
@@ -67,6 +68,15 @@ namespace Gularen
 		std::string path;
 
 		DocumentNode(const std::string& path);
+
+		virtual std::string ToString() const override;
+	};
+
+	struct CommentNode : Node
+	{
+		std::string value;
+
+		CommentNode(const std::string& value);
 
 		virtual std::string ToString() const override;
 	};

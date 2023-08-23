@@ -453,7 +453,7 @@ namespace Gularen
 				break;
 
 			case TokenType::IncludeMark:
-#ifndef __EMSCRIPTEN__
+				#ifndef __EMSCRIPTEN__
 				if (Check(3) && Is(1, TokenType::SquareOpen) && Is(2, TokenType::Resource) &&
 					Is(3, TokenType::SquareClose) && !HasNetProtocol(Get(2).value))
 				{
@@ -465,7 +465,7 @@ namespace Gularen
 					Advance(3);
 					break;
 				}
-#endif
+				#endif
 
 				AddText("?", Get(0).range);
 				Advance(0);
@@ -484,6 +484,7 @@ namespace Gularen
 				break;
 
 			case TokenType::Comment:
+				Add(std::make_shared<CommentNode>(Get(0).value.substr(1)), Get(0).range);
 				Advance(0);
 				break;
 

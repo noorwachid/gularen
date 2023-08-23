@@ -10,6 +10,11 @@ namespace Gularen
 		group = NodeGroup::Document;
 	}
 
+	CommentNode::CommentNode(const std::string& value) : value{value}
+	{
+		group = NodeGroup::Comment;
+	}
+
 	TextNode::TextNode(const std::string& value) : value{value}
 	{
 		group = NodeGroup::Text;
@@ -103,6 +108,11 @@ namespace Gularen
 			return range.ToString() + " document";
 
 		return range.ToString() + " document " + Helper::Escape(path);
+	}
+
+	std::string CommentNode::ToString() const
+	{
+		return range.ToString() + " comment " + Helper::Escape(value);
 	}
 
 	std::string TextNode::ToString() const
