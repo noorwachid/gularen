@@ -1,24 +1,19 @@
 >>> Preface
 
 >>> Table of Content
-~ print toc
-~~ toc
-~ - [>Preface]
-~ - [>Chapter 1]
-~ - [>Chapter 2]
-~ - [>Chapter 3]
-~ - [>Apendix]
-
-~ print toc without specified heading
-~~ toc without Preface, Apendix
-~ - [>Chapter 1]
-~ - [>Chapter 2]
-~ - [>Chapter 3]
+~~ inject-page
+- [>Preface]
+- [>Chapter 1]
+- [>Chapter 2]
+- [>Chapter 3]
+	- [>Animal Kingdom]
+- [>Apendix]
 
 >>> Chapter 1
 >>> Chapter 2
 
 >>> Chapter 3
 >>> Chapter 4
+>> Animal Kingdom
 
 >>> Apendix
