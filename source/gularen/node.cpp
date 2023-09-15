@@ -1,150 +1,123 @@
-#include "gularen/helper/escape.h"
 #include "gularen/node.h"
+#include "gularen/helper/escape.h"
 
-namespace Gularen
-{
+namespace Gularen {
 	// constructors
 
-	DocumentNode::DocumentNode(const std::string& path) : path{path}
-	{
-		group = NodeGroup::Document;
+	DocumentNode::DocumentNode(const std::string& path) : path{path} {
+		group = NodeGroup::document;
 	}
 
-	CommentNode::CommentNode(const std::string& value) : value{value}
-	{
-		group = NodeGroup::Comment;
+	CommentNode::CommentNode(const std::string& value) : value{value} {
+		group = NodeGroup::comment;
 	}
 
-	TextNode::TextNode(const std::string& value) : value{value}
-	{
-		group = NodeGroup::Text;
+	TextNode::TextNode(const std::string& value) : value{value} {
+		group = NodeGroup::text;
 	}
 
-	PunctNode::PunctNode(PunctType type, const std::string& value) : type{type}, value{value}
-	{
-		group = NodeGroup::Punct;
+	PunctNode::PunctNode(PunctType type, const std::string& value) : type{type}, value{value} {
+		group = NodeGroup::punct;
 	}
 
-	EmojiNode::EmojiNode(const std::string& value) : value{value}
-	{
-		group = NodeGroup::Emoji;
+	EmojiNode::EmojiNode(const std::string& value) : value{value} {
+		group = NodeGroup::emoji;
 	}
 
-	FSNode::FSNode(FSType type) : type{type}
-	{
-		group = NodeGroup::FS;
+	FSNode::FSNode(FSType type) : type{type} {
+		group = NodeGroup::fs;
 	}
 
-	HeadingNode::HeadingNode(HeadingType type) : type{type}
-	{
-		group = NodeGroup::Heading;
+	HeadingNode::HeadingNode(HeadingType type) : type{type} {
+		group = NodeGroup::deading;
 	}
 
-	ParagraphNode::ParagraphNode()
-	{
-		group = NodeGroup::Paragraph;
+	ParagraphNode::ParagraphNode() {
+		group = NodeGroup::paragraph;
 	}
 
-	AdmonNode::AdmonNode(AdmonType type) : type{type}
-	{
-		group = NodeGroup::Admon;
+	AdmonNode::AdmonNode(AdmonType type) : type{type} {
+		group = NodeGroup::admon;
 	}
 
-	FootnoteJumpNode::FootnoteJumpNode(const std::string& value) : value{value}
-	{
-		group = NodeGroup::FootnoteJump;
+	FootnoteJumpNode::FootnoteJumpNode(const std::string& value) : value{value} {
+		group = NodeGroup::footnoteJump;
 	}
 
-	FootnoteDescribeNode::FootnoteDescribeNode(const std::string& value) : value{value}
-	{
-		group = NodeGroup::FootnoteDescribe;
+	FootnoteDescribeNode::FootnoteDescribeNode(const std::string& value) : value{value} {
+		group = NodeGroup::footnoteDescribe;
 	}
 
-	BreakNode::BreakNode(BreakType type) : type{type}
-	{
-		group = NodeGroup::Break;
+	BreakNode::BreakNode(BreakType type) : type{type} {
+		group = NodeGroup::break_;
 	}
 
-	ListNode::ListNode(ListType type) : type{type}
-	{
-		group = NodeGroup::List;
+	ListNode::ListNode(ListType type) : type{type} {
+		group = NodeGroup::list;
 	}
 
-	ListItemNode::ListItemNode(size_t index) : index{index}, state{ListItemState::None}
-	{
-		group = NodeGroup::ListItem;
+	ListItemNode::ListItemNode(size_t index) : index{index}, state{ListItemState::none} {
+		group = NodeGroup::listItem;
 	}
 
-	ListItemNode::ListItemNode(size_t index, ListItemState state) : index{index}, state{state}
-	{
-		group = NodeGroup::ListItem;
+	ListItemNode::ListItemNode(size_t index, ListItemState state) : index{index}, state{state} {
+		group = NodeGroup::listItem;
 	}
 
-	TableNode::TableNode()
-	{
-		group = NodeGroup::Table;
+	TableNode::TableNode() {
+		group = NodeGroup::table;
 	}
 
-	TableRowNode::TableRowNode()
-	{
-		group = NodeGroup::TableRow;
+	TableRowNode::TableRowNode() {
+		group = NodeGroup::tableRow;
 	}
 
-	ResourceNode::ResourceNode(ResourceType type, const std::string& value) : type{type}, value{value}
-	{
-		group = NodeGroup::Resource;
+	ResourceNode::ResourceNode(ResourceType type, const std::string& value) : type{type}, value{value} {
+		group = NodeGroup::resource;
 	}
 
 	// toStrings
 
-	std::string Node::ToString() const
-	{
-		return range.ToString() + " base";
+	std::string Node::toString() const {
+		return range.toString() + " base";
 	}
 
-	std::string DocumentNode::ToString() const
-	{
+	std::string DocumentNode::toString() const {
 		if (path.empty())
-			return range.ToString() + " document";
+			return range.toString() + " document";
 
-		return range.ToString() + " document " + Helper::Escape(path);
+		return range.toString() + " document " + Helper::escape(path);
 	}
 
-	std::string CommentNode::ToString() const
-	{
-		return range.ToString() + " comment " + Helper::Escape(value);
+	std::string CommentNode::toString() const {
+		return range.toString() + " comment " + Helper::escape(value);
 	}
 
-	std::string TextNode::ToString() const
-	{
-		return range.ToString() + " text " + Helper::Escape(value);
+	std::string TextNode::toString() const {
+		return range.toString() + " text " + Helper::escape(value);
 	}
 
-	std::string PunctNode::ToString() const
-	{
+	std::string PunctNode::toString() const {
 		std::string typeString;
 
-		return range.ToString() + " punct " + value;
+		return range.toString() + " punct " + value;
 	}
 
-	std::string EmojiNode::ToString() const
-	{
-		return range.ToString() + " emoji " + value;
+	std::string EmojiNode::toString() const {
+		return range.toString() + " emoji " + value;
 	}
 
-	std::string FSNode::ToString() const
-	{
-		std::string string = range.ToString() + " fs ";
+	std::string FSNode::toString() const {
+		std::string string = range.toString() + " fs ";
 
-		switch (type)
-		{
-			case FSType::Bold:
+		switch (type) {
+			case FSType::bold:
 				string += "bold";
 				break;
-			case FSType::Italic:
+			case FSType::italic:
 				string += "italic";
 				break;
-			case FSType::Monospace:
+			case FSType::monospace:
 				string += "monospace";
 				break;
 
@@ -155,128 +128,112 @@ namespace Gularen
 		return string;
 	}
 
-	std::string HeadingNode::ToString() const
-	{
-		std::string string = range.ToString() + " ";
+	std::string HeadingNode::toString() const {
+		std::string string = range.toString() + " ";
 
-		switch (type)
-		{
-			case HeadingType::Chapter:
+		switch (type) {
+			case HeadingType::chapter:
 				string += "chapter";
 				break;
-			case HeadingType::Section:
+			case HeadingType::section:
 				string += "section";
 				break;
-			case HeadingType::Subsection:
+			case HeadingType::subsection:
 				string += "subsection";
 				break;
-			case HeadingType::Subtitle:
+			case HeadingType::subtitle:
 				string += "subtitle";
 				break;
 		}
 
-		if (!id.empty())
-		{
+		if (!id.empty()) {
 			string += " id:" + id;
 		}
 
 		return string;
 	}
 
-	std::string ParagraphNode::ToString() const
-	{
-		return range.ToString() + " paragraph";
+	std::string ParagraphNode::toString() const {
+		return range.toString() + " paragraph";
 	}
 
-	std::string AdmonNode::ToString() const
-	{
-		std::string string = range.ToString() + " admon ";
+	std::string AdmonNode::toString() const {
+		std::string string = range.toString() + " admon ";
 
-		switch (type)
-		{
-			case AdmonType::Note:
+		switch (type) {
+			case AdmonType::note:
 				string += "note";
 				break;
-			case AdmonType::Hint:
+			case AdmonType::hint:
 				string += "hint";
 				break;
-			case AdmonType::Important:
+			case AdmonType::important:
 				string += "important";
 				break;
-			case AdmonType::Warning:
+			case AdmonType::warning:
 				string += "warning";
 				break;
-			case AdmonType::SeeAlso:
+			case AdmonType::seeAlso:
 				string += "seeAlso";
 				break;
-			case AdmonType::Tip:
+			case AdmonType::tip:
 				string += "tip";
 				break;
 		}
 		return string;
 	}
 
-	std::string FootnoteJumpNode::ToString() const
-	{
-		return range.ToString() + " footnoteJump " + value;
+	std::string FootnoteJumpNode::toString() const {
+		return range.toString() + " footnoteJump " + value;
 	}
 
-	std::string FootnoteDescribeNode::ToString() const
-	{
-		return range.ToString() + " footnoteDescribe " + value;
+	std::string FootnoteDescribeNode::toString() const {
+		return range.toString() + " footnoteDescribe " + value;
 	}
 
-	std::string IndentNode::ToString() const
-	{
-		return range.ToString() + " indent";
+	std::string IndentNode::toString() const {
+		return range.toString() + " indent";
 	}
 
-	std::string BQNode::ToString() const
-	{
-		return range.ToString() + " bq";
+	std::string BQNode::toString() const {
+		return range.toString() + " bq";
 	}
 
-	std::string BreakNode::ToString() const
-	{
-		switch (type)
-		{
-			case BreakType::Line:
-				return range.ToString() + " lineBreak";
-			case BreakType::Page:
-				return range.ToString() + " pageBreak";
-			case BreakType::Thematic:
-				return range.ToString() + " thematicBreak";
+	std::string BreakNode::toString() const {
+		switch (type) {
+			case BreakType::line:
+				return range.toString() + " lineBreak";
+			case BreakType::page:
+				return range.toString() + " pageBreak";
+			case BreakType::thematic:
+				return range.toString() + " thematicBreak";
 		}
 	}
 
-	std::string ListNode::ToString() const
-	{
-		switch (type)
-		{
-			case ListType::Bullet:
-				return range.ToString() + " bulletList";
-			case ListType::Index:
-				return range.ToString() + " indexList";
-			case ListType::Check:
-				return range.ToString() + " checkList";
+	std::string ListNode::toString() const {
+		switch (type) {
+			case ListType::bullet:
+				return range.toString() + " bulletList";
+			case ListType::index:
+				return range.toString() + " indexList";
+			case ListType::check:
+				return range.toString() + " checkList";
 		}
 	}
 
-	std::string ListItemNode::ToString() const
-	{
-		std::string string = range.ToString() + " listItem ";
+	std::string ListItemNode::toString() const {
+		std::string string = range.toString() + " listItem ";
 
-		switch (state)
-		{
-			case ListItemState::None:
+		switch (state) {
+			case ListItemState::none:
 				break;
-			case ListItemState::Todo:
+			case ListItemState::todo:
 				string += "todo";
 				break;
-			case ListItemState::Done:
+			case ListItemState::done:
 				string += "done";
 				break;
-			case ListItemState::Canceled:
+			case ListItemState::cancelled:
 				string += "canceled";
 				break;
 		}
@@ -284,32 +241,26 @@ namespace Gularen
 		return string;
 	}
 
-	std::string TableNode::ToString() const
-	{
-		std::string string = range.ToString() + " table";
-		if (header > 0)
-		{
+	std::string TableNode::toString() const {
+		std::string string = range.toString() + " table";
+		if (header > 0) {
 			string += " header:" + std::to_string(header);
 		}
-		if (footer > 0)
-		{
+		if (footer > 0) {
 			string += " footer:" + std::to_string(footer);
 		}
 
-		if (!alignments.empty())
-		{
+		if (!alignments.empty()) {
 			string += " alignments:";
-			for (Alignment alignment : alignments)
-			{
-				switch (alignment)
-				{
-					case Alignment::Left:
+			for (Alignment alignment : alignments) {
+				switch (alignment) {
+					case Alignment::left:
 						string += "left,";
 						break;
-					case Alignment::Center:
+					case Alignment::center:
 						string += "center,";
 						break;
-					case Alignment::Right:
+					case Alignment::right:
 						string += "right,";
 						break;
 				}
@@ -320,83 +271,70 @@ namespace Gularen
 		return string;
 	}
 
-	std::string TableRowNode::ToString() const
-	{
-		return range.ToString() + " tableRow";
+	std::string TableRowNode::toString() const {
+		return range.toString() + " tableRow";
 	}
 
-	std::string TableCellNode::ToString() const
-	{
-		return range.ToString() + " tableCell";
+	std::string TableCellNode::toString() const {
+		return range.toString() + " tableCell";
 	}
 
-	std::string ResourceNode::ToString() const
-	{
-		std::string string = range.ToString() + " ";
+	std::string ResourceNode::toString() const {
+		std::string string = range.toString() + " ";
 
-		switch (type)
-		{
-			case ResourceType::Link:
+		switch (type) {
+			case ResourceType::link:
 				string = "linker";
 				break;
-			case ResourceType::LinkLocal:
+			case ResourceType::linkLocal:
 				string = "linkerLocal";
 				break;
-			case ResourceType::Present:
+			case ResourceType::present:
 				string = "presenter";
 				break;
-			case ResourceType::PresentLocal:
+			case ResourceType::presentLocal:
 				string = "presenterLocal";
 				break;
 		}
 
-		if (!value.empty())
-		{
-			string += " value:" + Helper::Escape(value);
+		if (!value.empty()) {
+			string += " value:" + Helper::escape(value);
 		}
 
-		if (!id.empty())
-		{
+		if (!id.empty()) {
 			string += " id:" + id;
 		}
 
-		if (!label.empty())
-		{
-			string += " label:" + Helper::Escape(label);
+		if (!label.empty()) {
+			string += " label:" + Helper::escape(label);
 		}
 
 		return string;
 	}
 
-	std::string CodeNode::ToString() const
-	{
-		std::string string = range.ToString() + " ";
-		string += type == CodeType::Block ? "codeblock" : "code";
+	std::string CodeNode::toString() const {
+		std::string string = range.toString() + " ";
+		string += type == CodeType::block ? "codeblock" : "code";
 
-		if (!lang.empty())
-		{
+		if (!lang.empty()) {
 			string += " lang:" + lang;
 		}
 
-		if (!source.empty())
-		{
-			string += " source:" + Helper::Escape(source);
+		if (!source.empty()) {
+			string += " source:" + Helper::escape(source);
 		}
 
 		return string;
 	}
 
-	std::string DateTimeNode::ToString() const
-	{
-		std::string string = range.ToString() + " datetime";
+	std::string DateTimeNode::toString() const {
+		std::string string = range.toString() + " datetime";
 
-		if (!date.empty())
-		{
+		if (!date.empty()) {
 			string += " date:" + date;
 		}
 
-		if (!time.empty())
-		{
+		if (!time.empty()) {
 			string += " time:" + time;
 		}
 

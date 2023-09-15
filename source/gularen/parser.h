@@ -4,53 +4,51 @@
 #include "gularen/node.h"
 #include <functional>
 
-namespace Gularen
-{
+namespace Gularen {
 	using Visitor = std::function<void(const NodePtr& node)>;
 
-	class Parser
-	{
+	class Parser {
 	public:
-		void Set(const std::string& content, const std::string& path = "");
+		void set(const std::string& content, const std::string& path = "");
 
-		void Load(const std::string& path);
+		void load(const std::string& path);
 
-		void Parse();
+		void parse();
 
-		const NodePtr& Get() const;
+		const NodePtr& get() const;
 
-		void Visit(const Visitor& visitor);
+		void visit(const Visitor& visitor);
 
 	private:
-		bool Check(size_t offset) const;
+		bool check(size_t offset) const;
 
-		bool Is(size_t offset, TokenType type) const;
+		bool is(size_t offset, TokenType type) const;
 
-		const Token& Get(size_t offset) const;
+		const Token& get(size_t offset) const;
 
-		void Advance(size_t offset);
+		void advance(size_t offset);
 
-		void Add(const NodePtr& node, const Range& range);
+		void add(const NodePtr& node, const Range& range);
 
-		void AddText(const std::string& value, const Range& range);
+		void addText(const std::string& value, const Range& range);
 
-		void AddScope(const NodePtr& node, const Range& range);
+		void addScope(const NodePtr& node, const Range& range);
 
-		void RemoveScope(const Range& range);
+		void removeScope(const Range& range);
 
-		const NodePtr& GetScope();
+		const NodePtr& getScope();
 
-		void ParseInline();
+		void parseInline();
 
-		void ParseBlock();
+		void parseBlock();
 
-		void ParseBlockEnding();
+		void parseBlockEnding();
 
-		void ParseIndent();
+		void parseIndent();
 
-		NodePtr RecursiveLoad(const std::string& directory, const std::string& nextPath);
+		NodePtr recursiveLoad(const std::string& directory, const std::string& nextPath);
 
-		void RecursiveVisit(const Visitor& visitor, const NodePtr& node);
+		void recursiveVisit(const Visitor& visitor, const NodePtr& node);
 
 	private:
 		NodePtr _root;

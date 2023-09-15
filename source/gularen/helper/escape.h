@@ -2,7 +2,6 @@
 
 #include <string>
 
-namespace Gularen::Helper
-{
-	std::string Escape(const std::string& from);
+namespace Gularen::Helper {
+	std::string escape(const std::string& from);
 }

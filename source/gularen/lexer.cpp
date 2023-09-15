@@ -3,61 +3,49 @@
 #include <fstream>
 #include <iostream>
 
-namespace Gularen
-{
-	bool IsDigit(char letter)
-	{
+namespace Gularen {
+	bool IsDigit(char letter) {
 		return letter >= '0' && letter <= '9';
 	}
 
-	bool IsDate(std::string_view text)
-	{
+	bool IsDate(std::string_view text) {
 		if (text.size() == 10 && IsDigit(text[0]) && IsDigit(text[1]) && IsDigit(text[2]) && IsDigit(text[3]) &&
 			text[4] == '-' && IsDigit(text[5]) && IsDigit(text[6]) && text[7] == '-' && IsDigit(text[8]) &&
-			IsDigit(text[9]))
-		{
+			IsDigit(text[9])) {
 			return true;
 		}
 		return false;
 	}
 
-	bool IsTime(std::string_view text)
-	{
+	bool IsTime(std::string_view text) {
 		if (text.size() == 5 && IsDigit(text[0]) && IsDigit(text[1]) && text[2] == ':' && IsDigit(text[3]) &&
-			IsDigit(text[4]))
-		{
+			IsDigit(text[4])) {
 			return true;
 		}
 
 		if (text.size() == 8 && IsDigit(text[0]) && IsDigit(text[1]) && text[2] == ':' && IsDigit(text[3]) &&
-			IsDigit(text[4]) && text[5] == ':' && IsDigit(text[6]) && IsDigit(text[7]))
-		{
+			IsDigit(text[4]) && text[5] == ':' && IsDigit(text[6]) && IsDigit(text[7])) {
 			return true;
 		}
 
 		return false;
 	}
 
-	bool IsDateTime(std::string_view text)
-	{
-		if (text.size() == 16 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 5)))
-		{
+	bool IsDateTime(std::string_view text) {
+		if (text.size() == 16 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 5))) {
 			return true;
 		}
-		if (text.size() == 19 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 8)))
-		{
+		if (text.size() == 19 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 8))) {
 			return true;
 		}
 		return false;
 	}
 
-	void Lexer::Set(const std::string& content)
-	{
+	void Lexer::set(const std::string& content) {
 		this->_content = content;
 	}
 
-	void Lexer::Tokenize()
-	{
+	void Lexer::tokenize() {
 		if (_content.empty())
 			return;
 
@@ -68,78 +56,64 @@ namespace Gularen
 		_begin.line = 1;
 		_begin.column = 1;
 
-		TokenizeBlock();
+		tokenizeBlock();
 
-		while (Check(0))
-		{
-			TokenizeInline();
+		while (check(0)) {
+			tokenizeInline();
 		}
 
 		if (!_tokens.empty() &&
-			(_tokens.back().type == TokenType::Newline || _tokens.back().type == TokenType::NewlinePlus))
-		{
-			_tokens.back().type = TokenType::End;
+			(_tokens.back().type == TokenType::newline || _tokens.back().type == TokenType::newlinePlus)) {
+			_tokens.back().type = TokenType::end;
 			_tokens.back().value = "\\0";
 			_tokens.back().range.end = _tokens.back().range.begin;
-		}
-		else
-		{
-			Add(TokenType::End, "\\0");
+		} else {
+			add(TokenType::end, "\\0");
 		}
 	}
 
-	const Tokens& Lexer::Get() const
-	{
+	const Tokens& Lexer::get() const {
 		return _tokens;
 	}
 
-	bool Lexer::Check(size_t offset)
-	{
+	bool Lexer::check(size_t offset) {
 		return _index + offset < _content.size();
 	}
 
-	bool Lexer::Is(size_t offset, char c)
-	{
+	bool Lexer::is(size_t offset, char c) {
 		return _content[_index + offset] == c;
 	}
 
-	bool Lexer::IsSymbol(size_t offset)
-	{
+	bool Lexer::isSymbol(size_t offset) {
 		char c = _content[_index + offset];
 		return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-';
 	}
 
-	char Lexer::Get(size_t offset)
-	{
+	char Lexer::get(size_t offset) {
 		return _content[_index + offset];
 	}
 
-	void Lexer::Advance(size_t offset)
-	{
+	void Lexer::advance(size_t offset) {
 		_index += 1 + offset;
 		_end.column += 1 + offset;
 	}
 
-	void Lexer::Retreat(size_t offset)
-	{
+	void Lexer::retreat(size_t offset) {
 		_index -= offset;
 		_end.column -= offset;
 	}
 
-	size_t Lexer::Count(char c)
-	{
+	size_t Lexer::count(char c) {
 		size_t count = 0;
-		while (Check(0) && Is(0, c))
-		{
+		while (check(0) && is(0, c)) {
 			++count;
-			Advance(0);
+			advance(0);
 		}
 		return count;
 	}
 
-	void Lexer::Add(TokenType type, const std::string& value)
-	{
-		if (!_tokens.empty() && _tokens.back().type == TokenType::Text)
+	void Lexer::add(TokenType type, const std::string& value) {
+		if (!_tokens.empty() && _tokens.back().type == TokenType::text)
 			_begin.column += 1;
 
 		Token token;
@@ -152,30 +126,23 @@ namespace Gularen
 		_begin.column += 1;
 	}
 
-	void Lexer::AddText(const std::string value)
-	{
-		if (!_tokens.empty() && _tokens.back().type == TokenType::Text)
-		{
+	void Lexer::addText(const std::string value) {
+		if (!_tokens.empty() && _tokens.back().type == TokenType::text) {
 			_tokens.back().value += value;
 			_tokens.back().range.end.column += value.size();
 			_begin = _end;
-		}
-		else
-		{
-			if (!_tokens.empty())
-			{
+		} else {
+			if (!_tokens.empty()) {
 				Token token;
-				token.type = TokenType::Text;
+				token.type = TokenType::text;
 				token.value = value;
 				token.range.begin = _begin;
 				token.range.end = _end;
 				_tokens.push_back(token);
 				_begin = _end;
-			}
-			else
-			{
+			} else {
 				Token token;
-				token.type = TokenType::Text;
+				token.type = TokenType::text;
 				token.value = value;
 				token.range.begin = _begin;
 				token.range.end = _end;
@@ -185,10 +152,8 @@ namespace Gularen
 		}
 	}
 
-	void Lexer::TokenizeInline()
-	{
-		switch (Get(0))
-		{
+	void Lexer::tokenizeInline() {
+		switch (get(0)) {
 			case ' ':
 			case 'a':
 			case 'b':
@@ -252,17 +217,16 @@ namespace Gularen
 			case '7':
 			case '8':
 			case '9':
-				TokenizeText();
+				tokenizeText();
 				break;
 
 			case '\n': {
 				size_t originalColumn = _end.column;
-				size_t counter = Count('\n');
+				size_t counter = count('\n');
 
-				if (counter == 1)
-				{
+				if (counter == 1) {
 					Token token;
-					token.type = TokenType::Newline;
+					token.type = TokenType::newline;
 					token.value = "\\n";
 					_end.column = originalColumn;
 					token.range.begin = _end;
@@ -271,13 +235,11 @@ namespace Gularen
 					_end.column = 1;
 					_begin = _end;
 					_tokens.push_back(token);
-				}
-				else
-				{
+				} else {
 					_end.line += counter - 1;
 					_end.column = 1;
 					Token token;
-					token.type = TokenType::NewlinePlus;
+					token.type = TokenType::newlinePlus;
 					token.value = "\\n";
 					token.range.begin = _begin;
 					token.range.end = _end;
@@ -286,483 +248,423 @@ namespace Gularen
 					_tokens.push_back(token);
 				}
 
-				TokenizeBlock();
+				tokenizeBlock();
 				break;
 			}
 
 			case '\\':
-				Advance(0);
-				if (Check(0))
-				{
-					AddText(_content.substr(_index, 1));
-					Advance(0);
+				advance(0);
+				if (check(0)) {
+					addText(_content.substr(_index, 1));
+					advance(0);
 				}
 				break;
 
 			case '~': {
 				size_t commentIndex = _index;
 				size_t commentSize = 1;
-				Advance(0);
-				while (Check(0) && !Is(0, '\n'))
-				{
+				advance(0);
+				while (check(0) && !is(0, '\n')) {
 					++commentSize;
-					Advance(0);
+					advance(0);
 				}
-				Add(TokenType::Comment, _content.substr(commentIndex, commentSize));
+				add(TokenType::comment, _content.substr(commentIndex, commentSize));
 				break;
 			}
 
 			case '\'':
-				TokenizeQuoMark(
-					_tokens.empty() || _tokens.back().type == TokenType::LDQuo, TokenType::LSQuo, "‘", TokenType::RSQuo,
+				tokenizeQuoMark(
+					_tokens.empty() || _tokens.back().type == TokenType::quoteOpen, TokenType::singleQuoteOpen, "‘", TokenType::singleQuoteClose,
 					"’"
 				);
-				Advance(0);
+				advance(0);
 				break;
 
 			case '"':
-				TokenizeQuoMark(
-					_tokens.empty() || _tokens.back().type == TokenType::LSQuo, TokenType::LDQuo, "“", TokenType::RDQuo,
+				tokenizeQuoMark(
+					_tokens.empty() || _tokens.back().type == TokenType::singleQuoteOpen, TokenType::quoteOpen, "“", TokenType::quoteClose,
 					"”"
 				);
-				Advance(0);
+				advance(0);
 				break;
 
 			case '-': {
-				if (Check(2) && Is(1, '-') && Is(2, '-'))
-				{
-					Add(TokenType::EmDash, "–");
-					Advance(2);
+				if (check(2) && is(1, '-') && is(2, '-')) {
+					add(TokenType::emDash, "–");
+					advance(2);
 					break;
 				}
-				if (Check(1) && Is(1, '-'))
-				{
-					Add(TokenType::EnDash, "–");
-					Advance(1);
+				if (check(1) && is(1, '-')) {
+					add(TokenType::enDash, "–");
+					advance(1);
 					break;
 				}
-				Add(TokenType::Hyphen, "-");
-				Advance(0);
+				add(TokenType::hyphen, "-");
+				advance(0);
 				break;
 			}
 
 			case ':': {
-				Advance(0);
+				advance(0);
 
-				if (Check(0))
-				{
+				if (check(0)) {
 					size_t emojiIndex = _index;
 					size_t emojiSize = 0;
 
-					while (Check(0) && (Get(0) >= 'a' && Get(0) <= 'z' || Is(0, '-')))
-					{
-						if (Is(0, ':'))
-						{
+					while (check(0) && (get(0) >= 'a' && get(0) <= 'z' || is(0, '-'))) {
+						if (is(0, ':')) {
 							break;
 						}
 
 						++emojiSize;
-						Advance(0);
+						advance(0);
 					}
 
-					if (Is(0, ':') && emojiSize > 0)
-					{
-						Add(TokenType::EmojiMark, ":");
-						Add(TokenType::EmojiCode, _content.substr(emojiIndex, emojiSize));
-						Add(TokenType::EmojiMark, ":");
-						Advance(0);
+					if (is(0, ':') && emojiSize > 0) {
+						add(TokenType::emojiMark, ":");
+						add(TokenType::emojiCode, _content.substr(emojiIndex, emojiSize));
+						add(TokenType::emojiMark, ":");
+						advance(0);
 						break;
 					}
 
-					AddText(":" + _content.substr(emojiIndex, emojiSize));
+					addText(":" + _content.substr(emojiIndex, emojiSize));
 					break;
 				}
 
-				AddText(":");
+				addText(":");
 				break;
 			}
 
 			case '{': {
-				Advance(0);
+				advance(0);
 
-				if (Check(0))
-				{
+				if (check(0)) {
 					size_t depth = 0;
 					std::string source;
 
-					while (Check(0))
-					{
-						if (Is(0, '}') && depth == 0)
-						{
-							Advance(0);
+					while (check(0)) {
+						if (is(0, '}') && depth == 0) {
+							advance(0);
 							break;
 						}
 
-						if (Is(0, '{'))
-						{
+						if (is(0, '{')) {
 							++depth;
 						}
 
-						if (Is(0, '\\'))
-						{
-							Advance(0);
+						if (is(0, '\\')) {
+							advance(0);
 						}
 
-						source += Get(0);
-						Advance(0);
+						source += get(0);
+						advance(0);
 					}
 
-					Add(TokenType::CurlyOpen, "{");
-					Add(TokenType::CodeSource, source);
-					Add(TokenType::CurlyClose, "}");
+					add(TokenType::curlyOpen, "{");
+					add(TokenType::codeSource, source);
+					add(TokenType::curlyClose, "}");
 
-					if (Is(0, '('))
-					{
-						Advance(0);
+					if (is(0, '(')) {
+						advance(0);
 						std::string lang;
 
-						if (Check(0) && IsSymbol(0))
-						{
-							while (Check(0) && IsSymbol(0))
-							{
-								lang += Get(0);
-								Advance(0);
+						if (check(0) && isSymbol(0)) {
+							while (check(0) && isSymbol(0)) {
+								lang += get(0);
+								advance(0);
 							}
 
-							if (Is(0, ')'))
-							{
-								Add(TokenType::ParenOpen, "(");
-								Add(TokenType::ResourceLabel, lang);
-								Add(TokenType::ParenClose, ")");
-								Advance(0);
+							if (is(0, ')')) {
+								add(TokenType::parenOpen, "(");
+								add(TokenType::resourceLabel, lang);
+								add(TokenType::parenClose, ")");
+								advance(0);
 								break;
 							}
 
-							AddText("(" + lang);
+							addText("(" + lang);
 							break;
-						}
-						else
-						{
-							AddText("(");
+						} else {
+							addText("(");
 						}
 					}
 					break;
 				}
 
-				AddText("{");
+				addText("{");
 			}
 
 			case '[': {
-				Advance(0);
+				advance(0);
 
-				if (Check(0))
-				{
+				if (check(0)) {
 					bool idMarkerExists = false;
 					size_t idMarkerIndex = 0;
 					size_t depth = 0;
 					std::string resource;
 
-					while (Check(0))
-					{
-						if (Is(0, ']') && depth == 0)
-						{
-							Advance(0);
+					while (check(0)) {
+						if (is(0, ']') && depth == 0) {
+							advance(0);
 							break;
 						}
 
-						if (Is(0, '['))
-						{
+						if (is(0, '[')) {
 							++depth;
 						}
 
-						if (Is(0, '>'))
-						{
+						if (is(0, '>')) {
 							idMarkerExists = true;
 							idMarkerIndex = resource.size();
 						}
 
-						if (Is(0, '\\'))
-						{
-							Advance(0);
+						if (is(0, '\\')) {
+							advance(0);
 						}
 
-						resource += Get(0);
-						Advance(0);
+						resource += get(0);
+						advance(0);
 					}
 
-					if (idMarkerExists)
-					{
-						Add(TokenType::SquareOpen, "[");
-						Add(TokenType::Resource, resource.substr(0, idMarkerIndex));
-						Add(TokenType::ResourceIDMark, ">");
-						Add(TokenType::ResourceID, resource.substr(idMarkerIndex + 1));
-						Add(TokenType::SquareClose, "]");
-					}
-					else
-					{
-						Add(TokenType::SquareOpen, "[");
-						Add(TokenType::Resource, resource);
-						Add(TokenType::SquareClose, "]");
+					if (idMarkerExists) {
+						add(TokenType::squareOpen, "[");
+						add(TokenType::resource, resource.substr(0, idMarkerIndex));
+						add(TokenType::resourceIDMark, ">");
+						add(TokenType::resourceID, resource.substr(idMarkerIndex + 1));
+						add(TokenType::squareClose, "]");
+					} else {
+						add(TokenType::squareOpen, "[");
+						add(TokenType::resource, resource);
+						add(TokenType::squareClose, "]");
 					}
 
-					if (Is(0, '('))
-					{
-						Advance(0);
+					if (is(0, '(')) {
+						advance(0);
 
-						if (Check(0))
-						{
+						if (check(0)) {
 							size_t depth = 0;
 							std::string label;
 
-							while (Check(0))
-							{
-								if (Is(0, ')') && depth == 0)
-								{
-									Advance(0);
+							while (check(0)) {
+								if (is(0, ')') && depth == 0) {
+									advance(0);
 									break;
 								}
 
-								if (Is(0, '('))
-								{
+								if (is(0, '(')) {
 									++depth;
 								}
 
-								if (Is(0, '\\'))
-								{
-									Advance(0);
+								if (is(0, '\\')) {
+									advance(0);
 								}
 
-								label += Get(0);
-								Advance(0);
+								label += get(0);
+								advance(0);
 							}
 
-							Add(TokenType::ParenOpen, "(");
-							Add(TokenType::ResourceLabel, label);
-							Add(TokenType::ParenClose, ")");
+							add(TokenType::parenOpen, "(");
+							add(TokenType::resourceLabel, label);
+							add(TokenType::parenClose, ")");
 							break;
-						}
-						else
-						{
-							AddText("(");
+						} else {
+							addText("(");
 						}
 					}
 					break;
 				}
 
-				AddText("[");
+				addText("[");
 				break;
 			}
 
 			case '!':
-				if (Check(1) && Is(1, '['))
-				{
-					Add(TokenType::PresentMark, "!");
-					Advance(0);
+				if (check(1) && is(1, '[')) {
+					add(TokenType::presentMark, "!");
+					advance(0);
 					// see inline [
 					break;
 				}
-				Advance(0);
-				AddText("!");
+				advance(0);
+				addText("!");
 				break;
 
 			case '?':
-				if (Check(1) && Is(1, '['))
-				{
-					Add(TokenType::IncludeMark, "?");
-					Advance(0);
+				if (check(1) && is(1, '[')) {
+					add(TokenType::includeMark, "?");
+					advance(0);
 					// see inline [
 					break;
 				}
-				Advance(0);
-				AddText("?");
+				advance(0);
+				addText("?");
 				break;
 
 			case '^':
 			case '=': {
-				std::string original(1, Get(0));
-				if (Check(2) && Is(1, '[') && IsSymbol(2))
-				{
-					Advance(1);
+				std::string original(1, get(0));
+				if (check(2) && is(1, '[') && isSymbol(2)) {
+					advance(1);
 					size_t idIndex = _index;
 					size_t idSize = 0;
-					while (Check(0) && IsSymbol(0))
-					{
+					while (check(0) && isSymbol(0)) {
 						++idSize;
-						Advance(0);
+						advance(0);
 					}
-					if (idSize > 0 && Check(0) && Is(0, ']'))
-					{
-						if (original[0] == '^')
-						{
-							Add(TokenType::JumpMark, original);
-							Add(TokenType::SquareOpen, "[");
-							Add(TokenType::JumpID, _content.substr(idIndex, idSize));
-							Add(TokenType::SquareClose, "]");
-							Advance(0);
+					if (idSize > 0 && check(0) && is(0, ']')) {
+						if (original[0] == '^') {
+							add(TokenType::jumpMark, original);
+							add(TokenType::squareOpen, "[");
+							add(TokenType::jumpID, _content.substr(idIndex, idSize));
+							add(TokenType::squareClose, "]");
+							advance(0);
 							break;
 						}
-						if (Check(1) && Is(1, ' '))
-						{
-							Add(TokenType::DescribeMark, original);
-							Add(TokenType::SquareOpen, "[");
-							Add(TokenType::JumpID, _content.substr(idIndex, idSize));
-							Add(TokenType::SquareClose, "]");
-							Advance(1);
+						if (check(1) && is(1, ' ')) {
+							add(TokenType::describeMark, original);
+							add(TokenType::squareOpen, "[");
+							add(TokenType::jumpID, _content.substr(idIndex, idSize));
+							add(TokenType::squareClose, "]");
+							advance(1);
 							break;
 						}
 					}
-					AddText(original);
-					Retreat(idSize + 1);
+					addText(original);
+					retreat(idSize + 1);
 					break;
 				}
-				Advance(0);
-				AddText(original);
+				advance(0);
+				addText(original);
 				break;
 			}
 
 			case '|':
 				// trim right
-				if (!_tokens.empty() && _tokens.back().type == TokenType::Text)
-				{
+				if (!_tokens.empty() && _tokens.back().type == TokenType::text) {
 					size_t blankCount = 0;
-					for (size_t i = _tokens.back().value.size(); i >= 0 && _tokens.back().value[i - 1] == ' '; --i)
-					{
+					for (size_t i = _tokens.back().value.size(); i >= 0 && _tokens.back().value[i - 1] == ' '; --i) {
 						++blankCount;
 					}
 					_tokens.back().value = _tokens.back().value.substr(0, _tokens.back().value.size() - blankCount);
 				}
-				Add(TokenType::Pipe, "|");
-				Advance(0);
-				TokenizeSpace();
+				add(TokenType::pipe, "|");
+				advance(0);
+				tokenizeSpace();
 				break;
 
 			case '<': {
-				if (Check(2) && Is(1, '<') && Is(2, '<'))
-				{
-					Add(TokenType::Break, "<<<");
-					Advance(2);
+				if (check(2) && is(1, '<') && is(2, '<')) {
+					add(TokenType::break_, "<<<");
+					advance(2);
 					break;
 				}
-				if (Check(1) && Is(1, '<'))
-				{
-					Add(TokenType::Break, "<<");
-					Advance(1);
+				if (check(1) && is(1, '<')) {
+					add(TokenType::break_, "<<");
+					advance(1);
 					break;
 				}
-				Advance(0);
+				advance(0);
 				size_t begin = _index;
 				size_t size = 0;
-				while (Check(0) && !Is(0, '>'))
-				{
+				while (check(0) && !is(0, '>')) {
 					++size;
-					Advance(0);
+					advance(0);
 				}
-				Advance(0);
+				advance(0);
 				std::string_view text = std::string_view(_content.data() + begin, size);
 
-				if (IsDate(text))
-				{
-					Add(TokenType::Date, _content.substr(begin, size));
+				if (IsDate(text)) {
+					add(TokenType::date, _content.substr(begin, size));
 					break;
 				}
-				if (IsTime(text))
-				{
-					Add(TokenType::Time, _content.substr(begin, size));
+				if (IsTime(text)) {
+					add(TokenType::time, _content.substr(begin, size));
 					break;
 				}
-				if (IsDateTime(text))
-				{
-					Add(TokenType::DateTime, _content.substr(begin, size));
+				if (IsDateTime(text)) {
+					add(TokenType::dateTime, _content.substr(begin, size));
 					break;
 				}
 
-				AddText("<");
-				AddText(_content.substr(begin, size));
-				AddText(">");
+				addText("<");
+				addText(_content.substr(begin, size));
+				addText(">");
 				break;
 			}
 
 			case '*':
-				if (Check(2) && Is(1, '*') && Is(2, '*'))
-				{
-					Add(TokenType::Dinkus, "***");
-					Advance(2);
+				if (check(2) && is(1, '*') && is(2, '*')) {
+					add(TokenType::dinkus, "***");
+					advance(2);
 					break;
 				}
-				Add(TokenType::FSBold, "*");
-				Advance(0);
+				add(TokenType::fsBold, "*");
+				advance(0);
 				break;
 
 			case '_':
-				Add(TokenType::FSItalic, "_");
-				Advance(0);
+				add(TokenType::fsItalic, "_");
+				advance(0);
 				break;
 
 			case '`':
-				Add(TokenType::FSMonospace, "`");
-				Advance(0);
+				add(TokenType::fsMonospace, "`");
+				advance(0);
 				break;
 
 			case '>': {
-				if (Check(1) && Is(1, ' '))
-				{
-					Add(TokenType::HeadingIDMark, ">");
-					Advance(1);
+				if (check(1) && is(1, ' ')) {
+					add(TokenType::headingIDMark, ">");
+					advance(1);
 
 					size_t idIndex = _index;
 					size_t idSize = 0;
 
-					while (Check(0) && !Is(0, '\n') && IsSymbol(0))
-					{
+					while (check(0) && !is(0, '\n') && isSymbol(0)) {
 						++idSize;
-						Advance(0);
+						advance(0);
 					}
 
-					if (idSize > 0)
-					{
-						Add(TokenType::HeadingID, _content.substr(idIndex, idSize));
+					if (idSize > 0) {
+						add(TokenType::headingID, _content.substr(idIndex, idSize));
 					}
 					break;
 				}
 
-				AddText(">");
-				Advance(0);
+				addText(">");
+				advance(0);
 				break;
 			}
 
 			default:
-				AddText(_content.substr(_index, 1));
-				Advance(0);
+				addText(_content.substr(_index, 1));
+				advance(0);
 				break;
 		}
 	}
 
-	void Lexer::TokenizePrefix()
-	{
+	void Lexer::tokenizePrefix() {
 		std::basic_string<TokenType> currentPrefix;
 		size_t currentIndent = 0;
 
-		while (Is(0, '\t') || Is(0, '/'))
-		{
-			if (Is(0, '\t'))
-			{
-				currentPrefix += TokenType::IndentIncr;
+		while (is(0, '\t') || is(0, '/')) {
+			if (is(0, '\t')) {
+				currentPrefix += TokenType::indentIncr;
 				++currentIndent;
-				Advance(0);
+				advance(0);
 				continue;
 			}
 
-			if (Check(1) && Is(0, '/') && Is(1, ' '))
-			{
-				currentPrefix += TokenType::BQIncr;
-				Advance(1);
+			if (check(1) && is(0, '/') && is(1, ' ')) {
+				currentPrefix += TokenType::bqIncr;
+				advance(1);
 				continue;
 			}
 
-			if ((Is(0, '/') && Is(1, '\0')) || (Is(0, '/') && Is(1, '\n')) || (Is(0, '/') && Is(1, '\t')))
-			{
-				currentPrefix += TokenType::BQIncr;
-				Advance(0);
+			if ((is(0, '/') && is(1, '\0')) || (is(0, '/') && is(1, '\n')) || (is(0, '/') && is(1, '\t'))) {
+				currentPrefix += TokenType::bqIncr;
+				advance(0);
 				continue;
 			}
 
@@ -771,30 +673,24 @@ namespace Gularen
 
 		size_t lowerBound = std::min(_prefix.size(), currentPrefix.size());
 
-		for (size_t i = 0; i < lowerBound; ++i)
-		{
-			if (currentPrefix[i] != _prefix[i])
-			{
+		for (size_t i = 0; i < lowerBound; ++i) {
+			if (currentPrefix[i] != _prefix[i]) {
 				lowerBound = i;
 				break;
 			}
 		}
 
-		if (_prefix.size() > lowerBound)
-		{
-			while (_prefix.size() > lowerBound)
-			{
-				Add(_prefix.back() == TokenType::IndentIncr ? TokenType::IndentDecr : TokenType::BQDecr,
-					_prefix.back() == TokenType::IndentIncr ? "I-" : "B-");
+		if (_prefix.size() > lowerBound) {
+			while (_prefix.size() > lowerBound) {
+				add(_prefix.back() == TokenType::indentIncr ? TokenType::indentDecr : TokenType::bqDecr,
+					_prefix.back() == TokenType::indentIncr ? "I-" : "B-");
 				_prefix.pop_back();
 			}
 		}
 
-		if (currentPrefix.size() > lowerBound)
-		{
-			while (lowerBound < currentPrefix.size())
-			{
-				Add(currentPrefix[lowerBound], currentPrefix[lowerBound] == TokenType::IndentIncr ? "I+" : "B+");
+		if (currentPrefix.size() > lowerBound) {
+			while (lowerBound < currentPrefix.size()) {
+				add(currentPrefix[lowerBound], currentPrefix[lowerBound] == TokenType::indentIncr ? "I+" : "B+");
 				++lowerBound;
 			}
 		}
@@ -803,68 +699,59 @@ namespace Gularen
 		_indent = currentIndent;
 	}
 
-	void Lexer::TokenizeBlock()
-	{
-		TokenizePrefix();
+	void Lexer::tokenizeBlock() {
+		tokenizePrefix();
 
-		switch (Get(0))
-		{
+		switch (get(0)) {
 			case '>': {
-				size_t counter = Count('>');
-				if (counter > 3)
-				{
-					AddText(std::string(counter, '>'));
+				size_t counter = count('>');
+				if (counter > 3) {
+					addText(std::string(counter, '>'));
 					break;
 				}
 
-				if (Is(0, ' '))
-				{
-					Advance(0);
-					switch (counter)
-					{
+				if (is(0, ' ')) {
+					advance(0);
+					switch (counter) {
 						case 3:
-							Add(TokenType::ChapterMark, ">>>");
+							add(TokenType::chapterMark, ">>>");
 							break;
 						case 2:
-							Add(TokenType::SectionMark, ">>");
+							add(TokenType::sectionMark, ">>");
 							break;
 						case 1:
-							Add(TokenType::SubsectionMark, ">");
+							add(TokenType::subsectionMark, ">");
 							break;
 					}
 					break;
 				}
-				AddText(std::string(counter, '>'));
+				addText(std::string(counter, '>'));
 				break;
 			}
 
 			case '-': {
-				TokenizeCode();
+				tokenizeCode();
 				break;
 			}
 
 			case '[': {
-				if (Check(3) && Is(2, ']') && Is(3, ' '))
-				{
-					if (Is(1, ' '))
-					{
-						Add(TokenType::Checkbox, "[ ]");
-						Advance(2);
-						TokenizeSpace();
+				if (check(3) && is(2, ']') && is(3, ' ')) {
+					if (is(1, ' ')) {
+						add(TokenType::checkbox, "[ ]");
+						advance(2);
+						tokenizeSpace();
 						break;
 					}
-					if (Is(1, 'v'))
-					{
-						Add(TokenType::Checkbox, "[v]");
-						Advance(2);
-						TokenizeSpace();
+					if (is(1, 'v')) {
+						add(TokenType::checkbox, "[v]");
+						advance(2);
+						tokenizeSpace();
 						break;
 					}
-					if (Is(1, 'x'))
-					{
-						Add(TokenType::Checkbox, "[x]");
-						Advance(2);
-						TokenizeSpace();
+					if (is(1, 'x')) {
+						add(TokenType::checkbox, "[x]");
+						advance(2);
+						tokenizeSpace();
 						break;
 					}
 				}
@@ -879,55 +766,43 @@ namespace Gularen
 			}
 
 			case '|':
-				TokenizeTable();
+				tokenizeTable();
 				break;
 
 			case '<': {
 				size_t previousIndex = _index;
-				Advance(0);
+				advance(0);
 				size_t beginIndex = _index;
 				size_t size = 0;
-				while (Check(0) && !Is(0, '>'))
-				{
+				while (check(0) && !is(0, '>')) {
 					++size;
-					Advance(0);
+					advance(0);
 				}
-				Advance(0);
+				advance(0);
 				std::string inside = _content.substr(beginIndex, size);
-				if (inside == "note")
-				{
-					Add(TokenType::AdmonNote, "<note>");
-					TokenizeSpace();
+				if (inside == "note") {
+					add(TokenType::admonNote, "<note>");
+					tokenizeSpace();
 					break;
-				}
-				else if (inside == "hint")
-				{
-					Add(TokenType::AdmonHint, "<hint>");
-					TokenizeSpace();
+				} else if (inside == "hint") {
+					add(TokenType::admonHint, "<hint>");
+					tokenizeSpace();
 					break;
-				}
-				else if (inside == "important")
-				{
-					Add(TokenType::AdmonImportant, "<important>");
-					TokenizeSpace();
+				} else if (inside == "important") {
+					add(TokenType::admonImportant, "<important>");
+					tokenizeSpace();
 					break;
-				}
-				else if (inside == "warning")
-				{
-					Add(TokenType::AdmonWarning, "<warning>");
-					TokenizeSpace();
+				} else if (inside == "warning") {
+					add(TokenType::admonWarning, "<warning>");
+					tokenizeSpace();
 					break;
-				}
-				else if (inside == "seealso")
-				{
-					Add(TokenType::AdmonSeeAlso, "<seealso>");
-					TokenizeSpace();
+				} else if (inside == "seealso") {
+					add(TokenType::admonSeeAlso, "<seealso>");
+					tokenizeSpace();
 					break;
-				}
-				else if (inside == "tip")
-				{
-					Add(TokenType::AdmonTip, "<tip>");
-					TokenizeSpace();
+				} else if (inside == "tip") {
+					add(TokenType::admonTip, "<tip>");
+					tokenizeSpace();
 					break;
 				}
 
@@ -946,21 +821,19 @@ namespace Gularen
 			case '8':
 			case '9': {
 				std::string number;
-				while (Check(0) && Get(0) >= '0' && Get(0) <= '9')
-				{
-					number += Get(0);
-					Advance(0);
+				while (check(0) && get(0) >= '0' && get(0) <= '9') {
+					number += get(0);
+					advance(0);
 				}
 
-				if (Check(1) && Is(0, '.') && Is(1, ' '))
-				{
-					Advance(0);
-					TokenizeSpace();
-					Add(TokenType::Index, number + ".");
+				if (check(1) && is(0, '.') && is(1, ' ')) {
+					advance(0);
+					tokenizeSpace();
+					add(TokenType::index, number + ".");
 					break;
 				}
 
-				AddText(number);
+				addText(number);
 				break;
 			}
 
@@ -969,210 +842,175 @@ namespace Gularen
 		}
 	}
 
-	void Lexer::TokenizeCode()
-	{
+	void Lexer::tokenizeCode() {
 		size_t openingIndent = _indent;
-		size_t openingCounter = Count('-');
+		size_t openingCounter = count('-');
 
-		if (openingCounter == 1)
-		{
-			if (Is(0, ' '))
-			{
-				Advance(0);
-				Add(TokenType::Bullet, "-");
+		if (openingCounter == 1) {
+			if (is(0, ' ')) {
+				advance(0);
+				add(TokenType::bullet, "-");
 				return;
 			}
 
-			Retreat(1);
+			retreat(1);
 			// see inline -
 			return;
 		}
 
-		if (openingCounter == 2)
-		{
-			Retreat(2);
+		if (openingCounter == 2) {
+			retreat(2);
 			// see inline -
 			return;
 		}
 
-		bool hasSpace = Is(0, ' ');
-		size_t spaceCounter = Count(' ');
+		bool hasSpace = is(0, ' ');
+		size_t spaceCounter = count(' ');
 
-		if (hasSpace)
-		{
+		if (hasSpace) {
 			size_t langIndex = _index;
 			size_t langSize = 0;
 
-			while (Check(0) && !Is(0, '\n') && IsSymbol(0))
-			{
+			while (check(0) && !is(0, '\n') && isSymbol(0)) {
 				++langSize;
-				Advance(0);
+				advance(0);
 			}
 
-			if (langSize == 0 || !Is(0, '\n'))
-			{
-				Retreat(openingCounter + spaceCounter + langSize);
+			if (langSize == 0 || !is(0, '\n')) {
+				retreat(openingCounter + spaceCounter + langSize);
 				return;
 			}
 
-			Add(TokenType::CodeMark, std::string(openingCounter, '-'));
-			Add(TokenType::CodeLang, _content.substr(langIndex, langSize));
-		}
-		else
-		{
-			if (!Is(0, '\n'))
-			{
-				Retreat(openingCounter + spaceCounter);
+			add(TokenType::codeMark, std::string(openingCounter, '-'));
+			add(TokenType::codeLang, _content.substr(langIndex, langSize));
+		} else {
+			if (!is(0, '\n')) {
+				retreat(openingCounter + spaceCounter);
 				// see inline -
 				return;
 			}
 
-			Add(TokenType::CodeMark, std::string(openingCounter, '-'));
+			add(TokenType::codeMark, std::string(openingCounter, '-'));
 		}
 
 		std::string source;
 		_end.column = _indent;
 
-		while (Check(0))
-		{
-			if (Is(0, '\n'))
-			{
-				size_t newline = Count('\n');
-				size_t indent = Count('\t');
+		while (check(0)) {
+			if (is(0, '\n')) {
+				size_t newline = count('\n');
+				size_t indent = count('\t');
 
 				_end.line += newline;
 				_end.column = indent;
 
-				if (Check(2) && Is(0, '-') && Is(1, '-') && Is(2, '-'))
-				{
-					size_t closingCounter = Count('-');
-					if ((_index >= _content.size() || Check(0) && Is(0, '\n')) && closingCounter == openingCounter)
-					{
+				if (check(2) && is(0, '-') && is(1, '-') && is(2, '-')) {
+					size_t closingCounter = count('-');
+					if ((_index >= _content.size() || check(0) && is(0, '\n')) && closingCounter == openingCounter) {
 						break;
 					}
 
-					if (newline > 0)
-					{
+					if (newline > 0) {
 						source += std::string(newline, '\n');
 					}
 
-					if (indent > openingIndent)
-					{
+					if (indent > openingIndent) {
 						source += std::string(indent - openingIndent, '\t');
 					}
 
 					source += std::string(closingCounter, '-');
 					continue;
-				}
-				else
-				{
-					if (newline > 0)
-					{
+				} else {
+					if (newline > 0) {
 						source += std::string(newline, '\n');
 					}
 
-					if (indent > openingIndent)
-					{
+					if (indent > openingIndent) {
 						source += std::string(indent - openingIndent, '\t');
 					}
 					continue;
 				}
 			}
 
-			source += Get(0);
-			Advance(0);
+			source += get(0);
+			advance(0);
 		}
 
 		size_t trimBegin = 0;
 		size_t trimEnd = 0;
 
-		for (size_t i = 0; i < source.size() && source[i] == '\n'; ++i)
-		{
+		for (size_t i = 0; i < source.size() && source[i] == '\n'; ++i) {
 			++trimBegin;
 		}
 
-		for (size_t i = source.size(); source.size() && i > 0 && source[i] == '\n'; --i)
-		{
+		for (size_t i = source.size(); source.size() && i > 0 && source[i] == '\n'; --i) {
 			++trimEnd;
 		}
 
 		size_t trimSize = trimEnd == source.size() ? source.size() : source.size() - trimBegin - trimEnd;
 
-		Add(TokenType::CodeSource, source.substr(trimBegin, trimSize));
-		Add(TokenType::CodeMark, std::string(openingCounter, '-'));
+		add(TokenType::codeSource, source.substr(trimBegin, trimSize));
+		add(TokenType::codeMark, std::string(openingCounter, '-'));
 	}
 
-	void Lexer::TokenizeSpace()
-	{
-		while (Check(0) && Is(0, ' '))
-		{
-			Advance(0);
+	void Lexer::tokenizeSpace() {
+		while (check(0) && is(0, ' ')) {
+			advance(0);
 		}
 
 		return;
 	}
 
-	void Lexer::TokenizeTable()
-	{
-		Add(TokenType::Pipe, "|");
-		Advance(0);
+	void Lexer::tokenizeTable() {
+		add(TokenType::pipe, "|");
+		advance(0);
 
-		if (!(Is(0, '-') || Is(0, ':')))
-		{
+		if (!(is(0, '-') || is(0, ':'))) {
 			return;
 		}
 
-		while (Check(0) && (Is(0, '-') || Is(0, ':') || Is(0, '|')) && !Is(0, '\n'))
-		{
-			if (Check(1) && Is(0, ':') && Is(1, '-'))
-			{
-				Advance(0);
-				size_t lineCounter = Count('-');
+		while (check(0) && (is(0, '-') || is(0, ':') || is(0, '|')) && !is(0, '\n')) {
+			if (check(1) && is(0, ':') && is(1, '-')) {
+				advance(0);
+				size_t lineCounter = count('-');
 
-				if (Get(0) == ':')
-				{
-					Advance(0);
-					Add(TokenType::PipeConnector, ":-:");
+				if (get(0) == ':') {
+					advance(0);
+					add(TokenType::pipeConnector, ":-:");
 					continue;
 				}
 
-				Add(TokenType::PipeConnector, ":--");
+				add(TokenType::pipeConnector, ":--");
 				continue;
 			}
 
-			if (Is(0, '-'))
-			{
-				size_t lineCounter = Count('-');
+			if (is(0, '-')) {
+				size_t lineCounter = count('-');
 
-				if (Get(0) == ':')
-				{
-					Advance(0);
-					Add(TokenType::PipeConnector, "--:");
+				if (get(0) == ':') {
+					advance(0);
+					add(TokenType::pipeConnector, "--:");
 					continue;
 				}
 
-				Add(TokenType::PipeConnector, ":--");
+				add(TokenType::pipeConnector, ":--");
 				continue;
 			}
 
-			if (Is(0, '|'))
-			{
-				Add(TokenType::Pipe, "|");
-				Advance(0);
+			if (is(0, '|')) {
+				add(TokenType::pipe, "|");
+				advance(0);
 				continue;
 			}
 
-			AddText(_content.substr(_index));
+			addText(_content.substr(_index));
 			return;
 		}
 	}
 
-	void Lexer::TokenizeText()
-	{
-		while (Check(0))
-		{
-			switch (Get(0))
-			{
+	void Lexer::tokenizeText() {
+		while (check(0)) {
+			switch (get(0)) {
 				case ' ':
 				case 'a':
 				case 'b':
@@ -1236,8 +1074,8 @@ namespace Gularen
 				case '7':
 				case '8':
 				case '9':
-					AddText(_content.substr(_index, 1));
-					Advance(0);
+					addText(_content.substr(_index, 1));
+					advance(0);
 					break;
 
 				default:
@@ -1246,19 +1084,18 @@ namespace Gularen
 		}
 	}
 
-	void Lexer::TokenizeQuoMark(
+	void Lexer::tokenizeQuoMark(
 		bool should, TokenType leftType, const std::string& leftValue, TokenType rightType,
 		const std::string& rightValue
-	)
-	{
+	) {
 		if (should || _index == 0 || _content[_index - 1] == ' ' || _content[_index - 1] == '\t' ||
 			_content[_index - 1] == '\n' || _content[_index - 1] == '\0')
 
 		{
-			Add(leftType, leftValue);
+			add(leftType, leftValue);
 			return;
 		}
 
-		Add(rightType, rightValue);
+		add(rightType, rightValue);
 	}
 }

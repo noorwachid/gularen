@@ -2,8 +2,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Gularen::Helper
-{
+namespace Gularen::Helper {
 	static std::string fallback = "??";
 
 	static std::unordered_map<std::string, std::string> shortcodeMap = {
@@ -1525,18 +1524,15 @@ namespace Gularen::Helper
 		{"pirate-flag", "🏴‍☠️"},
 	};
 
-	const std::string& ShortcodeToEmoji(const std::string& shortcode)
-	{
+	const std::string& shortcodeToEmoji(const std::string& shortcode) {
 		return shortcodeMap.count(shortcode) ? shortcodeMap.at(shortcode) : fallback;
 	}
 
-	std::vector<std::string> GetShortcodes()
-	{
+	std::vector<std::string> getShortcodes() {
 		std::vector<std::string> shortcodes;
 		shortcodes.reserve(shortcodeMap.size());
 
-		for (const auto& [shortcode, emoji] : shortcodeMap)
-		{
+		for (const auto& [shortcode, emoji] : shortcodeMap) {
 			shortcodes.push_back(shortcode);
 		}
 

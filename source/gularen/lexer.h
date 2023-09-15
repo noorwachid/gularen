@@ -3,51 +3,49 @@
 #include "gularen/token.h"
 #include <vector>
 
-namespace Gularen
-{
-	class Lexer
-	{
+namespace Gularen {
+	class Lexer {
 	public:
-		void Set(const std::string& content);
+		void set(const std::string& content);
 
-		void Tokenize();
+		void tokenize();
 
-		const Tokens& Get() const;
+		const Tokens& get() const;
 
 	private:
-		bool Check(size_t offset);
+		bool check(size_t offset);
 
-		bool Is(size_t offset, char c);
+		bool is(size_t offset, char c);
 
-		bool IsSymbol(size_t offset);
+		bool isSymbol(size_t offset);
 
-		char Get(size_t offset);
+		char get(size_t offset);
 
-		void Advance(size_t offset);
+		void advance(size_t offset);
 
-		void Retreat(size_t offset);
+		void retreat(size_t offset);
 
-		size_t Count(char c);
+		size_t count(char c);
 
-		void Add(TokenType type, const std::string& value);
+		void add(TokenType type, const std::string& value);
 
-		void AddText(const std::string value);
+		void addText(const std::string value);
 
-		void TokenizePrefix();
+		void tokenizePrefix();
 
-		void TokenizeBlock();
+		void tokenizeBlock();
 
-		void TokenizeInline();
+		void tokenizeInline();
 
-		void TokenizeCode();
+		void tokenizeCode();
 
-		void TokenizeText();
+		void tokenizeText();
 
-		void TokenizeSpace();
+		void tokenizeSpace();
 
-		void TokenizeTable();
+		void tokenizeTable();
 
-		void TokenizeQuoMark(
+		void tokenizeQuoMark(
 			bool should, TokenType leftType, const std::string& leftValue, TokenType rightType,
 			const std::string& rightValue
 		);
