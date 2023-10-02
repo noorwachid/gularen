@@ -11,7 +11,7 @@ namespace Gularen {
 		comment,
 		text,
 		fs,
-		deading,
+		heading,
 		paragraph,
 		indent,
 		bq,
@@ -181,6 +181,8 @@ namespace Gularen {
 	};
 
 	struct IndentNode : Node {
+		bool skipable = false;
+
 		IndentNode() {
 			group = NodeGroup::indent;
 		}

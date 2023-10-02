@@ -36,7 +36,12 @@ int main(int argc, char** argv) {
 
 	std::string command(argv[1]);
 
-	if (command == "tokenize" && argc > 2) {
+	if (command == "tokenize") {
+		if (argc < 2) {
+			std::cout << "please specify the input file\n";
+			return 0;
+		}
+
 		std::string input(argv[2]);
 
 		if (std::filesystem::is_directory(input)) {
@@ -53,7 +58,12 @@ int main(int argc, char** argv) {
 		}
 
 		return 0;
-	} else if (command == "parse" && argc > 2) {
+	} else if (command == "parse") {
+		if (argc < 2) {
+			std::cout << "please specify the input file\n";
+			return 0;
+		}
+
 		std::string input(argv[2]);
 
 		if (std::filesystem::is_directory(input)) {
@@ -71,33 +81,53 @@ int main(int argc, char** argv) {
 		std::cout << out.str();
 
 		return 0;
-	} else if (command == "shortcode-to-emoji" && argc > 2) {
-		std::cout << Gularen::Helper::shortcodeToEmoji(argv[2]);
-		return 0;
-	} else if (command == "get-shortcodes") {
-		for (const std::string& shortcode : Gularen::Helper::getShortcodes()) {
-			std::cout << shortcode << '\n';
+	} else if (command == "html") {
+		if (argc < 2) {
+			std::cout << "please specify the input file\n";
+			return 0;
 		}
-		return 0;
-	} else if (command == "to-html") {
-		std::string input(argv[2]);
+
+		std::string input;
+		std::string template_;
+
+		for (int i = 2; i < argc; ++i) {
+			std::string argument = argv[i];
+			if (argument == "--template" && i + 1 < argc) {
+				template_ = argv[i + 1];
+				continue;
+			}
+
+			input = argument;
+		}
 
 		if (std::filesystem::is_directory(input)) {
 			std::cout << "please specify the input file, make sure its not a directory\n";
+			return 0;
+		}
+
+		if (!template_.empty()) {
+			if (std::filesystem::is_directory(template_)) {
+				std::cout << "please specify the template file, make sure its not a directory\n";
+				return 0;
+			}
+
+			std::string templateMarker = "<!-- content -->";
+			std::string templateContent = read(template_);
+
+			size_t startPos = templateContent.find(templateMarker);
+
+			if (startPos == std::string::npos) {
+				std::cout << "pleace add special comment: '" << templateMarker << "' to the template file\n";
+				return 0;
+			}
+
+			templateContent.replace(startPos, templateMarker.length(), Gularen::Transpiler::HTML::transpile(read(input)));
+
+			std::cout <<  templateContent;
 			return 0;
 		}
 
 		std::cout << Gularen::Transpiler::HTML::transpile(read(input));
-		return 0;
-	} else if (command == "to-html-ls") {
-		std::string input(argv[2]);
-
-		if (std::filesystem::is_directory(input)) {
-			std::cout << "please specify the input file, make sure its not a directory\n";
-			return 0;
-		}
-
-		std::cout << Gularen::Transpiler::HTML::transpileSL(read(input));
 		return 0;
 	} else {
 		std::cout << "unknown command\n";

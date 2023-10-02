@@ -251,7 +251,7 @@ namespace Gularen {
 				break;
 
 			case TokenType::headingIDMark:
-				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::deading) {
+				if (check(1) && is(1, TokenType::headingID) && getScope()->group == NodeGroup::heading) {
 					HeadingNode* headingNode = static_cast<HeadingNode*>(getScope().get());
 					if (headingNode->type == HeadingType::subtitle) {
 						addText("> " + get(1).value, get(0).range);
@@ -442,7 +442,7 @@ namespace Gularen {
 
 	void Parser::parseIndent() {
 		switch (getScope()->group) {
-			case NodeGroup::deading:
+			case NodeGroup::heading:
 				if (getScope()->as<HeadingNode>().type == HeadingType::subtitle) {
 					removeScope(get(0).range);
 				}
@@ -466,7 +466,11 @@ namespace Gularen {
 				while (check(0) && _scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
 					removeScope(get(0).range);
 				}
+				IndentNode* indentNode = static_cast<IndentNode*>(getScope().get());
 				removeScope(get(0).range);
+				if (getScope()->group == NodeGroup::listItem) {
+					indentNode->skipable = true;
+				}
 				advance(0);
 				continue;
 			}
@@ -723,7 +727,7 @@ namespace Gularen {
 				break;
 
 			case TokenType::subsectionMark:
-				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::deading &&
+				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading &&
 					_lastEnding == TokenType::newline) {
 					_scopes.push(getScope()->children.back());
 					addScope(std::make_shared<HeadingNode>(HeadingType::subtitle), get(0).range);

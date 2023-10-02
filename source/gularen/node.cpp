@@ -29,7 +29,7 @@ namespace Gularen {
 	}
 
 	HeadingNode::HeadingNode(HeadingType type) : type{type} {
-		group = NodeGroup::deading;
+		group = NodeGroup::heading;
 	}
 
 	ParagraphNode::ParagraphNode() {

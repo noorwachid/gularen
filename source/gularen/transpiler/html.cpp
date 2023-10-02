@@ -76,7 +76,7 @@ namespace Gularen::Transpiler::HTML {
 					}
 					return;
 
-				case NodeGroup::deading: {
+				case NodeGroup::heading: {
 					const HeadingNode& headingNode = node->as<HeadingNode>();
 					if (headingNode.type == HeadingType::subtitle)
 						return addOpenTag(node, "small");
@@ -107,7 +107,11 @@ namespace Gularen::Transpiler::HTML {
 				}
 
 				case NodeGroup::indent:
-					return addOpenTag(node, "blockquote");
+					if (!node->as<IndentNode>().skipable) {
+						return addOpenTag(node, "blockquote");
+					}
+
+					return;
 
 				case NodeGroup::break_:
 					switch (node->as<BreakNode>().type) {
@@ -357,7 +361,6 @@ namespace Gularen::Transpiler::HTML {
 
 				default:
 					break;
-					;
 			}
 		}
 
@@ -385,7 +388,7 @@ namespace Gularen::Transpiler::HTML {
 					}
 					return;
 
-				case NodeGroup::deading:
+				case NodeGroup::heading:
 					switch (node->as<HeadingNode>().type) {
 						case HeadingType::chapter:
 							return addCloseTagLF(node, "h1");
@@ -399,7 +402,11 @@ namespace Gularen::Transpiler::HTML {
 					return;
 
 				case NodeGroup::indent:
-					return addCloseTagLF(node, "blockquote");
+					if (!node->as<IndentNode>().skipable) {
+						return addCloseTagLF(node, "blockquote");
+					}
+
+					return;
 
 				case NodeGroup::list:
 					switch (node->as<ListNode>().type) {
@@ -513,6 +520,8 @@ namespace Gularen::Transpiler::HTML {
 
 	private:
 		TableNode* _tableNode = nullptr;
+		std::string _indentFlags;
+		size_t _indentDepth = 0;
 		size_t _tableRowCount = 0;
 		size_t _tableColumnCount = 0;
 		Options _options;
