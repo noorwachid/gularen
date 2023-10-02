@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace Gularen {
-	bool HasNetProtocol(const std::string& reference) {
+	bool hasNetProtocol(const std::string& reference) {
 		if (reference.empty())
 			return false;
 
@@ -337,7 +337,7 @@ namespace Gularen {
 
 				if (check(2) && is(1, TokenType::resource) && is(2, TokenType::squareClose)) {
 					linkNode = std::make_shared<ResourceNode>(
-						HasNetProtocol(get(1).value) ? ResourceType::link : ResourceType::linkLocal, get(1).value
+						hasNetProtocol(get(1).value) ? ResourceType::link : ResourceType::linkLocal, get(1).value
 					);
 					add(linkNode, get(0).range);
 					advance(2);
@@ -368,7 +368,7 @@ namespace Gularen {
 				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::resource) &&
 					is(3, TokenType::squareClose)) {
 					presentNode = std::make_shared<ResourceNode>(
-						HasNetProtocol(get(2).value) ? ResourceType::present : ResourceType::presentLocal, get(2).value
+						hasNetProtocol(get(2).value) ? ResourceType::present : ResourceType::presentLocal, get(2).value
 					);
 					add(presentNode, get(0).range);
 					advance(3);
@@ -402,7 +402,7 @@ namespace Gularen {
 			case TokenType::includeMark:
 				#ifndef __EMSCRIPTEN__
 				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::resource) &&
-					is(3, TokenType::squareClose) && !HasNetProtocol(get(2).value)) {
+					is(3, TokenType::squareClose) && !hasNetProtocol(get(2).value)) {
 					std::string directory = _path == "" ? std::filesystem::current_path().string()
 														: std::filesystem::path(_path).parent_path().string();
 

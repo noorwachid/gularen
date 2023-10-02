@@ -19,7 +19,7 @@ target_include_directories(gularen PUBLIC source)
 set_target_properties(gularen PROPERTIES CXX_STANDARD 17)
 
 add_executable(gularen-cli
-	source/main.cpp
+	cli/main.cpp
 )
 
 set_target_properties(gularen-cli PROPERTIES CXX_STANDARD 17 OUTPUT_NAME gularen)

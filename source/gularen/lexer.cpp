@@ -4,38 +4,38 @@
 #include <iostream>
 
 namespace Gularen {
-	bool IsDigit(char letter) {
+	bool isDigit(char letter) {
 		return letter >= '0' && letter <= '9';
 	}
 
-	bool IsDate(std::string_view text) {
-		if (text.size() == 10 && IsDigit(text[0]) && IsDigit(text[1]) && IsDigit(text[2]) && IsDigit(text[3]) &&
-			text[4] == '-' && IsDigit(text[5]) && IsDigit(text[6]) && text[7] == '-' && IsDigit(text[8]) &&
-			IsDigit(text[9])) {
+	bool isDate(std::string_view text) {
+		if (text.size() == 10 && isDigit(text[0]) && isDigit(text[1]) && isDigit(text[2]) && isDigit(text[3]) &&
+			text[4] == '-' && isDigit(text[5]) && isDigit(text[6]) && text[7] == '-' && isDigit(text[8]) &&
+			isDigit(text[9])) {
 			return true;
 		}
 		return false;
 	}
 
-	bool IsTime(std::string_view text) {
-		if (text.size() == 5 && IsDigit(text[0]) && IsDigit(text[1]) && text[2] == ':' && IsDigit(text[3]) &&
-			IsDigit(text[4])) {
+	bool isTime(std::string_view text) {
+		if (text.size() == 5 && isDigit(text[0]) && isDigit(text[1]) && text[2] == ':' && isDigit(text[3]) &&
+			isDigit(text[4])) {
 			return true;
 		}
 
-		if (text.size() == 8 && IsDigit(text[0]) && IsDigit(text[1]) && text[2] == ':' && IsDigit(text[3]) &&
-			IsDigit(text[4]) && text[5] == ':' && IsDigit(text[6]) && IsDigit(text[7])) {
+		if (text.size() == 8 && isDigit(text[0]) && isDigit(text[1]) && text[2] == ':' && isDigit(text[3]) &&
+			isDigit(text[4]) && text[5] == ':' && isDigit(text[6]) && isDigit(text[7])) {
 			return true;
 		}
 
 		return false;
 	}
 
-	bool IsDateTime(std::string_view text) {
-		if (text.size() == 16 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 5))) {
+	bool isDateTime(std::string_view text) {
+		if (text.size() == 16 && isDate(text.substr(0, 10)) && isTime(text.substr(11, 5))) {
 			return true;
 		}
-		if (text.size() == 19 && IsDate(text.substr(0, 10)) && IsTime(text.substr(11, 8))) {
+		if (text.size() == 19 && isDate(text.substr(0, 10)) && isTime(text.substr(11, 8))) {
 			return true;
 		}
 		return false;
@@ -574,15 +574,15 @@ namespace Gularen {
 				advance(0);
 				std::string_view text = std::string_view(_content.data() + begin, size);
 
-				if (IsDate(text)) {
+				if (isDate(text)) {
 					add(TokenType::date, _content.substr(begin, size));
 					break;
 				}
-				if (IsTime(text)) {
+				if (isTime(text)) {
 					add(TokenType::time, _content.substr(begin, size));
 					break;
 				}
-				if (IsDateTime(text)) {
+				if (isDateTime(text)) {
 					add(TokenType::dateTime, _content.substr(begin, size));
 					break;
 				}
