@@ -2,8 +2,9 @@
 
 #include <string>
 
-namespace Gularen::Helper {
-	const std::string& shortcodeToEmoji(const std::string& shortcode);
+namespace Gularen::Helper
+{
+	const std::string& ShortcodeToEmoji(const std::string& shortcode);
 
-	std::vector<std::string> getShortcodes();
+	std::vector<std::string> GetShortcodes();
 }

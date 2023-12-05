@@ -188,7 +188,7 @@
 		gularen.transpiled = false;
 
 		function transpile() {
-			const html = Module.transpileSL(inputNode.value);
+			const html = Module.transpileSyncLine(inputNode.value);
 			outputNode.innerHTML = html;
 			dispatchEvent(new Event('gularentranspile', {
 				bubbles: true,

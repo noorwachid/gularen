@@ -4,5 +4,5 @@
 
 EMSCRIPTEN_BINDINGS(my_module)  {
 	emscripten::function("transpile", &Gularen::Transpiler::HTML::Transpile);
-	emscripten::function("transpileSL", &Gularen::Transpiler::HTML::TranspileSL);
+	emscripten::function("transpileSyncLine", &Gularen::Transpiler::HTML::TranspileSyncLine);
 }

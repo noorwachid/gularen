@@ -2,122 +2,130 @@
 
 #include <string>
 
-namespace Gularen {
-	enum class TokenType {
-		comment,
+namespace Gularen
+{
+	enum class TokenType
+	{
+		Comment,
 
-		indentIncr,
-		indentDecr,
+		IndentIncr,
+		IndentDecr,
 
-		bqIncr,
-		bqDecr,
+		BQIncr,
+		BQDecr,
 
-		newline,
-		newlinePlus,
+		Newline,
+		NewlinePlus,
 
-		text,
+		Text,
 
-		codeMark,
-		codeLang,
-		codeSource,
+		CodeMark,
+		CodeLang,
+		CodeSource,
 
-		chapterMark,
-		sectionMark,
-		subsectionMark,
+		ChapterMark,
+		SectionMark,
+		SubsectionMark,
 
-		headingID,
-		headingIDMark,
+		HeadingID,
+		HeadingIDMark,
 
-		fsBold,
-		fsItalic,
-		fsMonospace,
+		FSBold,
+		FSItalic,
+		FSMonospace,
 
-		bullet,
-		checkbox,
-		index,
+		Bullet,
+		Checkbox,
+		Index,
 
-		break_,
-		dinkus,
+		Break,
+		Dinkus,
 
-		pipe,
-		pipeConnector,
+		Pipe,
+		PipeConnector,
 
-		date,
-		time,
-		dateTime,
+		Date,
+		Time,
+		DateTime,
 
-		squareOpen,
-		squareClose,
+		SquareOpen,
+		SquareClose,
 
-		curlyOpen,
-		curlyClose,
+		CurlyOpen,
+		CurlyClose,
 
-		resource,
-		resourceIDMark,
-		resourceID,
-		resourceLabel,
+		Resource,
+		ResourceIDMark,
+		ResourceID,
+		ResourceLabel,
 
-		parenOpen,
-		parenClose,
+		ParenOpen,
+		ParenClose,
 
-		presentMark,
-		includeMark,
-		jumpMark,
-		jumpID,
-		describeMark,
+		PresentMark,
+		IncludeMark,
+		JumpMark,
+		JumpID,
+		DescribeMark,
 
-		admonNote,
-		admonHint,
-		admonImportant,
-		admonWarning,
-		admonSeeAlso,
-		admonTip,
+		AdmonNote,
+		AdmonHint,
+		AdmonImportant,
+		AdmonWarning,
+		AdmonSeeAlso,
+		AdmonTip,
 
-		emojiMark,
-		emojiCode,
+		EmojiMark,
+		EmojiCode,
 
-		hyphen,
-		enDash,
-		emDash,
+		Hyphen,
+		EnDash,
+		EmDash,
 
-		singleQuoteOpen,
-		singleQuoteClose,
-		quoteOpen,
-		quoteClose,
+		SingleQuoteOpen,
+		SingleQuoteClose,
+		QuoteOpen,
+		QuoteClose,
 
-		end,
+		End,
 	};
 
-	struct Position {
+	struct Position
+	{
 		size_t line;
 		size_t column;
 
-		Position() : line(1), column(1) {
+		Position() : line(1), column(1)
+		{
 		}
 
-		Position(size_t line, size_t column) : line(line), column(column) {
+		Position(size_t line, size_t column) : line(line), column(column)
+		{
 		}
 
-		bool operator==(const Position& other) const {
+		bool operator==(const Position& other) const
+		{
 			return line == other.line && column == other.column;
 		}
 
-		std::string toString() const;
+		std::string ToString() const;
 	};
 
-	struct Range {
+	struct Range
+	{
 		Position begin;
 		Position end;
 
-		std::string toString() const;
+		std::string ToString() const;
 	};
 
-	struct Token {
+	struct Token
+	{
 		TokenType type;
 		Range range;
 		std::string value;
 
-		std::string toString() const;
+		std::string ToString() const;
 	};
 
 	using Tokens = std::vector<Token>;

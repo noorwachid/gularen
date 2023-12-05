@@ -1,62 +1,64 @@
 #pragma once
 
-#include "gularen/token.h"
+#include "Gularen/Token.h"
 #include <vector>
 
-namespace Gularen {
-	class Lexer {
+namespace Gularen
+{
+	class Lexer
+	{
 	public:
-		void set(const std::string& content);
+		void Set(const std::string& content);
 
-		void tokenize();
+		void Tokenize();
 
-		const Tokens& get() const;
+		const Tokens& GetTokens() const;
 
 	private:
-		bool check(size_t offset);
+		bool CheckBoundary(size_t offset);
 
-		bool is(size_t offset, char c);
+		bool IsByte(size_t offset, char c);
 
-		bool isSymbol(size_t offset);
+		bool IsSymbolByte(size_t offset);
 
-		char get(size_t offset);
+		char GetByte(size_t offset);
 
-		void advance(size_t offset);
+		void Advance(size_t offset);
 
-		void retreat(size_t offset);
+		void Retreat(size_t offset);
 
-		size_t count(char c);
+		size_t CountRepetendBytes(char c);
 
-		void add(TokenType type, const std::string& value);
+		void Add(TokenType type, const std::string& value);
 
-		void addText(const std::string value);
+		void AddText(const std::string value);
 
-		void tokenizePrefix();
+		void TokenizePrefix();
 
-		void tokenizeBlock();
+		void TokenizeBlock();
 
-		void tokenizeInline();
+		void TokenizeInline();
 
-		void tokenizeCode();
+		void TokenizeCode();
 
-		void tokenizeText();
+		void TokenizeText();
 
-		void tokenizeSpace();
+		void TokenizeSpace();
 
-		void tokenizeTable();
+		void TokenizeTable();
 
-		void tokenizeQuoMark(
+		void TokenizeQuoMark(
 			bool should, TokenType leftType, const std::string& leftValue, TokenType rightType,
 			const std::string& rightValue
 		);
 
 	private:
-		size_t index;
-		size_t indent = 0;
-		Position begin;
-		Position end;
-		std::string content;
-		std::basic_string<TokenType> prefix;
-		Tokens tokens;
+		size_t _index;
+		size_t _indent = 0;
+		Position _begin;
+		Position _end;
+		std::string _content;
+		std::basic_string<TokenType> _prefix;
+		Tokens _tokens;
 	};
 }
