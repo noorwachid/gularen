@@ -51,12 +51,12 @@ namespace Gularen {
 		);
 
 	private:
-		size_t _index;
-		size_t _indent = 0;
-		Position _begin;
-		Position _end;
-		std::string _content;
-		std::basic_string<TokenType> _prefix;
-		Tokens _tokens;
+		size_t index;
+		size_t indent = 0;
+		Position begin;
+		Position end;
+		std::string content;
+		std::basic_string<TokenType> prefix;
+		Tokens tokens;
 	};
 }

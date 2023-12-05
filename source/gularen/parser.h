@@ -51,15 +51,15 @@ namespace Gularen {
 		void recursiveVisit(const Visitor& visitor, const NodePtr& node);
 
 	private:
-		NodePtr _root;
-		Lexer _lexer;
-		std::stack<NodePtr> _scopes;
-		bool _pathVirtual = false;
-		std::string _path;
-		std::vector<std::string> _previousPaths;
-		size_t _index;
-		TokenType _lastEnding;
+		NodePtr root;
+		Lexer lexer;
+		std::stack<NodePtr> scopes;
+		bool pathVirtual = false;
+		std::string path;
+		std::vector<std::string> previousPaths;
+		size_t index;
+		TokenType lastEnding;
 
-		bool _lastListDeadBecauseNewlinePlus;
+		bool lastListDeadBecauseNewlinePlus;
 	};
 }

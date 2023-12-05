@@ -1,8 +1,8 @@
 #include <emscripten/bind.h>
-#include <gularen/transpiler/html.h>
+#include <Gularen/Transpiler/HTML.h>
 
 
 EMSCRIPTEN_BINDINGS(my_module)  {
-	emscripten::function("transpile", &Gularen::Transpiler::HTML::transpile);
-	emscripten::function("transpileSL", &Gularen::Transpiler::HTML::transpileSL);
+	emscripten::function("transpile", &Gularen::Transpiler::HTML::Transpile);
+	emscripten::function("transpileSL", &Gularen::Transpiler::HTML::TranspileSL);
 }

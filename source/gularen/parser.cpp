@@ -26,29 +26,29 @@ namespace Gularen {
 	}
 
 	bool Parser::check(size_t offset) const {
-		return _index + offset < _lexer.get().size();
+		return index + offset < lexer.get().size();
 	}
 
 	bool Parser::is(size_t offset, TokenType type) const {
-		return _lexer.get()[_index + offset].type == type;
+		return lexer.get()[index + offset].type == type;
 	}
 
 	const Token& Parser::get(size_t offset) const {
-		return _lexer.get()[_index + offset];
+		return lexer.get()[index + offset];
 	}
 
 	void Parser::advance(size_t offset) {
-		_index += 1 + offset;
+		index += 1 + offset;
 	}
 
 	void Parser::add(const NodePtr& node, const Range& range) {
 		node->range = range;
-		_scopes.top()->children.push_back(node);
+		scopes.top()->children.push_back(node);
 	}
 
 	void Parser::addText(const std::string& value, const Range& range) {
-		if (!_scopes.top()->children.empty() && _scopes.top()->children.back()->group == NodeGroup::text) {
-			Node* node = _scopes.top()->children.back().get();
+		if (!scopes.top()->children.empty() && scopes.top()->children.back()->group == NodeGroup::text) {
+			Node* node = scopes.top()->children.back().get();
 			static_cast<TextNode*>(node)->value += value;
 		} else {
 			add(std::make_shared<TextNode>(value), range);
@@ -57,41 +57,41 @@ namespace Gularen {
 
 	void Parser::addScope(const NodePtr& node, const Range& range) {
 		add(node, range);
-		_scopes.push(node);
+		scopes.push(node);
 	}
 
 	void Parser::removeScope(const Range& range) {
-		if (_scopes.size() > 1)
-			_scopes.pop();
+		if (scopes.size() > 1)
+			scopes.pop();
 	}
 
 	const NodePtr& Parser::getScope() {
-		return _scopes.top();
+		return scopes.top();
 	}
 
 	void Parser::set(const std::string& content, const std::string& path) {
-		_lexer.set(content);
-		this->_pathVirtual = true;
-		this->_path = path;
-		this->_previousPaths.clear();
-		this->_previousPaths.push_back(path);
+		lexer.set(content);
+		this->pathVirtual = true;
+		this->path = path;
+		this->previousPaths.clear();
+		this->previousPaths.push_back(path);
 	}
 
 	void Parser::load(const std::string& path) {
-		this->_pathVirtual = false;
-		this->_path = path;
-		this->_previousPaths.clear();
-		this->_previousPaths.push_back(path);
+		this->pathVirtual = false;
+		this->path = path;
+		this->previousPaths.clear();
+		this->previousPaths.push_back(path);
 
 		if (std::filesystem::is_directory(path)) {
-			_lexer.set("");
+			lexer.set("");
 			return;
 		}
 
 		std::ifstream file(path);
 
 		if (!file.is_open()) {
-			_lexer.set("");
+			lexer.set("");
 			return;
 		}
 
@@ -101,12 +101,12 @@ namespace Gularen {
 		file.seekg(0, std::ios::beg);
 		content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 
-		_lexer.set(content);
+		lexer.set(content);
 	}
 
 	NodePtr Parser::recursiveLoad(const std::string& directory, const std::string& nextPath) {
 		std::string nextFullPath = directory + "/" + nextPath;
-		for (const std::string& previousPath : _previousPaths) {
+		for (const std::string& previousPath : previousPaths) {
 			if (previousPath == nextFullPath) {
 				return nullptr;
 			}
@@ -114,7 +114,7 @@ namespace Gularen {
 
 		Parser parser;
 		parser.load(nextFullPath);
-		parser._previousPaths.insert(parser._previousPaths.end(), _previousPaths.begin(), _previousPaths.end());
+		parser.previousPaths.insert(parser.previousPaths.end(), previousPaths.begin(), previousPaths.end());
 		parser.parse();
 
 		NodePtr node = parser.get();
@@ -127,21 +127,21 @@ namespace Gularen {
 	}
 
 	void Parser::parse() {
-		_lexer.tokenize();
-		_root = nullptr;
+		lexer.tokenize();
+		root = nullptr;
 
-		if (_lexer.get().empty())
+		if (lexer.get().empty())
 			return;
 
-		_index = 0;
-		_lastEnding = TokenType::newline;
+		index = 0;
+		lastEnding = TokenType::newline;
 
-		while (!_scopes.empty()) {
-			_scopes.pop();
+		while (!scopes.empty()) {
+			scopes.pop();
 		}
 
-		_root = std::make_shared<DocumentNode>(_pathVirtual ? "" : _path);
-		_scopes.push(_root);
+		root = std::make_shared<DocumentNode>(pathVirtual ? "" : path);
+		scopes.push(root);
 
 		parseBlock();
 
@@ -153,11 +153,11 @@ namespace Gularen {
 	}
 
 	const NodePtr& Parser::get() const {
-		return _root;
+		return root;
 	}
 
 	void Parser::visit(const Visitor& visitor) {
-		recursiveVisit(visitor, _root);
+		recursiveVisit(visitor, root);
 	}
 
 	void Parser::recursiveVisit(const Visitor& visitor, const NodePtr& node) {
@@ -403,8 +403,8 @@ namespace Gularen {
 				#ifndef __EMSCRIPTEN__
 				if (check(3) && is(1, TokenType::squareOpen) && is(2, TokenType::resource) &&
 					is(3, TokenType::squareClose) && !hasNetProtocol(get(2).value)) {
-					std::string directory = _path == "" ? std::filesystem::current_path().string()
-														: std::filesystem::path(_path).parent_path().string();
+					std::string directory = path == "" ? std::filesystem::current_path().string()
+														: std::filesystem::path(path).parent_path().string();
 
 					NodePtr fileNode = recursiveLoad(directory, get(2).value);
 					add(fileNode ? fileNode : std::make_shared<DocumentNode>(get(2).value), get(0).range);
@@ -420,7 +420,7 @@ namespace Gularen {
 			case TokenType::newline:
 			case TokenType::newlinePlus:
 			case TokenType::end:
-				_lastEnding = get(0).type;
+				lastEnding = get(0).type;
 				advance(0);
 
 				if (check(0)) {
@@ -463,7 +463,7 @@ namespace Gularen {
 			}
 
 			if (is(0, TokenType::indentDecr)) {
-				while (check(0) && _scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
+				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::indent) {
 					removeScope(get(0).range);
 				}
 				IndentNode* indentNode = static_cast<IndentNode*>(getScope().get());
@@ -482,7 +482,7 @@ namespace Gularen {
 			}
 
 			if (is(0, TokenType::bqDecr)) {
-				while (check(0) && _scopes.size() > 1 && getScope()->group != NodeGroup::bq) {
+				while (check(0) && scopes.size() > 1 && getScope()->group != NodeGroup::bq) {
 					removeScope(get(0).range);
 				}
 				removeScope(get(0).range);
@@ -500,11 +500,11 @@ namespace Gularen {
 				removeScope(get(0).range);
 				ListType type = getScope()->as<ListNode>().type;
 
-				if (_lastEnding == TokenType::newlinePlus ||
+				if (lastEnding == TokenType::newlinePlus ||
 					(check(0) && !((is(0, TokenType::bullet) && type == ListType::bullet) ||
 								   (is(0, TokenType::index) && type == ListType::index) ||
 								   (is(0, TokenType::checkbox) && type == ListType::check)))) {
-					_lastListDeadBecauseNewlinePlus = _lastEnding == TokenType::newlinePlus;
+					lastListDeadBecauseNewlinePlus = lastEnding == TokenType::newlinePlus;
 					removeScope(get(0).range);
 				}
 				break;
@@ -514,7 +514,7 @@ namespace Gularen {
 				if (getScope()->children.empty()) {
 					removeScope(get(0).range);
 					getScope()->children.pop_back();
-				} else if (_lastEnding == TokenType::newlinePlus || (check(0) && is(0, TokenType::bullet) || is(0, TokenType::index) || is(0, TokenType::checkbox) || is(0, TokenType::pipe) || is(0, TokenType::chapterMark) || is(0, TokenType::describeMark))) {
+				} else if (lastEnding == TokenType::newlinePlus || (check(0) && is(0, TokenType::bullet) || is(0, TokenType::index) || is(0, TokenType::checkbox) || is(0, TokenType::pipe) || is(0, TokenType::chapterMark) || is(0, TokenType::describeMark))) {
 					removeScope(get(0).range);
 				}
 				break;
@@ -530,7 +530,7 @@ namespace Gularen {
 				// tableRow
 				removeScope(get(0).range);
 
-				if (_lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
+				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
 					removeScope(get(0).range);
 				}
 				break;
@@ -538,7 +538,7 @@ namespace Gularen {
 			case NodeGroup::tableRow:
 				removeScope(get(0).range);
 
-				if (_lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
+				if (lastEnding == TokenType::newlinePlus || (check(0) && !is(0, TokenType::pipe))) {
 					removeScope(get(0).range);
 				}
 				break;
@@ -573,8 +573,8 @@ namespace Gularen {
 				if (getScope()->group != NodeGroup::list) {
 					if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::list &&
 						getScope()->children.back()->as<ListNode>().type == ListType::index &&
-						!_lastListDeadBecauseNewlinePlus) {
-						_scopes.push(getScope()->children.back());
+						!lastListDeadBecauseNewlinePlus) {
+						scopes.push(getScope()->children.back());
 					} else {
 						addScope(std::make_shared<ListNode>(ListType::index), get(0).range);
 					}
@@ -587,8 +587,8 @@ namespace Gularen {
 				if (getScope()->group != NodeGroup::list) {
 					if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::list &&
 						getScope()->children.back()->as<ListNode>().type == ListType::check &&
-						!_lastListDeadBecauseNewlinePlus) {
-						_scopes.push(getScope()->children.back());
+						!lastListDeadBecauseNewlinePlus) {
+						scopes.push(getScope()->children.back());
 					} else {
 						addScope(std::make_shared<ListNode>(ListType::check), get(0).range);
 					}
@@ -728,8 +728,8 @@ namespace Gularen {
 
 			case TokenType::subsectionMark:
 				if (!getScope()->children.empty() && getScope()->children.back()->group == NodeGroup::heading &&
-					_lastEnding == TokenType::newline) {
-					_scopes.push(getScope()->children.back());
+					lastEnding == TokenType::newline) {
+					scopes.push(getScope()->children.back());
 					addScope(std::make_shared<HeadingNode>(HeadingType::subtitle), get(0).range);
 				} else {
 					addScope(std::make_shared<HeadingNode>(HeadingType::subsection), get(0).range);

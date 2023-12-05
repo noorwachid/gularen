@@ -14,10 +14,10 @@ namespace Gularen::Transpiler::HTML {
 			parser.set(input);
 			parser.parse();
 
-			this->_options = options;
+			this->options = options;
 			std::shared_ptr<Node> root = parser.get();
 			visit(root);
-			return _output;
+			return output;
 		}
 
 		std::string slugify(const std::string& from) {
@@ -161,17 +161,17 @@ namespace Gularen::Transpiler::HTML {
 					return;
 
 				case NodeGroup::table:
-					_tableNode = static_cast<TableNode*>(node.get());
-					_tableRowCount = 0;
+					tableNode = static_cast<TableNode*>(node.get());
+					tableRowCount = 0;
 					return addOpenTagLF(node, "table");
 
 				case NodeGroup::tableRow:
-					_tableColumnCount = 0;
+					tableColumnCount = 0;
 					return addOpenTagLF(node, "tr");
 
 				case NodeGroup::tableCell: {
 					std::string alignment = "cell-left";
-					switch (_tableNode->alignments[_tableColumnCount]) {
+					switch (tableNode->alignments[tableColumnCount]) {
 						case Alignment::left:
 							alignment = "cell-left";
 							break;
@@ -182,8 +182,8 @@ namespace Gularen::Transpiler::HTML {
 							alignment = "cell-right";
 							break;
 					}
-					if (_tableRowCount < _tableNode->header ||
-						(_tableNode->footer > _tableNode->header && _tableRowCount >= _tableNode->footer)) {
+					if (tableRowCount < tableNode->header ||
+						(tableNode->footer > tableNode->header && tableRowCount >= tableNode->footer)) {
 						return addOpenTagWithClassAttr(node, "th", alignment);
 					} else {
 						return addOpenTagWithClassAttr(node, "td", alignment);
@@ -320,16 +320,16 @@ namespace Gularen::Transpiler::HTML {
 				case NodeGroup::dateTime: {
 					const DateTimeNode& dateTimeNode = node->as<DateTimeNode>();
 					if (dateTimeNode.time.empty()) {
-						_output += "<time datetime=\"" + dateTimeNode.date + "\">" + dateTimeNode.date + "</time>";
+						output += "<time datetime=\"" + dateTimeNode.date + "\">" + dateTimeNode.date + "</time>";
 						return;
 					}
 					if (dateTimeNode.date.empty()) {
-						_output += "<time datetime=\"" + dateTimeNode.time + "\">" + dateTimeNode.time + "</time>";
+						output += "<time datetime=\"" + dateTimeNode.time + "\">" + dateTimeNode.time + "</time>";
 						return;
 					}
-					_output += "<time datetime=\"" + dateTimeNode.date + " " + dateTimeNode.time + "\">";
-					_output += dateTimeNode.date + " " + dateTimeNode.time;
-					_output += "</time>";
+					output += "<time datetime=\"" + dateTimeNode.date + " " + dateTimeNode.time + "\">";
+					output += dateTimeNode.date + " " + dateTimeNode.time;
+					output += "</time>";
 					return;
 				}
 
@@ -435,15 +435,15 @@ namespace Gularen::Transpiler::HTML {
 					return;
 
 				case NodeGroup::table:
-					_tableNode = nullptr;
+					tableNode = nullptr;
 					return addCloseTagLF(node, "table");
 
 				case NodeGroup::tableRow:
-					++_tableRowCount;
+					++tableRowCount;
 					return addCloseTagLF(node, "tr");
 
 				case NodeGroup::tableCell:
-					++_tableColumnCount;
+					++tableColumnCount;
 					return addCloseTagLF(node, "td");
 
 				case NodeGroup::footnoteDescribe:
@@ -475,7 +475,7 @@ namespace Gularen::Transpiler::HTML {
 		}
 
 		std::string createSL(const std::shared_ptr<Node>& node) {
-			if (!_options.sourceLocation) {
+			if (!options.sourceLocation) {
 				return "";
 			}
 
@@ -483,49 +483,49 @@ namespace Gularen::Transpiler::HTML {
 		}
 
 		void add(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			_output += buffer;
+			output += buffer;
 		}
 
 		void addText(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			_output += escape(buffer);
+			output += escape(buffer);
 		}
 
 		void addOpenTag(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			_output += "<" + buffer + createSL(node) + ">";
+			output += "<" + buffer + createSL(node) + ">";
 		}
 
 		void addOpenTagLF(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			_output += "<" + buffer + createSL(node) + ">\n";
+			output += "<" + buffer + createSL(node) + ">\n";
 		}
 
 		void addOpenTagWithClassAttr(
 			const std::shared_ptr<Node>& node, const std::string& buffer, const std::string& classAttr
 		) {
-			_output += "<" + buffer + " class=\"" + classAttr + "\"" + createSL(node) + ">";
+			output += "<" + buffer + " class=\"" + classAttr + "\"" + createSL(node) + ">";
 		}
 
 		void addOpenTagWithClassAttrLF(
 			const std::shared_ptr<Node>& node, const std::string& buffer, const std::string& classAttr
 		) {
-			_output += "<" + buffer + " class=\"" + classAttr + "\"" + createSL(node) + ">\n";
+			output += "<" + buffer + " class=\"" + classAttr + "\"" + createSL(node) + ">\n";
 		}
 
 		void addCloseTag(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			_output += "</" + buffer + ">";
+			output += "</" + buffer + ">";
 		}
 
 		void addCloseTagLF(const std::shared_ptr<Node>& node, const std::string& buffer) {
-			_output += "</" + buffer + ">\n";
+			output += "</" + buffer + ">\n";
 		}
 
 	private:
-		TableNode* _tableNode = nullptr;
-		std::string _indentFlags;
-		size_t _indentDepth = 0;
-		size_t _tableRowCount = 0;
-		size_t _tableColumnCount = 0;
-		Options _options;
-		std::string _output;
+		TableNode* tableNode = nullptr;
+		std::string indentFlags;
+		size_t indentDepth = 0;
+		size_t tableRowCount = 0;
+		size_t tableColumnCount = 0;
+		Options options;
+		std::string output;
 	};
 
 	std::string transpile(const std::string& content) {
