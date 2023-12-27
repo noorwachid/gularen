@@ -15,7 +15,7 @@ namespace Gularen {
 			parser.load(path);
 			parser.parse();
 
-			this->_options = options;
+			_options = options;
 			std::shared_ptr<Node> root = parser.getRoot();
 			visit(root);
 			return _output;
@@ -26,7 +26,7 @@ namespace Gularen {
 			parser.set(input);
 			parser.parse();
 
-			this->_options = options;
+			_options = options;
 			std::shared_ptr<Node> root = parser.getRoot();
 			visit(root);
 			return _output;

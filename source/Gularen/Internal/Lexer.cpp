@@ -42,7 +42,7 @@ namespace Gularen {
 	}
 
 	void Lexer::set(const std::string& content) {
-		this->_content = content;
+		_content = content;
 	}
 
 	void Lexer::parse() {
