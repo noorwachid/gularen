@@ -14,8 +14,3 @@ This will create<<line-break.
 --- gr
 <<<
 ---
-
---- gr-rule
-lineBreak = lt lt
-pageBreak = lt lt lt
----

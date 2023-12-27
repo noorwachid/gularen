@@ -21,13 +21,3 @@ I’ll schedule you from 4:30--5:00
 ~ Em dash
 Wait! I forgot to tell you---
 ---
-
---- gr-rule
-lsquote = (ldquote|space|tab|newline) apos
-ldquote = (lsquote|space|tab|newline) apos
-rsquote = !(ldquote|space|tab|newline) apos
-rdquote = !(lsquote|space|tab|newline) apos
-hyphen = text minus text
-enDash = minus minus
-emDash = minus minus minus
----

@@ -45,10 +45,3 @@
 - Third 
 	+1 level indentation after current list will create the body of the list.
 ---
-
---- gr-rule
-bulletListItem = minus space any newline
-indexListItem = number period space any newline
-checkListItem = squareOpen (space|'v'|'x') squareClose space any newline
-listItemBody = (bulletListItem|indexListItem|checkListItem) (indent++)+
----

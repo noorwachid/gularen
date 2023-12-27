@@ -7,7 +7,3 @@
 <seealso> See also
 <tip> Tip
 ---
-
---- gr-rule
-admon = angleOpen ("note"|"hint"|"important"|"warning"|"seealso"|"tip") angleClose any newline
----

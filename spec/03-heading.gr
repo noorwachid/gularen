@@ -31,11 +31,3 @@ See [>chapter-one](chapter 1)
 
 If on another file [chapter-1.gr>chapter-one](chapter 1)
 ---
-
---- gr-rule
-id = ('a'..'z'|'0'..'9'|'-')
-chapter = gt gt gt space any [gt id] newline
-section = gt gt space any [gt id] newline
-subsection = gt space any [gt id] newline
-subtitle = (chapter|section|subsection) gt space any newline
----

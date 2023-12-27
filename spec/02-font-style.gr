@@ -15,9 +15,3 @@ _Anything inside two underscores will be rendered as italic font style._
 --- gr
 `Hello _*darkness* my old_ friend`
 ---
-
---- gr-rule
-fsBold = asterisk any asterisk
-fsItalic = underscore any undersrore
-fsMonospace = backtick any backtick
----

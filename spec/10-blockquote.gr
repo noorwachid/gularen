@@ -10,7 +10,3 @@
 / / -- Markus Aurelius
 / Say what now?
 ---
-
---- gr-rule
-blockquote = ((slash space)+ any newline)+
----
