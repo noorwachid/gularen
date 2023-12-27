@@ -6,6 +6,8 @@
 namespace Gularen {
 	std::string transpile(const std::string& content);
 
+	std::string transpileFile(const std::string& path);
+
 	// the html will injected with line sync data
 	// can be accessed using attribute data-line="0"
 	// its using 0-based indexing

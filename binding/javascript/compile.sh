@@ -5,7 +5,7 @@ em++ --bind \
 	-s NO_FILESYSTEM=1 \
 	-o binding/javascript/gularen.js \
 	binding/javascript/binding.cpp \
-	source/Gularen/Internal/Helper/escape.cpp \
+	source/Gularen/Internal/Helper/quote.cpp \
 	source/Gularen/Internal/Helper/emoji.cpp \
 	source/Gularen/Internal/Token.cpp \
 	source/Gularen/Internal/Lexer.cpp \

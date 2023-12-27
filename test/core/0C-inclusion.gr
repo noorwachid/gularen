@@ -1,2 +1,19 @@
-?[file]
+---
+?[resource/1.gr]
+?[resource/2.gr]
 ?[https://www.net] ~ net protocol is not allowed
+---
+---
+1:1 document
+  1:1 paragraph
+    1:1 document "resource/1.gr"
+      1:1-11 paragraph
+        1:1-11 text "hello world"
+    2:1 text "\n"
+    2:1 document "resource/2.gr"
+      1:1-8 codeblock lang:tsv source:"1\t2\n3\t4"
+    3:1 text "\n?"
+    linker value:"https://www.net"
+    3:20-19 text " "
+    3:20-49 comment " net protocol is not allowed"
+---

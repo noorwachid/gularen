@@ -1,3 +1,4 @@
+---
 [file]
 [file>heading]
 [>heading]
@@ -7,3 +8,23 @@
 [file>heading](label)
 [>heading](label)
 [https://www.org](label)
+---
+---
+1:1 document
+  1:1-7 paragraph
+    linkerLocal value:"file"
+    2:1-15 text "\n"
+    linkerLocal value:"file" id:heading
+    3:1-11 text "\n"
+    linkerLocal id:heading
+    4:1-18 text "\n"
+    linker value:"https://www.org"
+  6:1-7 paragraph
+    linkerLocal value:"file" label:"label"
+    7:1-15 text "\n"
+    linkerLocal value:"file" id:heading label:"label"
+    8:1-11 text "\n"
+    linkerLocal id:heading label:"label"
+    9:1-18 text "\n"
+    linker value:"https://www.org" label:"label"
+---

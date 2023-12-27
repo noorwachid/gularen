@@ -1,8 +1,8 @@
-#include "Gularen/Internal/Helper/escape.h"
+#include "Gularen/Internal/Helper/quote.h"
 
 namespace Gularen::Helper {
-	std::string escape(const std::string& from) {
-		std::string to;
+	std::string quote(const std::string& from) {
+		std::string to = "\"";
 
 		for (char c : from) {
 			if (c == '\t')
@@ -11,9 +11,13 @@ namespace Gularen::Helper {
 				to += "\\n";
 			else if (c < ' ')
 				to += "\\d" + std::to_string(c);
+			else if (c == '"')
+				to += "\\\"";
 			else
 				to += c;
 		}
+
+		to += "\"";
 
 		return to;
 	}

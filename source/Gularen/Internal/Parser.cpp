@@ -71,17 +71,17 @@ namespace Gularen {
 
 	void Parser::set(const std::string& content, const std::string& path) {
 		_lexer.set(content);
-		this->_pathVirtual = true;
-		this->_path = path;
-		this->_previousPaths.clear();
-		this->_previousPaths.push_back(path);
+		_pathVirtual = true;
+		_path = path;
+		_previousPaths.clear();
+		_previousPaths.push_back(path);
 	}
 
 	void Parser::load(const std::string& path) {
-		this->_pathVirtual = false;
-		this->_path = path;
-		this->_previousPaths.clear();
-		this->_previousPaths.push_back(path);
+		_pathVirtual = false;
+		_path = path;
+		_previousPaths.clear();
+		_previousPaths.push_back(path);
 
 		if (std::filesystem::is_directory(path)) {
 			_lexer.set("");
@@ -406,8 +406,8 @@ namespace Gularen {
 #ifndef __EMSCRIPTEN__
 				if (checkBoundary(3) && isToken(1, TokenType::squareOpen) && isToken(2, TokenType::resource) &&
 					isToken(3, TokenType::squareClose) && !hasNetProtocol(getToken(2).value)) {
-					std::string directory = _path == "" ? std::filesystem::current_path().string()
-														: std::filesystem::path(_path).parent_path().string();
+					std::string directory = _path.empty() ? std::filesystem::current_path().string()
+														  : std::filesystem::path(_path).parent_path().string();
 
 					NodePtr fileNode = recursiveLoad(directory, getToken(2).value);
 					add(fileNode ? fileNode : std::make_shared<DocumentNode>(getToken(2).value), getToken(0).range);

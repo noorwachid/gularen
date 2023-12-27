@@ -1,6 +1,18 @@
+---
 ![file]
 ![https://www.org/cat.png]
 
 ![file](label)
 ![https://www.org/cat.png](label)
-
+---
+---
+1:1 document
+  1:1 paragraph
+    presenterLocal value:"file"
+    2:1 text "\n"
+    presenter value:"https://www.org/cat.png"
+  4:1 paragraph
+    presenterLocal value:"file" label:"label"
+    5:1 text "\n"
+    presenter value:"https://www.org/cat.png" label:"label"
+---

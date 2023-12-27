@@ -3,5 +3,5 @@
 #include <string>
 
 namespace Gularen::Helper {
-	std::string escape(const std::string& from);
+	std::string quote(const std::string& from);
 }

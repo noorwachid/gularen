@@ -10,6 +10,17 @@ namespace Gularen {
 
 	class Transpiler {
 	public:
+		const std::string& transpileFile(const std::string& path, const Options& options) {
+			Parser parser;
+			parser.load(path);
+			parser.parse();
+
+			this->_options = options;
+			std::shared_ptr<Node> root = parser.getRoot();
+			visit(root);
+			return _output;
+		}
+
 		const std::string& transpile(const std::string& input, const Options& options) {
 			Parser parser;
 			parser.set(input);
@@ -532,6 +543,11 @@ namespace Gularen {
 	std::string transpile(const std::string& content) {
 		Transpiler transpiler;
 		return transpiler.transpile(content, Options{});
+	}
+
+	std::string transpileFile(const std::string& path) {
+		Transpiler transpiler;
+		return transpiler.transpileFile(path, Options{});
 	}
 
 	std::string transpileSyncLine(const std::string& content) {

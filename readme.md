@@ -10,6 +10,9 @@ A sweet-spot of markup language
 ## CLI
 [Right over here](cli/readme.md)
 
+## Contributors
+[Please read](contributor.md)
+
 ## Editor Support
 - [Vim (syntax highlighting)](https://github.com/noorwachid/vim-gularen)
 - [Neovim (toolkit)](https://github.com/noorwachid/nvim-gularen)

@@ -1,1 +1,9 @@
+---
 Now you see me, ~ now you don't.
+---
+---
+1:1 document
+  1:1-16 paragraph
+    1:1-16 text "Now you see me, "
+    1:17-33 comment " now you don't."
+---

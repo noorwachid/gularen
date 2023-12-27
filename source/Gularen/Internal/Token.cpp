@@ -1,5 +1,5 @@
 #include "Gularen/Internal/Token.h"
-#include "Gularen/Internal/Helper/escape.h"
+#include "Gularen/Internal/Helper/quote.h"
 
 namespace Gularen {
 	std::string Position::toString() const {
@@ -25,7 +25,7 @@ namespace Gularen {
 
 		repr += rangeStr + std::string(rangePad - rangeStr.size(), ' ');
 		repr += typeStr + std::string(typePad - typeStr.size(), ' ');
-		repr += Helper::escape(value);
+		repr += Helper::quote(value);
 
 		return repr;
 	}

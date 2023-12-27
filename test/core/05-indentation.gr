@@ -1,3 +1,4 @@
+---
 zero
 zero
 
@@ -9,3 +10,28 @@ zero
 	one
 
 	one
+---
+---
+1:1 document
+  1:1-4 paragraph
+    1:1-4 text "zero\nzero"
+  4:1-4 paragraph
+    4:1-4 text "zero"
+    5:1-3 indent
+      5:4-3 indent
+        5:4-5 paragraph
+          5:4-5 text "two"
+      6:3-4 paragraph
+        6:3-4 text "one"
+        7:1-5 indent
+          7:6-5 indent
+            7:6-5 indent
+              7:6-8 paragraph
+                7:6-8 text "four"
+    8:2-4 text "\nzero"
+    9:1-2 indent
+      9:3-4 paragraph
+        9:3-4 text "one"
+      11:1-4 paragraph
+        11:1-4 text "one"
+---

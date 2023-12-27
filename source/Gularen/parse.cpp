@@ -8,4 +8,11 @@ namespace Gularen {
 		parser.parse();
 		return parser.getRoot();
 	}
+
+	NodePtr parseFile(const std::string& path) {
+		Parser parser;
+		parser.load(path);
+		parser.parse();
+		return parser.getRoot();
+	}
 }

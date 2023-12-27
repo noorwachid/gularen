@@ -1,5 +1,5 @@
 #include "Gularen/Node.h"
-#include "Gularen/Internal/Helper/escape.h"
+#include "Gularen/Internal/Helper/quote.h"
 
 namespace Gularen {
 	// constructors
@@ -86,15 +86,15 @@ namespace Gularen {
 		if (path.empty())
 			return range.toString() + " document";
 
-		return range.toString() + " document " + Helper::escape(path);
+		return range.toString() + " document " + Helper::quote(path);
 	}
 
 	std::string CommentNode::toString() const {
-		return range.toString() + " comment " + Helper::escape(value);
+		return range.toString() + " comment " + Helper::quote(value);
 	}
 
 	std::string TextNode::toString() const {
-		return range.toString() + " text " + Helper::escape(value);
+		return range.toString() + " text " + Helper::quote(value);
 	}
 
 	std::string PunctNode::toString() const {
@@ -222,19 +222,19 @@ namespace Gularen {
 	}
 
 	std::string ListItemNode::toString() const {
-		std::string string = range.toString() + " listItem ";
+		std::string string = range.toString() + " listItem";
 
 		switch (state) {
 			case ListItemState::none:
 				break;
 			case ListItemState::todo:
-				string += "todo";
+				string += " todo";
 				break;
 			case ListItemState::done:
-				string += "done";
+				string += " done";
 				break;
 			case ListItemState::cancelled:
-				string += "canceled";
+				string += " cancelled";
 				break;
 		}
 
@@ -298,7 +298,7 @@ namespace Gularen {
 		}
 
 		if (!value.empty()) {
-			string += " value:" + Helper::escape(value);
+			string += " value:" + Helper::quote(value);
 		}
 
 		if (!id.empty()) {
@@ -306,7 +306,7 @@ namespace Gularen {
 		}
 
 		if (!label.empty()) {
-			string += " label:" + Helper::escape(label);
+			string += " label:" + Helper::quote(label);
 		}
 
 		return string;
@@ -321,7 +321,7 @@ namespace Gularen {
 		}
 
 		if (!source.empty()) {
-			string += " source:" + Helper::escape(source);
+			string += " source:" + Helper::quote(source);
 		}
 
 		return string;
