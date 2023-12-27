@@ -8,7 +8,7 @@ A sweet-spot of markup language
 [Right over here](https://noorwach.id/gularen/editor/)
 
 ## CLI
-[Right over here](cli/readme.md)
+[Right over there](cli/readme.md)
 
 ## Contributors
 [Please read](contributor.md)
