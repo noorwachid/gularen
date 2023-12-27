@@ -8,6 +8,9 @@ Contains code for language bindings. Currently, it only includes JavaScript bind
 ### `editor`
 Code for the live-demo website.
 
+### `cli`
+Code for the command line interface.
+
 ### `source`
 - `Gularen/`: Publicly available APIs
 - `Gularen/Internal/`: Should not be used in consumer source code.
@@ -16,7 +19,7 @@ Code for the live-demo website.
 Specification documents.
 
 ### `test`
-Test units.
+Test documents.
 
 ## Naming Convention
 - Use a tab for indentation.
