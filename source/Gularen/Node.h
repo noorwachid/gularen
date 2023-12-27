@@ -1,43 +1,41 @@
 #pragma once
 
-#include "Gularen/Token.h"
+#include "Gularen/Internal/Token.h"
 #include <memory>
 #include <stack>
 
-namespace Gularen
-{
-	enum class NodeGroup
-	{
-		Document,
+namespace Gularen {
+	enum class NodeGroup {
+		document,
 
-		Comment,
-		Text,
-		FS,
-		Heading,
-		Paragraph,
-		Indent,
-		BQ,
-		Break,
-		List,
-		ListItem,
+		comment,
+		text,
+		fs,
+		heading,
+		paragraph,
+		indent,
+		bq,
+		break_,
+		list,
+		listItem,
 
-		Table,
-		TableRow,
-		TableCell,
+		table,
+		tableRow,
+		tableCell,
 
-		Resource,
+		resource,
 
-		Code,
+		code,
 
-		Punct,
-		Emoji,
+		punct,
+		emoji,
 
-		Admon,
+		admon,
 
-		FootnoteJump,
-		FootnoteDescribe,
+		footnoteJump,
+		footnoteDescribe,
 
-		DateTime,
+		dateTime,
 	};
 
 	struct Node;
@@ -45,224 +43,195 @@ namespace Gularen
 	using NodePtr = std::shared_ptr<Node>;
 	using NodeChildren = std::vector<NodePtr>;
 
-	struct Node
-	{
+	struct Node {
 		NodeGroup group;
 		NodeChildren children;
 
 		Range range;
 
 		template <class T>
-		const T& As()
-		{
+		const T& as() {
 			return *static_cast<T*>(this);
 		}
 
-		virtual std::string ToString() const;
-
-		static std::string Escape(const std::string& from);
+		virtual std::string toString() const;
 	};
 
-	struct DocumentNode : Node
-	{
+	struct DocumentNode : Node {
 		std::string path;
 
 		DocumentNode(const std::string& path);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct CommentNode : Node
-	{
+	struct CommentNode : Node {
 		std::string value;
 
 		CommentNode(const std::string& value);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct TextNode : Node
-	{
+	struct TextNode : Node {
 		std::string value;
 
 		TextNode(const std::string& value);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class PunctType
-	{
-		Hyphen,
-		EnDash,
-		EmDash,
+	enum class PunctType {
+		hyphen,
+		enDash,
+		emDash,
 
-		SingleQuoteOpen,
-		SingleQuoteClose,
-		QuoteOpen,
-		QuoteClose,
+		singleQuoteOpen,
+		singleQuoteClose,
+		quoteOpen,
+		quoteClose,
 	};
 
-	struct PunctNode : Node
-	{
+	struct PunctNode : Node {
 		PunctType type;
 		std::string value;
 
 		PunctNode(PunctType type, const std::string& value);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct EmojiNode : Node
-	{
+	struct EmojiNode : Node {
 		std::string value;
 
 		EmojiNode(const std::string& value);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class FSType
-	{
-		Bold,
-		Italic,
-		Monospace
+	enum class FSType {
+		bold,
+		italic,
+		monospace
 	};
 
-	struct FSNode : Node
-	{
+	struct FSNode : Node {
 		FSType type;
 
 		FSNode(FSType type);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class HeadingType
-	{
-		Chapter,
-		Section,
-		Subsection,
-		Subtitle,
+	enum class HeadingType {
+		chapter,
+		section,
+		subsection,
+		subtitle,
 	};
 
-	struct HeadingNode : Node
-	{
+	struct HeadingNode : Node {
 		HeadingType type;
 		std::string id;
 
 		HeadingNode(HeadingType type);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct ParagraphNode : Node
-	{
+	struct ParagraphNode : Node {
 		ParagraphNode();
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class AdmonType
-	{
-		Note,
-		Hint,
-		Important,
-		Warning,
-		SeeAlso,
-		Tip,
+	enum class AdmonType {
+		note,
+		hint,
+		important,
+		warning,
+		seeAlso,
+		tip,
 	};
 
-	struct AdmonNode : Node
-	{
+	struct AdmonNode : Node {
 		AdmonType type;
 
 		AdmonNode(AdmonType type);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct FootnoteJumpNode : Node
-	{
+	struct FootnoteJumpNode : Node {
 		std::string value;
 
 		FootnoteJumpNode(const std::string& value);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct FootnoteDescribeNode : Node
-	{
+	struct FootnoteDescribeNode : Node {
 		std::string value;
 
 		FootnoteDescribeNode(const std::string& value);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct IndentNode : Node
-	{
+	struct IndentNode : Node {
 		bool skipable = false;
 
-		IndentNode()
-		{
-			group = NodeGroup::Indent;
+		IndentNode() {
+			group = NodeGroup::indent;
 		}
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct BQNode : Node
-	{
-		BQNode()
-		{
-			group = NodeGroup::BQ;
+	struct BQNode : Node {
+		BQNode() {
+			group = NodeGroup::bq;
 		}
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class BreakType
-	{
-		Line,
-		Page,
-		Thematic,
+	enum class BreakType {
+		line,
+		page,
+		thematic,
 	};
 
-	struct BreakNode : Node
-	{
+	struct BreakNode : Node {
 		BreakType type;
 
 		BreakNode(BreakType type);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class ListType
-	{
-		Bullet,
-		Index,
-		Check,
+	enum class ListType {
+		bullet,
+		index,
+		check,
 	};
 
-	struct ListNode : Node
-	{
+	struct ListNode : Node {
 		ListType type;
 
 		ListNode(ListType type);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class ListItemState
-	{
-		None,
-		Todo,
-		Done,
-		Cancelled,
+	enum class ListItemState {
+		none,
+		todo,
+		done,
+		cancelled,
 	};
 
-	struct ListItemNode : Node
-	{
+	struct ListItemNode : Node {
 		ListItemState state;
 		size_t index;
 
@@ -270,54 +239,47 @@ namespace Gularen
 
 		ListItemNode(size_t index, ListItemState state);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class Alignment
-	{
-		Left = 0,
-		Center = 1,
-		Right = 2,
+	enum class Alignment {
+		left = 0,
+		center = 1,
+		right = 2,
 	};
 
-	struct TableNode : Node
-	{
+	struct TableNode : Node {
 		size_t header = 0;
 		size_t footer = 0;
 		std::vector<Alignment> alignments;
 
 		TableNode();
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct TableRowNode : Node
-	{
+	struct TableRowNode : Node {
 		TableRowNode();
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct TableCellNode : Node
-	{
-		TableCellNode()
-		{
-			group = NodeGroup::TableCell;
+	struct TableCellNode : Node {
+		TableCellNode() {
+			group = NodeGroup::tableCell;
 		}
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class ResourceType
-	{
-		Link,
-		LinkLocal,
-		Present,
-		PresentLocal,
+	enum class ResourceType {
+		link,
+		linkLocal,
+		present,
+		presentLocal,
 	};
 
-	struct ResourceNode : Node
-	{
+	struct ResourceNode : Node {
 		ResourceType type;
 		std::string value;
 		std::string id;
@@ -325,40 +287,35 @@ namespace Gularen
 
 		ResourceNode(ResourceType type, const std::string& value);
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	enum class CodeType
-	{
-		Inline,
-		Block,
+	enum class CodeType {
+		inline_,
+		block,
 	};
 
-	struct CodeNode : Node
-	{
+	struct CodeNode : Node {
 		CodeType type;
 
 		std::string lang;
 		std::string source;
 
-		CodeNode()
-		{
-			group = NodeGroup::Code;
+		CodeNode() {
+			group = NodeGroup::code;
 		}
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 
-	struct DateTimeNode : Node
-	{
+	struct DateTimeNode : Node {
 		std::string date;
 		std::string time;
 
-		DateTimeNode()
-		{
-			group = NodeGroup::DateTime;
+		DateTimeNode() {
+			group = NodeGroup::dateTime;
 		}
 
-		virtual std::string ToString() const override;
+		virtual std::string toString() const override;
 	};
 }

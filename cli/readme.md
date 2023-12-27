@@ -1,4 +1,8 @@
 # Gularen CLI
 
-- `gularen html document.gr`
-- `gularen html --template template.html document.gr`
+*Transpile gularen file to HTML*
+- `gularen transpile document.gr`
+- `gularen transpile --template template.html document.gr`
+
+*Parse gularen file to AST*
+- `gularen parse document.gr`

@@ -1,10 +1,15 @@
-em++ --bind  -std=c++17 -O3 -Isource \
+em++ --bind \
+	-std=c++17 \
+	-O3 \
+	-Isource \
+	-s NO_FILESYSTEM=1 \
 	-o binding/javascript/gularen.js \
 	binding/javascript/binding.cpp \
-	source/gularen/helper/escape.cpp \
-	source/gularen/helper/emoji.cpp \
-	source/gularen/token.cpp \
-	source/gularen/lexer.cpp \
-	source/gularen/node.cpp \
-	source/gularen/parser.cpp \
-	source/gularen/transpiler/html.cpp
+	source/Gularen/Internal/Helper/escape.cpp \
+	source/Gularen/Internal/Helper/emoji.cpp \
+	source/Gularen/Internal/Token.cpp \
+	source/Gularen/Internal/Lexer.cpp \
+	source/Gularen/Internal/parser.cpp \
+	source/Gularen/Node.cpp \
+	source/Gularen/parse.cpp \
+	source/Gularen/transpile.cpp

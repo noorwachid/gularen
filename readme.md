@@ -7,6 +7,9 @@ A sweet-spot of markup language
 ## Live Demo
 [Right over here](https://noorwach.id/gularen/editor/)
 
+## CLI
+[Right over here](cli/readme.md)
+
 ## Editor Support
 - [Vim (syntax highlighting)](https://github.com/noorwachid/vim-gularen)
 - [Neovim (toolkit)](https://github.com/noorwachid/nvim-gularen)

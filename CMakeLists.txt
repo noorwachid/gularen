@@ -6,13 +6,14 @@ project(gularen
 )
 
 add_library(gularen 
-	source/Gularen/Lexer.cpp
-	source/Gularen/Token.cpp
 	source/Gularen/Node.cpp
-	source/Gularen/Parser.cpp
-	source/Gularen/Helper/Escape.cpp
-	source/Gularen/Helper/Emoji.cpp
-	source/Gularen/Transpiler/HTML.cpp
+	source/Gularen/parse.cpp
+	source/Gularen/transpile.cpp
+	source/Gularen/Internal/Lexer.cpp
+	source/Gularen/Internal/Token.cpp
+	source/Gularen/Internal/Parser.cpp
+	source/Gularen/Internal/Helper/escape.cpp
+	source/Gularen/Internal/Helper/emoji.cpp
 )
 
 target_include_directories(gularen PUBLIC source)

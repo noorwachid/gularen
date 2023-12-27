@@ -1,13 +1,10 @@
-#include "Gularen/Helper/Escape.h"
+#include "Gularen/Internal/Helper/escape.h"
 
-namespace Gularen::Helper
-{
-	std::string Escape(const std::string& from)
-	{
+namespace Gularen::Helper {
+	std::string escape(const std::string& from) {
 		std::string to;
 
-		for (char c : from)
-		{
+		for (char c : from) {
 			if (c == '\t')
 				to += "\\t";
 			else if (c == '\n')
