@@ -220,17 +220,16 @@ namespace Gularen {
 								return;
 						}
 					}
-					if (codeNode.lang.size() > 3 && (codeNode.lang.substr(codeNode.lang.size() - 3, 3) == "-pr")) {
-						std::string lang = codeNode.lang.substr(0, codeNode.lang.size() - 3);
+					if (codeNode.lang == "latex" || codeNode.lang == "mermaid") {
 						switch (codeNode.type) {
 							case CodeType::inline_:
-								addOpenTagWithClassAttr(node, "span", "language-presenter language-presenter-" + lang);
+								addOpenTagWithClassAttr(node, "span", "language-presenter language-presenter-" + codeNode.lang);
 								addText(node, codeNode.source);
 								addCloseTag(node, "span");
 								return;
 
 							case CodeType::block:
-								addOpenTagWithClassAttr(node, "div", "language-presenter language-presenter-" + lang);
+								addOpenTagWithClassAttr(node, "div", "language-presenter language-presenter-" + codeNode.lang);
 								addText(node, codeNode.source);
 								addCloseTag(node, "div");
 								return;
