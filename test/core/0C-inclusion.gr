@@ -1,8 +1,8 @@
----
+----
 ?[resource/1.gr]
 ?[resource/2.gr]
 ?[https://www.net] ~ net protocol is not allowed
----
+----
 ---
 1:1 document
   1:1 paragraph

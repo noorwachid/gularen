@@ -1,9 +1,9 @@
----
+----
 | Name | Chromosome | Age |
 |:-----|:----------:|----:|
 | Noor |     XY     |  22 |
 | Dori |     XX     |  19 |
----
+----
 ---
 1:1 document
   1:1 table header:1 footer:1 alignments:left,center,right
