@@ -14,6 +14,7 @@ A sweet-spot of markup language
 [Please read](contributor.md)
 
 ## Editor Support
+- [VS Code](https://marketplace.visualstudio.com/items?itemName=nwachid.gularen)
 - [Vim (syntax highlighting)](https://github.com/noorwachid/vim-gularen)
 - [Neovim (toolkit)](https://github.com/noorwachid/nvim-gularen)
 
