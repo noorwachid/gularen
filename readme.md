@@ -18,10 +18,12 @@ A sweet-spot of markup language
 - [Vim](https://github.com/noorwachid/vim-gularen)
 
 ## Why Not Use Markdown?
-Consistency, Every expression of Gularen only do one thing and there is no alternative syntax.
+Shorter, create bold text with a single asterisk: `*bold*`.
+Consistency, Every expression of Gularen only perform one action, and there is no alternative syntax.
+Better order and default, In the image expression, the URL is the first argument `![https://i.imgflip.com/7r6vdk.jpg]`. You don't even have to write the label.
+Comment, Anything after `~` in `now you see me ~ now you don't` will not be rendered.
 
-I took most of the inspiration from AsciiDoc and Markdown. 
-So nothing drastic is changing for the syntax and structures.
+I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any drastic changes to the syntax and structures.
 
 ## Language Specification
 - [01 Comment](spec/01-comment.gr)
