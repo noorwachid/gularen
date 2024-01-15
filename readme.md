@@ -17,6 +17,12 @@ A sweet-spot of markup language
 - [VS Code](https://marketplace.visualstudio.com/items?itemName=nwachid.gularen)
 - [Vim](https://github.com/noorwachid/vim-gularen)
 
+## Why Not Use Markdown?
+Consistency, Every expression of Gularen only do one thing and there is no alternative syntax.
+
+I took most of the inspiration from AsciiDoc and Markdown. 
+So nothing drastic is changing for the syntax and structures.
+
 ## Language Specification
 - [01 Comment](spec/01-comment.gr)
 - [02 Font style](spec/02-font-style.gr)
@@ -36,14 +42,6 @@ A sweet-spot of markup language
 - [10 Blockquote](spec/10-blockquote.gr)
 - [11 Admonition](spec/11-admonition.gr)
 - [12 Date-time](spec/12-datetime.gr)
-
-## Why?
-The problem with Markdown was, too many ways to do something. 
-And Markdown was designed in mind to be parsed with regex.
-Instead of character by character scanner. 
-
-The purpose of Gularen is to create smallest possible footprint of additional characters 
-while writing visually pleasing plain text document.
 
 ## Changelog
 **2023-08-05:**
