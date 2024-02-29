@@ -13,9 +13,9 @@ enum class NodeKind {
 
 	paragraph,
 
-	chapter,
-	section,
-	subsection,
+	space,
+
+	heading,
 };
 
 struct Node {
@@ -52,6 +52,17 @@ struct Text : Node {
 	}
 };
 
+struct Space : Node {
+	StringSlice value;
+
+	Space(Position position): Node(position, NodeKind::space) {
+	}
+
+	virtual void print() override {
+		printf("space\n");
+	}
+};
+
 struct Style : Node {
 	enum class Type {
 		bold,
@@ -85,30 +96,30 @@ struct Paragraph : Node {
 	}
 };
 
-struct Chapter : Node {
-	Chapter(Position position): Node(position, NodeKind::chapter) {
+struct Heading : Node {
+	enum class Type {
+		chapter,
+		section,
+		subsection,
+
+		title,
+		subtitle,
+	};
+
+	Type type;
+
+	Heading(Position position): Node(position, NodeKind::heading) {
 	}
 
 	virtual void print() override {
-		printf("chapter\n");
-	}
-};
+		switch (type) {
+			case Type::chapter: printf("chapter\n"); break;
+			case Type::section: printf("section\n"); break;
+			case Type::subsection: printf("subsection\n"); break;
 
-struct Section : Node {
-	Section(Position position): Node(position, NodeKind::section) {
-	}
-
-	virtual void print() override {
-		printf("section\n");
-	}
-};
-
-struct Subsection : Node {
-	Subsection(Position position): Node(position, NodeKind::subsection) {
-	}
-
-	virtual void print() override {
-		printf("subsection\n");
+			case Type::title: printf("title\n"); break;
+			case Type::subtitle: printf("subtitle\n"); break;
+		}
 	}
 };
 

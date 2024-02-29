@@ -114,6 +114,13 @@ private:
 					_advance(1);
 					break;
 				}
+
+				if (_get(0).kind == TokenKind::newline) {
+					const Token& token = _eat();
+					paragraph->children.append(new Space(token.position));
+					continue;
+				}
+
 				if (_isBlock()) {
 					break;
 				}
@@ -130,37 +137,58 @@ private:
 
 	Node* _parseHeading() {
 		const Token& token = _eat();
-		Node* heading = nullptr;
+		Heading* heading = new Heading(token.position);
 
 		switch (token.kind) {
-			case TokenKind::head1:
-				heading = new Subsection(token.position);
+			case TokenKind::head3:
+				heading->type = Heading::Type::chapter;
 				break;
 
 			case TokenKind::head2:
-				heading = new Section(token.position);
+				heading->type = Heading::Type::section;
 				break;
 
-			case TokenKind::head3:
-				heading = new Chapter(token.position);
+			case TokenKind::head1:
+				heading->type = Heading::Type::subsection;
 				break;
 
-			default: return nullptr;
+			default: 
+				delete heading;
+				return nullptr;
 		}
 
 		
 		while (_isBound(0)) {
 			Node* node = _parseInline();
 			if (node == nullptr) {
-				if (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus) {
+				if (_get(0).kind == TokenKind::newlinePlus) {
 					_advance(1);
 					break;
 				}
 
-				if (_get(0).kind == TokenKind::head1) {
-					if (!(_isBound(1) && _get(1).kind == TokenKind::text)) {
+				if (_get(0).kind == TokenKind::newline) {
+					_advance(1);
 
+					if (_isBound(0) && _get(0).kind == TokenKind::head1)  {
+						Node* subtitle = _parseHeading();
+						if (subtitle == nullptr) {
+							delete heading;
+							return nullptr;
+						}
+
+						Heading* title = heading;
+
+						heading = new Heading(token.position);
+						heading->type = title->type;
+						heading->children.append(title);
+
+						title->type = Heading::Type::title;
+						static_cast<Heading*>(subtitle)->type = Heading::Type::subtitle;
+
+						heading->children.append(subtitle);
 					}
+
+					break;
 				}
 
 				delete heading;
