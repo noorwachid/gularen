@@ -22,12 +22,12 @@ If the subsection modifier is placed in the next line of any headings. It will b
 > Subsection Subtitle
 ---
 
->> Heading ID 
+>> Heading Link
 
 --- gr
->>> Chapter 1 > chapter-one
+>>> Laminal Flow
 
-See [>chapter-one](chapter 1)
+See [>Laminal Flow]
 
-If on another file [chapter-1.gr>chapter-one](chapter 1)
+If on another file [Chapter 1.gr>Laminal Flow]
 ---

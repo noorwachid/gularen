@@ -12,18 +12,18 @@
 >> Local Linker
 
 --- gr
-[>this-segment]
+[>Laminal Flow]
 
 ~ With alternative label
-[>this-segment](see this segment)
+[>Laminal Flow](see this segment)
 ---
 
 --- gr
-[another-document.gr]
+[Another Document.gr]
 
 ~ With alternative label
-[another-document.gr](Another document)
+[Another Document.gr](see this document)
 
-~ With specify heading ID
-[another-document.gr>legal-section]
+~ With specify heading
+[Another Document.gr>Legal Section]
 ---

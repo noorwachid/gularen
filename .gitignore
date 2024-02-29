@@ -1,8 +1,2 @@
-.env
-.idea
-.vscode
-.vs
-build*
-.DS_Store
-CMakeLists.txt.user
 /binary
+/sandbox

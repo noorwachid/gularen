@@ -30,7 +30,7 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 
 ## Language Specification
 - [01 Comment](spec/01-comment.gr)
-- [02 Font style](spec/02-font-style.gr)
+- [02 Style](spec/02-style.gr)
 - [03 Heading](spec/03-heading.gr)
 - [04 Paragraph](spec/04-paragraph.gr)
 - [05 Indentation](spec/05-indentation.gr)
@@ -49,7 +49,11 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [12 Date-time](spec/12-datetime.gr)
 
 ## Changelog
-**2023-08-05:**
+**2024-02-29**:
+Breaking changes:
+- Removing heading ID `Heading > ID`
+
+**2023-08-05**:
 
 New features:
 - Date-time marker:

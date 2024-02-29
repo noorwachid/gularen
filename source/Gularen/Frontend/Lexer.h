@@ -7,19 +7,44 @@
 namespace Gularen {
 
 enum class TokenKind {
+	comment,
+
 	text,
+
+	newline,
+	newlinePlus,
+
+	indentInc,
+	indentDec,
 
 	asterisk,
 	underscore,
 	backtick,
+
+	head3,
+	head2,
+	head1,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
 	switch (kind) {
+		case TokenKind::comment: return "comment";
+
 		case TokenKind::text: return "text";
+
+		case TokenKind::newline: return "newline";
+		case TokenKind::newlinePlus: return "newline+";
+
+		case TokenKind::indentInc: return "->";
+		case TokenKind::indentDec: return "<-";
+
 		case TokenKind::asterisk: return "asterisk";
 		case TokenKind::underscore: return "underscore";
 		case TokenKind::backtick: return "backtick";
+
+		case TokenKind::head3: return "head3";
+		case TokenKind::head2: return "head2";
+		case TokenKind::head1: return "head1";
 	}
 }
 
@@ -42,6 +67,10 @@ public:
 
 		while (_isBound(0)) {
 			switch (_get(0)) {
+				case '~':
+					_consumeComment();
+					break;
+
 				case '*': 
 					_append(TokenKind::asterisk); 
 					_advance(1);
@@ -57,11 +86,66 @@ public:
 					_advance(1);
 					break;
 
+				case '>': 
+					if (_isBound(1) && _get(1) == '>') {
+						if (_isBound(2) && _get(2) == '>') {
+							if (_isBound(3) && _get(3) == ' ') {
+								_append(TokenKind::head3, _contentIndex, 3);
+								_advance(4);
+								break;
+							}
+						}
+
+						if (_isBound(2) && _get(2) == ' ') {
+							_append(TokenKind::head2, _contentIndex, 2);
+							_advance(3);
+						}
+						break;
+					}
+
+					if (_isBound(1) && _get(1) == ' ') {
+						_append(TokenKind::head1, _contentIndex, 1);
+						_advance(2);
+						break;
+					}
+					break;
+
+				case '\n': {
+					unsigned int count = 0;
+
+					while (_isBound(0) && _get(0) == '\n') {
+						count += 1;
+						_advance(1);
+					}
+
+					if (count == 1) {
+						_append(TokenKind::newline);
+						break;
+					}
+
+					_append(TokenKind::newlinePlus);
+					break;
+				}
+
 				default: 
 					_consumeText(); 
 					break;
 			}
 		}
+
+		if (_tokens.size() != 0) {
+			switch (_tokens.get(_tokens.size() - 1).kind) {
+				case TokenKind::newlinePlus: 
+					break;
+				case TokenKind::newline: 
+					_tokens.get(_tokens.size() - 1).kind = TokenKind::newlinePlus;
+					break;
+				default: 
+					_append(TokenKind::newlinePlus);
+					break;
+			}
+		}
+
 
 		return Slice<Token>(_tokens.pointer(), _tokens.size());
 	}
@@ -88,8 +172,18 @@ private:
 		_tokens.append(static_cast<Token&&>(token));
 	}
 
-	void _appendText(unsigned int index, unsigned int size) {
-		_append(TokenKind::text, index, size);
+	void _consumeComment() {
+		unsigned int beginIndex = _contentIndex;
+
+		while (_isBound(0) && _get(0) != '\n') {
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0) == '\n') {
+			_advance(1);
+		}
+
+		_append(TokenKind::comment, beginIndex, _contentIndex - beginIndex);
 	}
 
 	void _consumeText() {
@@ -123,6 +217,9 @@ private:
 				case '*':
 				case '_':
 				case '`':
+				case '~':
+				case '>':
+				case '\n':
 					goto end;
 
 			}
@@ -130,7 +227,7 @@ private:
 
 		end:
 
-		_appendText(beginIndex, _contentIndex - beginIndex);
+		_append(TokenKind::text, beginIndex, _contentIndex - beginIndex);
 
 		return;
 	}
