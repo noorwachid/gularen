@@ -24,6 +24,9 @@ enum class TokenKind {
 	head3,
 	head2,
 	head1,
+
+	indentPush,
+	indentPop,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -45,6 +48,9 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::head3: return "head3";
 		case TokenKind::head2: return "head2";
 		case TokenKind::head1: return "head1";
+
+		case TokenKind::indentPush: return "indentPush";
+		case TokenKind::indentPop: return "indentPop";
 	}
 }
 
@@ -64,6 +70,9 @@ public:
 	Slice<Token> parse(StringSlice content) {
 		_content = content;
 		_contentIndex = 0;
+		_indentLevel = 0;
+
+		_consumeIndent();
 
 		while (_isBound(0)) {
 			switch (_get(0)) {
@@ -120,10 +129,12 @@ public:
 
 					if (count == 1) {
 						_append(TokenKind::newline);
+						_consumeIndent();
 						break;
 					}
 
 					_append(TokenKind::newlinePlus);
+					_consumeIndent();
 					break;
 				}
 
@@ -172,6 +183,32 @@ private:
 		_tokens.append(static_cast<Token&&>(token));
 	}
 
+	void _consumeIndent() {
+		unsigned int indentLevel = 0;
+		while (_isBound(0) && _get(0) == '\t') {
+			indentLevel += 1;
+			_advance(1);
+		}
+
+		if (_indentLevel == indentLevel) {
+			return;
+		}
+
+		if (_indentLevel < indentLevel) {
+			while (_indentLevel < indentLevel) {
+				_append(TokenKind::indentPush);
+				_indentLevel += 1;
+			}
+		}
+
+		if (_indentLevel > indentLevel) {
+			while (_indentLevel > indentLevel) {
+				_append(TokenKind::indentPop);
+				_indentLevel -= 1;
+			}
+		}
+	}
+
 	void _consumeComment() {
 		unsigned int beginIndex = _contentIndex;
 
@@ -218,7 +255,6 @@ private:
 				case '_':
 				case '`':
 				case '~':
-				case '>':
 				case '\n':
 					goto end;
 
@@ -238,6 +274,8 @@ private:
 	unsigned int _contentIndex;
 
 	Array<Token> _tokens;
+
+	unsigned int _indentLevel;
 };
 
 }

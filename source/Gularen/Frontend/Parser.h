@@ -116,6 +116,24 @@ private:
 				}
 
 				if (_get(0).kind == TokenKind::newline) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
+						_advance(1);
+
+						Node* indent = _parseIndent();
+						if (indent == nullptr) {
+							delete paragraph;
+							return nullptr;
+						}
+
+						paragraph->children.append(indent);
+						continue;
+					}
+
+					if (_isBound(1) && _get(1).kind == TokenKind::indentPop) {
+						_advance(1);
+						continue;
+					}
+
 					const Token& token = _eat();
 					paragraph->children.append(new Space(token.position));
 					continue;
@@ -201,8 +219,44 @@ private:
 		return heading;
 	}
 
+	Node* _parseIndent() {
+		const Token& token = _eat();
+		Indent* indent = new Indent(token.position);
+
+		while (_isBound(0) && _get(0).kind != TokenKind::indentPop) {
+			Node* node = _parseBlock();
+
+			if (node == nullptr) {
+				delete indent;
+				return nullptr;
+			}
+
+			indent->children.append(node);
+		}
+
+		if (!(_isBound(0) && _get(0).kind == TokenKind::indentPop)) {
+			return _expect("indent pop");
+		}
+
+		_advance(1);
+
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_eat();
+		}
+
+		return indent;
+	}
+
 	bool _isBlock() {
 		switch (_get(0).kind) {
+			case TokenKind::head1:
+			case TokenKind::head2:
+			case TokenKind::head3:
+
+			case TokenKind::indentPush:
+			case TokenKind::indentPop:
+				return true;
+
 			default: 
 				return false;
 		}
@@ -222,6 +276,9 @@ private:
 			case TokenKind::head2:
 			case TokenKind::head3:
 				return _parseHeading();
+
+			case TokenKind::indentPush:
+				return _parseIndent();
 
 			default: {
 				StringSlice kind = toStringSlice(_get(0).kind);

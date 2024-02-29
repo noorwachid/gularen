@@ -16,6 +16,8 @@ enum class NodeKind {
 	space,
 
 	heading,
+
+	indent,
 };
 
 struct Node {
@@ -120,6 +122,15 @@ struct Heading : Node {
 			case Type::title: printf("title\n"); break;
 			case Type::subtitle: printf("subtitle\n"); break;
 		}
+	}
+};
+
+struct Indent : Node {
+	Indent(Position position): Node(position, NodeKind::indent) {
+	}
+
+	virtual void print() override {
+		printf("indent\n");
 	}
 };
 
