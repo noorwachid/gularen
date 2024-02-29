@@ -32,6 +32,10 @@ enum class TokenKind {
 	pageBreak,
 
 	dinkus,
+
+	bullet,
+	index,
+	checkbox,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -60,6 +64,10 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::lineBreak: return "lineBreak";
 		case TokenKind::pageBreak: return "pageBreak";
 		case TokenKind::dinkus: return "dinkus";
+
+		case TokenKind::bullet: return "bullet";
+		case TokenKind::index: return "index";
+		case TokenKind::checkbox: return "checkbox";
 	}
 }
 
@@ -148,6 +156,16 @@ public:
 					}
 
 					_advance(1);
+					break;
+
+				case '-':
+					if (_isBound(1) && _get(1) == ' ') {
+						_append(TokenKind::bullet, _contentIndex, 1);
+						_advance(2);
+						break;
+					}
+
+					_consumeText();
 					break;
 
 				case '\n': {
@@ -247,11 +265,12 @@ private:
 			_advance(1);
 		}
 
+		_append(TokenKind::comment, beginIndex, _contentIndex - beginIndex);
+
 		if (_isBound(0) && _get(0) == '\n') {
 			_advance(1);
 		}
 
-		_append(TokenKind::comment, beginIndex, _contentIndex - beginIndex);
 	}
 
 	void _consumeText() {

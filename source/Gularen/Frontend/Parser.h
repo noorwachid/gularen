@@ -269,6 +269,64 @@ private:
 		return node;
 	}
 
+	Node* _parseList() {
+		List* list = new List(_get(0).position);
+
+		while (_isBound(0) && _get(0).kind == TokenKind::bullet) {
+			Item* item = new Item(_eat().position);
+			list->children.append(item);
+
+			while (_isBound(0)) {
+				Node* node = _parseInline();
+
+				if (node == nullptr) {
+					if (_get(0).kind == TokenKind::newline) {
+						if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
+							_advance(2);
+
+							while (_isBound(0)) {
+								Node* subnode = _parseBlock();
+								if (subnode == nullptr) {
+									if (_get(0).kind == TokenKind::indentPop) {
+										_advance(1);
+										break;
+									}
+
+									delete list;
+									delete item;
+									return _expect("indent pop");
+								}
+
+								item->children.append(subnode);
+							}
+
+							break;
+						}
+
+						_advance(1);
+						break;
+					}
+					
+					if (_get(0).kind == TokenKind::newlinePlus) {
+						_advance(1);
+						goto listEnd;
+					}
+
+					delete list;
+					delete item;
+					return _expect("newline");
+				}
+
+				item->children.append(node);
+			}
+
+		}
+
+		listEnd:
+
+		return list;
+	}
+
 	bool _isBlock() {
 		switch (_get(0).kind) {
 			case TokenKind::head1:
@@ -308,11 +366,11 @@ private:
 			case TokenKind::dinkus:
 				return _parseDinkus();
 
-			default: {
-				StringSlice kind = toStringSlice(_get(0).kind);
-				printf("[Parser.parseBlock] unhandled token %.*s\n", kind.size(), kind.pointer());
+			case TokenKind::bullet:
+				return _parseList();
+
+			default:
 				return nullptr;
-			}
 		}
 	}
 

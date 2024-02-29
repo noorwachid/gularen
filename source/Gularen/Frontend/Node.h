@@ -12,18 +12,21 @@ enum class NodeKind {
 	style,
 
 	paragraph,
-
 	space,
-
 	lineBreak,
-
 	pageBreak,
-
 	dinkus,
 
 	heading,
 
 	indent,
+
+	list,
+	item,
+	orderedList,
+	orderedItem,
+	todoList,
+	todoItem,
 };
 
 struct Node {
@@ -170,6 +173,60 @@ struct Indent : Node {
 
 	virtual void print() override {
 		printf("indent\n");
+	}
+};
+
+struct List : Node {
+	List(Position position): Node(position, NodeKind::list) {
+	}
+
+	virtual void print() override {
+		printf("list\n");
+	}
+};
+
+struct Item : Node {
+	Item(Position position): Node(position, NodeKind::item) {
+	}
+
+	virtual void print() override {
+		printf("item\n");
+	}
+};
+
+struct OrderedList : Node {
+	OrderedList(Position position): Node(position, NodeKind::orderedList) {
+	}
+
+	virtual void print() override {
+		printf("orderedList\n");
+	}
+};
+
+struct OrderedItem : Node {
+	OrderedItem(Position position): Node(position, NodeKind::orderedItem) {
+	}
+
+	virtual void print() override {
+		printf("orderedItem\n");
+	}
+};
+
+struct TodoList : Node {
+	TodoList(Position position): Node(position, NodeKind::todoList) {
+	}
+
+	virtual void print() override {
+		printf("todoList\n");
+	}
+};
+
+struct TodoItem : Node {
+	TodoItem(Position position): Node(position, NodeKind::todoItem) {
+	}
+
+	virtual void print() override {
+		printf("todoItem\n");
 	}
 };
 
