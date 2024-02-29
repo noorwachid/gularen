@@ -95,6 +95,8 @@ private:
 			case TokenKind::underscore: return _parseStyle(Style::Type::italic);
 			case TokenKind::backtick: return _parseStyle(Style::Type::monospaced);
 
+			case TokenKind::lineBreak: return new LineBreak(_eat().position);
+
 			default: {
 				return nullptr;
 			}
@@ -247,6 +249,26 @@ private:
 		return indent;
 	}
 
+	Node* _parsePageBreak() {
+		Node* node = new PageBreak(_eat().position);
+
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_advance(1);
+		}
+
+		return node;
+	}
+
+	Node* _parseDinkus() {
+		Node* node = new Dinkus(_eat().position);
+
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_advance(1);
+		}
+
+		return node;
+	}
+
 	bool _isBlock() {
 		switch (_get(0).kind) {
 			case TokenKind::head1:
@@ -279,6 +301,12 @@ private:
 
 			case TokenKind::indentPush:
 				return _parseIndent();
+
+			case TokenKind::pageBreak:
+				return _parsePageBreak();
+
+			case TokenKind::dinkus:
+				return _parseDinkus();
 
 			default: {
 				StringSlice kind = toStringSlice(_get(0).kind);

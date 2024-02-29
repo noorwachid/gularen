@@ -15,6 +15,12 @@ enum class NodeKind {
 
 	space,
 
+	lineBreak,
+
+	pageBreak,
+
+	dinkus,
+
 	heading,
 
 	indent,
@@ -62,6 +68,39 @@ struct Space : Node {
 
 	virtual void print() override {
 		printf("space\n");
+	}
+};
+
+struct LineBreak : Node {
+	StringSlice value;
+
+	LineBreak(Position position): Node(position, NodeKind::lineBreak) {
+	}
+
+	virtual void print() override {
+		printf("lineBreak\n");
+	}
+};
+
+struct PageBreak : Node {
+	StringSlice value;
+
+	PageBreak(Position position): Node(position, NodeKind::pageBreak) {
+	}
+
+	virtual void print() override {
+		printf("pageBreak\n");
+	}
+};
+
+struct Dinkus : Node {
+	StringSlice value;
+
+	Dinkus(Position position): Node(position, NodeKind::dinkus) {
+	}
+
+	virtual void print() override {
+		printf("dinkus\n");
 	}
 };
 

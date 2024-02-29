@@ -27,6 +27,11 @@ enum class TokenKind {
 
 	indentPush,
 	indentPop,
+
+	lineBreak,
+	pageBreak,
+
+	dinkus,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -51,6 +56,10 @@ StringSlice toStringSlice(TokenKind kind) {
 
 		case TokenKind::indentPush: return "indentPush";
 		case TokenKind::indentPop: return "indentPop";
+
+		case TokenKind::lineBreak: return "lineBreak";
+		case TokenKind::pageBreak: return "pageBreak";
+		case TokenKind::dinkus: return "dinkus";
 	}
 }
 
@@ -81,6 +90,12 @@ public:
 					break;
 
 				case '*': 
+					if (_isBound(2) && _get(1) == '*' && _get(2) == '*') {
+						_append(TokenKind::dinkus, _contentIndex, 3); 
+						_advance(3);
+						break;
+					}
+
 					_append(TokenKind::asterisk); 
 					_advance(1);
 					break;
@@ -117,6 +132,22 @@ public:
 						_advance(2);
 						break;
 					}
+					break;
+
+				case '<': 
+					if (_isBound(1) && _get(1) == '<') {
+						if (_isBound(2) && _get(2) == '<') {
+							_append(TokenKind::pageBreak, _contentIndex, 3);
+							_advance(3);
+							break;
+						}
+
+						_append(TokenKind::lineBreak, _contentIndex, 2);
+						_advance(2);
+						break;
+					}
+
+					_advance(1);
 					break;
 
 				case '\n': {
@@ -255,6 +286,7 @@ private:
 				case '_':
 				case '`':
 				case '~':
+				case '<':
 				case '\n':
 					goto end;
 
