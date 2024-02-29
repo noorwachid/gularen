@@ -141,7 +141,7 @@ private:
 					continue;
 				}
 
-				if (_isBlock()) {
+				if (!_isParagraph()) {
 					break;
 				}
 				
@@ -269,11 +269,12 @@ private:
 		return node;
 	}
 
-	Node* _parseList() {
-		List* list = new List(_get(0).position);
+	template <typename L, typename I>
+	Node* _parseList(TokenKind kind) {
+		L* list = new L(_get(0).position);
 
-		while (_isBound(0) && _get(0).kind == TokenKind::bullet) {
-			Item* item = new Item(_eat().position);
+		while (_isBound(0) && _get(0).kind == kind) {
+			I* item = new I(_eat().position);
 			list->children.append(item);
 
 			while (_isBound(0)) {
@@ -327,14 +328,14 @@ private:
 		return list;
 	}
 
-	bool _isBlock() {
+	bool _isParagraph() {
 		switch (_get(0).kind) {
-			case TokenKind::head1:
-			case TokenKind::head2:
-			case TokenKind::head3:
+			case TokenKind::comment:
+			case TokenKind::text:
 
-			case TokenKind::indentPush:
-			case TokenKind::indentPop:
+			case TokenKind::asterisk:
+			case TokenKind::underscore:
+			case TokenKind::backtick:
 				return true;
 
 			default: 
@@ -367,7 +368,10 @@ private:
 				return _parseDinkus();
 
 			case TokenKind::bullet:
-				return _parseList();
+				return _parseList<List, Item>(TokenKind::bullet);
+
+			case TokenKind::index:
+				return _parseList<OrderedList, OrderedItem>(TokenKind::index);
 
 			default:
 				return nullptr;

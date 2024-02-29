@@ -168,6 +168,19 @@ public:
 					_consumeText();
 					break;
 
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					_consumeIndex();
+					break;
+
 				case '\n': {
 					unsigned int count = 0;
 
@@ -317,6 +330,24 @@ private:
 		_append(TokenKind::text, beginIndex, _contentIndex - beginIndex);
 
 		return;
+	}
+
+	void _consumeIndex() {
+		unsigned int beginIndex = _contentIndex;
+
+		while (_isBound(0) && _get(0) >= '0' && _get(0) <= '9') {
+			_advance(1);
+		}
+
+		if (_isBound(1) && _get(0) == '.' && _get(1) == ' ') {
+			_advance(1);
+			_append(TokenKind::index, beginIndex, _contentIndex - beginIndex);
+			_advance(1);
+			return;
+		}
+
+		_contentIndex = beginIndex;
+		_consumeText();
 	}
 
 private:
