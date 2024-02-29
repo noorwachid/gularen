@@ -269,58 +269,104 @@ private:
 		return node;
 	}
 
-	template <typename L, typename I>
-	Node* _parseList(TokenKind kind) {
-		L* list = new L(_get(0).position);
+	enum class ItemResult {
+		ok,
+		error,
+		earlyExit,
+	};
 
-		while (_isBound(0) && _get(0).kind == kind) {
-			I* item = new I(_eat().position);
-			list->children.append(item);
+	ItemResult _parseItem(Node* list, Node* item) {
+		while (_isBound(0)) {
+			Node* node = _parseInline();
 
-			while (_isBound(0)) {
-				Node* node = _parseInline();
+			if (node == nullptr) {
+				if (_get(0).kind == TokenKind::newline) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
+						_advance(2);
 
-				if (node == nullptr) {
-					if (_get(0).kind == TokenKind::newline) {
-						if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
-							_advance(2);
-
-							while (_isBound(0)) {
-								Node* subnode = _parseBlock();
-								if (subnode == nullptr) {
-									if (_get(0).kind == TokenKind::indentPop) {
-										_advance(1);
-										break;
-									}
-
-									delete list;
-									delete item;
-									return _expect("indent pop");
+						while (_isBound(0)) {
+							Node* subnode = _parseBlock();
+							if (subnode == nullptr) {
+								if (_get(0).kind == TokenKind::indentPop) {
+									_advance(1);
+									break;
 								}
 
-								item->children.append(subnode);
+								delete list;
+								delete item;
+								_expect("indent pop");
+								return ItemResult::error;
 							}
 
-							break;
+							item->children.append(subnode);
 						}
 
-						_advance(1);
 						break;
 					}
-					
-					if (_get(0).kind == TokenKind::newlinePlus) {
-						_advance(1);
-						goto listEnd;
-					}
 
-					delete list;
-					delete item;
-					return _expect("newline");
+					_advance(1);
+					break;
+				}
+				
+				if (_get(0).kind == TokenKind::newlinePlus) {
+					_advance(1);
+					return ItemResult::earlyExit;
 				}
 
-				item->children.append(node);
+				delete list;
+				delete item;
+				_expect("newline");
+				return ItemResult::error;
 			}
 
+			item->children.append(node);
+		}
+
+		return ItemResult::ok;
+	}
+
+	Node* _parseList(TokenKind tokenKind, NodeKind nodeKind) {
+		List* list = new List(_get(0).position, nodeKind);
+
+		while (_isBound(0) && _get(0).kind == tokenKind) {
+			Item* item = new Item(_eat().position);
+			list->children.append(item);
+
+			ItemResult result = _parseItem(list, item);
+
+			switch (result) {
+				case ItemResult::ok: break;
+				case ItemResult::error: return nullptr;
+				case ItemResult::earlyExit: goto listEnd;
+			}
+		}
+
+		listEnd:
+
+		return list;
+	}
+
+	Node* _parseTodoList() {
+		List* list = new List(_get(0).position, NodeKind::todoList);
+
+		while (_isBound(0) && _get(0).kind == TokenKind::checkbox) {
+			const Token& token = _eat();
+			TodoItem* item = new TodoItem(token.position);
+			list->children.append(item);
+
+			switch (token.value.get(1)) {
+				case ' ': item->state = TodoItem::State::todo; break;
+				case 'v': item->state = TodoItem::State::done; break;
+				case 'x': item->state = TodoItem::State::cancelled; break;
+			}
+
+			ItemResult result = _parseItem(list, item);
+
+			switch (result) {
+				case ItemResult::ok: break;
+				case ItemResult::error: return nullptr;
+				case ItemResult::earlyExit: goto listEnd;
+			}
 		}
 
 		listEnd:
@@ -368,10 +414,13 @@ private:
 				return _parseDinkus();
 
 			case TokenKind::bullet:
-				return _parseList<List, Item>(TokenKind::bullet);
+				return _parseList(TokenKind::bullet, NodeKind::list);
 
 			case TokenKind::index:
-				return _parseList<OrderedList, OrderedItem>(TokenKind::index);
+				return _parseList(TokenKind::index, NodeKind::numberedList);
+
+			case TokenKind::checkbox:
+				return _parseTodoList();
 
 			default:
 				return nullptr;

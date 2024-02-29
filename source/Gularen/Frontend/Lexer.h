@@ -181,6 +181,15 @@ public:
 					_consumeIndex();
 					break;
 
+				case '[':
+					if (_isBound(4) && _get(2) == ']' && _get(3) == ' ' && (_get(1) == ' ' || _get(1) == 'x' || _get(1) == 'v')) {
+						_append(TokenKind::checkbox, _contentIndex, 3);
+						_advance(4);
+						break;
+					}
+					// _consumeLink();
+					break;
+
 				case '\n': {
 					unsigned int count = 0;
 
