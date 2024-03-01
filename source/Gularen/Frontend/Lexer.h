@@ -41,6 +41,17 @@ enum class TokenKind {
 	teeLeft,
 	teeRight,
 	teeCenter,
+
+	raw,
+
+	fencePush,
+	fencePop,
+
+	curlyOpen,
+	curlyClose,
+
+	parenOpen,
+	parenClose,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -78,6 +89,17 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::teeLeft: return "teeLeft";
 		case TokenKind::teeRight: return "teeRight";
 		case TokenKind::teeCenter: return "teeCenter";
+
+		case TokenKind::raw: return "raw";
+
+		case TokenKind::fencePush: return "fencePush";
+		case TokenKind::fencePop: return "fencePop";
+
+		case TokenKind::curlyOpen: return "curlyOpen";
+		case TokenKind::curlyClose: return "curlyClose";
+
+		case TokenKind::parenOpen: return "parenOpen";
+		case TokenKind::parenClose: return "parenClose";
 	}
 }
 
@@ -89,7 +111,38 @@ struct Position {
 struct Token {
 	Position position;
 	TokenKind kind;
-	StringSlice value;
+	StringSlice content;
+
+	void print() const {
+		StringSlice kindString = toStringSlice(kind);
+
+		printf("%.*s", kindString.size(), kindString.pointer());
+
+		if (content.size() != 0) {
+			printf(" = ");
+			for (unsigned int i = 0; i < content.size(); i += 1) {
+				if (content.get(i) < ' ') {
+					switch (content.get(i)) {
+						case '\t':
+							printf("\\t");
+							break;
+
+						case '\n':
+							printf("\\n");
+							break;
+
+						default:
+							printf("\\x%02X", content.get(i) & 0xFF);
+							break;
+					}
+					continue;
+				}
+				printf("%c", content.get(i));
+			}
+		}
+
+		printf("\n");
+	}
 };
 
 class Lexer {
@@ -175,6 +228,11 @@ public:
 						break;
 					}
 
+					if (_isBound(2) && _get(1) == '-' && _get(2) == '-') {
+						_consumeCodeBlock();
+						break;
+					}
+
 					_consumeText();
 					break;
 
@@ -202,6 +260,10 @@ public:
 
 				case '|':
 					_consumePipe();
+					break;
+
+				case '{':
+					_consumeCode();
 					break;
 
 				case '\n': {
@@ -264,7 +326,7 @@ private:
 		token.position.line = 0;
 		token.position.column = 0;
 		token.kind = kind;
-		token.value = _content.cut(index, size);
+		token.content = _content.cut(index, size);
 		_tokens.append(static_cast<Token&&>(token));
 	}
 
@@ -343,6 +405,7 @@ private:
 				case '~':
 				case '<':
 				case '|':
+				case '{':
 				case '\n':
 					goto end;
 
@@ -428,6 +491,113 @@ private:
 					break;
 			}
 		}
+	}
+
+	void _consumeLabel() {
+		_append(TokenKind::parenOpen, _contentIndex, 1);
+		_advance(1);
+
+		unsigned int oldContextIndex = _contentIndex;
+
+		while (_isBound(0) && _get(0) != ')') {
+			_advance(1);
+		}
+
+		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+
+		if (_isBound(0) && _get(0) == ')') {
+			_append(TokenKind::parenClose, _contentIndex, 1);
+			_advance(1);
+		}
+	}
+
+	void _consumeCode() {
+		_append(TokenKind::curlyOpen, _contentIndex, 1);
+		_advance(1);
+
+		unsigned int oldContextIndex = _contentIndex;
+
+		while (_isBound(0) && _get(0) != '}') {
+			_advance(1);
+		}
+
+		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+
+		if (_isBound(0) && _get(0) == '}') {
+			_append(TokenKind::curlyClose, _contentIndex, 1);
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0) == '(') {
+			_consumeLabel();
+		}
+	}
+
+	void _consumeCodeBlockContent(unsigned int dashCount) {
+		unsigned int oldContextIndex = _contentIndex;
+		unsigned int oldIndentLevel = _indentLevel;
+
+		while (_isBound(0)) {
+			if (_get(0) == '\n') {
+				_advance(1);
+				unsigned int indentLevel = 0;
+				while (_isBound(0) && _get(0) == '\t') {
+					_advance(1);
+					indentLevel += 1;
+				}
+
+				if (_get(0) == '-' && indentLevel == oldIndentLevel) {
+					unsigned int i = 0;
+					while (i < dashCount && _get(i) == '-') { i += 1; }
+					if (i == dashCount && (!_isBound(dashCount) || (_isBound(dashCount) && _get(dashCount) == '\n'))) {
+						_append(TokenKind::raw, oldContextIndex + 1, _contentIndex - oldContextIndex - 2 - oldIndentLevel);
+						_append(TokenKind::fencePop, _contentIndex, dashCount);
+						_advance(dashCount);
+						return;
+					}
+				}
+				continue;
+			}
+
+			_advance(1);
+		}
+
+		_append(TokenKind::raw, oldContextIndex + 1, _contentIndex - oldContextIndex - 1);
+	}
+
+	void _consumeCodeBlock() {
+		unsigned int oldContentIndex = _contentIndex;
+
+		while (_isBound(0) && _get(0) == '-') {
+			_advance(1);
+		}
+
+		unsigned int dashCount = _contentIndex - oldContentIndex;
+
+		if (_isBound(0) && _get(0) == '\n') {
+			_append(TokenKind::fencePush, oldContentIndex, _contentIndex - oldContentIndex);
+			return _consumeCodeBlockContent(dashCount);
+		}
+
+		// capture label
+		if (_isBound(1) && _get(0) == ' ' && _get(1) != '\n') {
+			unsigned int youngContextIndex = _contentIndex;
+			_advance(1);
+			unsigned int middleAgedContentIndex = _contentIndex;
+
+			while (_isBound(0) && _get(0) != '\n') {
+				_advance(1);
+			}
+
+			if (_isBound(0) && _get(0) == '\n') {
+				_append(TokenKind::fencePush, oldContentIndex, youngContextIndex - oldContentIndex);
+				_append(TokenKind::text, middleAgedContentIndex, _contentIndex - middleAgedContentIndex);
+				return _consumeCodeBlockContent(dashCount);
+			}
+		}
+
+		_contentIndex = oldContentIndex;
+		_consumeText();
 	}
 
 private:

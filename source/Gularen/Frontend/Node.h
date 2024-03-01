@@ -31,6 +31,9 @@ enum class NodeKind {
 	table,
 	row,
 	cell,
+
+	code,
+	codeBlock,
 };
 
 struct Node {
@@ -46,30 +49,28 @@ struct Node {
 };
 
 struct Comment : Node {
-	StringSlice value;
+	StringSlice content;
 
-	Comment(Position position, StringSlice value): Node(position, NodeKind::comment), value(value) {
+	Comment(Position position, StringSlice content): Node(position, NodeKind::comment), content(content) {
 	}
 
 	virtual void print() override {
-		printf("comment %.*s\n", value.size(), value.pointer());
+		printf("comment %.*s\n", content.size(), content.pointer());
 	}
 };
 
 struct Text : Node {
-	StringSlice value;
+	StringSlice content;
 
-	Text(Position position, StringSlice value): Node(position, NodeKind::text), value(value) {
+	Text(Position position, StringSlice content): Node(position, NodeKind::text), content(content) {
 	}
 
 	virtual void print() override {
-		printf("text %.*s\n", value.size(), value.pointer());
+		printf("text %.*s\n", content.size(), content.pointer());
 	}
 };
 
 struct Space : Node {
-	StringSlice value;
-
 	Space(Position position): Node(position, NodeKind::space) {
 	}
 
@@ -79,8 +80,6 @@ struct Space : Node {
 };
 
 struct LineBreak : Node {
-	StringSlice value;
-
 	LineBreak(Position position): Node(position, NodeKind::lineBreak) {
 	}
 
@@ -90,8 +89,6 @@ struct LineBreak : Node {
 };
 
 struct PageBreak : Node {
-	StringSlice value;
-
 	PageBreak(Position position): Node(position, NodeKind::pageBreak) {
 	}
 
@@ -101,8 +98,6 @@ struct PageBreak : Node {
 };
 
 struct Dinkus : Node {
-	StringSlice value;
-
 	Dinkus(Position position): Node(position, NodeKind::dinkus) {
 	}
 
@@ -284,6 +279,64 @@ struct Cell : Node {
 
 	virtual void print() override {
 		printf("cell\n");
+	}
+};
+
+struct Code : Node {
+	StringSlice label;
+	StringSlice content;
+
+	Code(Position position): Node(position, NodeKind::code) {
+	}
+
+	virtual void print() override {
+		printf("code ");
+
+		if (label.size()) {
+			printf("%.*s ", label.size(), label.pointer());
+		}
+
+		printContent();
+		printf("\n");
+	}
+
+	void printContent() {
+		for (unsigned int i = 0; i < content.size(); i += 1) {
+			if (content.get(i) < ' ') {
+				switch (content.get(i)) {
+					case '\t':
+						printf("\\t");
+					break;
+
+					case '\n':
+						printf("\\n");
+					break;
+
+					default:
+						printf("\\x%02X", content.get(i) & 0xFF);
+					break;
+				}
+				continue;
+			}
+			printf("%c", content.get(i));
+		}
+	}
+};
+
+struct CodeBlock : Code {
+	CodeBlock(Position position): Code(position) {
+		kind = NodeKind::codeBlock;
+	}
+
+	virtual void print() override {
+		printf("codeBlock ");
+
+		if (label.size()) {
+			printf("%.*s ", label.size(), label.pointer());
+		}
+
+		printContent();
+		printf("\n");
 	}
 };
 

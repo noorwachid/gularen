@@ -78,12 +78,12 @@ private:
 
 	Node* _parseComment() {
 		const Token& token = _eat();
-		return new Comment(token.position, token.value);
+		return new Comment(token.position, token.content);
 	}
 
 	Node* _parseText() {
 		const Token& token = _eat();
-		return new Text(token.position, token.value);
+		return new Text(token.position, token.content);
 	}
 
 	Node* _parseInline() {
@@ -97,6 +97,8 @@ private:
 			case TokenKind::backtick: return _parseStyle(Style::Type::monospaced);
 
 			case TokenKind::lineBreak: return new LineBreak(_eat().position);
+
+			case TokenKind::curlyOpen: return _parseCode();
 
 			default: {
 				return nullptr;
@@ -353,7 +355,7 @@ private:
 			TodoItem* item = new TodoItem(token.position);
 			list->children.append(item);
 
-			switch (token.value.get(1)) {
+			switch (token.content.get(1)) {
 				case ' ': item->state = TodoItem::State::todo; break;
 				case 'v': item->state = TodoItem::State::done; break;
 				case 'x': item->state = TodoItem::State::cancelled; break;
@@ -492,6 +494,52 @@ private:
 		return _checkTableRow(table, type);
 	}
 
+	Node* _parseCode() {
+		Code* codeBlock = new Code(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			codeBlock->content = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::curlyClose) {
+			_advance(1);
+
+			if (_isBound(2) && 
+				_get(0).kind == TokenKind::parenOpen && 
+				_get(1).kind == TokenKind::raw && 
+				_get(2).kind == TokenKind::parenClose) {
+
+				codeBlock->label = _get(1).content;
+
+				_advance(3);
+			}
+		}
+
+		return codeBlock;
+	}
+
+	Node* _parseCodeBlock() {
+		CodeBlock* codeBlock = new CodeBlock(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::text) {
+			codeBlock->label = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			codeBlock->content = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::fencePop) {
+			_advance(1);
+
+			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+				_advance(1);
+			}
+		}
+
+		return codeBlock;
+	}
+
 	bool _isParagraph() {
 		switch (_get(0).kind) {
 			case TokenKind::comment:
@@ -500,6 +548,8 @@ private:
 			case TokenKind::asterisk:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
+
+			case TokenKind::curlyOpen:
 				return true;
 
 			default: 
@@ -515,6 +565,8 @@ private:
 			case TokenKind::asterisk:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
+
+			case TokenKind::curlyOpen:
 				return _parseParagraph();
 
 			case TokenKind::head1:
@@ -542,6 +594,9 @@ private:
 
 			case TokenKind::pipe:
 				return _parseTable();
+
+			case TokenKind::fencePush:
+				return _parseCodeBlock();
 
 			default:
 				return nullptr;

@@ -7,16 +7,7 @@ using namespace Gularen;
 
 void print(Slice<Token> tokens) {
 	for (unsigned int i = 0; i < tokens.size(); i += 1) {
-		const Token& token = tokens.get(i);
-		StringSlice kind = toStringSlice(token.kind);
-
-		printf("%.*s", kind.size(), kind.pointer());
-
-		if (token.value.size() != 0) {
-			printf(" = %.*s", token.value.size(), token.value.pointer());
-		}
-
-		printf("\n");
+		tokens.get(i).print();
 	}
 }
 
