@@ -37,6 +37,7 @@ enum class NodeKind {
 
 	link,
 	view,
+	include,
 };
 
 struct Node {
@@ -393,17 +394,24 @@ struct View : Node {
 	}
 
 	virtual void print() override {
-		printf("view ");
-
-		if (resource.size()) {
-			printf("%.*s ", resource.size(), resource.pointer());
-		}
+		printf("view %.*s", resource.size(), resource.pointer());
 
 		if (label.size()) {
-			printf("%.*s", label.size(), label.pointer());
+			printf(" %.*s", label.size(), label.pointer());
 		}
 
 		printf("\n");
+	}
+};
+
+struct Include : Node {
+	StringSlice resource;
+
+	Include(Position position): Node(position, NodeKind::include) {
+	}
+
+	virtual void print() override {
+		printf("include %.*s\n", resource.size(), resource.pointer());
 	}
 };
 

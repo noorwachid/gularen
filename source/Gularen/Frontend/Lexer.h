@@ -288,8 +288,7 @@ public:
 						break;
 					}
 
-					_append(TokenKind::text, _contentIndex, 1);
-					_advance(1);
+					_consumeText();
 					break;
 
 				case '?':
@@ -299,8 +298,7 @@ public:
 						break;
 					}
 
-					_append(TokenKind::text, _contentIndex, 1);
-					_advance(1);
+					_consumeText();
 					break;
 
 				case '|':
@@ -452,10 +450,18 @@ private:
 				case '|':
 				case '{':
 				case '[':
-				case '!':
 				case '\n':
 					goto end;
 
+				case '!':
+				case '?':
+					if (_isBound(1) && _get(1) == '[') {
+						goto end;
+					}
+
+					_advance(1);
+					break;
+						
 			}
 		}
 

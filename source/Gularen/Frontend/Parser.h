@@ -101,6 +101,7 @@ private:
 			case TokenKind::curlyOpen: return _parseCode();
 			case TokenKind::squareOpen: return _parseLink();
 			case TokenKind::exclamation: return _parseView();
+			case TokenKind::question: return _parseInclude();
 
 			default: {
 				return nullptr;
@@ -541,6 +542,24 @@ private:
 		}
 
 		return view;
+	}
+
+	Node* _parseInclude() {
+		Include* include = new Include(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			include->resource = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_advance(1);
+		}
+
+		return include;
 	}
 
 	Node* _parseCode() {
