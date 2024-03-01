@@ -52,6 +52,12 @@ enum class TokenKind {
 
 	parenOpen,
 	parenClose,
+
+	squareOpen,
+	squareClose,
+
+	angleOpen,
+	angleClose,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -100,6 +106,12 @@ StringSlice toStringSlice(TokenKind kind) {
 
 		case TokenKind::parenOpen: return "parenOpen";
 		case TokenKind::parenClose: return "parenClose";
+
+		case TokenKind::squareOpen: return "squareOpen";
+		case TokenKind::squareClose: return "squareClose";
+
+		case TokenKind::angleOpen: return "angleOpen";
+		case TokenKind::angleClose: return "angleClose";
 	}
 }
 
@@ -255,7 +267,8 @@ public:
 						_advance(4);
 						break;
 					}
-					// _consumeLink();
+
+					_consumeLink();
 					break;
 
 				case '|':
@@ -406,6 +419,7 @@ private:
 				case '<':
 				case '|':
 				case '{':
+				case '[':
 				case '\n':
 					goto end;
 
@@ -508,6 +522,28 @@ private:
 		if (_isBound(0) && _get(0) == ')') {
 			_append(TokenKind::parenClose, _contentIndex, 1);
 			_advance(1);
+		}
+	}
+
+	void _consumeLink() {
+		_append(TokenKind::squareOpen, _contentIndex, 1);
+		_advance(1);
+
+		unsigned int oldContextIndex = _contentIndex;
+
+		while (_isBound(0) && _get(0) != ']') {
+			_advance(1);
+		}
+
+		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+
+		if (_isBound(0) && _get(0) == ']') {
+			_append(TokenKind::squareClose, _contentIndex, 1);
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0) == '(') {
+			_consumeLabel();
 		}
 	}
 

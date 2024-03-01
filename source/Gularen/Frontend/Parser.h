@@ -99,6 +99,7 @@ private:
 			case TokenKind::lineBreak: return new LineBreak(_eat().position);
 
 			case TokenKind::curlyOpen: return _parseCode();
+			case TokenKind::squareOpen: return _parseLink();
 
 			default: {
 				return nullptr;
@@ -111,15 +112,10 @@ private:
 
 		Paragraph* paragraph = new Paragraph(token.position);
 
-		while (_isBound(0)) {
+		while (_isBound(0) && _isParagraph()) {
 			Node* node = _parseInline();
 
 			if (node == nullptr) {
-				if (_get(0).kind == TokenKind::newlinePlus) {
-					_advance(1);
-					break;
-				}
-
 				if (_get(0).kind == TokenKind::newline) {
 					if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
 						_advance(1);
@@ -144,15 +140,14 @@ private:
 					continue;
 				}
 
-				if (!_isParagraph()) {
-					break;
-				}
-				
-				delete paragraph;
-				return _expect("newline+ or block");
+				continue;
 			}
 
 			paragraph->children.append(node);
+		}
+
+		if (_get(0).kind == TokenKind::newlinePlus) {
+			_advance(1);
 		}
 
 		return paragraph;
@@ -494,11 +489,36 @@ private:
 		return _checkTableRow(table, type);
 	}
 
-	Node* _parseCode() {
-		Code* codeBlock = new Code(_eat().position);
+
+	Node* _parseLink() {
+		Link* link = new Link(_eat().position);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-			codeBlock->content = _eat().content;
+			link->setResource(_eat().content);
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_advance(1);
+
+			if (_isBound(2) && 
+				_get(0).kind == TokenKind::parenOpen && 
+				_get(1).kind == TokenKind::raw && 
+				_get(2).kind == TokenKind::parenClose) {
+
+				link->label = _get(1).content;
+
+				_advance(3);
+			}
+		}
+
+		return link;
+	}
+
+	Node* _parseCode() {
+		Code* code = new Code(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			code->content = _eat().content;
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::curlyClose) {
@@ -509,13 +529,13 @@ private:
 				_get(1).kind == TokenKind::raw && 
 				_get(2).kind == TokenKind::parenClose) {
 
-				codeBlock->label = _get(1).content;
+				code->label = _get(1).content;
 
 				_advance(3);
 			}
 		}
 
-		return codeBlock;
+		return code;
 	}
 
 	Node* _parseCodeBlock() {
@@ -544,12 +564,14 @@ private:
 		switch (_get(0).kind) {
 			case TokenKind::comment:
 			case TokenKind::text:
+			case TokenKind::newline:
 
 			case TokenKind::asterisk:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
 
 			case TokenKind::curlyOpen:
+			case TokenKind::squareOpen:
 				return true;
 
 			default: 
@@ -567,6 +589,7 @@ private:
 			case TokenKind::backtick:
 
 			case TokenKind::curlyOpen:
+			case TokenKind::squareOpen:
 				return _parseParagraph();
 
 			case TokenKind::head1:

@@ -34,6 +34,8 @@ enum class NodeKind {
 
 	code,
 	codeBlock,
+
+	link,
 };
 
 struct Node {
@@ -336,6 +338,48 @@ struct CodeBlock : Code {
 		}
 
 		printContent();
+		printf("\n");
+	}
+};
+
+struct Link : Node {
+	StringSlice resource;
+	StringSlice heading;
+	StringSlice label;
+
+	Link(Position position): Node(position, NodeKind::link) {
+	}
+
+	void setResource(StringSlice resource) {
+		unsigned int i = 0;
+
+		while (i < resource.size() && resource.get(i) != '>') {
+			i += 1;
+		}
+
+		this->resource = resource.cut(0, i);
+
+		if (i < resource.size()) {
+			this->heading = resource.cut(i + 1, resource.size() - i - 1);
+		}
+	}
+
+	virtual void print() override {
+		printf("link ");
+
+		if (resource.size()) {
+			printf("%.*s ", resource.size(), resource.pointer());
+		}
+
+
+		if (heading.size()) {
+			printf(">%.*s ", heading.size(), heading.pointer());
+		}
+
+		if (label.size()) {
+			printf("%.*s", label.size(), label.pointer());
+		}
+
 		printf("\n");
 	}
 };
