@@ -27,6 +27,10 @@ enum class NodeKind {
 
 	item,
 	todoItem,
+
+	table,
+	row,
+	cell,
 };
 
 struct Node {
@@ -218,6 +222,68 @@ struct TodoItem : Node {
 			case State::done: printf("done\n"); break;
 			case State::cancelled: printf("cancelled\n"); break;
 		}
+	}
+};
+
+struct Table : Node {
+	enum class Alignment {
+		left,
+		center,
+		right,
+	};
+
+	Array<Alignment> alignments;
+
+	Table(Position position): Node(position, NodeKind::table) {
+	}
+
+	virtual void print() override {
+		printf("table ");
+
+		for (unsigned int i = 0; i < alignments.size(); i += 1) {
+			if (i != 0) {
+				printf(", ");
+			}
+			switch (alignments.get(i)) {
+				case Alignment::left: printf("left"); break;
+				case Alignment::center: printf("center"); break;
+				case Alignment::right: printf("right"); break;
+			}
+		}
+
+		printf("\n");
+	}
+};
+
+struct Row : Node {
+	enum class Type {
+		header,
+		content,
+		footer,
+	};
+
+	Type type;
+
+	Row(Position position): Node(position, NodeKind::row) {
+	}
+
+	virtual void print() override {
+		printf("row ");
+
+		switch (type) {
+			case Type::header: printf("header\n"); break;
+			case Type::content: printf("content\n"); break;
+			case Type::footer: printf("footer\n"); break;
+		}
+	}
+};
+
+struct Cell : Node {
+	Cell(Position position): Node(position, NodeKind::cell) {
+	}
+
+	virtual void print() override {
+		printf("cell\n");
 	}
 };
 

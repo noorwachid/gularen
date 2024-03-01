@@ -29,7 +29,8 @@ private:
 	}
 
 	decltype(nullptr) _expect(StringSlice message) {
-		printf("[ParsingError] unxpected token, expect %.*s\n", message.size(), message.pointer());
+		StringSlice kind = toStringSlice(_get(0).kind);
+		printf("[ParsingError] unxpected token %.*s, expect %.*s\n", kind.size(), kind.pointer(), message.size(), message.pointer());
 		return nullptr;
 	}
 
@@ -292,8 +293,6 @@ private:
 									break;
 								}
 
-								delete list;
-								delete item;
 								_expect("indent pop");
 								return ItemResult::error;
 							}
@@ -313,8 +312,6 @@ private:
 					return ItemResult::earlyExit;
 				}
 
-				delete list;
-				delete item;
 				_expect("newline");
 				return ItemResult::error;
 			}
@@ -336,7 +333,9 @@ private:
 
 			switch (result) {
 				case ItemResult::ok: break;
-				case ItemResult::error: return nullptr;
+				case ItemResult::error: 
+					delete list;
+					return nullptr;
 				case ItemResult::earlyExit: goto listEnd;
 			}
 		}
@@ -364,7 +363,9 @@ private:
 
 			switch (result) {
 				case ItemResult::ok: break;
-				case ItemResult::error: return nullptr;
+				case ItemResult::error:
+					delete list;
+					return nullptr;
 				case ItemResult::earlyExit: goto listEnd;
 			}
 		}
@@ -372,6 +373,123 @@ private:
 		listEnd:
 
 		return list;
+	}
+
+	Node* _checkTableRow(Node* node, Row::Type type) {
+		// content only table
+		if (type == Row::Type::header) {
+			for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				static_cast<Row*>(node->children.get(i))->type = Row::Type::content;
+			}
+		}
+
+		return node;
+	}
+
+	Node* _parseTable() {
+		Table* table = new Table(_get(0).position);
+
+		Row::Type type = Row::Type::header;
+
+		while (_isBound(0) && _get(0).kind == TokenKind::pipe) {
+			const Token& token = _eat();
+
+			if (_isBound(0) && (_get(0).kind == TokenKind::teeLeft || _get(0).kind == TokenKind::teeCenter || _get(0).kind == TokenKind::teeRight)) {
+				while (_isBound(0)) {
+					while (_isBound(0)) {
+						switch (_get(0).kind) {
+							case TokenKind::teeLeft:
+								_advance(1);
+								if (type == Row::Type::header) {
+									table->alignments.append(Table::Alignment::left);
+								}
+								goto nextTeeCell;
+
+							case TokenKind::teeCenter:
+								_advance(1);
+								if (type == Row::Type::header) {
+									table->alignments.append(Table::Alignment::center);
+								}
+								goto nextTeeCell;
+
+							case TokenKind::teeRight:
+								_advance(1);
+								if (type == Row::Type::header) {
+									table->alignments.append(Table::Alignment::right);
+								}
+								goto nextTeeCell;
+
+							case TokenKind::pipe:
+								_advance(1);
+								goto nextTeeCell;
+
+							case TokenKind::newline:
+								_advance(1);
+								goto nextTeeRow;
+
+							case TokenKind::newlinePlus:
+								_advance(1);
+								return table;
+								
+							default:
+								return table; // early exit
+						}
+					}
+
+					nextTeeCell:
+					continue;
+				}
+
+				nextTeeRow:
+				if (type == Row::Type::header) {
+					type = Row::Type::content;
+				} else if (type == Row::Type::content) {
+					type = Row::Type::footer;
+				}
+				continue;
+			}
+
+			Row* row = new Row(token.position);
+			row->type = type;
+			table->children.append(row);
+
+			while (_isBound(0)) {
+				Cell* cell = new Cell(_get(0).position);
+				row->children.append(cell);
+
+				while (_isBound(0)) {
+					Node* node = _parseInline();
+					if (node == nullptr) {
+						switch (_get(0).kind) {
+							case TokenKind::pipe:
+								_advance(1);
+								goto nextCell;
+
+							case TokenKind::newline:
+								_advance(1);
+								goto nextRow;
+
+							case TokenKind::newlinePlus:
+								_advance(1);
+								return _checkTableRow(table, type);
+								
+							default:
+								return _checkTableRow(table, type); // early exit
+						}
+					}
+
+					cell->children.append(node);
+				}
+
+				nextCell:
+				continue;
+			}
+
+			nextRow:
+			continue;
+		}
+
+		return _checkTableRow(table, type);
 	}
 
 	bool _isParagraph() {
@@ -421,6 +539,9 @@ private:
 
 			case TokenKind::checkbox:
 				return _parseTodoList();
+
+			case TokenKind::pipe:
+				return _parseTable();
 
 			default:
 				return nullptr;

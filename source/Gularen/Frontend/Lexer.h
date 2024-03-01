@@ -36,6 +36,11 @@ enum class TokenKind {
 	bullet,
 	index,
 	checkbox,
+
+	pipe,
+	teeLeft,
+	teeRight,
+	teeCenter,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -68,6 +73,11 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::bullet: return "bullet";
 		case TokenKind::index: return "index";
 		case TokenKind::checkbox: return "checkbox";
+
+		case TokenKind::pipe: return "pipe";
+		case TokenKind::teeLeft: return "teeLeft";
+		case TokenKind::teeRight: return "teeRight";
+		case TokenKind::teeCenter: return "teeCenter";
 	}
 }
 
@@ -188,6 +198,10 @@ public:
 						break;
 					}
 					// _consumeLink();
+					break;
+
+				case '|':
+					_consumePipe();
 					break;
 
 				case '\n': {
@@ -328,6 +342,7 @@ private:
 				case '`':
 				case '~':
 				case '<':
+				case '|':
 				case '\n':
 					goto end;
 
@@ -357,6 +372,62 @@ private:
 
 		_contentIndex = beginIndex;
 		_consumeText();
+	}
+
+	void _consumePipe() {
+		while (_isBound(0)) {
+			switch (_get(0)) {
+				case '|':
+					_append(TokenKind::pipe);
+					_advance(1);
+					break;
+
+				case '-':
+					if (!(_isBound(2) && _get(1) == '-' && (_get(2) == '-' || _get(2) == ':'))) {
+						_consumeText();
+						break;
+					}
+
+					while (_isBound(0) && _get(0) == '-') {
+						_advance(1);
+					}
+
+					if (_isBound(0) && _get(0) == ':') {
+						_append(TokenKind::teeRight);
+						_advance(1);
+						break;
+					}
+					_append(TokenKind::teeLeft);
+					break;
+
+				case ':':
+					if (!(_isBound(2) && _get(1) == '-' && (_get(2) == '-' || _get(2) == ':'))) {
+						_consumeText();
+						break;
+					}
+
+					_advance(1);
+
+					while (_isBound(0) && _get(0) == '-') {
+						_advance(1);
+					}
+
+					if (_isBound(0) && _get(0) == ':') {
+						_append(TokenKind::teeCenter);
+						_advance(1);
+						break;
+					}
+					_append(TokenKind::teeLeft);
+					break;
+
+				case '\n':
+					return;
+
+				default:
+					_consumeText();
+					break;
+			}
+		}
 	}
 
 private:
