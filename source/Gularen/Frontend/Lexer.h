@@ -58,6 +58,11 @@ enum class TokenKind {
 
 	angleOpen,
 	angleClose,
+
+	exclamation,
+	question,
+	caret,
+	equal,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -112,6 +117,11 @@ StringSlice toStringSlice(TokenKind kind) {
 
 		case TokenKind::angleOpen: return "angleOpen";
 		case TokenKind::angleClose: return "angleClose";
+
+		case TokenKind::exclamation: return "exclamation";
+		case TokenKind::question: return "question";
+		case TokenKind::caret: return "caret";
+		case TokenKind::equal: return "equal";
 	}
 }
 
@@ -271,6 +281,28 @@ public:
 					_consumeLink();
 					break;
 
+				case '!':
+					if (_isBound(1) && _get(1) == '[') {
+						_append(TokenKind::exclamation, _contentIndex, 1);
+						_advance(1);
+						break;
+					}
+
+					_append(TokenKind::text, _contentIndex, 1);
+					_advance(1);
+					break;
+
+				case '?':
+					if (_isBound(1) && _get(1) == '[') {
+						_append(TokenKind::question, _contentIndex, 1);
+						_advance(1);
+						break;
+					}
+
+					_append(TokenKind::text, _contentIndex, 1);
+					_advance(1);
+					break;
+
 				case '|':
 					_consumePipe();
 					break;
@@ -420,6 +452,7 @@ private:
 				case '|':
 				case '{':
 				case '[':
+				case '!':
 				case '\n':
 					goto end;
 

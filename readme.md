@@ -39,7 +39,7 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [08 Table](spec/08-table.gr)
 - [09 Code](spec/09-code.gr)
 - [0A Linker](spec/0A-linker.gr)
-- [0B Presenter](spec/0B-presenter.gr)
+- [0B Viewer](spec/0B-viewer.gr)
 - [0C Inclusion](spec/0C-inclusion.gr)
 - [0D Footnote](spec/0D-footnote.gr)
 - [0E Punctuation mark](spec/0E-punctuation-mark.gr)

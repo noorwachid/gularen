@@ -100,6 +100,7 @@ private:
 
 			case TokenKind::curlyOpen: return _parseCode();
 			case TokenKind::squareOpen: return _parseLink();
+			case TokenKind::exclamation: return _parseView();
 
 			default: {
 				return nullptr;
@@ -514,6 +515,34 @@ private:
 		return link;
 	}
 
+	Node* _parseView() {
+		View* view = new View(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			view->resource = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_advance(1);
+
+			if (_isBound(2) && 
+				_get(0).kind == TokenKind::parenOpen && 
+				_get(1).kind == TokenKind::raw && 
+				_get(2).kind == TokenKind::parenClose) {
+
+				view->label = _get(1).content;
+
+				_advance(3);
+			}
+		}
+
+		return view;
+	}
+
 	Node* _parseCode() {
 		Code* code = new Code(_eat().position);
 
@@ -572,6 +601,8 @@ private:
 
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
+			case TokenKind::exclamation:
+			case TokenKind::question:
 				return true;
 
 			default: 
@@ -590,6 +621,8 @@ private:
 
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
+			case TokenKind::exclamation:
+			case TokenKind::question:
 				return _parseParagraph();
 
 			case TokenKind::head1:
