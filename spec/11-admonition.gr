@@ -1,9 +1,18 @@
 >>> Admonition
+This is common admonition labels
+
 --- gr
-<note> Note
-<hint> Hint
-<important> Important
-<warning> Warning
-<seealso> See also
-<tip> Tip
+<Note> Note
+<Hint> Hint
+<Important> Important
+<Warning> 
+<See also> The Amazing Spiderman 2
+<Tip> Tip
+---
+
+You can always add more admonition labels
+--- gr
+<Question> Questionare 3.1
+
+<Did you know?> Questionare 3.1
 ---

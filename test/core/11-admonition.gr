@@ -1,23 +1,23 @@
 ----
-<note> Note
-<hint> Hint
-<important> Important
-<warning> Warning
-<seealso> See also
-<tip> Tip
+<Note> Note
+<Hint> Hint
+<Important> Important
+<Warning> Warning
+<See also> See also
+<Tip> Tip
 ----
 ---
 1:1 document
-  1:1-7 admon note
+  1:1-7 admon Note
     1:8-11 text "Note"
-  2:1-7 admon hint
+  2:1-7 admon Hint
     2:8-11 text "Hint"
-  3:1-12 admon important
+  3:1-12 admon Important
     3:13-21 text "Important"
-  4:1-10 admon warning
+  4:1-10 admon Warning
     4:11-17 text "Warning"
-  5:1-10 admon seeAlso
+  5:1-10 admon See also
     5:11-18 text "See also"
-  6:1-6 admon tip
+  6:1-6 admon Tip
     6:7-9 text "Tip"
 ---
