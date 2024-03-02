@@ -40,6 +40,8 @@ enum class NodeKind {
 	include,
 	footnoteRef,
 	footnoteDecl,
+
+	emoji,
 };
 
 struct Node {
@@ -436,6 +438,17 @@ struct FootnoteDecl : Node {
 
 	virtual void print() override {
 		printf("footnoteDesc %.*s\n", resource.size(), resource.pointer());
+	}
+};
+
+struct Emoji : Node {
+	StringSlice code;
+
+	Emoji(Position position, StringSlice code): Node(position, NodeKind::emoji), code(code) {
+	}
+
+	virtual void print() override {
+		printf("emoji %.*s\n", code.size(), code.pointer());
 	}
 };
 

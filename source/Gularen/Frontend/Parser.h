@@ -103,6 +103,7 @@ private:
 			case TokenKind::exclamation: return _parseView();
 			case TokenKind::question: return _parseInclude();
 			case TokenKind::caret: return _parseFootnoteRef();
+			case TokenKind::emoji: return _parseEmoji();
 
 			default: {
 				return nullptr;
@@ -544,6 +545,11 @@ private:
 		return view;
 	}
 
+	Node* _parseEmoji() {
+		const Token& token = _eat();
+		return new Emoji(token.position, token.content);
+	}
+
 	Node* _parseInclude() {
 		Include* include = new Include(_eat().position);
 
@@ -702,6 +708,7 @@ private:
 			case TokenKind::exclamation:
 			case TokenKind::question:
 			case TokenKind::caret:
+			case TokenKind::emoji:
 				return true;
 
 			default: 
@@ -723,6 +730,7 @@ private:
 			case TokenKind::exclamation:
 			case TokenKind::question:
 			case TokenKind::caret:
+			case TokenKind::emoji:
 				return _parseParagraph();
 
 			case TokenKind::head1:

@@ -63,6 +63,8 @@ enum class TokenKind {
 	question,
 	caret,
 	equal,
+
+	emoji,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -122,6 +124,8 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::question: return "question";
 		case TokenKind::caret: return "caret";
 		case TokenKind::equal: return "equal";
+
+		case TokenKind::emoji: return "emojiCode";
 	}
 }
 
@@ -329,6 +333,24 @@ public:
 					_consumeCode();
 					break;
 
+				case ':': {
+					unsigned int openingContextIndex = _contentIndex;
+					if (_isBound(1) && ((_get(1) >= 'a' && _get(1) <= 'z') || _get(1) == '-')) {
+						_advance(1);
+						while (_isBound(0) && ((_get(0) >= 'a' && _get(0) <= 'z') || _get(0) == '-')) {
+							_advance(1);
+						}
+						if (_isBound(0) && _get(0) == ':') {
+							_append(TokenKind::emoji, openingContextIndex + 1, _contentIndex - openingContextIndex - 1);
+							_advance(1);
+							break;
+						}
+					}
+					_advance(1);
+					_append(TokenKind::text, openingContextIndex, _contentIndex - openingContextIndex);
+					break;
+				}
+
 				case '\n': {
 					unsigned int count = 0;
 
@@ -470,6 +492,7 @@ private:
 				case '|':
 				case '{':
 				case '[':
+				case ':':
 				case '\n':
 					goto end;
 
