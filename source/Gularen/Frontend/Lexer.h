@@ -65,6 +65,8 @@ enum class TokenKind {
 	equal,
 
 	emoji,
+
+	dateTime,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -126,6 +128,8 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::equal: return "equal";
 
 		case TokenKind::emoji: return "emoji";
+
+		case TokenKind::dateTime: return "dateTime";
 	}
 }
 
@@ -232,7 +236,7 @@ public:
 					}
 					break;
 
-				case '<': 
+				case '<': {
 					if (_isBound(1) && _get(1) == '<') {
 						if (_isBound(2) && _get(2) == '<') {
 							_append(TokenKind::pageBreak, _contentIndex, 3);
@@ -245,8 +249,25 @@ public:
 						break;
 					}
 
+					unsigned int oldContentIndex = _contentIndex;
+
 					_advance(1);
+
+					if (_get(0) >= '0' && _get(0) <= '9') {
+						while (_isBound(0) && ((_get(0) >= '0' && _get(0) <= '9') || _get(0) == ':' || _get(0) == ' ' || _get(0) == '-')) {
+							_advance(1);
+						}
+
+						if (_isBound(0) && _get(0) == '>') {
+							_append(TokenKind::dateTime, oldContentIndex + 1, _contentIndex - oldContentIndex - 1);
+							_advance(1);
+							break;
+						}
+					}
+
+					_append(TokenKind::text, oldContentIndex, _contentIndex - oldContentIndex);
 					break;
+				}
 
 				case '-':
 					if (_isBound(1) && _get(1) == ' ') {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Gularen/Library/StringHelper.h"
 #include "Gularen/Frontend/Lexer.h"
 
 namespace Gularen {
@@ -44,6 +45,8 @@ enum class NodeKind {
 	emoji,
 
 	blockquote,
+
+	dateTime,
 };
 
 struct Node {
@@ -460,6 +463,110 @@ struct Blockquote : Node {
 
 	virtual void print() override {
 		printf("blockquote\n");
+	}
+};
+
+struct DateTime : Node {
+	bool date;
+	bool time;
+	
+	unsigned int year;
+	unsigned char month;
+	unsigned char day;
+
+	unsigned char hour;
+	unsigned char minute;
+	unsigned char second;
+
+	DateTime(Position position, StringSlice value): Node(position, NodeKind::dateTime) {
+		date = false;
+		time = false;
+
+		year = 0; month = 0; hour = 0; minute = 0; second = 0;
+
+		unsigned int timeBegin = 0;
+
+		for (unsigned int iter = 0; iter < value.size(); iter += 1) {
+			if (value.get(iter) == '-') {
+				date = true;
+			}
+			if (value.get(iter) == ':') {
+				time = true;
+			}
+			if (value.get(iter) == ' ') {
+				timeBegin = iter + 1;
+			}
+		}
+
+		if (date) {
+			parseDate(value, 0);
+			return;
+		}
+
+		if (time) {
+			parseTime(value, timeBegin);
+		}
+	}
+
+	void parseDate(StringSlice value, unsigned int iter) {
+		unsigned int begin = iter;
+		for (; iter < value.size() && value.get(iter) != '-'; iter += 1);
+
+		if (value.get(iter) == '-') {
+			year = toInt(value.cut(begin, iter - begin));
+		}
+
+		iter += 1;
+		begin = iter;
+		for (; iter < value.size() && value.get(iter) != '-'; iter += 1);
+
+		if (value.get(iter) == '-') {
+			month = toInt(value.cut(begin, iter - begin));
+		}
+
+		iter += 1;
+		begin = iter;
+		for (; iter < value.size(); iter += 1);
+
+		if (iter == value.size()) {
+			day = toInt(value.cut(begin, iter - begin));
+		}
+	}
+
+	void parseTime(StringSlice value, unsigned int iter) {
+		unsigned int begin = iter;
+		for (; iter < value.size() && value.get(iter) != ':'; iter += 1);
+
+		if (value.get(iter) == ':') {
+			hour = toInt(value.cut(begin, iter - begin));
+		}
+
+		iter += 1;
+		begin = iter;
+		for (; iter < value.size() && value.get(iter) != ':'; iter += 1);
+
+		if (value.get(iter) == ':' || iter == value.size()) {
+			minute = toInt(value.cut(begin, iter - begin));
+		}
+
+		if (iter < value.size()) {
+			iter += 1;
+			begin = iter;
+			for (; iter < value.size(); iter += 1);
+
+			second = toInt(value.cut(begin, iter - begin));
+		}
+	}
+
+	virtual void print() override {
+		printf("dateTime ");
+		if (date) {
+			printf("%04d-%02d-%02d ", year, month, day);
+		}
+		if (time) {
+			printf("%02d:%02d:%02d ", hour, minute, second);
+		}
+		printf("\n");
 	}
 };
 

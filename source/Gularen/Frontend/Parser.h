@@ -104,6 +104,7 @@ private:
 			case TokenKind::question: return _parseInclude();
 			case TokenKind::caret: return _parseFootnoteRef();
 			case TokenKind::emoji: return _parseEmoji();
+			case TokenKind::dateTime: return _parseDateTime();
 
 			default: {
 				return nullptr;
@@ -550,6 +551,11 @@ private:
 		return new Emoji(token.position, token.content);
 	}
 
+	Node* _parseDateTime() {
+		const Token& token = _eat();
+		return new DateTime(token.position, token.content);
+	}
+
 	Node* _parseInclude() {
 		Include* include = new Include(_eat().position);
 
@@ -737,6 +743,7 @@ private:
 			case TokenKind::question:
 			case TokenKind::caret:
 			case TokenKind::emoji:
+			case TokenKind::dateTime:
 				return true;
 
 			default: 
@@ -759,6 +766,7 @@ private:
 			case TokenKind::question:
 			case TokenKind::caret:
 			case TokenKind::emoji:
+			case TokenKind::dateTime:
 				return _parseParagraph();
 
 			case TokenKind::head1:
