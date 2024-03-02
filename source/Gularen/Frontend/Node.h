@@ -38,6 +38,8 @@ enum class NodeKind {
 	link,
 	view,
 	include,
+	footnoteRef,
+	footnoteDecl,
 };
 
 struct Node {
@@ -412,6 +414,28 @@ struct Include : Node {
 
 	virtual void print() override {
 		printf("include %.*s\n", resource.size(), resource.pointer());
+	}
+};
+
+struct FootnoteRef : Node {
+	StringSlice resource;
+
+	FootnoteRef(Position position): Node(position, NodeKind::footnoteRef) {
+	}
+
+	virtual void print() override {
+		printf("footnoteRef %.*s\n", resource.size(), resource.pointer());
+	}
+};
+
+struct FootnoteDecl : Node {
+	StringSlice resource;
+
+	FootnoteDecl(Position position): Node(position, NodeKind::footnoteDecl) {
+	}
+
+	virtual void print() override {
+		printf("footnoteDesc %.*s\n", resource.size(), resource.pointer());
 	}
 };
 

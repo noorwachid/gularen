@@ -301,6 +301,26 @@ public:
 					_consumeText();
 					break;
 
+				case '^':
+					if (_isBound(1) && _get(1) == '[') {
+						_append(TokenKind::caret, _contentIndex, 1);
+						_advance(1);
+						break;
+					}
+
+					_consumeText();
+					break;
+
+				case '=':
+					if (_isBound(1) && _get(1) == '[') {
+						_append(TokenKind::equal, _contentIndex, 1);
+						_advance(1);
+						break;
+					}
+
+					_consumeText();
+					break;
+
 				case '|':
 					_consumePipe();
 					break;
@@ -455,6 +475,8 @@ private:
 
 				case '!':
 				case '?':
+				case '^':
+				case '=':
 					if (_isBound(1) && _get(1) == '[') {
 						goto end;
 					}

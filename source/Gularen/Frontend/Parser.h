@@ -102,6 +102,7 @@ private:
 			case TokenKind::squareOpen: return _parseLink();
 			case TokenKind::exclamation: return _parseView();
 			case TokenKind::question: return _parseInclude();
+			case TokenKind::caret: return _parseFootnoteRef();
 
 			default: {
 				return nullptr;
@@ -311,8 +312,7 @@ private:
 					return ItemResult::earlyExit;
 				}
 
-				_expect("newline");
-				return ItemResult::error;
+				return ItemResult::earlyExit;
 			}
 
 			item->children.append(node);
@@ -562,6 +562,85 @@ private:
 		return include;
 	}
 
+	Node* _parseFootnoteRef() {
+		FootnoteRef* ref = new FootnoteRef(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			ref->resource = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_advance(1);
+		}
+
+		return ref;
+	}
+
+	Node* _parseFootnoteDecl() {
+		FootnoteDecl* decl = new FootnoteDecl(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			decl->resource = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_advance(1);
+		}
+
+		while (_isBound(0)) {
+			Node* node = _parseInline();
+
+			if (node == nullptr) {
+				if (_get(0).kind == TokenKind::newline) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
+						_advance(2);
+
+						while (_isBound(0)) {
+							Node* subnode = _parseBlock();
+							if (subnode == nullptr) {
+								if (_get(0).kind == TokenKind::indentPop) {
+									_advance(1);
+									if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+										_advance(1);
+									}
+									return decl;
+									break;
+								}
+
+								delete decl;
+								return _expect("indent pop");
+							}
+
+							decl->children.append(subnode);
+						}
+
+						break;
+					}
+
+					_advance(1);
+					break;
+				}
+				
+				if (_get(0).kind == TokenKind::newlinePlus) {
+					_advance(1);
+					return decl;
+				}
+			}
+
+			decl->children.append(node);
+		}
+
+		return decl;
+	}
+
 	Node* _parseCode() {
 		Code* code = new Code(_eat().position);
 
@@ -622,6 +701,7 @@ private:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
 			case TokenKind::question:
+			case TokenKind::caret:
 				return true;
 
 			default: 
@@ -642,6 +722,7 @@ private:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
 			case TokenKind::question:
+			case TokenKind::caret:
 				return _parseParagraph();
 
 			case TokenKind::head1:
@@ -672,6 +753,9 @@ private:
 
 			case TokenKind::fencePush:
 				return _parseCodeBlock();
+
+			case TokenKind::equal:
+				return _parseFootnoteDecl();
 
 			default:
 				return nullptr;
