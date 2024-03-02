@@ -42,7 +42,7 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [0B Viewer](spec/0B-viewer.gr)
 - [0C Inclusion](spec/0C-inclusion.gr)
 - [0D Footnote](spec/0D-footnote.gr)
-- [0E Punctuation mark](spec/0E-punctuation-mark.gr)
+- [0E Punctuation](spec/0E-punctuation.gr)
 - [0F Emoji](spec/0F-emoji.gr)
 - [10 Blockquote](spec/10-blockquote.gr)
 - [11 Admonition](spec/11-admonition.gr)
