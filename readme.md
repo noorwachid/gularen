@@ -16,6 +16,7 @@ A sweet-spot of markup language
 ## Editor Support
 - [VS Code](https://marketplace.visualstudio.com/items?itemName=nwachid.gularen)
 - [Vim](https://github.com/noorwachid/vim-gularen)
+- [Tree Sitter](https://github.com/noorwachid/tree-sitter-gularen)
 
 ## Why Not Use Markdown?
 **Shorter**, create bold text with a single asterisk: `*bold*`.
