@@ -14,9 +14,6 @@ enum class TokenKind {
 	newline,
 	newlinePlus,
 
-	indentInc,
-	indentDec,
-
 	asterisk,
 	underscore,
 	backtick,
@@ -25,8 +22,11 @@ enum class TokenKind {
 	head2,
 	head1,
 
-	indentPush,
-	indentPop,
+	indentOpen,
+	indentClose,
+
+	blockquoteOpen,
+	blockquoteClose,
 
 	lineBreak,
 	pageBreak,
@@ -44,8 +44,8 @@ enum class TokenKind {
 
 	raw,
 
-	fencePush,
-	fencePop,
+	fenceOpen,
+	fenceClose,
 
 	curlyOpen,
 	curlyClose,
@@ -76,9 +76,6 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::newline: return "newline";
 		case TokenKind::newlinePlus: return "newline+";
 
-		case TokenKind::indentInc: return "->";
-		case TokenKind::indentDec: return "<-";
-
 		case TokenKind::asterisk: return "asterisk";
 		case TokenKind::underscore: return "underscore";
 		case TokenKind::backtick: return "backtick";
@@ -87,8 +84,11 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::head2: return "head2";
 		case TokenKind::head1: return "head1";
 
-		case TokenKind::indentPush: return "indentPush";
-		case TokenKind::indentPop: return "indentPop";
+		case TokenKind::indentOpen: return "indentOpen";
+		case TokenKind::indentClose: return "indentClose";
+
+		case TokenKind::blockquoteOpen: return "blockquoteOpen";
+		case TokenKind::blockquoteClose: return "blockquoteClose";
 
 		case TokenKind::lineBreak: return "lineBreak";
 		case TokenKind::pageBreak: return "pageBreak";
@@ -105,8 +105,8 @@ StringSlice toStringSlice(TokenKind kind) {
 
 		case TokenKind::raw: return "raw";
 
-		case TokenKind::fencePush: return "fencePush";
-		case TokenKind::fencePop: return "fencePop";
+		case TokenKind::fenceOpen: return "fenceOpen";
+		case TokenKind::fenceClose: return "fenceClose";
 
 		case TokenKind::curlyOpen: return "curlyOpen";
 		case TokenKind::curlyClose: return "curlyClose";
@@ -125,7 +125,7 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::caret: return "caret";
 		case TokenKind::equal: return "equal";
 
-		case TokenKind::emoji: return "emojiCode";
+		case TokenKind::emoji: return "emoji";
 	}
 }
 
@@ -177,6 +177,7 @@ public:
 		_content = content;
 		_contentIndex = 0;
 		_indentLevel = 0;
+		_quoteLevel = 0;
 
 		_consumeIndent();
 
@@ -423,20 +424,48 @@ private:
 		}
 
 		if (_indentLevel == indentLevel) {
-			return;
+			return _consumeQuote();
 		}
 
 		if (_indentLevel < indentLevel) {
 			while (_indentLevel < indentLevel) {
-				_append(TokenKind::indentPush);
+				_append(TokenKind::indentOpen);
 				_indentLevel += 1;
 			}
 		}
 
 		if (_indentLevel > indentLevel) {
 			while (_indentLevel > indentLevel) {
-				_append(TokenKind::indentPop);
+				_append(TokenKind::indentClose);
 				_indentLevel -= 1;
+			}
+		}
+
+		_consumeQuote();
+	}
+
+	void _consumeQuote() {
+		unsigned int quoteLevel = 0;
+		while (_isBound(1) && _get(0) == '/' && _get(1) == ' ') {
+			quoteLevel += 1;
+			_advance(2);
+		}
+
+		if (_quoteLevel == quoteLevel) {
+			return;
+		}
+
+		if (_quoteLevel < quoteLevel) {
+			while (_quoteLevel < quoteLevel) {
+				_append(TokenKind::blockquoteOpen);
+				_quoteLevel += 1;
+			}
+		}
+
+		if (_quoteLevel > quoteLevel) {
+			while (_quoteLevel > quoteLevel) {
+				_append(TokenKind::blockquoteClose);
+				_quoteLevel -= 1;
 			}
 		}
 	}
@@ -671,7 +700,7 @@ private:
 					while (i < dashCount && _get(i) == '-') { i += 1; }
 					if (i == dashCount && (!_isBound(dashCount) || (_isBound(dashCount) && _get(dashCount) == '\n'))) {
 						_append(TokenKind::raw, oldContextIndex + 1, _contentIndex - oldContextIndex - 2 - oldIndentLevel);
-						_append(TokenKind::fencePop, _contentIndex, dashCount);
+						_append(TokenKind::fenceClose, _contentIndex, dashCount);
 						_advance(dashCount);
 						return;
 					}
@@ -695,7 +724,7 @@ private:
 		unsigned int dashCount = _contentIndex - oldContentIndex;
 
 		if (_isBound(0) && _get(0) == '\n') {
-			_append(TokenKind::fencePush, oldContentIndex, _contentIndex - oldContentIndex);
+			_append(TokenKind::fenceOpen, oldContentIndex, _contentIndex - oldContentIndex);
 			return _consumeCodeBlockContent(dashCount);
 		}
 
@@ -710,7 +739,7 @@ private:
 			}
 
 			if (_isBound(0) && _get(0) == '\n') {
-				_append(TokenKind::fencePush, oldContentIndex, youngContextIndex - oldContentIndex);
+				_append(TokenKind::fenceOpen, oldContentIndex, youngContextIndex - oldContentIndex);
 				_append(TokenKind::text, middleAgedContentIndex, _contentIndex - middleAgedContentIndex);
 				return _consumeCodeBlockContent(dashCount);
 			}
@@ -728,6 +757,8 @@ private:
 	Array<Token> _tokens;
 
 	unsigned int _indentLevel;
+
+	unsigned int _quoteLevel;
 };
 
 }

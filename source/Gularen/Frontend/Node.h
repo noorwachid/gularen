@@ -42,6 +42,8 @@ enum class NodeKind {
 	footnoteDecl,
 
 	emoji,
+
+	blockquote,
 };
 
 struct Node {
@@ -449,6 +451,15 @@ struct Emoji : Node {
 
 	virtual void print() override {
 		printf("emoji %.*s\n", code.size(), code.pointer());
+	}
+};
+
+struct Blockquote : Node {
+	Blockquote(Position position): Node(position, NodeKind::blockquote) {
+	}
+
+	virtual void print() override {
+		printf("blockquote\n");
 	}
 };
 

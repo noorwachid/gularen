@@ -121,7 +121,7 @@ private:
 
 			if (node == nullptr) {
 				if (_get(0).kind == TokenKind::newline) {
-					if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
 						_advance(1);
 
 						Node* indent = _parseIndent();
@@ -134,7 +134,7 @@ private:
 						continue;
 					}
 
-					if (_isBound(1) && _get(1).kind == TokenKind::indentPop) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentClose) {
 						_advance(1);
 						continue;
 					}
@@ -227,7 +227,7 @@ private:
 		const Token& token = _eat();
 		Indent* indent = new Indent(token.position);
 
-		while (_isBound(0) && _get(0).kind != TokenKind::indentPop) {
+		while (_isBound(0) && _get(0).kind != TokenKind::indentClose) {
 			Node* node = _parseBlock();
 
 			if (node == nullptr) {
@@ -238,7 +238,7 @@ private:
 			indent->children.append(node);
 		}
 
-		if (!(_isBound(0) && _get(0).kind == TokenKind::indentPop)) {
+		if (!(_isBound(0) && _get(0).kind == TokenKind::indentClose)) {
 			return _expect("indent pop");
 		}
 
@@ -283,13 +283,13 @@ private:
 
 			if (node == nullptr) {
 				if (_get(0).kind == TokenKind::newline) {
-					if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
 						_advance(2);
 
 						while (_isBound(0)) {
 							Node* subnode = _parseBlock();
 							if (subnode == nullptr) {
-								if (_get(0).kind == TokenKind::indentPop) {
+								if (_get(0).kind == TokenKind::indentClose) {
 									_advance(1);
 									break;
 								}
@@ -606,13 +606,13 @@ private:
 
 			if (node == nullptr) {
 				if (_get(0).kind == TokenKind::newline) {
-					if (_isBound(1) && _get(1).kind == TokenKind::indentPush) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
 						_advance(2);
 
 						while (_isBound(0)) {
 							Node* subnode = _parseBlock();
 							if (subnode == nullptr) {
-								if (_get(0).kind == TokenKind::indentPop) {
+								if (_get(0).kind == TokenKind::indentClose) {
 									_advance(1);
 									if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
 										_advance(1);
@@ -682,7 +682,7 @@ private:
 			codeBlock->content = _eat().content;
 		}
 
-		if (_isBound(0) && _get(0).kind == TokenKind::fencePop) {
+		if (_isBound(0) && _get(0).kind == TokenKind::fenceClose) {
 			_advance(1);
 
 			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
@@ -691,6 +691,34 @@ private:
 		}
 
 		return codeBlock;
+	}
+
+	Node* _parseBlockquote() {
+		const Token& token = _eat();
+		Blockquote* indent = new Blockquote(token.position);
+
+		while (_isBound(0) && _get(0).kind != TokenKind::blockquoteClose) {
+			Node* node = _parseBlock();
+
+			if (node == nullptr) {
+				delete indent;
+				return nullptr;
+			}
+
+			indent->children.append(node);
+		}
+
+		if (!(_isBound(0) && _get(0).kind == TokenKind::blockquoteClose)) {
+			return _expect("blockquote pop");
+		}
+
+		_advance(1);
+
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_eat();
+		}
+
+		return indent;
 	}
 
 	bool _isParagraph() {
@@ -738,7 +766,7 @@ private:
 			case TokenKind::head3:
 				return _parseHeading();
 
-			case TokenKind::indentPush:
+			case TokenKind::indentOpen:
 				return _parseIndent();
 
 			case TokenKind::pageBreak:
@@ -759,11 +787,14 @@ private:
 			case TokenKind::pipe:
 				return _parseTable();
 
-			case TokenKind::fencePush:
+			case TokenKind::fenceOpen:
 				return _parseCodeBlock();
 
 			case TokenKind::equal:
 				return _parseFootnoteDecl();
+
+			case TokenKind::blockquoteOpen:
+				return _parseBlockquote();
 
 			default:
 				return nullptr;
