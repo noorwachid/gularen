@@ -736,6 +736,56 @@ private:
 		return indent;
 	}
 
+	Node* _parseAdmon() {
+		const Token& token = _eat();
+		Admon* admon = new Admon(token.position, token.content);
+
+		while (_isBound(0)) {
+			Node* node = _parseInline();
+
+			if (node == nullptr) {
+				if (_get(0).kind == TokenKind::newline) {
+					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
+						_advance(2);
+
+						while (_isBound(0)) {
+							Node* subnode = _parseBlock();
+							if (subnode == nullptr) {
+								if (_get(0).kind == TokenKind::indentClose) {
+									_advance(1);
+									if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+										_advance(1);
+									}
+									return admon;
+									break;
+								}
+
+								delete admon;
+								return _expect("indent pop");
+							}
+
+							admon->children.append(subnode);
+						}
+
+						break;
+					}
+
+					_advance(1);
+					break;
+				}
+				
+				if (_get(0).kind == TokenKind::newlinePlus) {
+					_advance(1);
+					return admon;
+				}
+			}
+
+			admon->children.append(node);
+		}
+
+		return admon;
+	}
+
 	bool _isParagraph() {
 		switch (_get(0).kind) {
 			case TokenKind::comment:
@@ -830,6 +880,9 @@ private:
 
 			case TokenKind::blockquoteOpen:
 				return _parseBlockquote();
+
+			case TokenKind::admon:
+				return _parseAdmon();
 
 			default:
 				return nullptr;

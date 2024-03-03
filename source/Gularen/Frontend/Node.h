@@ -42,13 +42,15 @@ enum class NodeKind {
 	footnoteRef,
 	footnoteDecl,
 
-	emoji,
 
 	blockquote,
 
-	dateTime,
-
 	punct,
+
+	emoji,
+	dateTime,
+	admon,
+
 };
 
 struct Node {
@@ -601,6 +603,17 @@ struct Punct : Node {
 			case Type::squoteOpen: printf("squoteOpen\n"); break;
 			case Type::squoteClose: printf("squoteClose\n"); break;
 		}
+	}
+};
+
+struct Admon : Node {
+	StringSlice label;
+
+	Admon(Position position, StringSlice label): Node(position, NodeKind::footnoteDecl), label(label) {
+	}
+
+	virtual void print() override {
+		printf("admon %.*s\n", label.size(), label.pointer());
 	}
 };
 

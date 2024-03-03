@@ -64,10 +64,6 @@ enum class TokenKind {
 	caret,
 	equal,
 
-	emoji,
-
-	dateTime,
-
 	hyphen,
 	enDash,
 	emDash,
@@ -77,6 +73,11 @@ enum class TokenKind {
 
 	squoteOpen,
 	squoteClose,
+
+	admon,
+	dateTime,
+	emoji,
+
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -137,10 +138,6 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::caret: return "caret";
 		case TokenKind::equal: return "equal";
 
-		case TokenKind::emoji: return "emoji";
-
-		case TokenKind::dateTime: return "dateTime";
-
 		case TokenKind::hyphen: return "hyphen";
 		case TokenKind::enDash: return "enDash";
 		case TokenKind::emDash: return "emDash";
@@ -150,6 +147,10 @@ StringSlice toStringSlice(TokenKind kind) {
 
 		case TokenKind::squoteOpen: return "squoteOpen";
 		case TokenKind::squoteClose: return "squoteClose";
+
+		case TokenKind::emoji: return "emoji";
+		case TokenKind::dateTime: return "dateTime";
+		case TokenKind::admon: return "admon";
 	}
 }
 
@@ -251,6 +252,26 @@ private:
 					}
 
 					_consumeText();
+					break;
+
+				case '<':
+					if (_isBound(1) && !(_get(1) >= '0' && _get(1) <= '9')) {
+						unsigned int oldContentIndex = _contentIndex;
+
+						while (_isBound(0) && _get(0) != '>') {
+							_advance(1);
+						}
+
+						if (_isBound(0) && _get(0) == '>') {
+							_append(TokenKind::admon, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex);
+							_advance(1);
+							break;
+						}
+
+						_contentIndex = oldContentIndex;
+					}
+
+					_parseInline();
 					break;
 
 				case '-':
