@@ -785,6 +785,7 @@ private:
 			if (node == nullptr) {
 				if (_get(0).kind == TokenKind::newline) {
 					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
+						admon->children.append(new Space(_get(0).position));
 						_advance(2);
 
 						while (_isBound(0)) {

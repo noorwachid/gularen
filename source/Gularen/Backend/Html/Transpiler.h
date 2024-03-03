@@ -248,6 +248,77 @@ private:
 				_content.append("</a>");
 			}
 
+			case NodeKind::footnoteRef: {
+				const FootnoteRef* ref = static_cast<const FootnoteRef*>(node);
+				_content.append("<sup><a href=\"#Footnote-");
+				_escapeID(ref->resource);
+				_content.append("\"></a></sup>");
+			}
+
+			case NodeKind::footnoteDecl: {
+				const FootnoteDecl* ref = static_cast<const FootnoteDecl*>(node);
+				_content.append("<div class=\"footnote\" id=\"Footnote-");
+				_escapeID(ref->resource);
+				_content.append("\">");
+				_content.append("<sup>");
+				_escape(ref->resource);
+				_content.append("</sup>");
+
+				if (ref->children.size() != 0) {
+					_content.append("\n");
+				}
+				return;
+			}
+
+			case NodeKind::admon: {
+				const Admon* ref = static_cast<const Admon*>(node);
+				_content.append("<div class=\"admon ");
+				_escapeClass(ref->label);
+				_content.append("\" data-label=\"");
+				_escapeAttribute(ref->label);
+				_content.append("\">");
+
+				if (ref->children.size() != 0) {
+					_content.append("\n");
+				}
+				return;
+			}
+
+			case NodeKind::punct: {
+				const Punct* punct = static_cast<const Punct*>(node);
+				switch (punct->type) {
+					case Punct::Type::hypen: return _content.append("&#8208;");
+					case Punct::Type::enDash: return _content.append("&#8211;");
+					case Punct::Type::emDash: return _content.append("&#8212;");
+					case Punct::Type::quoteOpen: return _content.append("&#8223;");
+					case Punct::Type::quoteClose: return _content.append("&#8221;");
+					case Punct::Type::squoteOpen: return _content.append("&#8216;");
+					case Punct::Type::squoteClose: return _content.append("&#8217;");
+				}
+			}
+
+			case NodeKind::emoji: {
+				const Emoji* emoji = static_cast<const Emoji*>(node);
+				_content.append("<span class=\"emoji\">");
+				_escape(emoji->code);
+				_content.append("</span>");
+				return;
+			}
+
+			case NodeKind::dateTime: {
+				const DateTime* dateTime = static_cast<const DateTime*>(node);
+				_content.append("<time datetime=\"");
+				_escapeAttribute(dateTime->content);
+				_content.append("\">");
+				_escape(dateTime->content);
+				_content.append("</time>");
+				return;
+			}
+
+			case NodeKind::blockquote: {
+				return _content.append("<blockquote class=\"quote\">\n");
+			}
+
 			default: break;
 		}
 	}
@@ -316,6 +387,18 @@ private:
 				return _content.append(_tableLabel ? "</th>\n" : "</td>\n");
 			}
 
+			case NodeKind::footnoteDecl: {
+				return _content.append("</div>\n\n");
+			}
+
+			case NodeKind::admon: {
+				return _content.append("</div>\n\n");
+			}
+
+			case NodeKind::blockquote: {
+				return _content.append("</blockquote>\n\n");
+			}
+
 			default: break;
 		}
 	}
@@ -353,6 +436,39 @@ private:
 				case 'H': case 'I': case 'J': case 'K': case 'L': case 'M':
 				case 'N': case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': 
 				case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
+
+				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g':
+				case 'h': case 'i': case 'j': case 'k': case 'l': case 'm':
+				case 'n': case 'o': case 'p': case 'q': case 'r': case 's': case 't': 
+				case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
+					_content.append(content.get(i));
+					break;
+
+				case '-':
+				case ' ': 
+					_content.append('-'); 
+					break;
+
+				default: 
+					break;
+			}
+		}
+	}
+
+	void _escapeClass(StringSlice content) {
+		for (unsigned int i = 0; i < content.size(); i += 1) {
+			switch (content.get(i)) {
+				case '0': case '1': case '2': case '3': case '4':
+				case '5': case '6': case '7': case '8': case '9':
+					_content.append(content.get(i));
+					break;
+
+				case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G':
+				case 'H': case 'I': case 'J': case 'K': case 'L': case 'M':
+				case 'N': case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': 
+				case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
+					_content.append(content.get(i) + ' ');
+					break;
 
 				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g':
 				case 'h': case 'i': case 'j': case 'k': case 'l': case 'm':

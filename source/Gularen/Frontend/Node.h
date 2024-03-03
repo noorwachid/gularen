@@ -499,7 +499,9 @@ struct DateTime : Node {
 	unsigned char minute;
 	unsigned char second;
 
-	DateTime(Position position, StringSlice value): Node(position, NodeKind::dateTime) {
+	StringSlice content;
+
+	DateTime(Position position, StringSlice content): Node(position, NodeKind::dateTime), content(content) {
 		date = false;
 		time = false;
 
@@ -507,75 +509,75 @@ struct DateTime : Node {
 
 		unsigned int timeBegin = 0;
 
-		for (unsigned int iter = 0; iter < value.size(); iter += 1) {
-			if (value.get(iter) == '-') {
+		for (unsigned int iter = 0; iter < content.size(); iter += 1) {
+			if (content.get(iter) == '-') {
 				date = true;
 			}
-			if (value.get(iter) == ':') {
+			if (content.get(iter) == ':') {
 				time = true;
 			}
-			if (value.get(iter) == ' ') {
+			if (content.get(iter) == ' ') {
 				timeBegin = iter + 1;
 			}
 		}
 
 		if (date) {
-			parseDate(value, 0);
+			parseDate(content, 0);
 			return;
 		}
 
 		if (time) {
-			parseTime(value, timeBegin);
+			parseTime(content, timeBegin);
 		}
 	}
 
-	void parseDate(StringSlice value, unsigned int iter) {
+	void parseDate(StringSlice content, unsigned int iter) {
 		unsigned int begin = iter;
-		for (; iter < value.size() && value.get(iter) != '-'; iter += 1);
+		for (; iter < content.size() && content.get(iter) != '-'; iter += 1);
 
-		if (value.get(iter) == '-') {
-			year = toInt(value.cut(begin, iter - begin));
+		if (content.get(iter) == '-') {
+			year = toInt(content.cut(begin, iter - begin));
 		}
 
 		iter += 1;
 		begin = iter;
-		for (; iter < value.size() && value.get(iter) != '-'; iter += 1);
+		for (; iter < content.size() && content.get(iter) != '-'; iter += 1);
 
-		if (value.get(iter) == '-') {
-			month = toInt(value.cut(begin, iter - begin));
+		if (content.get(iter) == '-') {
+			month = toInt(content.cut(begin, iter - begin));
 		}
 
 		iter += 1;
 		begin = iter;
-		for (; iter < value.size(); iter += 1);
+		for (; iter < content.size(); iter += 1);
 
-		if (iter == value.size()) {
-			day = toInt(value.cut(begin, iter - begin));
+		if (iter == content.size()) {
+			day = toInt(content.cut(begin, iter - begin));
 		}
 	}
 
-	void parseTime(StringSlice value, unsigned int iter) {
+	void parseTime(StringSlice content, unsigned int iter) {
 		unsigned int begin = iter;
-		for (; iter < value.size() && value.get(iter) != ':'; iter += 1);
+		for (; iter < content.size() && content.get(iter) != ':'; iter += 1);
 
-		if (value.get(iter) == ':') {
-			hour = toInt(value.cut(begin, iter - begin));
+		if (content.get(iter) == ':') {
+			hour = toInt(content.cut(begin, iter - begin));
 		}
 
 		iter += 1;
 		begin = iter;
-		for (; iter < value.size() && value.get(iter) != ':'; iter += 1);
+		for (; iter < content.size() && content.get(iter) != ':'; iter += 1);
 
-		if (value.get(iter) == ':' || iter == value.size()) {
-			minute = toInt(value.cut(begin, iter - begin));
+		if (content.get(iter) == ':' || iter == content.size()) {
+			minute = toInt(content.cut(begin, iter - begin));
 		}
 
-		if (iter < value.size()) {
+		if (iter < content.size()) {
 			iter += 1;
 			begin = iter;
-			for (; iter < value.size(); iter += 1);
+			for (; iter < content.size(); iter += 1);
 
-			second = toInt(value.cut(begin, iter - begin));
+			second = toInt(content.cut(begin, iter - begin));
 		}
 	}
 
@@ -626,7 +628,7 @@ struct Punct : Node {
 struct Admon : Node {
 	StringSlice label;
 
-	Admon(Position position, StringSlice label): Node(position, NodeKind::footnoteDecl), label(label) {
+	Admon(Position position, StringSlice label): Node(position, NodeKind::admon), label(label) {
 	}
 
 	virtual void print() override {

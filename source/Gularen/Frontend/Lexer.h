@@ -590,6 +590,11 @@ private:
 			_advance(2);
 		}
 
+		if (_isBound(1) && _get(0) == '/' && _get(1) == '\n') {
+			quoteLevel += 1;
+			_advance(1);
+		}
+
 		if (_quoteLevel == quoteLevel) {
 			return;
 		}
