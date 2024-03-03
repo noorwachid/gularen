@@ -1,80 +1,67 @@
-#include "Gularen/Internal/Parser.h"
-#include "Gularen/parse.h"
+#include "Gularen/Frontend/Parser.h"
+#include "Gularen/Frontend/Node.h"
+#include "Gularen/Library/String.h"
+#include <stdio.h>
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
+using namespace Gularen;
 
-std::string toString(const Gularen::NodePtr& node, size_t depth = 0) {
-	std::string content;
-
-	if (!node)
-		return content;
-
-	content += std::string(depth * 2, ' ') + node->toString() + "\n";
-
-	for (const Gularen::NodePtr& childNode : node->children) {
-		content += toString(childNode, depth + 1);
+void print(Slice<Token> tokens) {
+	for (unsigned int i = 0; i < tokens.size(); i += 1) {
+		Position position = tokens.get(i).position;
+		printf("%d:%d ", position.line, position.column);
+		tokens.get(i).print();
 	}
-
-	return content;
 }
 
-std::string readFile(const std::string& filePath) {
-	std::ifstream file(filePath);
-	std::string content;
+void print(Node* node, unsigned int depth = 0) {
+	for (unsigned int i = 0; i < depth; i += 1) {
+		printf("  ");
+	}
+	node->print();
+	for (unsigned int i = 0; i < node->children.size(); i += 1) {
+		print(node->children.get(i), depth + 1);
+	}
+}
 
-	file.seekg(0, std::ios::end);
-	content.reserve(file.tellg());
-	file.seekg(0, std::ios::beg);
-	content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+String readFile(const char* path) {
+	String content;
+	FILE* file = fopen(path, "r");
+
+	if (file == nullptr) {
+		printf("failed to open file %s\n", path);
+		return String();
+	}
+
+	fseek(file, 0, SEEK_END);
+	char* data = content.expand(ftell(file));
+	fseek(file, 0, SEEK_SET);
+
+	fread(data, content.size(), sizeof(char), file);
+	fclose(file);
 
 	return content;
 }
 
 int main(int argc, char** argv) {
 	if (argc < 2) {
-		std::cout << "please specify the input file\n";
-
-		return 0;
+		printf("please specify the file path\n");
+		return 1;
 	}
 
-	if (!std::filesystem::exists(argv[1])) {
-		std::cout << "file does not exist\n";
+	String content = readFile(argv[1]);
+	StringSlice contentSlice(content.pointer(), content.size());
 
-		return 0;
+	Lexer lexer;
+	Slice<Token> tokens = lexer.parse(contentSlice);
+	print(tokens);
+	printf("\n");
+
+	Parser parser;
+	Slice<Node*> nodes = parser.parse(contentSlice);
+
+	for (unsigned int i = 0; i < nodes.size(); i += 1) {
+		print(nodes.get(i));
 	}
-
-	Gularen::NodePtr node = Gularen::parseFile(argv[1]);
-
-	if (node->children.size() < 2 || node->children[0]->group != Gularen::NodeGroup::code || node->children[1]->group != Gularen::NodeGroup::code) {
-		std::cout << "invalid test file, please make one codeblock for the gularen markup and one for the expected AST\n";
-		std::cout << toString(node);
-
-		return 0;
-	}
-
-	auto& inputNode = node->children[0]->as<Gularen::CodeNode>();
-
-	Gularen::Parser parser;
-	parser.set(inputNode.source, argv[1]);
-	parser.parse();
-
-	std::string output = toString(parser.getRoot());
-	std::string expectedOutput = node->children[1]->as<Gularen::CodeNode>().source;
-	expectedOutput += '\n';
-
-	if (output != expectedOutput) {
-		std::cout << "[FAIL] " << argv[1] << "\n";
-		std::cout << "output:\n";
-		std::cout << output;
-		std::cout << "expected output:\n";
-		std::cout << expectedOutput;
-
-		return 0;
-	}
-
-	std::cout << "[PASS] " << argv[1] << "\n";
 
 	return 0;
 }

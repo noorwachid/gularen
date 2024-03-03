@@ -6,6 +6,8 @@
 namespace Gularen {
 
 enum class NodeKind {
+	document, 
+
 	comment,
 
 	text,
@@ -64,6 +66,21 @@ struct Node {
 	virtual void print() {
 	}
 };
+
+struct Document : Node {
+	StringSlice path;
+
+	Document(): Node({}, NodeKind::document) {
+	}
+
+	Document(Position position, StringSlice path): Node(position, NodeKind::document), path(path) {
+	}
+
+	virtual void print() override {
+		printf("document %.*s\n", path.size(), path.pointer());
+	}
+};
+
 
 struct Comment : Node {
 	StringSlice content;

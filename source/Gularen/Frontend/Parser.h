@@ -1,12 +1,41 @@
 #pragma once
 
 #include "Gularen/Frontend/Node.h"
+#include "Gularen/Library/String.h"
+#include <stdio.h>
 
 namespace Gularen {
 
 class Parser {
 public:
-	Slice<Node*> parse(StringSlice content) {
+	~Parser() {
+	}
+
+	Document* parseFile(StringSlice path) {
+		_document.path = path;
+
+		char pathC[512];
+		unsigned int pathSize = path.size() < 511 ? path.size() : 511;
+		memcpy(pathC, path.pointer(), pathSize);
+		pathC[pathSize] = 0;
+
+		FILE* file = fopen(pathC, "r");
+
+		if (file == nullptr) {
+			return nullptr;
+		}
+
+		fseek(file, 0, SEEK_END);
+		char* data = _content.expand(ftell(file));
+		fseek(file, 0, SEEK_SET);
+
+		fread(data, _content.size(), sizeof(char), file);
+		fclose(file);
+
+		return parse(StringSlice(_content.pointer(), _content.size()));
+	}
+
+	Document* parse(StringSlice content) {
 		Lexer lexer;
 		_tokens = lexer.parse(content);
 		_tokenIndex = 0;
@@ -14,12 +43,12 @@ public:
 		while (_isBound(0)) {
 			Node* node = _parseBlock();
 			if (node == nullptr) {
-				return {};
+				return nullptr;
 			}
-			_nodes.append(node);
+			_document.children.append(node);
 		}
 
-		return Slice<Node*>(_nodes.pointer(), _nodes.size());
+		return &_document;
 	}
 
 private:
@@ -894,7 +923,9 @@ private:
 
 	unsigned int _tokenIndex;
 
-	Array<Node*> _nodes;
+	Document _document;
+
+	String _content;
 };
 
 }
