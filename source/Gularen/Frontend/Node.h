@@ -47,6 +47,8 @@ enum class NodeKind {
 	blockquote,
 
 	dateTime,
+
+	punct,
 };
 
 struct Node {
@@ -567,6 +569,38 @@ struct DateTime : Node {
 			printf("%02d:%02d:%02d ", hour, minute, second);
 		}
 		printf("\n");
+	}
+};
+
+struct Punct : Node {
+	enum class Type {
+		hypen,
+		enDash,
+		emDash,
+
+		quoteOpen,
+		quoteClose,
+		squoteOpen,
+		squoteClose,
+	};
+
+	Type type;
+
+	Punct(Position position, Type type): Node(position, NodeKind::punct), type(type) {
+	}
+
+	virtual void print() override {
+		printf("punct ");
+		switch (type) {
+			case Type::hypen: printf("hyphen\n"); break;
+			case Type::enDash: printf("enDash\n"); break;
+			case Type::emDash: printf("emDash\n"); break;
+
+			case Type::quoteOpen: printf("quoteOpen\n"); break;
+			case Type::quoteClose: printf("quoteClose\n"); break;
+			case Type::squoteOpen: printf("squoteOpen\n"); break;
+			case Type::squoteClose: printf("squoteClose\n"); break;
+		}
 	}
 };
 

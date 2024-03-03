@@ -12,6 +12,10 @@ public:
 		Parser parser;
 		Slice<Node*> nodes = parser.parse(content);
 
+		_content = String();
+		_tableAlignments = Slice<Table::Alignment>(nullptr, 0);
+		_tableColumnIndex = 0;
+
 		for (unsigned int i = 0; i < nodes.size(); i += 1) {
 			_transpile(nodes.get(i), 0);
 		}
@@ -25,6 +29,10 @@ private:
 
 private:
 	String _content;
+
+	Slice<Table::Alignment> _tableAlignments;
+
+	unsigned int _tableColumnIndex;
 };
 
 }

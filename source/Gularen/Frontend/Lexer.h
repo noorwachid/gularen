@@ -67,6 +67,16 @@ enum class TokenKind {
 	emoji,
 
 	dateTime,
+
+	hyphen,
+	enDash,
+	emDash,
+
+	quoteOpen,
+	quoteClose,
+
+	squoteOpen,
+	squoteClose,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -130,6 +140,16 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::emoji: return "emoji";
 
 		case TokenKind::dateTime: return "dateTime";
+
+		case TokenKind::hyphen: return "hyphen";
+		case TokenKind::enDash: return "enDash";
+		case TokenKind::emDash: return "emDash";
+
+		case TokenKind::quoteOpen: return "quoteOpen";
+		case TokenKind::quoteClose: return "quoteClose";
+
+		case TokenKind::squoteOpen: return "squoteOpen";
+		case TokenKind::squoteClose: return "squoteClose";
 	}
 }
 
@@ -184,7 +204,105 @@ public:
 		_quoteLevel = 0;
 
 		_consumeIndent();
+		_parseBlock();
 
+		if (_tokens.size() != 0) {
+			switch (_tokens.get(_tokens.size() - 1).kind) {
+				case TokenKind::newlinePlus: 
+					break;
+				case TokenKind::newline: 
+					_tokens.get(_tokens.size() - 1).kind = TokenKind::newlinePlus;
+					break;
+				default: 
+					_append(TokenKind::newlinePlus);
+					break;
+			}
+		}
+
+
+		return Slice<Token>(_tokens.pointer(), _tokens.size());
+	}
+
+private:
+	void _parseBlock() {
+		while (_isBound(0)) {
+			switch (_get(0)) {
+				case '>': 
+					if (_isBound(1) && _get(1) == '>') {
+						if (_isBound(2) && _get(2) == '>') {
+							if (_isBound(3) && _get(3) == ' ') {
+								_append(TokenKind::head3, _contentIndex, 3);
+								_advance(4);
+								break;
+							}
+						}
+
+						if (_isBound(2) && _get(2) == ' ') {
+							_append(TokenKind::head2, _contentIndex, 2);
+							_advance(3);
+						}
+						break;
+					}
+
+					if (_isBound(1) && _get(1) == ' ') {
+						_append(TokenKind::head1, _contentIndex, 1);
+						_advance(2);
+						break;
+					}
+
+					_consumeText();
+					break;
+
+				case '-':
+					if (_isBound(1) && _get(1) == ' ') {
+						_append(TokenKind::bullet, _contentIndex, 1);
+						_advance(2);
+						break;
+					}
+
+					if (_isBound(2) && _get(1) == '-' && _get(2) == '-') {
+						_consumeCodeBlock();
+						break;
+					}
+
+					_parseInline();
+					break;
+
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
+					_consumeIndex();
+					break;
+
+				case '=':
+					if (_isBound(1) && _get(1) == '[') {
+						_append(TokenKind::equal, _contentIndex, 1);
+						_advance(1);
+						break;
+					}
+
+					_consumeText();
+					break;
+
+				case '|':
+					_consumePipe();
+					break;
+
+				default: 
+					_parseInline(); 
+					break;
+			}
+		}
+	}
+
+	void _parseInline() {
 		while (_isBound(0)) {
 			switch (_get(0)) {
 				case '~':
@@ -210,30 +328,6 @@ public:
 				case '`': 
 					_append(TokenKind::backtick); 
 					_advance(1);
-					break;
-
-				case '>': 
-					if (_isBound(1) && _get(1) == '>') {
-						if (_isBound(2) && _get(2) == '>') {
-							if (_isBound(3) && _get(3) == ' ') {
-								_append(TokenKind::head3, _contentIndex, 3);
-								_advance(4);
-								break;
-							}
-						}
-
-						if (_isBound(2) && _get(2) == ' ') {
-							_append(TokenKind::head2, _contentIndex, 2);
-							_advance(3);
-						}
-						break;
-					}
-
-					if (_isBound(1) && _get(1) == ' ') {
-						_append(TokenKind::head1, _contentIndex, 1);
-						_advance(2);
-						break;
-					}
 					break;
 
 				case '<': {
@@ -270,31 +364,20 @@ public:
 				}
 
 				case '-':
-					if (_isBound(1) && _get(1) == ' ') {
-						_append(TokenKind::bullet, _contentIndex, 1);
+					if (_isBound(1) && _get(1) == '-') {
+						if (_isBound(2) && _get(2) == '-') {
+							_append(TokenKind::emDash, _contentIndex, 3);
+							_advance(3);
+							break;
+						}
+
+						_append(TokenKind::enDash, _contentIndex, 2);
 						_advance(2);
 						break;
 					}
 
-					if (_isBound(2) && _get(1) == '-' && _get(2) == '-') {
-						_consumeCodeBlock();
-						break;
-					}
-
-					_consumeText();
-					break;
-
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-					_consumeIndex();
+					_append(TokenKind::hyphen, _contentIndex, 1);
+					_advance(1);
 					break;
 
 				case '[':
@@ -337,16 +420,6 @@ public:
 					_consumeText();
 					break;
 
-				case '=':
-					if (_isBound(1) && _get(1) == '[') {
-						_append(TokenKind::equal, _contentIndex, 1);
-						_advance(1);
-						break;
-					}
-
-					_consumeText();
-					break;
-
 				case '|':
 					_consumePipe();
 					break;
@@ -373,6 +446,23 @@ public:
 					break;
 				}
 
+				case '"':
+					_consumeQuote(
+						(_tokens.size() != 0 && _tokens.get(_tokens.size() - 1).kind == TokenKind::squoteOpen), // ‘“ case
+						TokenKind::quoteOpen, 
+						TokenKind::quoteClose
+					);
+					break;
+					
+
+				case '\'':
+					_consumeQuote(
+						(_tokens.size() != 0 && _tokens.get(_tokens.size() - 1).kind == TokenKind::quoteOpen), // “‘ case
+						TokenKind::squoteOpen, 
+						TokenKind::squoteClose
+					);
+					break;
+
 				case '\n': {
 					unsigned int count = 0;
 
@@ -384,12 +474,12 @@ public:
 					if (count == 1) {
 						_append(TokenKind::newline);
 						_consumeIndent();
-						break;
+						return;
 					}
 
 					_append(TokenKind::newlinePlus);
 					_consumeIndent();
-					break;
+					return;
 				}
 
 				default: 
@@ -397,22 +487,6 @@ public:
 					break;
 			}
 		}
-
-		if (_tokens.size() != 0) {
-			switch (_tokens.get(_tokens.size() - 1).kind) {
-				case TokenKind::newlinePlus: 
-					break;
-				case TokenKind::newline: 
-					_tokens.get(_tokens.size() - 1).kind = TokenKind::newlinePlus;
-					break;
-				default: 
-					_append(TokenKind::newlinePlus);
-					break;
-			}
-		}
-
-
-		return Slice<Token>(_tokens.pointer(), _tokens.size());
 	}
 
 private:
@@ -445,7 +519,7 @@ private:
 		}
 
 		if (_indentLevel == indentLevel) {
-			return _consumeQuote();
+			return _consumeBlockquote();
 		}
 
 		if (_indentLevel < indentLevel) {
@@ -462,10 +536,10 @@ private:
 			}
 		}
 
-		_consumeQuote();
+		_consumeBlockquote();
 	}
 
-	void _consumeQuote() {
+	void _consumeBlockquote() {
 		unsigned int quoteLevel = 0;
 		while (_isBound(1) && _get(0) == '/' && _get(1) == ' ') {
 			quoteLevel += 1;
@@ -489,6 +563,22 @@ private:
 				_quoteLevel -= 1;
 			}
 		}
+	}
+
+	void _consumeQuote(bool condition, TokenKind left, TokenKind right) {
+		if (_contentIndex == 0 || 
+			_content.get(_contentIndex - 1) == ' ' || 
+            _content.get(_contentIndex - 1) == '\t' || 
+            _content.get(_contentIndex - 1) == '\n' || 
+            condition) {
+			_append(left, _contentIndex, 1);
+			_advance(1);
+            return;
+        }
+
+		_append(right, _contentIndex, 1);
+		_advance(1);
+        return;
 	}
 
 	void _consumeComment() {
@@ -543,6 +633,9 @@ private:
 				case '{':
 				case '[':
 				case ':':
+				case '-':
+				case '"':
+				case '\'':
 				case '\n':
 					goto end;
 
@@ -767,7 +860,7 @@ private:
 		}
 
 		_contentIndex = oldContentIndex;
-		_consumeText();
+		_parseInline();
 	}
 
 private:

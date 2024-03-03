@@ -106,6 +106,15 @@ private:
 			case TokenKind::emoji: return _parseEmoji();
 			case TokenKind::dateTime: return _parseDateTime();
 
+			case TokenKind::hyphen: return new Punct(_eat().position, Punct::Type::hypen);
+			case TokenKind::enDash: return new Punct(_eat().position, Punct::Type::enDash);
+			case TokenKind::emDash: return new Punct(_eat().position, Punct::Type::emDash);
+
+			case TokenKind::quoteOpen: return new Punct(_eat().position, Punct::Type::quoteOpen);
+			case TokenKind::quoteClose: return new Punct(_eat().position, Punct::Type::quoteClose);
+			case TokenKind::squoteOpen: return new Punct(_eat().position, Punct::Type::squoteOpen);
+			case TokenKind::squoteClose: return new Punct(_eat().position, Punct::Type::squoteClose);
+
 			default: {
 				return nullptr;
 			}
@@ -744,6 +753,15 @@ private:
 			case TokenKind::caret:
 			case TokenKind::emoji:
 			case TokenKind::dateTime:
+
+			case TokenKind::hyphen:
+			case TokenKind::enDash:
+			case TokenKind::emDash:
+
+			case TokenKind::quoteOpen:
+			case TokenKind::quoteClose:
+			case TokenKind::squoteOpen:
+			case TokenKind::squoteClose:
 				return true;
 
 			default: 
@@ -767,6 +785,15 @@ private:
 			case TokenKind::caret:
 			case TokenKind::emoji:
 			case TokenKind::dateTime:
+
+			case TokenKind::hyphen:
+			case TokenKind::enDash:
+			case TokenKind::emDash:
+
+			case TokenKind::quoteOpen:
+			case TokenKind::quoteClose:
+			case TokenKind::squoteOpen:
+			case TokenKind::squoteClose:
 				return _parseParagraph();
 
 			case TokenKind::head1:
