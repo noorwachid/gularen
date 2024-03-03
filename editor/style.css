@@ -25,7 +25,7 @@ blockquote {
 	padding-left: 2rem;
 }
 
-blockquote.bordered {
+blockquote.quote {
 	padding-left: 1rem;
 	border-left: 0.3rem solid #d1d1d1;
 	margin-left: 0;
@@ -47,8 +47,14 @@ code {
 }
 
 pre {
-	background-color: #444;
 	overflow-y: hidden;
+}
+
+code.language-latex,
+code.language-mermaid {
+	background-color: transparent;
+	margin: 0 0;
+	padding: .1rem .1rem;
 }
 
 pre>code {
@@ -213,12 +219,8 @@ p,
 pre,
 table,
 ul,
-.admon-note,
-.admon-hint,
-.admon-important,
-.admon-warning,
-.admon-seealso,
-.admon-tip,
+.quote,
+.admon,
 .language-presenter {
 	margin-bottom: 1.2rem;
 }
@@ -311,79 +313,66 @@ img {
 	max-width: 100%;
 }
 
-.admon-note,
-.admon-hint,
-.admon-important,
-.admon-warning,
-.admon-seealso,
-.admon-tip {
+.admon {
 	background: #222;
 	padding: 1rem 1.3rem;
+	border-left: 2px solid #49af90;
 }
 
-.admon-note::before,
-.admon-hint::before,
-.admon-important::before,
-.admon-warning::before,
-.admon-seealso::before,
-.admon-tip::before {
+.admon::before {
+	content: attr(data-label);
 	font-weight: bold;
 	display: block;
-	margin-bottom: 1.
+	margin-bottom: 1.0;
+	color: #59bfa0;
 }
 
-.admon-note::before {
-	content: "Note";
+.admon.note::before {
 	color: #59a0ff;
 }
 
-.admon-note {
-	border: 2px solid #4990ef;
+.admon.note {
+	border-left: 2px solid #4990ef;
 }
 
-.admon-hint::before {
-	content: "Hint";
+.admon.hint::before {
 	color: #8059ff;
 }
 
-.admon-hint {
-	border: 2px solid #6049ef;
+.admon.hint {
+	border-left: 2px solid #6049ef;
 }
 
-.admon-important::before {
-	content: "Important";
+.admon.important::before {
 	color: #ff4444;
 }
 
-.admon-important {
-	border: 2px solid #ef4949;
+.admon.important {
+	border-left: 2px solid #ef4949;
 }
 
-.admon-warning::before {
-	content: "Warning";
+.admon.warning::before {
 	color: #dfbf33;
 }
 
-.admon-warning {
-	border: 2px solid #cfaf22;
+.admon.warning {
+	border-left: 2px solid #cfaf22;
 }
 
-.admon-seealso::before {
-	content: "See Also";
+.admon.see-also::before {
 	color: #ff3980;
 }
 
-.admon-seealso {
-	border: 2px solid #ef2990;
+.admon.see-also {
+	border-left: 2px solid #ef2990;
 }
 
-.admon-tip::before {
-	content: "Tip";
+.admon.tip::before {
 	color: #59dd59;
 }
 
-.admon-tip {
-	border: 2px solid #33af33;
+.admon.tip {
+	border-left: 2px solid #33af33;
 }
 
 
@@ -399,16 +388,16 @@ td.cell-right {
 	text-align: right;
 }
 
-ul.checklist {
+ul.todo {
 	padding-left: 1rem;
 	list-style: none;
 }
 
-ul.checklist ul.checklist {
+ul.todo ul.todo {
 	padding-left: 3.2rem;
 }
 
-ul.checklist>li>input[type=checkbox] {
+ul.todo>li>input[type=checkbox] {
 	margin-bottom: 0;
 	margin-right: 4px;
 }

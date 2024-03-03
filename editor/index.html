@@ -188,7 +188,7 @@
 		gularen.transpiled = false;
 
 		function transpile() {
-			const html = Module.transpileSyncLine(inputNode.value);
+			const html = Module.transpile(inputNode.value);
 			outputNode.innerHTML = html;
 			dispatchEvent(new Event('gularentranspile', {
 				bubbles: true,
@@ -200,7 +200,7 @@
 			outputNode.querySelectorAll('time').forEach(timeNode => {
 				const dateTime = timeNode.getAttribute('datetime');
 				if (dateTime) {
-					timeNode.textContent = (new Date(dateTime)).toLocaleString();
+					timeNode.textContent = (new Date(dateTime)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 				}
 			});
 		}
@@ -230,19 +230,19 @@
 		}
 
 		function followCursor() {
-			let previewNode = null;
-			let line = getCursorPos(inputNode);
-
-			while (!previewNode && line >= 0) {
-				previewNode = document.querySelector(`[data-sl^="${line}:"]`);
-				--line;
-			}
-
-			if (previewNode) {
-				previewNode.scrollIntoView({
-					behavior: "smooth"
-				});
-			}
+			// let previewNode = null;
+			// let line = getCursorPos(inputNode);
+			//
+			// while (!previewNode && line >= 0) {
+			// 	previewNode = document.querySelector(`[data-sl^="${line}:"]`);
+			// 	--line;
+			// }
+			//
+			// if (previewNode) {
+			// 	previewNode.scrollIntoView({
+			// 		behavior: "smooth"
+			// 	});
+			// }
 		}
 
 		Module.onRuntimeInitialized = () => {
@@ -427,12 +427,13 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 ---
 
 >> Admonition
-<tip> A tip
-<note> A note
-<hint> A hint
-<seealso> An interesting suggestion
-<important> Important stuff
-<warning> Warning stuff
+<Tip> A tip
+<Note> A note
+<Hint> A hint
+<See also> An interesting suggestion
+<Important> Important stuff
+<Warning> Warning stuff
+<Other> Other stuff
 
 >> Date-Time
 Meet me on <2020-10-10 18:00> at Diner`;
@@ -485,6 +486,12 @@ Meet me on <2020-10-10 18:00> at Diner`;
 	<script>
 		function parseHighlight() {
 			document.querySelectorAll('code').forEach(el => {
+				for (let i = 0; i < el.classList.length; i += 1) {
+					const className = el.classList[i];
+					if (className == 'language-latex' || className == 'language-mermaid') {
+						return; // dont highlight this two
+					}
+				}
 				hljs.highlightElement(el);
 			});
 		}
@@ -500,7 +507,7 @@ Meet me on <2020-10-10 18:00> at Diner`;
 			theme: 'dark',
 		});
 		function parseMermaid() {
-			mermaid.init(undefined, '.language-presenter.language-presenter-mermaid');
+			mermaid.init(undefined, '.language-mermaid');
 		}
 		addEventListener('gularentranspile', parseMermaid)
 		if (gularen.transpiled) {
@@ -513,7 +520,7 @@ Meet me on <2020-10-10 18:00> at Diner`;
 		crossorigin="anonymous"></script>
 	<script>
 		function parseKatex() {
-			document.querySelectorAll('.language-presenter.language-presenter-latex').forEach(node => {
+			document.querySelectorAll('.language-latex').forEach(node => {
 				katex.render(node.innerHTML, node);
 			})
 		}

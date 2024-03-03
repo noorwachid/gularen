@@ -68,7 +68,7 @@ private:
 						return;
 
 					case Heading::Type::title: return;
-					case Heading::Type::subtitle: return _content.append("<span>");
+					case Heading::Type::subtitle: return _content.append("<small>");
 				}
 			}
 
@@ -161,6 +161,16 @@ private:
 
 			case NodeKind::code: {
 				const Code* code = static_cast<const Code*>(node);
+
+				if (code->label.size() != 0) {
+					_content.append("<code class=\"language-");
+					_escapeAttribute(code->label);
+					_content.append("\">");
+					_escape(code->content);
+					_content.append("</code>");
+					return;
+				}
+
 				_content.append("<code>");
 				_escape(code->content);
 				_content.append("</code>");
@@ -169,6 +179,16 @@ private:
 
 			case NodeKind::codeBlock: {
 				const CodeBlock* code = static_cast<const CodeBlock*>(node);
+
+				if (code->label.size() != 0) {
+					_content.append("<pre><code class=\"language-");
+					_escapeAttribute(code->label);
+					_content.append("\">");
+					_escape(code->content);
+					_content.append("</code></pre>\n\n");
+					return;
+				}
+
 				_content.append("<pre><code>");
 				_escape(code->content);
 				_content.append("</code></pre>\n\n");
@@ -198,6 +218,7 @@ private:
 					_escape(link->label);
 				}
 				_content.append("</a>");
+				return;
 			}
 
 			case NodeKind::view: {
@@ -237,6 +258,7 @@ private:
 					_escape(view->label);
 				}
 				_content.append("</a>");
+				return;
 			}
 
 			case NodeKind::include: {
@@ -246,6 +268,7 @@ private:
 				_content.append("\">");
 				_escape(include->resource);
 				_content.append("</a>");
+				return;
 			}
 
 			case NodeKind::footnoteRef: {
@@ -253,6 +276,7 @@ private:
 				_content.append("<sup><a href=\"#Footnote-");
 				_escapeID(ref->resource);
 				_content.append("\"></a></sup>");
+				return;
 			}
 
 			case NodeKind::footnoteDecl: {
@@ -339,7 +363,7 @@ private:
 					case Heading::Type::section: return _content.append("</h2>\n");
 					case Heading::Type::subsection: return _content.append("</h3>\n");
 					case Heading::Type::title: return _content.append(" ");
-					case Heading::Type::subtitle: return _content.append("</span>");
+					case Heading::Type::subtitle: return _content.append("</small>");
 				}
 			}
 
