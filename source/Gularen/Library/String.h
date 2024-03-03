@@ -91,9 +91,21 @@ public:
 	}
 
 	void append(const String& other) {
-		_grow();
 		for (unsigned int i = 0; i < other.size(); i += 1) {
 			append(other.get(i));
+		}
+	}
+
+	void append(const char* other) {
+		unsigned int size = strlen(other);
+		for (unsigned int i = 0; i < size; i += 1) {
+			append(other[i]);
+		}
+	}
+
+	void append(const char* other, unsigned int size) {
+		for (unsigned int i = 0; i < size; i += 1) {
+			append(other[i]);
 		}
 	}
 

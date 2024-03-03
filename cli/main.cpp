@@ -1,4 +1,5 @@
 #include "Gularen/Frontend/Parser.h"
+#include "Gularen/Backend/Html/Transpiler.h"
 
 using namespace Gularen;
 
@@ -21,7 +22,14 @@ int main(int argc, char** argv) {
 	Parser parser;
 	Document* document = parser.parseFile(argv[1]);
 
-	print(document);
+	if (document != nullptr) {
+		print(document);
+	}
+
+	Html::Transpiler transpiler;
+	StringSlice content = transpiler.transpile(document);
+
+	printf("\nHTML:\n%.*s\n", content.size(), content.pointer());
 
 	return 0;
 }
