@@ -219,10 +219,14 @@ p,
 pre,
 table,
 ul,
-.quote,
+blockquote,
 .admon,
 .language-presenter {
 	margin-bottom: 1.2rem;
+}
+
+blockquote blockquote {
+	margin-bottom: 0;
 }
 
 table {
