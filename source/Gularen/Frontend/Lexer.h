@@ -204,6 +204,11 @@ public:
 		_indentLevel = 0;
 		_quoteLevel = 0;
 
+		_line = 0;
+		_column = 0;
+
+		_savePosition();
+
 		_consumeIndent();
 		_parseBlock();
 
@@ -227,6 +232,8 @@ public:
 private:
 	void _parseBlock() {
 		while (_isBound(0)) {
+			_savePosition();
+
 			switch (_get(0)) {
 				case '>': 
 					if (_isBound(1) && _get(1) == '>') {
@@ -325,6 +332,8 @@ private:
 
 	void _parseInline() {
 		while (_isBound(0)) {
+			_savePosition();
+
 			switch (_get(0)) {
 				case '~':
 					_consumeComment();
@@ -488,6 +497,7 @@ private:
 					unsigned int count = 0;
 
 					while (_isBound(0) && _get(0) == '\n') {
+						_advanceLine(1);
 						count += 1;
 						_advance(1);
 					}
@@ -517,6 +527,17 @@ private:
 
 	void _advance(unsigned int offset) {
 		_contentIndex += offset;
+		_column += 1;
+	}
+
+	void _advanceLine(unsigned int offset) {
+		_line += offset;
+		_column = 0;
+	}
+
+	void _savePosition() {
+		_oldLine = _line;
+		_oldColumn = _column;
 	}
 
 	char _get(unsigned int offset) const {
@@ -525,8 +546,8 @@ private:
 
 	void _append(TokenKind kind, unsigned int index = 0, unsigned int size = 0) {
 		Token token;
-		token.position.line = 0;
-		token.position.column = 0;
+		token.position.line = _oldLine;
+		token.position.column = _oldColumn;
 		token.kind = kind;
 		token.content = _content.cut(index, size);
 		_tokens.append(static_cast<Token&&>(token));
@@ -606,12 +627,14 @@ private:
 		unsigned int beginIndex = _contentIndex;
 
 		while (_isBound(0) && _get(0) != '\n') {
+			_advanceLine(1);
 			_advance(1);
 		}
 
 		_append(TokenKind::comment, beginIndex, _contentIndex - beginIndex);
 
 		if (_isBound(0) && _get(0) == '\n') {
+			_advanceLine(1);
 			_advance(1);
 		}
 
@@ -758,6 +781,7 @@ private:
 	void _consumeLabel() {
 		_append(TokenKind::parenOpen, _contentIndex, 1);
 		_advance(1);
+		_savePosition();
 
 		unsigned int oldContextIndex = _contentIndex;
 
@@ -766,6 +790,7 @@ private:
 		}
 
 		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+		_savePosition();
 
 		if (_isBound(0) && _get(0) == ')') {
 			_append(TokenKind::parenClose, _contentIndex, 1);
@@ -798,6 +823,7 @@ private:
 	void _consumeCode() {
 		_append(TokenKind::curlyOpen, _contentIndex, 1);
 		_advance(1);
+		_savePosition();
 
 		unsigned int oldContextIndex = _contentIndex;
 
@@ -806,10 +832,12 @@ private:
 		}
 
 		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+		_savePosition();
 
 		if (_isBound(0) && _get(0) == '}') {
 			_append(TokenKind::curlyClose, _contentIndex, 1);
 			_advance(1);
+			_savePosition();
 		}
 
 		if (_isBound(0) && _get(0) == '(') {
@@ -823,6 +851,7 @@ private:
 
 		while (_isBound(0)) {
 			if (_get(0) == '\n') {
+				_advanceLine(1);
 				_advance(1);
 				unsigned int indentLevel = 0;
 				while (_isBound(0) && _get(0) == '\t') {
@@ -888,6 +917,14 @@ private:
 	StringSlice _content;
 
 	unsigned int _contentIndex;
+
+	unsigned int _line;
+
+	unsigned int _column;
+
+	unsigned int _oldLine;
+
+	unsigned int _oldColumn;
 
 	Array<Token> _tokens;
 

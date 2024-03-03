@@ -7,6 +7,8 @@ using namespace Gularen;
 
 void print(Slice<Token> tokens) {
 	for (unsigned int i = 0; i < tokens.size(); i += 1) {
+		Position position = tokens.get(i).position;
+		printf("%d:%d ", position.line, position.column);
 		tokens.get(i).print();
 	}
 }
