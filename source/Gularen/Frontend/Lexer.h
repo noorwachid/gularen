@@ -38,6 +38,7 @@ enum class TokenKind {
 	checkbox,
 
 	pipe,
+	tee,
 	teeLeft,
 	teeRight,
 	teeCenter,
@@ -112,6 +113,7 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::checkbox: return "checkbox";
 
 		case TokenKind::pipe: return "pipe";
+		case TokenKind::tee: return "tee";
 		case TokenKind::teeLeft: return "teeLeft";
 		case TokenKind::teeRight: return "teeRight";
 		case TokenKind::teeCenter: return "teeCenter";
@@ -745,7 +747,7 @@ private:
 						_advance(1);
 						break;
 					}
-					_append(TokenKind::teeLeft);
+					_append(TokenKind::tee);
 					break;
 
 				case ':':

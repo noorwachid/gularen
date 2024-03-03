@@ -40,6 +40,10 @@ public:
 		_tokens = lexer.parse(content);
 		_tokenIndex = 0;
 
+		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
+		// 	_tokens.get(i).print();
+		// }
+
 		while (_isBound(0)) {
 			Node* node = _parseBlock();
 			if (node == nullptr) {
@@ -433,10 +437,14 @@ private:
 		while (_isBound(0) && _get(0).kind == TokenKind::pipe) {
 			const Token& token = _eat();
 
-			if (_isBound(0) && (_get(0).kind == TokenKind::teeLeft || _get(0).kind == TokenKind::teeCenter || _get(0).kind == TokenKind::teeRight)) {
+			if (_isBound(0) && (_get(0).kind == TokenKind::tee || _get(0).kind == TokenKind::teeLeft || _get(0).kind == TokenKind::teeCenter || _get(0).kind == TokenKind::teeRight)) {
 				while (_isBound(0)) {
 					while (_isBound(0)) {
 						switch (_get(0).kind) {
+							case TokenKind::tee:
+								_advance(1);
+								goto nextTeeCell;
+
 							case TokenKind::teeLeft:
 								_advance(1);
 								if (type == Row::Type::header) {
@@ -494,7 +502,6 @@ private:
 
 			while (_isBound(0)) {
 				Cell* cell = new Cell(_get(0).position);
-				row->children.append(cell);
 
 				while (_isBound(0)) {
 					Node* node = _parseInline();
@@ -506,13 +513,16 @@ private:
 
 							case TokenKind::newline:
 								_advance(1);
+								delete cell;
 								goto nextRow;
 
 							case TokenKind::newlinePlus:
 								_advance(1);
+								delete cell;
 								return _checkTableRow(table, type);
 								
 							default:
+								delete cell;
 								return _checkTableRow(table, type); // early exit
 						}
 					}
@@ -521,7 +531,7 @@ private:
 				}
 
 				nextCell:
-				continue;
+				row->children.append(cell);
 			}
 
 			nextRow:
@@ -825,6 +835,8 @@ private:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
 
+			case TokenKind::lineBreak:
+
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
@@ -873,6 +885,8 @@ private:
 			case TokenKind::quoteClose:
 			case TokenKind::squoteOpen:
 			case TokenKind::squoteClose:
+
+			case TokenKind::lineBreak:
 				return _parseParagraph();
 
 			case TokenKind::head1:
