@@ -261,16 +261,6 @@ private:
 				return;
 			}
 
-			case NodeKind::include: {
-				const Include* include = static_cast<const Include*>(node);
-				_content.append("<a href=\"");
-				_escapeAttribute(include->resource);
-				_content.append("\">");
-				_escape(include->resource);
-				_content.append("</a>");
-				return;
-			}
-
 			case NodeKind::footnoteRef: {
 				const FootnoteRef* ref = static_cast<const FootnoteRef*>(node);
 				_content.append("<sup><a href=\"#Footnote-");

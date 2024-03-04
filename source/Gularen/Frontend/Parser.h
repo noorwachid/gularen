@@ -9,10 +9,24 @@ namespace Gularen {
 class Parser {
 public:
 	~Parser() {
+		delete _document;
+		_document = nullptr;
 	}
 
 	Document* parseFile(StringSlice path) {
-		_document.path = path;
+		_document = new Document();
+		_document->path = String(path.pointer(), path.size());
+
+		for (unsigned int i = path.size(); i > 0; i -= 1) {
+			if (path.get(i - 1) == '/') {
+				_documentPath = String(path.pointer(), i - 1);
+				break;
+			}
+		}
+
+		if (_documentPath.size() == 0) {
+			_documentPath = String(".");
+		}
 
 		char pathC[512];
 		unsigned int pathSize = path.size() < 511 ? path.size() : 511;
@@ -22,17 +36,38 @@ public:
 		FILE* file = fopen(pathC, "r");
 
 		if (file == nullptr) {
+			delete _document;
+			_document = nullptr;
 			return nullptr;
 		}
 
 		fseek(file, 0, SEEK_END);
-		char* data = _content.expand(ftell(file));
+		char* data = _document->content.expand(ftell(file));
 		fseek(file, 0, SEEK_SET);
 
-		fread(data, _content.size(), sizeof(char), file);
+		fread(data, _document->content.size(), sizeof(char), file);
 		fclose(file);
 
-		return parse(StringSlice(_content.pointer(), _content.size()));
+
+		Lexer lexer;
+		_tokens = lexer.parse(StringSlice(_document->content.pointer(), _document->content.size()));
+		_tokenIndex = 0;
+
+		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
+		// 	_tokens.get(i).print();
+		// }
+
+		while (_isBound(0)) {
+			Node* node = _parseBlock();
+			if (node == nullptr) {
+				delete _document;
+				_document = nullptr;
+				return nullptr;
+			}
+			_document->children.append(node);
+		}
+
+		return _document;
 	}
 
 	Document* parse(StringSlice content) {
@@ -49,10 +84,10 @@ public:
 			if (node == nullptr) {
 				return nullptr;
 			}
-			_document.children.append(node);
+			_document->children.append(node);
 		}
 
-		return &_document;
+		return _document;
 	}
 
 private:
@@ -134,7 +169,6 @@ private:
 			case TokenKind::curlyOpen: return _parseCode();
 			case TokenKind::squareOpen: return _parseLink();
 			case TokenKind::exclamation: return _parseView();
-			case TokenKind::question: return _parseInclude();
 			case TokenKind::caret: return _parseFootnoteRef();
 			case TokenKind::emoji: return _parseEmoji();
 			case TokenKind::dateTime: return _parseDateTime();
@@ -605,21 +639,60 @@ private:
 	}
 
 	Node* _parseInclude() {
-		Include* include = new Include(_eat().position);
+		#ifdef __EMSCRIPTEN__
+		Link* link = new Link(_eat().position);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
 			_advance(1);
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-			include->resource = _eat().content;
+			link->resource = _eat().content;
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
 			_advance(1);
 		}
 
-		return include;
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_advance(1);
+		}
+
+		return link;
+		#else
+
+		Document* document = nullptr;
+		const Token& token = _eat();
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			StringSlice filePath = _eat().content;
+			String path = _documentPath + String("/");
+			path.append(filePath.pointer(), filePath.size());
+
+			Parser parser;
+			document = parser.parseFile(StringSlice(path.pointer(), path.size()));
+
+			if (document != nullptr) {
+				document->position = token.position;
+			}
+
+			parser._document = nullptr;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_advance(1);
+		}
+
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_advance(1);
+		}
+
+		return document;
+		#endif
 	}
 
 	Node* _parseFootnoteRef() {
@@ -841,7 +914,6 @@ private:
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
-			case TokenKind::question:
 			case TokenKind::caret:
 			case TokenKind::emoji:
 			case TokenKind::dateTime:
@@ -873,7 +945,6 @@ private:
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
-			case TokenKind::question:
 			case TokenKind::caret:
 			case TokenKind::emoji:
 			case TokenKind::dateTime:
@@ -903,6 +974,9 @@ private:
 
 			case TokenKind::dinkus:
 				return _parseDinkus();
+
+			case TokenKind::question:
+				return _parseInclude();
 
 			case TokenKind::bullet:
 				return _parseList(TokenKind::bullet, NodeKind::list);
@@ -938,9 +1012,9 @@ private:
 
 	unsigned int _tokenIndex;
 
-	Document _document;
+	Document* _document;
 
-	String _content;
+	String _documentPath;
 };
 
 }

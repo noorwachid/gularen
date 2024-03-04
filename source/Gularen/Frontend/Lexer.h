@@ -311,6 +311,16 @@ private:
 					_consumeIndex();
 					break;
 
+				case '?':
+					if (_isBound(1) && _get(1) == '[') {
+						_append(TokenKind::question, _contentIndex, 1);
+						_advance(1);
+						break;
+					}
+
+					_consumeText();
+					break;
+
 				case '=':
 					if (_isBound(1) && _get(1) == '[') {
 						_append(TokenKind::equal, _contentIndex, 1);
@@ -425,16 +435,6 @@ private:
 				case '!':
 					if (_isBound(1) && _get(1) == '[') {
 						_append(TokenKind::exclamation, _contentIndex, 1);
-						_advance(1);
-						break;
-					}
-
-					_consumeText();
-					break;
-
-				case '?':
-					if (_isBound(1) && _get(1) == '[') {
-						_append(TokenKind::question, _contentIndex, 1);
 						_advance(1);
 						break;
 					}

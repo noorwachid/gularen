@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Gularen/Library/String.h"
 #include "Gularen/Library/StringHelper.h"
 #include "Gularen/Frontend/Lexer.h"
 
@@ -40,7 +41,6 @@ enum class NodeKind {
 
 	link,
 	view,
-	include,
 	footnoteRef,
 	footnoteDecl,
 
@@ -63,17 +63,26 @@ struct Node {
 	Node(Position position, NodeKind kind): position(position), kind(kind)  {
 	}
 
+	~Node() {
+		for (unsigned int i = 0; i < children.size(); i += 1) {
+			children.get(i)->~Node();
+			delete children.get(i);
+			children.get(i) = nullptr;
+		}
+	}
+
 	virtual void print() {
 	}
 };
 
 struct Document : Node {
-	StringSlice path;
+	String path;
+	String content;
 
 	Document(): Node({}, NodeKind::document) {
 	}
 
-	Document(Position position, StringSlice path): Node(position, NodeKind::document), path(path) {
+	Document(Position position, StringSlice path): Node(position, NodeKind::document), path(path.pointer(), path.size()) {
 	}
 
 	virtual void print() override {
@@ -431,17 +440,6 @@ struct View : Node {
 		}
 
 		printf("\n");
-	}
-};
-
-struct Include : Node {
-	StringSlice resource;
-
-	Include(Position position): Node(position, NodeKind::include) {
-	}
-
-	virtual void print() override {
-		printf("include %.*s\n", resource.size(), resource.pointer());
 	}
 };
 
