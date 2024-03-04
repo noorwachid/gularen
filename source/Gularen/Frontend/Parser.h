@@ -8,6 +8,11 @@ namespace Gularen {
 
 class Parser {
 public:
+	Parser() {
+		_document = nullptr;
+		_fileInclusion = true;
+	}
+
 	~Parser() {
 		delete _document;
 		_document = nullptr;
@@ -88,6 +93,10 @@ public:
 		}
 
 		return _document;
+	}
+
+	void setFileInclusion(bool state) {
+		_fileInclusion = state;
 	}
 
 private:
@@ -673,14 +682,20 @@ private:
 			String path = _documentPath + String("/");
 			path.append(filePath.pointer(), filePath.size());
 
-			Parser parser;
-			document = parser.parseFile(StringSlice(path.pointer(), path.size()));
+			if (_fileInclusion) {
+				Parser parser;
+				document = parser.parseFile(StringSlice(path.pointer(), path.size()));
 
-			if (document != nullptr) {
+				if (document != nullptr) {
+					document->position = token.position;
+				}
+
+				parser._document = nullptr;
+			} else {
+				document = new Document();
+				document->path = String(filePath.pointer(), filePath.size());
 				document->position = token.position;
 			}
-
-			parser._document = nullptr;
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
@@ -1015,6 +1030,8 @@ private:
 	Document* _document;
 
 	String _documentPath;
+
+	bool _fileInclusion;
 };
 
 }
