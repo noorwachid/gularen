@@ -123,10 +123,8 @@
 		}
 	</style>
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
-		integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
+	<link rel="stylesheet" href="library/code/style.css">
+	<link rel="stylesheet" href="library/math/style.css">
 </head>
 
 <body>
@@ -482,7 +480,7 @@ Meet me on <2020-10-10 18:00> at Diner`;
 		});
 	</script>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+	<script src="library/code/script.js"></script>
 	<script>
 		function parseHighlight() {
 			document.querySelectorAll('code').forEach(el => {
@@ -501,8 +499,8 @@ Meet me on <2020-10-10 18:00> at Diner`;
 		}
 	</script>
 
-	<script type="module">
-		import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+	<script src="library/diagram/script.js"></script>
+	<script>
 		mermaid.initialize({
 			theme: 'dark',
 		});
@@ -515,9 +513,7 @@ Meet me on <2020-10-10 18:00> at Diner`;
 		}
 	</script>
 
-	<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"
-		integrity="sha384-cpW21h6RZv/phavutF+AuVYrr+dA8xD9zs6FwLpaCct6O9ctzYFfFr4dgmgccOTx"
-		crossorigin="anonymous"></script>
+	<script src="library/math/script.js"></script>
 	<script>
 		function parseKatex() {
 			document.querySelectorAll('.language-latex').forEach(node => {

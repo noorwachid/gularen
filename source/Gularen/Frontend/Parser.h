@@ -76,6 +76,8 @@ public:
 	}
 
 	Document* parse(StringSlice content) {
+		_document = new Document();
+
 		Lexer lexer;
 		_tokens = lexer.parse(content);
 		_tokenIndex = 0;
@@ -87,6 +89,8 @@ public:
 		while (_isBound(0)) {
 			Node* node = _parseBlock();
 			if (node == nullptr) {
+				delete _document;
+				_document = nullptr;
 				return nullptr;
 			}
 			_document->children.append(node);
@@ -671,40 +675,40 @@ private:
 		#else
 
 		Document* document = nullptr;
-		const Token& token = _eat();
-
-		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
-			_advance(1);
-		}
-
-		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-			StringSlice filePath = _eat().content;
-			String path = _documentPath + String("/");
-			path.append(filePath.pointer(), filePath.size());
-
-			if (_fileInclusion) {
-				Parser parser;
-				document = parser.parseFile(StringSlice(path.pointer(), path.size()));
-
-				if (document != nullptr) {
-					document->position = token.position;
-				}
-
-				parser._document = nullptr;
-			} else {
-				document = new Document();
-				document->path = String(filePath.pointer(), filePath.size());
-				document->position = token.position;
-			}
-		}
-
-		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
-			_advance(1);
-		}
-
-		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-			_advance(1);
-		}
+		// const Token& token = _eat();
+		//
+		// if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+		// 	_advance(1);
+		// }
+		//
+		// if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+		// 	StringSlice filePath = _eat().content;
+		// 	String path = _documentPath + String("/");
+		// 	path.append(filePath.pointer(), filePath.size());
+		//
+		// 	if (_fileInclusion) {
+		// 		Parser parser;
+		// 		document = parser.parseFile(StringSlice(path.pointer(), path.size()));
+		//
+		// 		if (document != nullptr) {
+		// 			document->position = token.position;
+		// 		}
+		//
+		// 		parser._document = nullptr;
+		// 	} else {
+		// 		document = new Document();
+		// 		document->path = String(filePath.pointer(), filePath.size());
+		// 		document->position = token.position;
+		// 	}
+		// }
+		//
+		// if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+		// 	_advance(1);
+		// }
+		//
+		// if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+		// 	_advance(1);
+		// }
 
 		return document;
 		#endif
