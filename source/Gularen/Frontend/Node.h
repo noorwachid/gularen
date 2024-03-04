@@ -63,7 +63,7 @@ struct Node {
 	Node(Position position, NodeKind kind): position(position), kind(kind)  {
 	}
 
-	~Node() {
+	virtual ~Node() {
 		for (unsigned int i = 0; i < children.size(); i += 1) {
 			children.get(i)->~Node();
 			delete children.get(i);
