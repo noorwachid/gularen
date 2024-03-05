@@ -1,7 +1,5 @@
 # Gularen CLI
 
-TODO:
-
 *Transpile gularen file to HTML*
 - `gularen to html document.gr`
 
