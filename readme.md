@@ -2,7 +2,7 @@
 A sweet-spot of markup language
 
 ## Overview
-<img width="352" alt="image" src="https://github.com/noorwachid/gularen/assets/42460975/62d3889b-dcd8-4445-ac5c-fa85623c5375">
+<img width="1426" alt="Screenshot 2024-03-05 at 17 26 30" src="https://github.com/noorwachid/gularen/assets/42460975/d90f21f9-12e0-4d91-ab1e-23e29d9911c8">
 
 ## Live Demo
 [Right over here](https://noorwach.id/gularen/editor/)
