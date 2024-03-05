@@ -5,14 +5,6 @@
 
 using namespace Gularen;
 
-void print(Slice<Token> tokens) {
-	for (unsigned int i = 0; i < tokens.size(); i += 1) {
-		Position position = tokens.get(i).position;
-		printf("%d:%d ", position.line, position.column);
-		tokens.get(i).print();
-	}
-}
-
 void print(Node* node, unsigned int depth = 0) {
 	for (unsigned int i = 0; i < depth; i += 1) {
 		printf("  ");
@@ -48,19 +40,38 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	String content = readFile(argv[1]);
+	if (argc < 3) {
+		printf("please specify the action [parse|expect]\n");
+		return 1;
+	}
+
+	String content = readFile(argv[2]);
 	StringSlice contentSlice(content.pointer(), content.size());
 
-	Lexer lexer;
-	Slice<Token> tokens = lexer.parse(contentSlice);
-	print(tokens);
-	printf("\n");
-
 	Parser parser;
-	Slice<Node*> nodes = parser.parse(contentSlice);
+	Document* document = parser.parse(contentSlice);
 
-	for (unsigned int i = 0; i < nodes.size(); i += 1) {
-		print(nodes.get(i));
+	if (document->children.size() < 2 || 
+		document->children.get(0)->kind != NodeKind::codeBlock ||
+		document->children.get(1)->kind != NodeKind::codeBlock
+	) {
+		printf("invalid test file\n");
+		return 0;
+	}
+
+	if (StringSlice(argv[1]) == "parse") {
+		Parser parser;
+		StringSlice content = static_cast<CodeBlock*>(document->children.get(0))->content;
+		Document* contentDocument = parser.parse(content);
+		if (contentDocument != nullptr) {
+			print(contentDocument);
+		}
+	}
+
+	if (StringSlice(argv[1]) == "expect") {
+		Parser parser;
+		StringSlice content = static_cast<CodeBlock*>(document->children.get(1))->content;
+		printf("%.*s\n", content.size(), content.pointer());
 	}
 
 	return 0;

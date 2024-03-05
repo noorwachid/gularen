@@ -1,33 +1,7 @@
-----
-The client API in javascript is {new WebSocket()}.
-
-With highlight {console.log('mystring')}(js).
-
 ---
+fuck
 ---
 
 ---
-direct
----
 
-	--- js
-	function cat() {
-		return '^._.^';
-	}
-	---
-----
----
-1:1 document
-  1:1-32 paragraph
-    1:1-32 text "The client API in javascript is "
-    1:33-50 code source:"new WebSocket()"
-    1:51-50 text "."
-  3:1-15 paragraph
-    3:1-15 text "With highlight "
-    3:16-41 code lang:js source:"console.log('mystring')"
-    3:45 text "."
-  5:1-4 codeblock
-  8:1-4 codeblock source:"direct"
-  12:1-2 indent
-    12:3-8 codeblock lang:js source:"function cat() {\n\treturn '^._.^';\n}"
 ---

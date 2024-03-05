@@ -69,9 +69,7 @@ public:
 		while (_isBound(0)) {
 			Node* node = _parseBlock();
 			if (node == nullptr) {
-				delete _document;
-				_document = nullptr;
-				return nullptr;
+				continue;
 			}
 			_document->children.append(node);
 		}
@@ -97,9 +95,7 @@ public:
 		while (_isBound(0)) {
 			Node* node = _parseBlock();
 			if (node == nullptr) {
-				delete _document;
-				_document = nullptr;
-				return nullptr;
+				continue;
 			}
 			_document->children.append(node);
 		}
