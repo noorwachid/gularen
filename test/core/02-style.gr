@@ -1,15 +1,15 @@
-----
-*bold* _italic_ `monospace`
-----
 ---
-1:1 document
-  1:1 paragraph
-    1:1 fs bold
-      1:2-5 text "bold"
-    1:7 text " "
-    1:8 fs italic
-      1:9-14 text "italic"
-    1:16 text " "
-    1:17 fs monospace
-      1:18-26 text "monospace"
+*bold* _italic_ `monospace`
+---
+---
+document 
+  paragraph
+    style bold
+      text bold
+    text  
+    style italic
+      text italic
+    text  
+    style monospaced
+      text monospace
 ---

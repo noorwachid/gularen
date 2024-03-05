@@ -1,4 +1,4 @@
-----
+---
 - one
 - two
 	- three
@@ -15,42 +15,40 @@
 [ ] one
 [v] two
 [x] three
-----
 ---
-1:1 document
-  1:1-3 bulletList
-    1:1-3 listItem
-      1:4-5 text "one"
-    2:1-3 listItem
-      2:4-5 text "two"
-      3:1-2 indent
-        3:3-4 bulletList
-          3:3-4 listItem
-            3:5-8 text "three"
-            4:1-3 indent
-              4:4-5 bulletList
-                4:4-5 listItem
-                  4:6-8 text "four"
-          5:3-4 listItem
-            5:5-7 text "five"
-          6:1-4 listItem
-            6:5-6 text "six"
-    7:2-3 listItem
-      7:4-7 text "seven"
-    8:1-3 listItem
-      8:4-7 text "eight"
-  10:1-4 indexList
-    10:1-4 listItem
-      10:5-6 text "one"
-    11:1-4 listItem
-      11:5-6 text "two"
-    12:1-4 listItem
-      12:5-8 text "three"
-  14:1 checkList
-    14:1 listItem todo
-      14:2-7 text "one"
-    15:1 listItem done
-      15:2-7 text "two"
-    16:1 listItem cancelled
-      16:2-9 text "three"
+---
+document 
+  list
+    item
+      text one
+    item
+      text two
+      list
+        item
+          text three
+          list
+            item
+              text four
+        item
+          text five
+        item
+          text six
+    item
+      text seven
+    item
+      text eight
+  numberList
+    item
+      text one
+    item
+      text two
+    item
+      text three
+  todoList
+    todoItem todo
+      text one
+    todoItem done
+      text two
+    todoItem cancelled
+      text three
 ---

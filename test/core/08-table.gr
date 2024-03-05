@@ -1,31 +1,31 @@
-----
+---
 | Name | Chromosome | Age |
 |:-----|:----------:|----:|
 | Noor |     XY     |  22 |
 | Dori |     XX     |  19 |
-----
 ---
-1:1 document
-  1:1 table header:1 footer:1 alignments:left,center,right
-    1:1 tableRow
-      1:1 tableCell
-        1:2-7 text " Name"
-      1:8 tableCell
-        1:9-20 text "Chromosome"
-      1:21 tableCell
-        1:22-26 text "Age"
-    3:1 tableRow
-      3:1 tableCell
-        3:2-7 text " Noor"
-      3:8 tableCell
-        3:9-20 text "XY"
-      3:21 tableCell
-        3:22-26 text "22"
-    4:1 tableRow
-      4:1 tableCell
-        4:2-7 text " Dori"
-      4:8 tableCell
-        4:9-20 text "XX"
-      4:21 tableCell
-        4:22-26 text "19"
+---
+document 
+  table left, center, right
+    row header
+      cell
+        text  Name 
+      cell
+        text  Chromosome 
+      cell
+        text  Age 
+    row content
+      cell
+        text  Noor 
+      cell
+        text      XY     
+      cell
+        text   22 
+    row content
+      cell
+        text  Dori 
+      cell
+        text      XX     
+      cell
+        text   19 
 ---

@@ -2,6 +2,7 @@
 ~ connot be tested
 ---
 ---
-paragraph
-  comment ~ connot be tested
+document 
+  paragraph
+    comment ~ connot be tested
 ---

@@ -1,4 +1,4 @@
-----
+---
 -a
 --b
 ---c
@@ -8,30 +8,36 @@ f--g
 h---i
 
 "don't judge a book by it's cover"
-----
 ---
-1:1 document
-  1:1 paragraph
-    1:1 punct -
-    1:2 text "a\n"
-    2:1 punct –
-    2:2-3 text "b\n"
-    3:1 punct –
-    3:2-4 text "c"
-  5:1 paragraph
-    5:1 text "d"
-    5:2 punct -
-    5:3 text "e\nf"
-    6:2 punct –
-    6:3-4 text "g\nh"
-    7:2 punct –
-    7:3-5 text "i"
-  9:1 paragraph
-    9:1 punct “
-    9:2-4 text "don"
-    9:5 punct ’
-    9:6-25 text "t judge a book by it"
-    9:26 punct ’
-    9:27-33 text "s cover"
-    9:34 punct ”
+---
+document 
+  paragraph
+    punct hyphen
+    text a
+    space
+    punct enDash
+    text b
+    space
+    punct emDash
+    text c
+  paragraph
+    text d
+    punct hyphen
+    text e
+    space
+    text f
+    punct enDash
+    text g
+    space
+    text h
+    punct emDash
+    text i
+  paragraph
+    punct quoteOpen
+    text don
+    punct squoteClose
+    text t judge a book by it
+    punct squoteClose
+    text s cover
+    punct quoteClose
 ---

@@ -53,33 +53,21 @@ public:
 		fread(data, _document->content.size(), sizeof(char), file);
 		fclose(file);
 
-
-		Lexer lexer;
-		_tokens = lexer.parse(StringSlice(_document->content.pointer(), _document->content.size()));
-		_tokenIndex = 0;
-
-		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
-		// 	_tokens.get(i).print();
-		// }
-
-		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-			_advance(1);
-		}
-
-		while (_isBound(0)) {
-			Node* node = _parseBlock();
-			if (node == nullptr) {
-				continue;
-			}
-			_document->children.append(node);
-		}
-
-		return _document;
+		return _parse(StringSlice(_document->content.pointer(), _document->content.size()));
 	}
 
 	Document* parse(StringSlice content) {
 		_document = new Document();
 
+		return _parse(content);
+	}
+
+	void setFileInclusion(bool state) {
+		_fileInclusion = state;
+	}
+
+private:
+	Document* _parse(StringSlice content) {
 		Lexer lexer;
 		_tokens = lexer.parse(content);
 		_tokenIndex = 0;
@@ -88,11 +76,11 @@ public:
 		// 	_tokens.get(i).print();
 		// }
 
-		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-			_advance(1);
-		}
-
 		while (_isBound(0)) {
+			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+				_advance(1);
+			}
+
 			Node* node = _parseBlock();
 			if (node == nullptr) {
 				continue;
@@ -103,17 +91,17 @@ public:
 		return _document;
 	}
 
-	void setFileInclusion(bool state) {
-		_fileInclusion = state;
-	}
-
-private:
 	decltype(nullptr) _wrong(StringSlice message) {
 		printf("[ParsingError] %.*s\n", message.size(), message.pointer());
 		return nullptr;
 	}
 
 	decltype(nullptr) _expect(StringSlice message) {
+		if (!_isBound(0)) {
+			printf("[ParsingError] unxpected end of file, expect %.*s\n", message.size(), message.pointer());
+			return nullptr;
+		}
+
 		StringSlice kind = toStringSlice(_get(0).kind);
 		printf("[ParsingError] unxpected token %.*s, expect %.*s\n", kind.size(), kind.pointer(), message.size(), message.pointer());
 		return nullptr;

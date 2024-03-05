@@ -223,6 +223,7 @@ public:
 					break;
 				default: 
 					_append(TokenKind::newlinePlus);
+					_consumeIndent();
 					break;
 			}
 		}
@@ -857,7 +858,7 @@ private:
 		unsigned int oldIndentLevel = _indentLevel;
 
 		while (_isBound(0)) {
-			if (_get(0) == '\n') {
+			if (_isBound(0) && _get(0) == '\n') {
 				_advanceLine(1);
 				_advance(1);
 				unsigned int indentLevel = 0;

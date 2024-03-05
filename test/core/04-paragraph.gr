@@ -1,9 +1,11 @@
-----
+---
 hello world
 nice day
-----
 ---
-1:1 document
-  1:1-11 paragraph
-    1:1-11 text "hello world\nnice day"
+---
+document 
+  paragraph
+    text hello world
+    space
+    text nice day
 ---

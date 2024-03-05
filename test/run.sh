@@ -8,5 +8,7 @@ do
 		echo "PASS $path"
 	else
 		echo "FAIL $path"
+		echo "RESULT"
+		echo "$result"
 	fi
 done
