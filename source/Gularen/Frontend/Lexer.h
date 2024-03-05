@@ -868,9 +868,17 @@ private:
 
 				if (_get(0) == '-' && indentLevel == oldIndentLevel) {
 					unsigned int i = 0;
-					while (i < dashCount && _get(i) == '-') { i += 1; }
+					while (_isBound(0) && i < dashCount && _get(i) == '-') { i += 1; }
 					if (i == dashCount && (!_isBound(dashCount) || (_isBound(dashCount) && _get(dashCount) == '\n'))) {
-						_append(TokenKind::raw, oldContextIndex + 1, _contentIndex - oldContextIndex - 2 - oldIndentLevel);
+						unsigned int size = _contentIndex - oldContextIndex - oldIndentLevel;
+						if (size > 0) {
+							size -= 1;
+
+							if (size > 0) {
+								size -= 1;
+							}
+						}
+						_append(TokenKind::raw, oldContextIndex + 1, size);
 						_append(TokenKind::fenceClose, _contentIndex, dashCount);
 						_advance(dashCount);
 						return;
