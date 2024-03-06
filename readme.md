@@ -36,7 +36,7 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [03 Heading](example/core/03-heading.gr)
 - [04 Paragraph](example/core/04-paragraph.gr)
 - [05 Indentation](example/core/05-indentation.gr)
-- [06 Breaking](example/core/06-breaking.gr)
+- [06 Break](example/core/06-break.gr)
 - [07 List](example/core/07-list.gr)
 - [08 Table](example/core/08-table.gr)
 - [09 Code](example/core/09-code.gr)
