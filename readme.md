@@ -29,25 +29,33 @@ A sweet-spot of markup language
 
 I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any drastic changes to the syntax and structures.
 
-## Language Specification
-- [01 Comment](spec/01-comment.gr)
-- [02 Style](spec/02-style.gr)
-- [03 Heading](spec/03-heading.gr)
-- [04 Paragraph](spec/04-paragraph.gr)
-- [05 Indentation](spec/05-indentation.gr)
-- [06 Breaking](spec/06-breaking.gr)
-- [07 List](spec/07-list.gr)
-- [08 Table](spec/08-table.gr)
-- [09 Code](spec/09-code.gr)
-- [0A Linker](spec/0A-linker.gr)
-- [0B Viewer](spec/0B-viewer.gr)
-- [0C Inclusion](spec/0C-inclusion.gr)
-- [0D Footnote](spec/0D-footnote.gr)
-- [0E Punctuation](spec/0E-punctuation.gr)
-- [0F Emoji](spec/0F-emoji.gr)
-- [10 Blockquote](spec/10-blockquote.gr)
-- [11 Admonition](spec/11-admonition.gr)
-- [12 Date-time](spec/12-datetime.gr)
+## Examples
+### Core Features
+- [01 Comment](example/core/01-comment.gr)
+- [02 Style](example/core/02-style.gr)
+- [03 Heading](example/core/03-heading.gr)
+- [04 Paragraph](example/core/04-paragraph.gr)
+- [05 Indentation](example/core/05-indentation.gr)
+- [06 Breaking](example/core/06-breaking.gr)
+- [07 List](example/core/07-list.gr)
+- [08 Table](example/core/08-table.gr)
+- [09 Code](example/core/09-code.gr)
+- [0A Linker](example/core/0A-linker.gr)
+- [0B Viewer](example/core/0B-viewer.gr)
+- [0C Inclusion](example/core/0C-inclusion.gr)
+- [0D Footnote](example/core/0D-footnote.gr)
+- [0E Punctuation](example/core/0E-punctuation.gr)
+- [0F Emoji](example/core/0F-emoji.gr)
+- [10 Blockquote](example/core/10-blockquote.gr)
+- [11 Admonition](example/core/11-admonition.gr)
+- [12 Date-time](example/core/12-datetime.gr)
+
+### Extended Features
+- [01 Metadata](example/extended/01-metadata.gr)
+- [02 Annotation](example/extended/02-annotation.gr)
+- [03 Tag](example/extended/03-tag.gr)
+- [04 Table of Contents](example/extended/04-toc.gr)
+- [05 Agenda](example/extended/05-agenda.gr)
 
 ## Changelog
 **2024-03-01**:

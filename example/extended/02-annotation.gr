@@ -1,0 +1,31 @@
+~ Changing the entity behaviour based on extra data
+~ Imagine generating presentation slides
+
+~> size fit
+>>> Impactful Heading
+
+<<<
+
+~> layout 2-columns
+![egyptian_cat.png](Egyptian Cat)
+
+	***
+
+Second Column.
+Bla bla bla...
+
+<<<
+
+~> position background
+![various_cat.png]
+
+Text over image
+
+<<<
+
+Fragmented list:
+
+~> step fragment
+- One
+- Two
+- Three
