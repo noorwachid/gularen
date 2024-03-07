@@ -11,9 +11,13 @@ Code for the live-demo website.
 ### `cli`
 Code for the command line interface.
 
+### `example`
+Runtime example of Gularen documents.
+
 ### `source`
-- `Gularen/`: Publicly available APIs
-- `Gularen/Internal/`: Should not be used in consumer source code.
+- `Gularen/Library`: Data-structures and algorithms used by Gularen.
+- `Gularen/Frontend`: Parsing code, from Gularen document to AST.
+- `Gularen/Backend`: Composing code, from AST to other content-type.
 
 ### `spec`
 Specification documents.
@@ -31,5 +35,5 @@ Test documents.
 ## Unit Test
 Assuming you are using Linux or MacOS:
 
-Create a `build` directory and build the project; you will get the `gularen-test` executable.
+Create a `binary` directory and build the project with `sh test/build.sh`, you will get the `gularen-test` executable.
 Run `sh test/run.sh` to ensure all tests pass.
