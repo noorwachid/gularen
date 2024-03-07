@@ -27,6 +27,8 @@ A sweet-spot of markup language
 
 **Comment**, Anything after `~` in `now you see me ~ now you don't` will not be rendered.
 
+**Secure**, You dont have to worry about inline HTML, because Gularen does not support inline HTML.
+
 I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any drastic changes to the syntax and structures.
 
 ## Examples
