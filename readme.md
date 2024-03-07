@@ -52,12 +52,14 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [11 Admonition](example/core/11-admonition.gr)
 - [12 Date-time](example/core/12-datetime.gr)
 
-### Extended Features
-- [01 Metadata](example/extended/01-metadata.gr)
-- [02 Annotation](example/extended/02-annotation.gr)
-- [03 Tag](example/extended/03-tag.gr)
-- [04 Table of Contents](example/extended/04-toc.gr)
-- [05 Agenda](example/extended/05-agenda.gr)
+### Composed Features
+- [01 Table of Contents](example/composed/04-toc.gr)
+- [02 Agenda](example/composed/05-agenda.gr)
+
+### Experimental Features
+- [01 Metadata](example/experimental/01-metadata.gr)
+- [02 Annotation](example/experimental/02-annotation.gr)
+- [03 Tag](example/experimental/03-tag.gr)
 
 ## Changelog
 **2024-03-01**:
