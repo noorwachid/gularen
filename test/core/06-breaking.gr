@@ -1,10 +1,10 @@
----
+----
 hello << world
 
 <<<
 
 ***
----
+----
 ---
 document 
   paragraph

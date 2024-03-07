@@ -1,9 +1,9 @@
----
+----
 | Name | Chromosome | Age |
 |:-----|:----------:|----:|
 | Noor |     XY     |  22 |
 | Dori |     XX     |  19 |
----
+----
 ---
 document 
   table left, center, right

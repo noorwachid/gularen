@@ -1,4 +1,4 @@
----
+----
 - one
 - two
 	- three
@@ -15,7 +15,7 @@
 [ ] one
 [v] two
 [x] three
----
+----
 ---
 document 
   list

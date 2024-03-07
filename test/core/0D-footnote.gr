@@ -1,8 +1,8 @@
----
+----
 something here^[1bc].
 
 =[1bc] something there
----
+----
 ---
 document 
   paragraph

@@ -1,4 +1,4 @@
----
+----
 [file]
 [file>heading]
 [>heading]
@@ -8,7 +8,7 @@
 [file>heading](label)
 [>heading](label)
 [https://www.org](label)
----
+----
 ---
 document 
   paragraph
