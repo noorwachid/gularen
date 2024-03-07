@@ -16,16 +16,29 @@ void print(Node* node, unsigned int depth = 0) {
 int main(int argc, char** argv) {
 	if (argc < 2) {
 		printf("please specify the action\n");
-		printf("  %s [to|parse]\n", argv[0]);
+		printf("  %s [help|to|parse]\n", argv[0]);
 		return 1;
 	}
 
 	StringSlice action = argv[1];
 
+	if (action == "help") {
+		printf("%s help\n", argv[0]);
+		printf("  display help page\n\n");
+		printf("%s to content-type file-path.gr\n", argv[0]);
+		printf("  convert specified file-path to specified content-type\n");
+		printf("  content-type can be one of:\n");
+		printf("    - html\n");
+		printf("\n");
+		printf("%s parse file-path.gr\n", argv[0]);
+		printf("  convert specified file-path to abstract syntax tree\n\n");
+		return 0;
+	}
+
 	if (action == "to") {
 		if (argc < 4) {
-			printf("please specify the target and file path\n");
-			printf("  %s to [html|md] file-path.gr\n", argv[0]);
+			printf("please specify the content-type and file path\n");
+			printf("  %s to content-type file-path.gr\n", argv[0]);
 
 			return 1;
 		}
@@ -50,7 +63,7 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 
-		printf("unknown target\n");
+		printf("unknown content-type\n");
 		return 1;
 	}
 
