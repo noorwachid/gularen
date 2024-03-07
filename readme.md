@@ -53,8 +53,8 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [12 Date-time](example/core/12-datetime.gr)
 
 ### Composed Features
-- [01 Table of Contents](example/composed/04-toc.gr)
-- [02 Agenda](example/composed/05-agenda.gr)
+- [01 Table of Contents](example/composed/01-toc.gr)
+- [02 Agenda](example/composed/02-agenda.gr)
 
 ### Experimental Features
 - [01 Metadata](example/experimental/01-metadata.gr)
