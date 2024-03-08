@@ -1,12 +1,21 @@
-~ Changing the entity behaviour based on extra data
+~ Annotations are denoted with double tilde followed by a space and a colon separated key value
+
+~ The first annotation without entity next to it belongs to Document node
+~ And used as metadata of the document
+
+~~ title: My Amazing Presentation
+~~ author: Noor Wachid
+~~ created-at: 2024-03-08
+
+~ An annotation changes the entity behaviour based on the extra data
 ~ Imagine generating presentation slides
 
-~~ @size: fit
+~~ size: fit
 >>> Impactful Heading
 
 <<<
 
-~~ @layout: 2-columns
+~~ layout: 2-columns
 ![egyptian_cat.png](Egyptian Cat)
 
 	***
@@ -16,7 +25,7 @@ Bla bla bla...
 
 <<<
 
-~~ @position: background
+~~ position: background
 ![various_cat.png]
 
 Text over image
@@ -25,7 +34,7 @@ Text over image
 
 Fragmented list:
 
-~~ @step: fragment
+~~ step: fragment
 - One
 - Two
 - Three

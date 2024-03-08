@@ -57,9 +57,8 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [02 Agenda](example/composed/02-agenda.gr)
 
 ### Experimental Features
-- [01 Metadata](example/experimental/01-metadata.gr)
+- [01 Tag](example/experimental/03-tag.gr)
 - [02 Annotation](example/experimental/02-annotation.gr)
-- [03 Tag](example/experimental/03-tag.gr)
 
 ## Changelog
 **2024-03-01**:

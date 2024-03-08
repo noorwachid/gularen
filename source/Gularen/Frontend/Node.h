@@ -55,10 +55,16 @@ enum class NodeKind {
 
 };
 
+struct Annotation {
+	StringSlice key;
+	StringSlice value;
+};
+
 struct Node {
 	Position position;
 	NodeKind kind;
 	Array<Node*> children;
+	Array<Annotation> annotations;
 
 	Node(Position position, NodeKind kind): position(position), kind(kind)  {
 	}
