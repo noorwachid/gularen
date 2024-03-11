@@ -333,6 +333,26 @@ private:
 				return _content.append("<blockquote class=\"quote\">\n");
 			}
 
+			case NodeKind::accountTag: {
+				const AccountTag* accountTag = static_cast<const AccountTag*>(node);
+				_content.append("<a class=\"account-tag\" href=\"");
+				_escapeAttribute(accountTag->resource);
+				_content.append("\">@");
+				_escape(accountTag->resource);
+				_content.append("</a>");
+				return;
+			}
+
+			case NodeKind::hashTag: {
+				const HashTag* hashTag = static_cast<const HashTag*>(node);
+				_content.append("<a class=\"hash-tag\" href=\"");
+				_escapeAttribute(hashTag->resource);
+				_content.append("\">#");
+				_escape(hashTag->resource);
+				_content.append("</a>");
+				return;
+			}
+
 			default: break;
 		}
 	}

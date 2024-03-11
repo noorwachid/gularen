@@ -526,8 +526,8 @@ private:
 				}
 
 				case '@': {
-					unsigned int oldContentIndex = _contentIndex;
 					_advance(1);
+					unsigned int oldContentIndex = _contentIndex;
 
 					while (_isBound(0) && (
 						(_get(0) >= 'a' && _get(0) <= 'z') ||
@@ -543,8 +543,8 @@ private:
 				}
 
 				case '#': {
-					unsigned int oldContentIndex = _contentIndex;
 					_advance(1);
+					unsigned int oldContentIndex = _contentIndex;
 
 					while (_isBound(0) && (
 						(_get(0) >= 'a' && _get(0) <= 'z') ||
