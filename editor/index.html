@@ -194,13 +194,6 @@
 				composed: false
 			}));
 			gularen.transpiled = true;
-
-			outputNode.querySelectorAll('time').forEach(timeNode => {
-				const dateTime = timeNode.getAttribute('datetime');
-				if (dateTime) {
-					timeNode.textContent = (new Date(dateTime)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-				}
-			});
 		}
 
 		function getCursorPos(node) {
