@@ -424,6 +424,9 @@ Muh {x}(latex) is pretty.
 F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 ---
 
+>> Emoji
+:coffee: + :rainy: = :small-smile:
+
 >> Admonition
 <Tip> A tip
 <Note> A note
@@ -523,6 +526,21 @@ Meet me on <2020-10-10 18:00> at Diner`;
 		addEventListener('gularentranspile', parseKatex);
 		if (gularen.transpiled) {
 			parseKatex();
+		}
+	</script>
+
+	<script src="library/emoji/script.js"></script>
+	<script>
+		function parseEmoji() {
+			document.querySelectorAll('.emoji').forEach(node => {
+				if (Emoji.database.hasOwnProperty(node.textContent)) {
+					node.textContent = Emoji.database[node.textContent];
+				}
+			});
+		}
+		addEventListener('gularentranspile', parseEmoji);
+		if (gularen.transpiled) {
+			parseEmoji();
 		}
 	</script>
 </body>
