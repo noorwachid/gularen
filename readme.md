@@ -59,6 +59,11 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [02 Agenda](example/composed/02-agenda.gr)
 
 ## Changelog
+**2024-03-11**:
+- Add emoji code specification
+- Add tag specification
+- Add annotation specification
+
 **2024-03-01**:
 
 Breaking changes:
