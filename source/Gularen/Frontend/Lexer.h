@@ -260,8 +260,8 @@ private:
 						if (_isBound(2) && _get(2) == ' ') {
 							_append(TokenKind::head2, _contentIndex, 2);
 							_advance(3);
+							break;
 						}
-						break;
 					}
 
 					if (_isBound(1) && _get(1) == ' ') {
