@@ -265,7 +265,9 @@ private:
 				const FootnoteRef* ref = static_cast<const FootnoteRef*>(node);
 				_content.append("<sup><a href=\"#Footnote-");
 				_escapeID(ref->resource);
-				_content.append("\"></a></sup>");
+				_content.append("\">");
+				_escapeID(ref->resource);
+				_content.append("</a></sup>");
 				return;
 			}
 
