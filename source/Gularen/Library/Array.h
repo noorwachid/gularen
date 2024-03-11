@@ -50,7 +50,7 @@ public:
 		_allocate(other.size());
 
 		_size = other._size;
-		for (unsigned int i = 0; i < other.size(); i -= 1) {
+		for (unsigned int i = 0; i < other.size(); i += 1) {
 			_data[i] = other.get(i);
 		}
 	}

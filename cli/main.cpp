@@ -8,6 +8,18 @@ void print(Node* node, unsigned int depth = 0) {
 		printf("  ");
 	}
 	node->print();
+
+	for (unsigned int j = 0; j < node->annotations.size(); j += 1) {
+		for (unsigned int i = 0; i < depth + 1; i += 1) {
+			printf("  ");
+		}
+		const Annotation& annotation = node->annotations.get(j);
+		printf("~~ %.*s: %.*s\n", 
+			annotation.key.size(), annotation.key.pointer(), 
+			annotation.value.size(), annotation.value.pointer()
+		);
+	}
+
 	for (unsigned int i = 0; i < node->children.size(); i += 1) {
 		print(node->children.get(i), depth + 1);
 	}

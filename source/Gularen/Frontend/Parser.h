@@ -76,9 +76,22 @@ private:
 		// 	_tokens.get(i).print();
 		// }
 
+		bool firstAnnotation = true;
+
 		while (_isBound(0)) {
 			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
 				_advance(1);
+
+				if (firstAnnotation) {
+					firstAnnotation = false;
+					_document->annotations = _annotations;
+					_annotations = Array<Annotation>();
+				}
+			}
+
+			if (_get(0).kind == TokenKind::annotationKey) {
+				_parseAnnotation();
+				continue;
 			}
 
 			Node* node = _parseBlock();
@@ -86,6 +99,11 @@ private:
 				continue;
 			}
 			_document->children.append(node);
+
+			if (_annotations.size() != 0) {
+				node->annotations = _annotations;
+				_annotations = Array<Annotation>();
+			}
 		}
 
 		return _document;
@@ -913,6 +931,17 @@ private:
 		return admon;
 	}
 
+	void _parseAnnotation() {
+		while (_isBound(0) && _get(0).kind == TokenKind::annotationKey) {
+			Annotation annotation;
+			annotation.key = _eat().content;
+			if (_isBound(0) && _get(0).kind == TokenKind::annotationValue) {
+				annotation.value = _eat().content;
+			}
+			_annotations.append(annotation);
+		}
+	}
+
 	bool _isParagraph() {
 		switch (_get(0).kind) {
 			case TokenKind::comment:
@@ -1037,6 +1066,8 @@ private:
 	String _documentPath;
 
 	bool _fileInclusion;
+
+	Array<Annotation> _annotations;
 };
 
 }

@@ -8,6 +8,8 @@ namespace Gularen {
 
 enum class TokenKind {
 	comment,
+	annotationKey,
+	annotationValue,
 
 	text,
 
@@ -86,6 +88,8 @@ enum class TokenKind {
 StringSlice toStringSlice(TokenKind kind) {
 	switch (kind) {
 		case TokenKind::comment: return "comment";
+		case TokenKind::annotationKey: return "annotationKey";
+		case TokenKind::annotationValue: return "annotationValue";
 
 		case TokenKind::text: return "text";
 
@@ -355,7 +359,7 @@ private:
 			switch (_get(0)) {
 				case '~':
 					_consumeComment();
-					break;
+					return;
 
 				case '*': 
 					if (_isBound(2) && _get(1) == '*' && _get(2) == '*') {
@@ -671,7 +675,42 @@ private:
 	}
 
 	void _consumeComment() {
-		unsigned int beginIndex = _contentIndex;
+		unsigned int beginIndex = _contentIndex + 1;
+		
+		if (_isBound(2) && _get(1) == '~' && _get(2) == ' ') {
+			_advance(3);
+			unsigned int keyIndex = _contentIndex;
+
+			while (_isBound(0) && (
+				(_get(0) >= 'a' && _get(0) <= 'z') ||
+				(_get(0) >= 'A' && _get(0) <= 'Z') ||
+				(_get(0) >= '0' && _get(0) <= '9') ||
+				(_get(0) == '-')
+			)) {
+				_advance(1);
+			}
+
+			if (_isBound(0) && _get(0) == ':') {
+				_append(TokenKind::annotationKey, keyIndex, _contentIndex - keyIndex);
+				_advance(1);
+				while (_isBound(0) && _get(0) == ' ') {
+					_advance(1);
+				}
+				unsigned int valueIndex = _contentIndex;
+
+				while (_isBound(0) && _get(0) != '\n') {
+					_advance(1);
+				}
+
+				_append(TokenKind::annotationValue, valueIndex, _contentIndex - valueIndex);
+
+				if (_isBound(0) && _get(0) == '\n') {
+					_advanceLine(1);
+					_advance(1);
+				}
+				return;
+			}
+		}
 
 		while (_isBound(0) && _get(0) != '\n') {
 			_advanceLine(1);
@@ -684,7 +723,6 @@ private:
 			_advanceLine(1);
 			_advance(1);
 		}
-
 	}
 
 	void _consumeText() {
