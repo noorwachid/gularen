@@ -52,13 +52,11 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 - [11 Admonition](example/core/11-admonition.gr)
 - [12 Date-time](example/core/12-datetime.gr)
 - [13 Tag](example/core/13-tag.gr)
+- [14 Annotation](example/core/14-annotation.gr)
 
 ### Composed Features
 - [01 Table of Contents](example/composed/01-toc.gr)
 - [02 Agenda](example/composed/02-agenda.gr)
-
-### Experimental Features
-- [01 Annotation](example/experimental/01-annotation.gr)
 
 ## Changelog
 **2024-03-01**:
