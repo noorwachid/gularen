@@ -187,6 +187,9 @@ private:
 			case TokenKind::squoteOpen: return new Punct(_eat().position, Punct::Type::squoteOpen);
 			case TokenKind::squoteClose: return new Punct(_eat().position, Punct::Type::squoteClose);
 
+			case TokenKind::accountTag: return new AccountTag(_get(0).position, _eat().content);
+			case TokenKind::hashTag: return new HashTag(_get(0).position, _eat().content);
+
 			default: {
 				return nullptr;
 			}
@@ -920,8 +923,6 @@ private:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
 
-			case TokenKind::lineBreak:
-
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
@@ -937,6 +938,11 @@ private:
 			case TokenKind::quoteClose:
 			case TokenKind::squoteOpen:
 			case TokenKind::squoteClose:
+
+			case TokenKind::lineBreak:
+
+			case TokenKind::accountTag:
+			case TokenKind::hashTag:
 				return true;
 
 			default: 
@@ -970,6 +976,9 @@ private:
 			case TokenKind::squoteClose:
 
 			case TokenKind::lineBreak:
+
+			case TokenKind::accountTag:
+			case TokenKind::hashTag:
 				return _parseParagraph();
 
 			case TokenKind::head1:

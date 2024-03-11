@@ -79,6 +79,8 @@ enum class TokenKind {
 	dateTime,
 	emoji,
 
+	accountTag,
+	hashTag,
 };
 
 StringSlice toStringSlice(TokenKind kind) {
@@ -153,6 +155,9 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::emoji: return "emoji";
 		case TokenKind::dateTime: return "dateTime";
 		case TokenKind::admon: return "admon";
+
+		case TokenKind::accountTag: return "accountTag";
+		case TokenKind::hashTag: return "hashTag";
 	}
 }
 
@@ -516,6 +521,40 @@ private:
 					return;
 				}
 
+				case '@': {
+					unsigned int oldContentIndex = _contentIndex;
+					_advance(1);
+
+					while (_isBound(0) && (
+						(_get(0) >= 'a' && _get(0) <= 'z') ||
+						(_get(0) >= 'A' && _get(0) <= 'Z') ||
+						(_get(0) >= '0' && _get(0) <= '9') ||
+						(_get(0) == '_')
+					)) {
+						_advance(1);
+					}
+
+					_append(TokenKind::accountTag, oldContentIndex, _contentIndex - oldContentIndex);
+					break;
+				}
+
+				case '#': {
+					unsigned int oldContentIndex = _contentIndex;
+					_advance(1);
+
+					while (_isBound(0) && (
+						(_get(0) >= 'a' && _get(0) <= 'z') ||
+						(_get(0) >= 'A' && _get(0) <= 'Z') ||
+						(_get(0) >= '0' && _get(0) <= '9') ||
+						(_get(0) == '_')
+					)) {
+						_advance(1);
+					}
+
+					_append(TokenKind::hashTag, oldContentIndex, _contentIndex - oldContentIndex);
+					break;
+				}
+
 				default: 
 					_consumeText(); 
 					break;
@@ -649,6 +688,7 @@ private:
 	}
 
 	void _consumeText() {
+		bool previousAlphanumeric = false;
 		unsigned int beginIndex = _contentIndex;
 
 		while (_isBound(0)) {
@@ -657,6 +697,9 @@ private:
 				case ' ':
 				case ',':
 				case '.':
+					previousAlphanumeric = false;
+					_advance(1);
+					break;
 
 				case '0': case '1': case '2': case '3': case '4':
 				case '5': case '6': case '7': case '8': case '9':
@@ -670,9 +713,7 @@ private:
 				case 'h': case 'i': case 'j': case 'k': case 'l': case 'm':
 				case 'n': case 'o': case 'p': case 'q': case 'r': case 's': case 't': 
 				case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
-
-				// slow case
-				default:
+					previousAlphanumeric = true;
 					_advance(1);
 					break;
 
@@ -691,10 +732,19 @@ private:
 				case '\n':
 					goto end;
 
+				case '@':
+				case '#':
+					if (!previousAlphanumeric) {
+						goto end;
+					}
+					_advance(1);
+					break;
+
 				case '!':
 				case '?':
 				case '^':
 				case '=':
+					previousAlphanumeric = false;
 					if (_isBound(1) && _get(1) == '[') {
 						goto end;
 					}
@@ -702,6 +752,11 @@ private:
 					_advance(1);
 					break;
 						
+				// slow case
+				default:
+					previousAlphanumeric = false;
+					_advance(1);
+					break;
 			}
 		}
 

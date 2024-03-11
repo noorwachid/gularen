@@ -53,6 +53,8 @@ enum class NodeKind {
 	dateTime,
 	admon,
 
+	accountTag,
+	hashTag,
 };
 
 struct Annotation {
@@ -637,6 +639,28 @@ struct Admon : Node {
 
 	virtual void print() override {
 		printf("admon %.*s\n", label.size(), label.pointer());
+	}
+};
+
+struct AccountTag : Node {
+	StringSlice resource;
+
+	AccountTag(Position position, StringSlice resource): Node(position, NodeKind::accountTag), resource(resource) {
+	}
+
+	virtual void print() override {
+		printf("accountTag %.*s\n", resource.size(), resource.pointer());
+	}
+};
+
+struct HashTag : Node {
+	StringSlice resource;
+
+	HashTag(Position position, StringSlice resource): Node(position, NodeKind::hashTag), resource(resource) {
+	}
+
+	virtual void print() override {
+		printf("hashTag %.*s\n", resource.size(), resource.pointer());
 	}
 };
 
