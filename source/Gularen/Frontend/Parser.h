@@ -75,6 +75,7 @@ private:
 		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
 		// 	_tokens.get(i).print();
 		// }
+		// return nullptr;
 
 		bool firstAnnotation = true;
 
@@ -96,6 +97,7 @@ private:
 
 			Node* node = _parseBlock();
 			if (node == nullptr) {
+				_advance(1);
 				continue;
 			}
 			_document->children.append(node);
@@ -612,14 +614,18 @@ private:
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
 			_advance(1);
 
-			if (_isBound(2) && 
-				_get(0).kind == TokenKind::parenOpen && 
-				_get(1).kind == TokenKind::raw && 
-				_get(2).kind == TokenKind::parenClose) {
+			if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
+				if (_isBound(2) && 
+					_get(1).kind == TokenKind::raw && 
+					_get(2).kind == TokenKind::parenClose) {
 
-				link->label = _get(1).content;
+					link->label = _get(1).content;
 
-				_advance(3);
+					_advance(3);
+				} else {
+					delete link;
+					return nullptr;
+				}
 			}
 		}
 
@@ -640,14 +646,18 @@ private:
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
 			_advance(1);
 
-			if (_isBound(2) && 
-				_get(0).kind == TokenKind::parenOpen && 
-				_get(1).kind == TokenKind::raw && 
-				_get(2).kind == TokenKind::parenClose) {
+			if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
+				if (_isBound(2) && 
+					_get(1).kind == TokenKind::raw && 
+					_get(2).kind == TokenKind::parenClose) {
 
-				view->label = _get(1).content;
+					view->label = _get(1).content;
 
-				_advance(3);
+					_advance(3);
+				} else {
+					delete view;
+					return nullptr;
+				}
 			}
 		}
 
