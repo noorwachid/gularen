@@ -66,6 +66,14 @@ public:
 		_fileInclusion = state;
 	}
 
+	Slice<Reference*> references() {
+		return Slice<Reference*>(_references.pointer(), _references.size());
+	}
+
+	Slice<Heading*> headings() {
+		return Slice<Heading*>(_headings.pointer(), _headings.size());
+	}
+
 private:
 	Document* _parse(StringSlice content) {
 		Lexer lexer;
@@ -321,6 +329,7 @@ private:
 				return nullptr;
 		}
 
+		_headings.append(heading);
 		
 		while (_isBound(0)) {
 			Node* node = _parseInline();
@@ -817,6 +826,8 @@ private:
 		Reference* ref = new Reference(_get(0).position);
 		ref->id = _get(2).content;
 
+		_references.append(ref);
+
 		_advance(6);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::indentOpen) {
@@ -1146,6 +1157,10 @@ private:
 	bool _fileInclusion;
 
 	Array<Annotation> _annotations;
+
+	Array<Reference*> _references;
+
+	Array<Heading*> _headings;
 };
 
 }
