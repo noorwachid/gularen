@@ -1,19 +1,21 @@
 >>> Citation
+>> Mentions
 --- gr
-A few researchers in the linguistics field have developed training programs designed to improve native speakers' ability to understand accented speech ^[thomas-2004]. 
-Their training techniques are based on the research described above indicating that comprehension improves with exposure to non-native speech. 
-^[derwing-2002] conducted their training with students preparing to be social workers, 
-but note that other professionals who work with non-native speakers could benefit from a similar program.
+"So that's why birds are real" ^[birds-real]. ~ auto generated label.
+Hans wrote a book ^[bird-not-real](Bird is Not real) to refute Derwing ideas.
+---
 
+>> References
+---
 >>> References
-
-^[derwing-2002]:
-	title: Teaching native speakers to listen to foreign-accented speech. Journal of Multilingual and Multicultural Development, 23(4), 245-259.
-	authors: Derwing, T. M., Rossiter, M. J., Munro, M. J.
+^[birds-real]:
+	title: Birds are Real
+	authors: James Derwing
 	year: 2002 
+	page: 245
 
-^[thomas-2004]:
-	title: Training strategies for improving listeners' comprehension of foreign-accented speech (Doctoral dissertation). University of Colorado, Boulder
-	author: Thomas, H. K. 
+^[bird-not-real]:
+	title: Bird is Not Real
+	author: Thomas Hans
 	year: 2004. 
 ---
