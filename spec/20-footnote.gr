@@ -1,0 +1,17 @@
+>>> Footnote
+
+--- gr 
+Here's a simple footnote,^(This is the first footnote.) and here's a another one.^(Very important part)
+---
+
+--- html
+<p>Here's a simple footnote,<a href="Footnote-1"><sup>1</sup></a>
+and here's a another one.<a href="Footnote-2"><sup>2</sup></a></p>
+
+<div class="footnote-desc">
+<p><sup>1</sup> This is the first footnote.</p>
+<p><sup>2</sup> Very important part</p>
+</div>
+---
+
+<See also> Citation

@@ -1,0 +1,7 @@
+>>> Highlight
+--- gr
+=Anything inside two equal will be rendered as highlighted=
+---
+--- html
+<p><mark>Anything inside two equal will be rendered as highlighted</mark></p>
+---

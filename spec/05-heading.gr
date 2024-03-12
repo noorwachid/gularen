@@ -1,0 +1,54 @@
+>>> Heading
+
+--- gr
+>>> Chapter
+
+>> Section
+
+> Subsection
+---
+--- html
+<h1 id="Chapter">Chapter</h1>
+
+<h2 id="Section">Section</h2>
+
+<h3 id="Subsection">Subsection</h3>
+---
+
+>> Heading Subtitle
+If the subsection modifier is placed in the next line of any headings. It will be parsed as subtitle.
+
+--- gr
+>>> Chapter
+> Chapter Subtitle
+
+>> Section
+> Section Subtitle
+
+> Subsection
+> Subsection Subtitle
+---
+--- html
+<h1 id="Chapter">Chapter <small>Chapter Subtitle</small></h1>
+
+<h2 id="Section">Section <small>Section Subtitle</small></h2>
+
+<h3 id="Subsection">Subsection <small>Subsection Subtitle</small><h3>
+---
+
+>> Heading Link
+
+--- gr
+>>> Laminal Flow
+
+See [>Laminal Flow]
+
+If on another file [Chapter 1.gr>Laminal Flow]
+---
+--- html
+<h1 id="Laminar-Flow">Laminar Flow</h1>
+
+<p>See <a href="#Laminar-Flow">Laminal Flow</a></p>
+
+<p>If on another file <a href="Chapter 1.gr#Laminal Flow">Chapter 1 Laminar Flow</a></p>
+---

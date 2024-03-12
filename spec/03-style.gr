@@ -1,0 +1,29 @@
+>>> Style
+
+--- gr
+*Anything inside two asterisks will be rendered as bold font style.*
+---
+--- html
+<p><b>Anything inside two asterisks will be rendered as bold font style.</b></p>
+---
+
+--- gr
+_Anything inside two underscores will be rendered as italic font style._
+---
+--- html
+<p><i>Anything inside two underscores will be rendered as italic font style.</i></p>
+---
+
+--- gr
+`Anything inside two backticks will be rendered as monospaced font style.`
+---
+--- html
+<p><samp>Anything inside two backticks will be rendered as monospaced font style.</samp></p>
+---
+
+--- gr
+`Hello _*darkness* my old_ friend`
+---
+--- html
+<p><samp>Hello <i><b>darkness</b> my old</i> friend</samp></p>
+---
