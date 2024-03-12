@@ -496,18 +496,17 @@ private:
 		return list;
 	}
 
-	Node* _parseTodoList() {
-		List* list = new List(_get(0).position, NodeKind::todoList);
+	Node* _parseCheckList() {
+		List* list = new List(_get(0).position, NodeKind::checkList);
 
 		while (_isBound(0) && _get(0).kind == TokenKind::checkbox) {
 			const Token& token = _eat();
-			TodoItem* item = new TodoItem(token.position);
+			CheckItem* item = new CheckItem(token.position);
 			list->children.append(item);
 
 			switch (token.content.get(1)) {
-				case ' ': item->state = TodoItem::State::todo; break;
-				case 'v': item->state = TodoItem::State::done; break;
-				case 'x': item->state = TodoItem::State::cancelled; break;
+				case ' ': item->state = CheckItem::State::unchecked; break;
+				case 'x': item->state = CheckItem::State::checked; break;
 			}
 
 			ItemResult result = _parseItem(list, item);
@@ -1134,7 +1133,7 @@ private:
 				return _parseList(TokenKind::index, NodeKind::numberedList);
 
 			case TokenKind::checkbox:
-				return _parseTodoList();
+				return _parseCheckList();
 
 			case TokenKind::pipe:
 				return _parseTable();

@@ -429,7 +429,7 @@ private:
 					break;
 
 				case '[':
-					if (_isBound(4) && _get(2) == ']' && _get(3) == ' ' && (_get(1) == ' ' || _get(1) == 'x' || _get(1) == 'v')) {
+					if (_isBound(4) && _get(2) == ']' && _get(3) == ' ' && (_get(1) == ' ' || _get(1) == 'x')) {
 						_append(TokenKind::checkbox, _contentIndex, 3);
 						_advance(4);
 						break;

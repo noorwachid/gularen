@@ -28,7 +28,7 @@ enum class NodeKind {
 
 	list,
 	numberedList,
-	todoList,
+	checkList,
 
 	item,
 	todoItem,
@@ -242,7 +242,7 @@ struct List : Node {
 		switch (kind) {
 			case NodeKind::list: printf("list\n"); break;
 			case NodeKind::numberedList: printf("numberList\n"); break;
-			case NodeKind::todoList: printf("todoList\n"); break;
+			case NodeKind::checkList: printf("checkList\n"); break;
 			default: break;
 		}
 	}
@@ -257,24 +257,22 @@ struct Item : Node {
 	}
 };
 
-struct TodoItem : Node {
+struct CheckItem : Node {
 	enum class State {
-		todo,
-		done,
-		cancelled,
+		unchecked,
+		checked,
 	};
 
 	State state;
 
-	TodoItem(Position position): Node(position, NodeKind::todoItem) {
+	CheckItem(Position position): Node(position, NodeKind::todoItem) {
 	}
 
 	virtual void print() override {
 		printf("todoItem ");
 		switch (state) {
-			case State::todo: printf("todo\n"); break;
-			case State::done: printf("done\n"); break;
-			case State::cancelled: printf("cancelled\n"); break;
+			case State::unchecked: printf("todo\n"); break;
+			case State::checked: printf("done\n"); break;
 		}
 	}
 };
