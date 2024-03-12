@@ -160,7 +160,6 @@ struct Style : Node {
 	enum class Type {
 		bold,
 		italic,
-		monospaced,
 	};
 
 	Type type;
@@ -175,7 +174,6 @@ struct Style : Node {
 		switch (type) {
 			case Type::bold: printf("bold\n"); break;
 			case Type::italic: printf("italic\n"); break;
-			case Type::monospaced: printf("monospaced\n"); break;
 		}
 	}
 };

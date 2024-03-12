@@ -63,7 +63,6 @@ private:
 				switch (static_cast<const Style*>(node)->type) {
 					case Style::Type::bold: return _content.append("<b>");
 					case Style::Type::italic: return _content.append("<i>");
-					case Style::Type::monospaced: return _content.append("<samp>");
 				}
 			}
 
@@ -371,7 +370,6 @@ private:
 				switch (static_cast<const Style*>(node)->type) {
 					case Style::Type::bold: return _content.append("</b>");
 					case Style::Type::italic: return _content.append("</i>");
-					case Style::Type::monospaced: return _content.append("</samp>");
 				}
 			}
 

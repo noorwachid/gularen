@@ -211,12 +211,11 @@ private:
 
 			case TokenKind::asterisk: return _parseStyle(Style::Type::bold);
 			case TokenKind::underscore: return _parseStyle(Style::Type::italic);
-			case TokenKind::backtick: return _parseStyle(Style::Type::monospaced);
 			case TokenKind::equal: return _parseHighlight();
 
 			case TokenKind::lineBreak: return new LineBreak(_eat().position);
 
-			case TokenKind::curlyOpen: return _parseCode();
+			case TokenKind::backtick: return _parseCode();
 			case TokenKind::squareOpen: return _parseLink();
 			case TokenKind::exclamation: return _parseView();
 			case TokenKind::caret: return _parseFootnote();
@@ -841,15 +840,16 @@ private:
 			code->content = _eat().content;
 		}
 
-		if (_isBound(0) && _get(0).kind == TokenKind::curlyClose) {
+		if (_isBound(0) && _get(0).kind == TokenKind::backtick) {
 			_advance(1);
 
 			if (_isBound(2) && 
-				_get(0).kind == TokenKind::parenOpen && 
+				_get(0).kind == TokenKind::backtick && 
 				_get(1).kind == TokenKind::raw && 
-				_get(2).kind == TokenKind::parenClose) {
+				_get(2).kind == TokenKind::backtick) {
 
-				code->label = _get(1).content;
+				code->label = code->content;
+				code->content = _get(1).content;
 
 				_advance(3);
 			}
@@ -981,7 +981,6 @@ private:
 			case TokenKind::backtick:
 			case TokenKind::equal:
 
-			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
 			case TokenKind::caret:
@@ -1018,7 +1017,6 @@ private:
 			case TokenKind::backtick:
 			case TokenKind::equal:
 
-			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
 			case TokenKind::caret:

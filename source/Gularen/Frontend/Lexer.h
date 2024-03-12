@@ -54,9 +54,6 @@ enum class TokenKind {
 	fenceOpen,
 	fenceClose,
 
-	curlyOpen,
-	curlyClose,
-
 	parenOpen,
 	parenClose,
 
@@ -135,9 +132,6 @@ StringSlice toStringSlice(TokenKind kind) {
 
 		case TokenKind::fenceOpen: return "fenceOpen";
 		case TokenKind::fenceClose: return "fenceClose";
-
-		case TokenKind::curlyOpen: return "curlyOpen";
-		case TokenKind::curlyClose: return "curlyClose";
 
 		case TokenKind::parenOpen: return "parenOpen";
 		case TokenKind::parenClose: return "parenClose";
@@ -374,8 +368,7 @@ private:
 					break;
 
 				case '`': 
-					_append(TokenKind::backtick); 
-					_advance(1);
+					_consumeCode();
 					break;
 
 				case '=': 
@@ -472,10 +465,6 @@ private:
 
 				case '|':
 					_consumePipe();
-					break;
-
-				case '{':
-					_consumeCode();
 					break;
 
 				case ':': {
@@ -776,7 +765,6 @@ private:
 				case '~':
 				case '<':
 				case '|':
-				case '{':
 				case '[':
 				case ':':
 				case '-':
@@ -944,27 +932,23 @@ private:
 	}
 
 	void _consumeCode() {
-		_append(TokenKind::curlyOpen, _contentIndex, 1);
+		_append(TokenKind::backtick, _contentIndex, 1);
 		_advance(1);
 		_savePosition();
 
 		unsigned int oldContextIndex = _contentIndex;
 
-		while (_isBound(0) && _get(0) != '}') {
+		while (_isBound(0) && _get(0) != '`') {
 			_advance(1);
 		}
 
 		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
 		_savePosition();
 
-		if (_isBound(0) && _get(0) == '}') {
-			_append(TokenKind::curlyClose, _contentIndex, 1);
+		if (_isBound(0) && _get(0) == '`') {
+			_append(TokenKind::backtick, _contentIndex, 1);
 			_advance(1);
 			_savePosition();
-		}
-
-		if (_isBound(0) && _get(0) == '(') {
-			_consumeLabel();
 		}
 	}
 
