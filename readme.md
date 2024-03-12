@@ -32,7 +32,7 @@ A sweet-spot of markup language
 I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any drastic changes to the syntax and structures.
 
 ## Specification and Examples
-[Right over here](spec.md)
+[Right over here](https://noorwach.id/gularen/spec.html)
 
 ## Changelog
 **DATE MERGED**
