@@ -43,6 +43,8 @@ enum class NodeKind {
 	link,
 	view,
 	footnote,
+	reference,
+	referenceInfo,
 
 	blockquote,
 
@@ -469,13 +471,42 @@ struct Footnote : Node {
 };
 
 struct Citation : Node {
-	StringSlice description;
+	StringSlice id;
+	StringSlice label;
 
-	Citation(Position position, StringSlice description): Node(position, NodeKind::footnote), description(description) {
+	Citation(Position position): Node(position, NodeKind::footnote) {
 	}
 
 	virtual void print() override {
-		printf("footnote %.*s\n", description.size(), description.pointer());
+		printf("citation %.*s", id.size(), id.pointer());
+
+		if (label.size() != 0) {
+			printf(" %.*s ", label.size(), label.pointer());
+		}
+
+		printf("\n");
+	}
+};
+
+struct ReferenceInfo : Node {
+	StringSlice key;
+
+	ReferenceInfo(Position position, StringSlice key): Node(position, NodeKind::referenceInfo), key(key) {
+	}
+
+	virtual void print() override {
+		printf("referenceInfo %.*s\n", key.size(), key.pointer());
+	}
+};
+
+struct Reference : Node {
+	StringSlice id;
+
+	Reference(Position position): Node(position, NodeKind::reference) {
+	}
+
+	virtual void print() override {
+		printf("reference %.*s\n", id.size(), id.pointer());
 	}
 };
 

@@ -1,3 +1,7 @@
-^[birds-real]
-^[bird-not-real](Bird is Not real)
+^[bird-is-real]
+^[bird-is-not-real](Bird is Not real)
 
+^[birds-is-real]:
+	title: Bird is Real
+	author: Government Agent
+	year: 2024

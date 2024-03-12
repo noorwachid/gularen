@@ -72,10 +72,10 @@ private:
 		_tokens = lexer.parse(content);
 		_tokenIndex = 0;
 
-		for (unsigned int i = 0; i < _tokens.size(); i += 1) {
-			_tokens.get(i).print();
-		}
-		return nullptr;
+		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
+		// 	_tokens.get(i).print();
+		// }
+		// return nullptr;
 
 		bool firstAnnotation = true;
 
@@ -97,6 +97,7 @@ private:
 
 			Node* node = _parseBlock();
 			if (node == nullptr) {
+				_advance(1);
 				continue;
 			}
 			_document->children.append(node);
@@ -218,7 +219,17 @@ private:
 			case TokenKind::backtick: return _parseCode();
 			case TokenKind::squareOpen: return _parseLink();
 			case TokenKind::exclamation: return _parseView();
-			case TokenKind::caret: return _parseFootnote();
+			case TokenKind::caret: {
+				if (_isBound(1)) {
+					if (_get(1).kind == TokenKind::parenOpen) {
+						return _parseFootnote();
+					}
+					if (_get(1).kind == TokenKind::squareOpen) {
+						return _parseCitation();
+					}
+				}
+				return nullptr;
+			}
 			case TokenKind::emoji: return _parseEmoji();
 			case TokenKind::dateTime: return _parseDateTime();
 
@@ -233,6 +244,8 @@ private:
 
 			case TokenKind::accountTag: return new AccountTag(_get(0).position, _eat().content);
 			case TokenKind::hashTag: return new HashTag(_get(0).position, _eat().content);
+
+			case TokenKind::colon: return _parseText();
 
 			default: {
 				return nullptr;
@@ -680,6 +693,34 @@ private:
 		return view;
 	}
 
+	Node* _parseCitation() {
+		Citation* view = new Citation(_eat().position);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+			_advance(1);
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+			view->id = _eat().content;
+		}
+
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_advance(1);
+
+			if (_isBound(2) && 
+				_get(0).kind == TokenKind::parenOpen && 
+				_get(1).kind == TokenKind::raw && 
+				_get(2).kind == TokenKind::parenClose) {
+
+				view->label = _get(1).content;
+
+				_advance(3);
+			}
+		}
+
+		return view;
+	}
+
 	Node* _parseEmoji() {
 		const Token& token = _eat();
 		return new Emoji(token.position, token.content);
@@ -772,66 +813,57 @@ private:
 		return ref;
 	}
 
-	// Node* _parseFootnoteDecl() {
-	// 	FootnoteDecl* decl = new FootnoteDecl(_eat().position);
-	//
-	// 	if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
-	// 		_advance(1);
-	// 	}
-	//
-	// 	if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-	// 		decl->resource = _eat().content;
-	// 	}
-	//
-	// 	if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
-	// 		_advance(1);
-	// 	}
-	//
-	// 	while (_isBound(0)) {
-	// 		Node* node = _parseInline();
-	//
-	// 		if (node == nullptr) {
-	// 			if (_get(0).kind == TokenKind::newline) {
-	// 				if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
-	// 					_advance(2);
-	//
-	// 					while (_isBound(0)) {
-	// 						Node* subnode = _parseBlock();
-	// 						if (subnode == nullptr) {
-	// 							if (_get(0).kind == TokenKind::indentClose) {
-	// 								_advance(1);
-	// 								if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-	// 									_advance(1);
-	// 								}
-	// 								return decl;
-	// 								break;
-	// 							}
-	//
-	// 							delete decl;
-	// 							return _expect("indent pop");
-	// 						}
-	//
-	// 						decl->children.append(subnode);
-	// 					}
-	//
-	// 					break;
-	// 				}
-	//
-	// 				_advance(1);
-	// 				break;
-	// 			}
-	// 			
-	// 			if (_get(0).kind == TokenKind::newlinePlus) {
-	// 				_advance(1);
-	// 				return decl;
-	// 			}
-	// 		}
-	//
-	// 		decl->children.append(node);
-	// 	}
-	//
-	// 	return decl;
-	// }
+	Node* _parseReference() {
+		Reference* ref = new Reference(_get(0).position);
+		ref->id = _get(2).content;
+
+		_advance(6);
+
+		if (_isBound(0) && _get(0).kind == TokenKind::indentOpen) {
+			_advance(1);
+
+			while (_isBound(0)) {
+				// printf("GotToken %.*s\n", 
+				// 	toStringSlice(_get(0).kind).size(),
+				// 	toStringSlice(_get(0).kind).pointer()
+				// );
+				//
+				if (_get(0).kind == TokenKind::indentClose) {
+					_advance(1);
+					break;
+				}
+
+				if (!(_isBound(1) && _get(0).kind == TokenKind::text && _get(1).kind == TokenKind::colon)) {
+					break;
+				}
+				ReferenceInfo* info = new ReferenceInfo(_get(0).position, _get(0).content);
+				_advance(2);
+
+				while (_isBound(0) && (_get(0).kind != TokenKind::newline || _get(0).kind != TokenKind::newlinePlus)) {
+					Node* node = _parseInline();
+					if (node == nullptr) {
+						break;
+					}
+					info->children.append(node);
+				}
+
+				ref->children.append(info);
+
+				if (_isBound(0)) {
+					if (_get(0).kind == TokenKind::newline) {
+						_advance(1);
+					}
+
+					if (_get(0).kind == TokenKind::newlinePlus) {
+						_advance(1);
+						break;
+					}
+				}
+			}
+		}
+
+		return ref;
+	}
 
 	Node* _parseCode() {
 		Code* code = new Code(_eat().position);
@@ -1000,6 +1032,8 @@ private:
 
 			case TokenKind::accountTag:
 			case TokenKind::hashTag:
+
+			case TokenKind::colon:
 				return true;
 
 			default: 
@@ -1008,6 +1042,10 @@ private:
 	}
 
 	Node* _parseBlock() {
+		if (!_isBound(0)) {
+			return nullptr;
+		}
+
 		switch (_get(0).kind) {
 			case TokenKind::comment:
 			case TokenKind::text:
@@ -1019,7 +1057,6 @@ private:
 
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
-			case TokenKind::caret:
 			case TokenKind::emoji:
 			case TokenKind::dateTime:
 
@@ -1036,7 +1073,23 @@ private:
 
 			case TokenKind::accountTag:
 			case TokenKind::hashTag:
+
+			case TokenKind::colon:
 				return _parseParagraph();
+
+			case TokenKind::caret: {
+				if (_isBound(5) && 
+					_get(1).kind == TokenKind::squareOpen &&
+					_get(2).kind == TokenKind::raw &&
+					_get(3).kind == TokenKind::squareClose &&
+					_get(4).kind == TokenKind::colon &&
+					_get(5).kind == TokenKind::newline
+					) {
+					return _parseReference();
+				}
+
+				return _parseParagraph();
+			}
 
 			case TokenKind::head1:
 			case TokenKind::head2:
