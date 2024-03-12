@@ -20,6 +20,8 @@ enum class TokenKind {
 	underscore,
 	backtick,
 
+	equal,
+
 	head3,
 	head2,
 	head1,
@@ -65,7 +67,6 @@ enum class TokenKind {
 	exclamation,
 	question,
 	caret,
-	equal,
 
 	hyphen,
 	enDash,
@@ -99,6 +100,8 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::asterisk: return "asterisk";
 		case TokenKind::underscore: return "underscore";
 		case TokenKind::backtick: return "backtick";
+
+		case TokenKind::equal: return "equal";
 
 		case TokenKind::head3: return "head3";
 		case TokenKind::head2: return "head2";
@@ -144,7 +147,6 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::exclamation: return "exclamation";
 		case TokenKind::question: return "question";
 		case TokenKind::caret: return "caret";
-		case TokenKind::equal: return "equal";
 
 		case TokenKind::hyphen: return "hyphen";
 		case TokenKind::enDash: return "enDash";
@@ -331,16 +333,6 @@ private:
 					_consumeText();
 					break;
 
-				case '=':
-					if (_isBound(1) && _get(1) == '[') {
-						_append(TokenKind::equal, _contentIndex, 1);
-						_advance(1);
-						break;
-					}
-
-					_consumeText();
-					break;
-
 				case '|':
 					_consumePipe();
 					break;
@@ -379,6 +371,11 @@ private:
 
 				case '`': 
 					_append(TokenKind::backtick); 
+					_advance(1);
+					break;
+
+				case '=': 
+					_append(TokenKind::equal); 
 					_advance(1);
 					break;
 
@@ -456,6 +453,13 @@ private:
 					if (_isBound(1) && _get(1) == '[') {
 						_append(TokenKind::caret, _contentIndex, 1);
 						_advance(1);
+						break;
+					}
+
+					if (_isBound(1) && _get(1) == '(') {
+						_append(TokenKind::caret, _contentIndex, 1);
+						_advance(1);
+						_consumeLabel();
 						break;
 					}
 
@@ -758,6 +762,7 @@ private:
 				case '*':
 				case '_':
 				case '`':
+				case '=':
 				case '~':
 				case '<':
 				case '|':
@@ -780,10 +785,17 @@ private:
 
 				case '!':
 				case '?':
-				case '^':
-				case '=':
 					previousAlphanumeric = false;
 					if (_isBound(1) && _get(1) == '[') {
+						goto end;
+					}
+
+					_advance(1);
+					break;
+
+				case '^':
+					previousAlphanumeric = false;
+					if (_isBound(1) && (_get(1) == '[' || _get(1) == '(')) {
 						goto end;
 					}
 

@@ -14,6 +14,7 @@ enum class NodeKind {
 	text,
 
 	style,
+	highlight,
 
 	paragraph,
 	space,
@@ -178,6 +179,15 @@ struct Style : Node {
 			case Type::italic: printf("italic\n"); break;
 			case Type::monospaced: printf("monospaced\n"); break;
 		}
+	}
+};
+
+struct Highlight : Node {
+	Highlight(Position position): Node(position, NodeKind::highlight) {
+	}
+
+	virtual void print() override {
+		printf("highlight\n");
 	}
 };
 

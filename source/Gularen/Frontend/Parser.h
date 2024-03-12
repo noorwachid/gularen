@@ -75,6 +75,7 @@ private:
 		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
 		// 	_tokens.get(i).print();
 		// }
+		// return nullptr;
 
 		bool firstAnnotation = true;
 
@@ -167,6 +168,31 @@ private:
 		return style;
 	}
 
+	Node* _parseHighlight() {
+		const Token& token = _eat();
+		Highlight* highlight = new Highlight(token.position);
+
+		while (_isBound(0) && _get(0).kind != token.kind) {
+			Node* child = _parseInline();
+
+			if (child == nullptr) {
+				delete highlight;
+				return nullptr;
+			}
+
+			highlight->children.append(child);
+		}
+
+		if (_isBound(0) && _get(0).kind != token.kind) {
+			delete highlight;
+			return _expect("equal");
+		}
+
+		_advance(1);
+
+		return highlight;
+	}
+
 	Node* _parseComment() {
 		const Token& token = _eat();
 		return new Comment(token.position, token.content);
@@ -186,6 +212,7 @@ private:
 			case TokenKind::asterisk: return _parseStyle(Style::Type::bold);
 			case TokenKind::underscore: return _parseStyle(Style::Type::italic);
 			case TokenKind::backtick: return _parseStyle(Style::Type::monospaced);
+			case TokenKind::equal: return _parseHighlight();
 
 			case TokenKind::lineBreak: return new LineBreak(_eat().position);
 
@@ -951,6 +978,7 @@ private:
 			case TokenKind::asterisk:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
+			case TokenKind::equal:
 
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
@@ -987,6 +1015,7 @@ private:
 			case TokenKind::asterisk:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
+			case TokenKind::equal:
 
 			case TokenKind::curlyOpen:
 			case TokenKind::squareOpen:
@@ -1041,9 +1070,6 @@ private:
 
 			case TokenKind::fenceOpen:
 				return _parseCodeBlock();
-
-			case TokenKind::equal:
-				return _parseFootnoteDecl();
 
 			case TokenKind::blockquoteOpen:
 				return _parseBlockquote();
