@@ -1,4 +1,5 @@
 >>> Footnote
+Footnote description automatically injected in the correct page.
 
 --- gr 
 Here's a simple footnote,^(This is the first footnote.) and here's a another one.^(Very important part)
