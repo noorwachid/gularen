@@ -410,6 +410,14 @@ ul.todo>li>input[type=checkbox] {
 	margin-right: 4px;
 }
 
+.footnote-desc {
+	margin-bottom: 1.2rem;
+}
+.footnote-desc>p {
+	font-size: 80%;
+	margin-bottom: 0;
+}
+
 pre code.hljs {
 	display: block;
 }
