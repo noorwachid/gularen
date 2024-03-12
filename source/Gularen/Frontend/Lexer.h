@@ -22,6 +22,8 @@ enum class TokenKind {
 
 	equal,
 
+	coloncolon,
+
 	head3,
 	head2,
 	head1,
@@ -102,6 +104,8 @@ StringSlice toStringSlice(TokenKind kind) {
 		case TokenKind::backtick: return "backtick";
 
 		case TokenKind::equal: return "equal";
+
+		case TokenKind::coloncolon: return "coloncolon";
 
 		case TokenKind::head3: return "head3";
 		case TokenKind::head2: return "head2";
@@ -475,6 +479,12 @@ private:
 					break;
 
 				case ':': {
+					if (_isBound(1) && _get(1) == ':') {
+						_append(TokenKind::coloncolon, _contentIndex, 2);
+						_advance(2);
+						break;
+					}
+					
 					unsigned int openingContextIndex = _contentIndex;
 					if (_isBound(1) && ((_get(1) >= 'a' && _get(1) <= 'z') || _get(1) == '-')) {
 						_advance(1);
