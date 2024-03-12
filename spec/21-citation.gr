@@ -1,8 +1,8 @@
 >>> Citation
 --- gr
-A few researchers in the linguistics field have developed training programs designed to improve native speakers' ability to understand accented speech (Derwing et al., 2002; Thomas, 2004). 
+A few researchers in the linguistics field have developed training programs designed to improve native speakers' ability to understand accented speech ^[thomas-2004]. 
 Their training techniques are based on the research described above indicating that comprehension improves with exposure to non-native speech. 
-Derwing et al. (2002) conducted their training with students preparing to be social workers, 
+^[derwing-2002] conducted their training with students preparing to be social workers, 
 but note that other professionals who work with non-native speakers could benefit from a similar program.
 
 >>> References
