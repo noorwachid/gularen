@@ -30,14 +30,13 @@
 </ol>
 ---
 
->> Todo List
+>> Check List
 
 --- gr
 [ ] To-do one 
 [ ] To-do two
-[v] Done three
-[v] Done four
-[x] Canceled five
+[x] Done three
+[x] Done four
 ---
 --- html
 <ol class="todo-list">
@@ -45,7 +44,6 @@
 	<li><input type="checkbox"> To-do two</li>
 	<li><input type="checkbox" checked> Done three</li>
 	<li><input type="checkbox" checked> Done four</li>
-	<li><input type="checkbox"> <strikethrough>Canceled five</strikethrough></li>
 </ol>
 ---
 
