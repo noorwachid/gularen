@@ -42,7 +42,7 @@ int main()
 
 > Anonymous Inline
 --- gr
-Why do we use {console.log('here')} instead of the majestic breakpoint?
+Why do we use `console.log('here')` instead of the majestic breakpoint?
 ---
 --- html
 <p>Why do we use <code>console.log('here')</code> instead of the majestic breakpoint?</p>
@@ -50,7 +50,7 @@ Why do we use {console.log('here')} instead of the majestic breakpoint?
 
 > Labeled Inline
 --- gr
-Let's say {\pi = 3}(latex) then the building is likely collapsed.
+Let's say `latex``\pi = 3` then the building is likely collapsed.
 ---
 --- html
 <p>Let's say <code class="language-latex">\pi = 3</code> then the building is likely collapsed.</p>
