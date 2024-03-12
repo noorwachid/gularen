@@ -35,6 +35,7 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 [Right over here](https://noorwach.id/gularen/spec.html)
 
 ## Changelog
+### Version 1.0.0
 **DATE MERGED**
 New features:
 - Highlight:
