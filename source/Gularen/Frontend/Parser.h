@@ -72,10 +72,10 @@ private:
 		_tokens = lexer.parse(content);
 		_tokenIndex = 0;
 
-		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
-		// 	_tokens.get(i).print();
-		// }
-		// return nullptr;
+		for (unsigned int i = 0; i < _tokens.size(); i += 1) {
+			_tokens.get(i).print();
+		}
+		return nullptr;
 
 		bool firstAnnotation = true;
 

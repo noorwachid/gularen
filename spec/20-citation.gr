@@ -1,5 +1,5 @@
 >>> Citation
->> Mentions
+>> Citation
 --- gr
 "So that's why birds are real" ^[birds-real]. ~ auto generated label.
 Hans wrote a book ^[bird-not-real](Bird is Not real) to refute Derwing ideas.
@@ -7,7 +7,6 @@ Hans wrote a book ^[bird-not-real](Bird is Not real) to refute Derwing ideas.
 
 >> References
 ---
->>> References
 ^[birds-real]:
 	title: Birds are Real
 	authors: James Derwing

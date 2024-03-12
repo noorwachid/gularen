@@ -468,6 +468,17 @@ struct Footnote : Node {
 	}
 };
 
+struct Citation : Node {
+	StringSlice description;
+
+	Citation(Position position, StringSlice description): Node(position, NodeKind::footnote), description(description) {
+	}
+
+	virtual void print() override {
+		printf("footnote %.*s\n", description.size(), description.pointer());
+	}
+};
+
 struct Emoji : Node {
 	StringSlice code;
 
