@@ -2,17 +2,36 @@
 This is common admonition labels
 
 --- gr
-<Note> Note
-<Hint> Hint
-<Important> Important
-<Warning> 
+<Note> A note
+<Hint> A hint
+<Important> Important stuff
+<Warning> Warning stuff
 <See also> The Amazing Spiderman 2
-<Tip> Tip
+<Tip> A tip
 ---
-
-You can always add more admonition labels
---- gr
-<Question> Questionare 3.1
-
-<Did you know?> Questionare 3.1
+--- html
+<div class="admon">
+	<div class="label">Note</div>
+	<div class="content">A note</div>
+</div>
+<div class="admon">
+	<div class="label">Hint</div>
+	<div class="content">a Hint</div>
+</div>
+<div class="admon">
+	<div class="label">Important</div>
+	<div class="content">Important stuff</div>
+</div>
+<div class="admon">
+	<div class="label">Warning</div>
+	<div class="content">Warning sfuff</div>
+</div>
+<div class="admon">
+	<div class="label">See also</div>
+	<div class="content">The Amazing Spiderman 2</div>
+</div>
+<div class="admon">
+	<div class="label">Tip</div>
+	<div class="content">A tip</div>
+</div>
 ---

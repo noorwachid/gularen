@@ -1,29 +1,43 @@
 >>> Linker
 
->> Linker
-
+>> Net Link
 --- gr
 [http://google.com]
+---
 
-~ With alternative label
+> With Label
+--- gr
 [http://google.com](Google)
 ---
 
->> Local Linker
+>> Heading Link
 
 --- gr
 [>Laminal Flow]
+---
 
-~ With alternative label
+> With Label
+--- gr
 [>Laminal Flow](see this segment)
 ---
 
+>> Local Link
+
 --- gr
 [Another Document.gr]
+---
 
-~ With alternative label
+> With Label
+--- gr
 [Another Document.gr](see this document)
+---
 
-~ With specify heading
+> With Specified Heading
+---
 [Another Document.gr>Legal Section]
+---
+
+> With Specified Heading and Label
+---
+[Another Document.gr>Legal Section](see this section)
 ---

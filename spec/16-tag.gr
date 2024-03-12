@@ -6,6 +6,9 @@
 --- gr
 @MrAnderson
 ---
+--- html
+<a class="account-tag" href="MrAnderson">@MrAnderson</a>
+---
 
 >> Hash Tag
 --- regex
@@ -13,4 +16,7 @@
 ---
 --- gr
 #someTopic
+---
+--- html
+<a class="hash-tag" href="someTopic">#someTopic</a>
 ---

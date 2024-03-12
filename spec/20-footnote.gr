@@ -9,8 +9,8 @@ Here's a simple footnote,^(This is the first footnote.) and here's a another one
 and here's a another one.<a href="Footnote-2"><sup>2</sup></a></p>
 
 <div class="footnote-desc">
-<p><sup>1</sup> This is the first footnote.</p>
-<p><sup>2</sup> Very important part</p>
+	<p><sup>1</sup> This is the first footnote.</p>
+	<p><sup>2</sup> Very important part</p>
 </div>
 ---
 

@@ -4,6 +4,9 @@ I look forward to see you soon :smile:!
 
 :coffee:
 ---
+--- html
+<p>I look forward to see you soon <span class="emoji">smile</span>!</p>
 
-<See also> emoji short code.
+<p><span class="emoji">coffee</span>
+---
 

@@ -6,18 +6,21 @@ Any single or double apostrophe will be converted into the correct left and righ
 --- gr
 "Don't you dare!" He said calmly.
 ---
+--- html
+<p>&#8223;Don&#8217;t you dare!&#8221; He said calmly.</p>
+---
 
 >> Hyphen, En Dash, Em Dash
 Two hyphen will make en dash.
 Three hyphen will make em dash.
 
 --- gr
-~ Hyphen
 A closed-door meetings
-
-~ En dash
 I’ll schedule you from 4:30--5:00
-
-~ Em dash
 Wait! I forgot to tell you---
+---
+--- html
+<p>A closed&#8208;door meetings
+I’ll schedule you from 4:30&#8211;5:00
+Wait! I forgot to tell you&#8212;</p>
 ---

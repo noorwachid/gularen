@@ -5,6 +5,10 @@ Diary <2018-05-10>
 Met Sofia at <10:00> talked about her newborn child.
 He said his first word today.
 ---
+--- html
+<p>Diary <time datetime="2018-05-10">2018-15-10</time>
 
-~ NOTE: Year zero until 999 should be written with leading zeros
-~ NOTE: If you want to mention day of the week you should include outside the date marker like Sunday <2022-01-01>
+<p>Met Sofia at <time datetime="10:00">10:00</time> talked about her newborn child.
+He said his first word today.</p>
+---
+

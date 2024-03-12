@@ -5,5 +5,5 @@ Any character after tilde won't be parsed until newline or end of document.
 Now you see me. ~ Now you dont.
 ---
 --- html
-<p>Now you see me.<p/>
+<p>Now you see me.</p>
 ---
