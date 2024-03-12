@@ -6,8 +6,8 @@ Here's a simple footnote,^(This is the first footnote.) and here's a another one
 ---
 
 --- html
-<p>Here's a simple footnote,<a href="Footnote-1"><sup>1</sup></a>
-and here's a another one.<a href="Footnote-2"><sup>2</sup></a></p>
+<p>Here's a simple footnote,<sup><a href="Footnote-1">1</a></sup>
+and here's a another one.<sup><a href="Footnote-2">2</a></sup></p>
 
 <div class="footnote-desc">
 	<p><sup>1</sup> This is the first footnote.</p>

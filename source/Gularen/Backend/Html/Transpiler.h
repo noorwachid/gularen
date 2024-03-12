@@ -16,7 +16,26 @@ public:
 		_tableLabel = false;
 
 		if (document != nullptr) {
-			_compose(document, 0);
+			for (unsigned int i = 0; i < document->children.size(); i += 1) {
+				_compose(document->children.get(i), 0);
+
+				if (_footnotes.size() != 0) {
+					_content.append("<div class=\"footnote-desc\">\n");
+					for (unsigned int i = 0; i < _footnotes.size(); i += 1) {
+						const Footnote* footnote = _footnotes.get(i);
+
+						_content.append("<p>");
+						_content.append("<sup>");
+						_content.append(String::fromInt(i + 1));
+						_content.append("</sup> ");
+						_content.append(footnote->description.pointer(), footnote->description.size());
+						_content.append("</p>\n");
+					}
+					_content.append("</div>\n");
+
+					_footnotes = Array<const Footnote*>();
+				}
+			}
 		}
 
 		return StringSlice(_content.pointer(), _content.size());
@@ -261,26 +280,15 @@ private:
 				return;
 			}
 
-			case NodeKind::footnoteRef: {
-				const FootnoteRef* ref = static_cast<const FootnoteRef*>(node);
+			case NodeKind::footnote: {
+				const Footnote* ref = static_cast<const Footnote*>(node);
+				String id = String::fromInt(_footnotes.size() + 1);
 				_content.append("<sup><a href=\"#Footnote-");
-				_escapeID(ref->resource);
-				_content.append("\"></a></sup>");
-				return;
-			}
-
-			case NodeKind::footnoteDecl: {
-				const FootnoteDecl* ref = static_cast<const FootnoteDecl*>(node);
-				_content.append("<div class=\"footnote\" id=\"Footnote-");
-				_escapeID(ref->resource);
+				_content.append(id);
 				_content.append("\">");
-				_content.append("<sup>");
-				_escape(ref->resource);
-				_content.append("</sup>");
-
-				if (ref->children.size() != 0) {
-					_content.append("\n");
-				}
+				_content.append(id);
+				_content.append("</a></sup>");
+				_footnotes.append(ref);
 				return;
 			}
 
@@ -421,10 +429,6 @@ private:
 				return _content.append(_tableLabel ? "</th>\n" : "</td>\n");
 			}
 
-			case NodeKind::footnoteDecl: {
-				return _content.append("</div>\n\n");
-			}
-
 			case NodeKind::admon: {
 				return _content.append("</div>\n\n");
 			}
@@ -544,6 +548,8 @@ private:
 	unsigned int _tableColumnIndex;
 
 	bool _tableLabel;
+
+	Array<const Footnote*> _footnotes;
 };
 
 }

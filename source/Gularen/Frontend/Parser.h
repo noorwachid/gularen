@@ -219,7 +219,7 @@ private:
 			case TokenKind::curlyOpen: return _parseCode();
 			case TokenKind::squareOpen: return _parseLink();
 			case TokenKind::exclamation: return _parseView();
-			case TokenKind::caret: return _parseFootnoteRef();
+			case TokenKind::caret: return _parseFootnote();
 			case TokenKind::emoji: return _parseEmoji();
 			case TokenKind::dateTime: return _parseDateTime();
 
@@ -754,84 +754,85 @@ private:
 		#endif
 	}
 
-	Node* _parseFootnoteRef() {
-		FootnoteRef* ref = new FootnoteRef(_eat().position);
+	Node* _parseFootnote() {
+		const Token& token = _eat();
+		Footnote* ref = nullptr;
 
-		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+		if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
 			_advance(1);
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-			ref->resource = _eat().content;
+			ref = new Footnote(token.position, _eat().content);
 		}
 
-		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+		if (_isBound(0) && _get(0).kind == TokenKind::parenClose) {
 			_advance(1);
 		}
 
 		return ref;
 	}
 
-	Node* _parseFootnoteDecl() {
-		FootnoteDecl* decl = new FootnoteDecl(_eat().position);
-
-		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
-			_advance(1);
-		}
-
-		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-			decl->resource = _eat().content;
-		}
-
-		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
-			_advance(1);
-		}
-
-		while (_isBound(0)) {
-			Node* node = _parseInline();
-
-			if (node == nullptr) {
-				if (_get(0).kind == TokenKind::newline) {
-					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
-						_advance(2);
-
-						while (_isBound(0)) {
-							Node* subnode = _parseBlock();
-							if (subnode == nullptr) {
-								if (_get(0).kind == TokenKind::indentClose) {
-									_advance(1);
-									if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-										_advance(1);
-									}
-									return decl;
-									break;
-								}
-
-								delete decl;
-								return _expect("indent pop");
-							}
-
-							decl->children.append(subnode);
-						}
-
-						break;
-					}
-
-					_advance(1);
-					break;
-				}
-				
-				if (_get(0).kind == TokenKind::newlinePlus) {
-					_advance(1);
-					return decl;
-				}
-			}
-
-			decl->children.append(node);
-		}
-
-		return decl;
-	}
+	// Node* _parseFootnoteDecl() {
+	// 	FootnoteDecl* decl = new FootnoteDecl(_eat().position);
+	//
+	// 	if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
+	// 		_advance(1);
+	// 	}
+	//
+	// 	if (_isBound(0) && _get(0).kind == TokenKind::raw) {
+	// 		decl->resource = _eat().content;
+	// 	}
+	//
+	// 	if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+	// 		_advance(1);
+	// 	}
+	//
+	// 	while (_isBound(0)) {
+	// 		Node* node = _parseInline();
+	//
+	// 		if (node == nullptr) {
+	// 			if (_get(0).kind == TokenKind::newline) {
+	// 				if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
+	// 					_advance(2);
+	//
+	// 					while (_isBound(0)) {
+	// 						Node* subnode = _parseBlock();
+	// 						if (subnode == nullptr) {
+	// 							if (_get(0).kind == TokenKind::indentClose) {
+	// 								_advance(1);
+	// 								if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+	// 									_advance(1);
+	// 								}
+	// 								return decl;
+	// 								break;
+	// 							}
+	//
+	// 							delete decl;
+	// 							return _expect("indent pop");
+	// 						}
+	//
+	// 						decl->children.append(subnode);
+	// 					}
+	//
+	// 					break;
+	// 				}
+	//
+	// 				_advance(1);
+	// 				break;
+	// 			}
+	// 			
+	// 			if (_get(0).kind == TokenKind::newlinePlus) {
+	// 				_advance(1);
+	// 				return decl;
+	// 			}
+	// 		}
+	//
+	// 		decl->children.append(node);
+	// 	}
+	//
+	// 	return decl;
+	// }
 
 	Node* _parseCode() {
 		Code* code = new Code(_eat().position);
