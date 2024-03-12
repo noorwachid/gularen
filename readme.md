@@ -37,6 +37,7 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 ## Changelog
 ### Version 1.0.0
 **DATE MERGED**
+
 New features:
 - Highlight:
   Highlight syntax: `=highlighted sentence.=`
@@ -76,6 +77,7 @@ Breaking changes:
 - Admonition label will be writen as is
 
 **2024-02-29**:
+
 Breaking changes:
 - Removing heading ID `Heading > ID`
 

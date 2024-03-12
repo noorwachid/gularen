@@ -230,7 +230,7 @@ private:
 
 					if (link->heading.size() != 0) {
 						_content.append(" ");
-						_escapeID(link->heading);
+						_escape(link->heading);
 					}
 				} else {
 					_escape(link->label);

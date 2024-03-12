@@ -660,14 +660,18 @@ private:
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
 			_advance(1);
 
-			if (_isBound(2) && 
-				_get(0).kind == TokenKind::parenOpen && 
-				_get(1).kind == TokenKind::raw && 
-				_get(2).kind == TokenKind::parenClose) {
+			if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
+				if (_isBound(2) && 
+					_get(1).kind == TokenKind::raw && 
+					_get(2).kind == TokenKind::parenClose) {
 
-				link->label = _get(1).content;
+					link->label = _get(1).content;
 
-				_advance(3);
+					_advance(3);
+				} else {
+					delete link;
+					return nullptr;
+				}
 			}
 		}
 
@@ -688,14 +692,18 @@ private:
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
 			_advance(1);
 
-			if (_isBound(2) && 
-				_get(0).kind == TokenKind::parenOpen && 
-				_get(1).kind == TokenKind::raw && 
-				_get(2).kind == TokenKind::parenClose) {
+			if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
+				if (_isBound(2) && 
+					_get(1).kind == TokenKind::raw && 
+					_get(2).kind == TokenKind::parenClose) {
 
-				view->label = _get(1).content;
+					view->label = _get(1).content;
 
-				_advance(3);
+					_advance(3);
+				} else {
+					delete view;
+					return nullptr;
+				}
 			}
 		}
 
