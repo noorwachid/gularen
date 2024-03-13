@@ -33,3 +33,18 @@
 	<div class="content">A tip</div>
 </div>
 ---
+
+--- gr
+<Note>
+	Long note.
+	Very long note.
+---
+--- html
+<div class="admon">
+	<div class="label">Note</div>
+	<div class="content">
+		<p>Long note.
+		Very long note.</p>
+	</div>
+</div>
+---
