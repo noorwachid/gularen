@@ -36,7 +36,7 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 
 ## Changelog
 ### Version 1.0.0
-**DATE MERGED**
+**2024-03-13**
 
 New features:
 - Highlight:
