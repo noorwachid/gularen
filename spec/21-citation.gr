@@ -1,20 +1,32 @@
 >>> Citation
 >> Citation
 --- gr
-"So that's why birds are real" ^[birds-real]. ~ auto generated label.
-Hans wrote a book ^[bird-not-real](Bird is Not real) to refute Derwing ideas.
+^[12-rules] ^[lateral-thinking] ^[good-omens] ^[my-lady-jane]
 ---
 
 >> References
 ---
-^[birds-real]:
-	title: Birds are Real
-	authors: James Derwing
-	year: 2002 
-	page: 245
+^[12-rules]:
+	title: 12 Rules of Life
+	author: Jordan Peterson
+	year: 2018
+	publisher: Random House Canada
 
-^[bird-not-real]:
-	title: Bird is Not Real
-	author: Thomas Hans
-	year: 2004. 
+^[lateral-thinking]:
+	title: Lateral Thinking: Creativity Step by Step
+	author: Edward de Bono
+	year: 1970
+	publisher: Harper & Row
+
+^[good-omens]:
+	title: Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch
+	authors: Terry Pratchett, Neil Gaiman
+	year: 1990
+	publisher: Gollancz 
+
+^[my-lady-jane]:
+	title: My Lady Jane
+	authors: Cynthia Hand, Brodi Ashton, Jodi Meadows
+	year: 2016
+	publisher: HarperCollins
 ---
