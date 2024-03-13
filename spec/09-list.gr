@@ -30,23 +30,6 @@
 </ol>
 ---
 
->> Check List
-
---- gr
-[ ] To-do one 
-[ ] To-do two
-[x] Done three
-[x] Done four
----
---- html
-<ol class="todo-list">
-	<li><input type="checkbox"> To-do one</li>
-	<li><input type="checkbox"> To-do two</li>
-	<li><input type="checkbox" checked> Done three</li>
-	<li><input type="checkbox" checked> Done four</li>
-</ol>
----
-
 >> Nested Variation
 
 --- gr

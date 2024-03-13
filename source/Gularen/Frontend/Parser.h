@@ -270,6 +270,12 @@ private:
 			Node* node = _parseInline();
 
 			if (node == nullptr) {
+				// if (_get(0).kind == TokenKind::coloncolon) {
+				// 	delete paragraph;
+				// 	_tokenIndex = tokenIndex;
+				// 	return _parseDefinitionList();
+				// }
+
 				if (_get(0).kind == TokenKind::newline) {
 					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
 						_advance(1);
@@ -523,6 +529,10 @@ private:
 		listEnd:
 
 		return list;
+	}
+
+	Node* _parseDefinitionList() {
+		return nullptr;
 	}
 
 	Node* _checkTableRow(Node* node, Row::Type type) {

@@ -29,9 +29,13 @@ enum class NodeKind {
 	list,
 	numberedList,
 	checkList,
+	definitionList,
 
 	item,
 	todoItem,
+	definitionItem,
+	definitionTerm,
+	definitionDesc,
 
 	table,
 	row,
@@ -243,6 +247,7 @@ struct List : Node {
 			case NodeKind::list: printf("list\n"); break;
 			case NodeKind::numberedList: printf("numberList\n"); break;
 			case NodeKind::checkList: printf("checkList\n"); break;
+			case NodeKind::definitionDesc: printf("definitionList\n"); break;
 			default: break;
 		}
 	}
@@ -274,6 +279,27 @@ struct CheckItem : Node {
 			case State::unchecked: printf("todo\n"); break;
 			case State::checked: printf("done\n"); break;
 		}
+	}
+};
+
+struct DefinitionItem : Node {
+};
+
+struct DefinitionTerm : Node {
+	DefinitionTerm(Position position): Node(position, NodeKind::definitionTerm) {
+	}
+
+	virtual void print() override {
+		printf("definitionTerm\n");
+	}
+};
+
+struct DefinitionDesc : Node {
+	DefinitionDesc(Position position): Node(position, NodeKind::definitionDesc) {
+	}
+
+	virtual void print() override {
+		printf("definitionDesc\n");
 	}
 };
 
