@@ -1,0 +1,18 @@
+----
+<Note> Note
+
+<Note>
+	Multiline
+	Note
+----
+---
+document 
+  admon Note
+    text  Note
+  admon Note
+    space
+    paragraph
+      text Multiline
+      space
+      text Note
+---

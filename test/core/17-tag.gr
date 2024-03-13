@@ -1,0 +1,10 @@
+---- gr
+@mention #topic
+----
+---
+document 
+  paragraph
+    accountTag mention
+    text  
+    hashTag topic
+---

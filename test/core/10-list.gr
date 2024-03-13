@@ -11,10 +11,6 @@
 1. one
 2. two
 3. three
-
-[ ] one
-[v] two
-[x] three
 ----
 ---
 document 
@@ -43,12 +39,5 @@ document
     item
       text two
     item
-      text three
-  todoList
-    todoItem todo
-      text one
-    todoItem done
-      text two
-    todoItem cancelled
       text three
 ---

@@ -1,0 +1,12 @@
+---- gr
+[ ] unchecked
+[x] checked
+----
+---
+document 
+  checkList
+    checkItem todo
+      text unchecked
+    checkItem done
+      text checked
+---

@@ -142,7 +142,7 @@ private:
 				return _content.append("<li>");
 			}
 
-			case NodeKind::todoItem: {
+			case NodeKind::checkItem: {
 				switch (static_cast<const CheckItem*>(node)->state) {
 					case CheckItem::State::unchecked: return _content.append("<li> <input type=\"checkbox\"> ");
 					case CheckItem::State::checked: return _content.append("<li> <input type=\"checkbox\" checked> ");
@@ -430,7 +430,7 @@ private:
 				return _content.append("</li>\n");
 			}
 
-			case NodeKind::todoItem: {
+			case NodeKind::checkItem: {
 				switch (static_cast<const CheckItem*>(node)->state) {
 					case CheckItem::State::unchecked: return _content.append("</li>\n");
 					case CheckItem::State::checked: return _content.append("</li>\n");

@@ -1,0 +1,9 @@
+---- gr
+=highlighted=
+----
+---
+document 
+  paragraph
+    highlight
+      text highlighted
+---

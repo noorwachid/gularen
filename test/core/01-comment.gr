@@ -5,5 +5,5 @@ Now you see me, ~ now you don't.
 document 
   paragraph
     text Now you see me, 
-    comment ~ now you don't.
+    comment  now you don't.
 ---

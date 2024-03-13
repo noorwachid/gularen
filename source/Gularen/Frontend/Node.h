@@ -32,7 +32,7 @@ enum class NodeKind {
 	definitionList,
 
 	item,
-	todoItem,
+	checkItem,
 	definitionItem,
 	definitionTerm,
 	definitionDesc,
@@ -270,11 +270,11 @@ struct CheckItem : Node {
 
 	State state;
 
-	CheckItem(Position position): Node(position, NodeKind::todoItem) {
+	CheckItem(Position position): Node(position, NodeKind::checkItem) {
 	}
 
 	virtual void print() override {
-		printf("todoItem ");
+		printf("checkItem ");
 		switch (state) {
 			case State::unchecked: printf("todo\n"); break;
 			case State::checked: printf("done\n"); break;

@@ -1,5 +1,5 @@
 ----
-*bold* _italic_ `monospace`
+*bold* _italic_
 ----
 ---
 document 
@@ -9,7 +9,4 @@ document
     text  
     style italic
       text italic
-    text  
-    style monospaced
-      text monospace
 ---

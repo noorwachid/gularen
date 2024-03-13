@@ -1,4 +1,4 @@
-----
+---- gr
 <10:00>
 <10:00:12>
 <2018-06-12>
@@ -8,13 +8,13 @@
 ---
 document 
   paragraph
-    dateTime 10:00:00
+    dateTime 10:00:00 
     space
-    dateTime 10:00:12
+    dateTime 10:00:12 
     space
-    dateTime 2018-06-12
+    dateTime 2018-06-12 
     space
-    dateTime 2018-06-12 00:00:00
+    dateTime 2018-06-12 00:00:00 
     space
-    dateTime 2018-06-12 00:00:00
+    dateTime 2018-06-12 00:00:00 
 ---

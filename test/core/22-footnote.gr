@@ -1,0 +1,10 @@
+----
+something here^(it is what it is).
+----
+---
+document 
+  paragraph
+    text something here
+    footnote it is what it is
+    text .
+---

@@ -1,0 +1,10 @@
+---- gr
+coffee: :coffee:
+----
+---
+document 
+  paragraph
+    text coffee
+    text : 
+    emoji coffee
+---

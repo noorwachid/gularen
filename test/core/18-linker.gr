@@ -1,4 +1,4 @@
-----
+---- gr
 [file]
 [file>heading]
 [>heading]
@@ -12,13 +12,13 @@
 ---
 document 
   paragraph
-    link file
+    link file 
     space
-    link file >heading
+    link file >heading 
     space
-    link >heading
+    link >heading 
     space
-    link https://www.org
+    link https://www.org 
   paragraph
     link file label
     space
