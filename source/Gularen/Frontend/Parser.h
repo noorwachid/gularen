@@ -263,6 +263,7 @@ private:
 
 	Node* _parseParagraph() {
 		const Token& token = _get(0);
+		unsigned int previousTokenIndex = _tokenIndex;
 
 		Paragraph* paragraph = new Paragraph(token.position);
 
@@ -270,11 +271,11 @@ private:
 			Node* node = _parseInline();
 
 			if (node == nullptr) {
-				// if (_get(0).kind == TokenKind::coloncolon) {
-				// 	delete paragraph;
-				// 	_tokenIndex = tokenIndex;
-				// 	return _parseDefinitionList();
-				// }
+				if (_get(0).kind == TokenKind::coloncolon) {
+					delete paragraph;
+					_tokenIndex = previousTokenIndex;
+					return _parseDefinitionList();
+				}
 
 				if (_get(0).kind == TokenKind::newline) {
 					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
@@ -532,7 +533,86 @@ private:
 	}
 
 	Node* _parseDefinitionList() {
-		return nullptr;
+		List* list = new List(_get(0).position, NodeKind::definitionList);
+
+		while (_isBound(0)) {
+			unsigned int previousTokenIndex = _tokenIndex;
+			bool itemOccupied = false;
+
+			DefinitionItem* item = new DefinitionItem(_get(0).position);
+			DefinitionTerm* term = new DefinitionTerm(_get(0).position);
+
+			item->children.append(term);
+
+			while (_isBound(0)) {
+				Node* node = _parseInline();
+
+				if (node == nullptr) {
+					if (_get(0).kind == TokenKind::newlinePlus) {
+						_advance(1);
+						if (!itemOccupied) {
+							delete item;
+						}
+						goto listEnd;
+					}
+
+					if (_get(0).kind == TokenKind::coloncolon) {
+						DefinitionDesc* desc = new DefinitionDesc(_eat().position);
+						item->children.append(desc);
+
+						while (_isBound(0)) {
+							Node* node = _parseInline();
+							if (node == nullptr) {
+								if (_get(0).kind == TokenKind::newline) {
+									if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
+										_advance(2);
+
+										while (_isBound(0)) {
+											Node* subnode = _parseBlock();
+											if (subnode == nullptr) {
+												if (_get(0).kind == TokenKind::indentClose) {
+													_advance(1);
+													goto itemEnd;
+												}
+
+												_expect("indent pop");
+												return list;
+											}
+
+											desc->children.append(subnode);
+										}
+
+										goto itemEnd;
+									}
+
+									_advance(1);
+									goto itemEnd;
+								}
+
+								if (_get(0).kind == TokenKind::newlinePlus) {
+									_advance(1);
+									list->children.append(item);
+									goto listEnd;
+								}
+							}
+							desc->children.append(node);
+						}
+					}
+					break;
+				}
+
+				term->children.append(node);
+				itemOccupied = true;
+			}
+
+			itemEnd:
+			list->children.append(item);
+			continue;
+		}
+
+		listEnd:
+
+		return list;
 	}
 
 	Node* _checkTableRow(Node* node, Row::Type type) {
@@ -1062,6 +1142,7 @@ private:
 			case TokenKind::hashTag:
 
 			case TokenKind::colon:
+			case TokenKind::coloncolon:
 				return true;
 
 			default: 

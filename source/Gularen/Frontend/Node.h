@@ -247,7 +247,7 @@ struct List : Node {
 			case NodeKind::list: printf("list\n"); break;
 			case NodeKind::numberedList: printf("numberList\n"); break;
 			case NodeKind::checkList: printf("checkList\n"); break;
-			case NodeKind::definitionDesc: printf("definitionList\n"); break;
+			case NodeKind::definitionList: printf("definitionList\n"); break;
 			default: break;
 		}
 	}
@@ -283,6 +283,12 @@ struct CheckItem : Node {
 };
 
 struct DefinitionItem : Node {
+	DefinitionItem(Position position): Node(position, NodeKind::definitionItem) {
+	}
+
+	virtual void print() override {
+		printf("definitionItem\n");
+	}
 };
 
 struct DefinitionTerm : Node {

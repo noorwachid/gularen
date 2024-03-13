@@ -126,6 +126,18 @@ private:
 				return _content.append("<ul class=\"todo\">\n");
 			}
 
+			case NodeKind::definitionList: {
+				return _content.append("<dl>\n");
+			}
+
+			case NodeKind::definitionTerm: {
+				return _content.append("<dt>");
+			}
+
+			case NodeKind::definitionDesc: {
+				return _content.append("<dd>");
+			}
+
 			case NodeKind::item: {
 				return _content.append("<li>");
 			}
@@ -400,6 +412,18 @@ private:
 
 			case NodeKind::checkList: {
 				return _content.append("</ul>\n\n");
+			}
+
+			case NodeKind::definitionList: {
+				return _content.append("</dl>\n\n");
+			}
+
+			case NodeKind::definitionTerm: {
+				return _content.append("</dt>\n");
+			}
+
+			case NodeKind::definitionDesc: {
+				return _content.append("</dd>\n");
 			}
 
 			case NodeKind::item: {
