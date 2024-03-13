@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Gularen Specification</title>
+	<style>body,code{color:#efefef}dl,h1,h2,h3,ol,p,ul{margin-top:0}img,table{max-width:100%}table,td.cell-left{text-align:left}h1>small,h2>small,h3>small,label,legend,pre code.hljs,pre>code,table{display:block}*,:after,:before{padding:0;margin:0;box-sizing:inherit}html{box-sizing:border-box;font-size:62.5%}body{background:#171717;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif;font-size:1.6em;font-weight:300;letter-spacing:.01em;line-height:1.6}h1,h1>small{line-height:1.2;font-weight:700}blockquote{padding-left:2rem}blockquote.bordered{padding-left:1rem;border-left:.3rem solid #d1d1d1;margin-left:0;margin-right:0}.button,blockquote :last-child,button,dd,dt,li{margin-bottom:0}code{background-color:#282c34;border-radius:.4rem;font-size:86%;margin:0 .2rem;padding:.2rem .5rem;white-space:nowrap}pre{background-color:#444;overflow-y:hidden}pre>code{tab-size:4;border-radius:0;padding:1rem 1.5rem;white-space:pre}hr{border:0;border-top:.1rem solid #f4f5f6;margin:3rem 0}input:not([type]),input[type=color],input[type=date],input[type=datetime-local],input[type=datetime],input[type=email],input[type=month],input[type=number],input[type=password],input[type=search],input[type=tel],input[type=text],input[type=url],input[type=week],select,textarea{color:#efefef;background-color:transparent;border:.1rem solid #d1d1d1;border-radius:.4rem;box-shadow:none;box-sizing:inherit;height:3.8rem;padding:.6rem 1rem .7rem;width:100%;font-size:1.6rem}input:not([type]):focus,input[type=color]:focus,input[type=date]:focus,input[type=datetime-local]:focus,input[type=datetime]:focus,input[type=email]:focus,input[type=month]:focus,input[type=number]:focus,input[type=password]:focus,input[type=search]:focus,input[type=tel]:focus,input[type=text]:focus,input[type=url]:focus,input[type=week]:focus,select:focus,textarea:focus{border-color:#eb6434;outline:0}select{background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" width="30"><path fill="%23d1d1d1" d="M0,0l6,8l6-8"/></svg>') center right no-repeat;padding-right:3rem}select:focus{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" width="30"><path fill="%239b4dca" d="M0,0l6,8l6-8"/></svg>')}select[multiple]{background:0 0;height:auto}textarea{min-height:6.5rem}label,legend{font-size:1.6rem;font-weight:700;margin-bottom:.5rem}fieldset{border-width:0;padding:0}dl,ol,ul,ul.checklist ul.checklist{padding-left:3.2rem}code.hljs,input[type=checkbox],input[type=radio]{display:inline}a{color:#eb6434;text-decoration:none}a:focus,a:hover{color:#606c76}dl,ol,ul{list-style:none}ol{list-style:decimal}ul{list-style:disc}dl dl,dl ol,dl ul,ol dl,ol ol,ol ul,ul dl,ul ol,ul ul{padding-left:3.2rem;margin-top:.4rem;margin-bottom:.4rem}fieldset,input,select,textarea{margin-bottom:1rem}.admon-hint,.admon-important,.admon-note,.admon-seealso,.admon-tip,.admon-warning,.language-presenter,dl,figure,form,ol,p,pre,table,ul{margin-bottom:1.2rem}table{border-spacing:0;border-collapse:collapse;overflow-x:auto}td,th{border:.1rem solid #666;padding:.5rem .8rem}@media (min-width:40rem){table{display:table;overflow-x:initial}}b,strong{font-weight:700}h1,h2,h3{letter-spacing:-.1rem;margin-bottom:.7rem}h1{font-size:4.6rem}h2{font-size:2.3rem;font-weight:700;line-height:1.15}h3{font-size:1.8rem;font-weight:700;line-height:1.1}h1>small,h2>small,h3>small{color:#aaa;margin-bottom:1.8rem}h1>small{font-size:1.9rem}h2>small{font-size:1.8rem;font-weight:700;line-height:1.15}h3>small{font-size:1.6rem;font-weight:700;line-height:1.1}.admon-hint,.admon-important,.admon-note,.admon-seealso,.admon-tip,.admon-warning{background:#222;padding:1rem 1.3rem}.admon-hint::before,.admon-important::before,.admon-note::before,.admon-seealso::before,.admon-tip::before,.admon-warning::before{font-weight:700;display:block;margin-bottom:1.}.admon-note::before{content:"Note";color:#59a0ff}.admon-note{border:2px solid #4990ef}.admon-hint::before{content:"Hint";color:#8059ff}.admon-hint{border:2px solid #6049ef}.admon-important::before{content:"Important";color:#f44}.admon-important{border:2px solid #ef4949}.admon-warning::before{content:"Warning";color:#dfbf33}.admon-warning{border:2px solid #cfaf22}.admon-seealso::before{content:"See Also";color:#ff3980}.admon-seealso{border:2px solid #ef2990}.admon-tip::before{content:"Tip";color:#59dd59}.admon-tip{border:2px solid #33af33}td.cell-center{text-align:center}td.cell-right{text-align:right}ul.checklist{padding-left:1rem;list-style:none}ul.checklist>li>input[type=checkbox]{margin-bottom:0;margin-right:4px}.footnote>sup{margin-right:4px}article{max-width:800px;padding:10px;margin:0 auto}</style>
+</head>
+
+<body>
+<article>
+
+<h1 id="Comment">Comment</h1>
+<p>Any character after tilde won&#8217;t be parsed until newline or end of document.</p>
+
+<pre><code class="language-gr">Now you see me. ~ Now you dont.</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;Now you see me.&lt;/p&gt;</code></pre>
+
+<h1 id="Annotation">Annotation</h1>
+<pre><code class="language-regex">~~ [a-zA-Z-0-9-]+:.*</code></pre>
+
+<pre><code class="language-gr">~~ title: Book Title
+~~ author: Author Name
+~~ created-at: 2021-01-10
+~~ published-at: 2024-01-03
+~~ category: Science-Fiction</code></pre>
+
+<h1 id="Paragraph">Paragraph</h1>
+<pre><code class="language-gr">Any text without special modifier will be rendered as paragraph.
+Single new line won&#39;t make new paragraph.
+
+Only double or more will create new paragraph.</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;Any text without special modifier will be rendered as paragraph.
+Single new line won&#39;t make new paragraph.&lt;/p&gt;
+
+&lt;p&gt;Only double or more will create new paragraph.&lt;/p&gt;</code></pre>
+
+<h1 id="Style">Style</h1>
+<pre><code class="language-gr">*Anything inside two asterisks will be rendered as bold font style.*</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;b&gt;Anything inside two asterisks will be rendered as bold font style.&lt;/b&gt;&lt;/p&gt;</code></pre>
+
+<pre><code class="language-gr">_Anything inside two underscores will be rendered as italic font style._</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;i&gt;Anything inside two underscores will be rendered as italic font style.&lt;/i&gt;&lt;/p&gt;</code></pre>
+
+<pre><code class="language-gr">Hello _*darkness* my old_ friend</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;Hello &lt;i&gt;&lt;b&gt;darkness&lt;/b&gt; my old&lt;/i&gt; friend&lt;/p&gt;</code></pre>
+
+<h1 id="Highlight">Highlight</h1>
+<pre><code class="language-gr">=Anything inside two equal will be rendered as highlighted=</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;mark&gt;Anything inside two equal will be rendered as highlighted&lt;/mark&gt;&lt;/p&gt;</code></pre>
+
+<h1 id="Breaking">Breaking</h1>
+<h2 id="ThematicBreak">Thematic&#8208;Break</h2>
+<pre><code class="language-gr">***</code></pre>
+
+<pre><code class="language-html">&lt;hr&gt;</code></pre>
+
+<h2 id="LineBreak">Line&#8208;Break</h2>
+<pre><code class="language-gr">This will create&lt;&lt;line-break.</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;This will create&lt;br&gt;line-break.&lt;/p&gt;</code></pre>
+
+<h2 id="PageBreak">Page&#8208;Break</h2>
+<pre><code class="language-gr">&lt;&lt;&lt;</code></pre>
+
+<pre><code class="language-html">&lt;div class=&quot;page-break&quot;&gt;&lt;/div&gt;</code></pre>
+
+<h1 id="Indentation">Indentation</h1>
+<p>1 tab </p>
+
+<pre><code class="language-gr">Level 0 indentation.
+	Level 1 indentation.
+		Level 2 indentation.
+			Level 3 indentation.</code></pre>
+
+<pre><code class="language-html">&lt;blockquote&gt;
+	Level 0 indentation.
+	&lt;blockquote&gt;
+		Level 1 indentation.
+		&lt;blockquote&gt;
+			Level 2 indentation.
+			&lt;blockquote&gt;
+				Level 3 indentation.
+			&lt;/blockquote&gt;
+		&lt;/blockquote&gt;
+	&lt;/blockquote&gt;
+&lt;/blockquote&gt;</code></pre>
+
+<h1 id="Block-Quote">Block Quote</h1>
+<pre><code class="language-gr ">/ &quot;You have power over your mind---not outside events. Realize this, and you will find strength.&quot; 
+/ -- Markus Aurelius</code></pre>
+
+<pre><code class="language-html">&lt;blockquote class=&quot;quote&quot;&gt;
+	&lt;p&gt;&amp;#8223;You have power over your mind&amp;#8212;not outside events. Realize this, and you will find strength.&amp;#8221;
+	&amp;#8211; Markus Aurelius&lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+
+<pre><code class="language-gr">/ / &quot;You have power over your mind---not outside events. Realize this, and you will find strength.&quot; 
+/ / -- Markus Aurelius
+/ Say what now?</code></pre>
+
+<pre><code class="language-html">&lt;blockquote class=&quot;block-quote&quot;&gt;
+	&lt;blockquote class=&quot;quote&quot;&gt;
+		&lt;p&gt;&amp;#8223;You have power over your mind&amp;#8212;not outside events. Realize this, and you will find strength.&amp;#8221;
+		&amp;#8211; Markus Aurelius&lt;/p&gt;
+	&lt;/blockquote&gt;
+	&lt;p&gt;Say what now?&lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+
+<h1 id="Heading">Heading</h1>
+<pre><code class="language-gr">&gt;&gt;&gt; Chapter
+
+&gt;&gt; Section
+
+&gt; Subsection</code></pre>
+
+<pre><code class="language-html">&lt;h1 id=&quot;Chapter&quot;&gt;Chapter&lt;/h1&gt;
+
+&lt;h2 id=&quot;Section&quot;&gt;Section&lt;/h2&gt;
+
+&lt;h3 id=&quot;Subsection&quot;&gt;Subsection&lt;/h3&gt;</code></pre>
+
+<h2 id="Heading-Subtitle">Heading Subtitle</h2>
+<p>If the subsection modifier is placed in the next line of any headings. It will be parsed as subtitle.</p>
+
+<pre><code class="language-gr">&gt;&gt;&gt; Chapter
+&gt; Chapter Subtitle
+
+&gt;&gt; Section
+&gt; Section Subtitle
+
+&gt; Subsection
+&gt; Subsection Subtitle</code></pre>
+
+<pre><code class="language-html">&lt;h1 id=&quot;Chapter&quot;&gt;Chapter &lt;small&gt;Chapter Subtitle&lt;/small&gt;&lt;/h1&gt;
+
+&lt;h2 id=&quot;Section&quot;&gt;Section &lt;small&gt;Section Subtitle&lt;/small&gt;&lt;/h2&gt;
+
+&lt;h3 id=&quot;Subsection&quot;&gt;Subsection &lt;small&gt;Subsection Subtitle&lt;/small&gt;&lt;h3&gt;</code></pre>
+
+<h2 id="Heading-Link">Heading Link</h2>
+<pre><code class="language-gr">&gt;&gt;&gt; Laminal Flow
+
+See [&gt;Laminal Flow]
+
+If on another file [Chapter 1.gr&gt;Laminal Flow]</code></pre>
+
+<pre><code class="language-html">&lt;h1 id=&quot;Laminar-Flow&quot;&gt;Laminar Flow&lt;/h1&gt;
+
+&lt;p&gt;See &lt;a href=&quot;#Laminar-Flow&quot;&gt;Laminal Flow&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;If on another file &lt;a href=&quot;Chapter 1.gr#Laminal Flow&quot;&gt;Chapter 1 Laminar Flow&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h1 id="List">List</h1>
+<h2 id="Bullet-List">Bullet List</h2>
+<pre><code class="language-gr">- Fast
+- Furious
+- Fit</code></pre>
+
+<pre><code class="language-html">&lt;ul&gt;
+	&lt;li&gt;Fast&lt;/li&gt;
+	&lt;li&gt;Furious&lt;/li&gt;
+	&lt;li&gt;Fit&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+<h2 id="Ordered-List">Ordered List</h2>
+<pre><code class="language-gr">1. One
+2. Two 
+3. Three</code></pre>
+
+<pre><code class="language-html">&lt;ol&gt;
+	&lt;li&gt;One&lt;/li&gt;
+	&lt;li&gt;Two&lt;/li&gt;
+	&lt;li&gt;Three&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+
+<h2 id="Nested-Variation">Nested Variation</h2>
+<pre><code class="language-gr">- One 
+- Two 
+	- Two sub 1
+	- Two sub 2
+		- Two sub 2 section A 
+		- Two sub 2 section B
+	- Two sub 3</code></pre>
+
+<pre><code class="language-html">&lt;ul&gt;
+	&lt;li&gt;One&lt;/li&gt;
+	&lt;li&gt;Two
+		&lt;ul&gt;
+			&lt;li&gt;Two sub 1&lt;/li&gt;
+			&lt;li&gt;Two sub 2
+				&lt;ul&gt;
+					&lt;li&gt;Two sub 2 section A&lt;/li&gt;
+					&lt;li&gt;Two sub 2 section B&lt;/li&gt;
+				&lt;/ul&gt;
+			&lt;/li&gt;
+			&lt;li&gt;Two sub 3&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+<h2 id="List-With-Description">List With Description</h2>
+<pre><code class="language-gr">- First 
+- Second 
+- Third 
+	+1 level indentation after current list will create the body of the list.</code></pre>
+
+<pre><code class="language-html">&lt;ul&gt;
+	&lt;li&gt;First&lt;/li&gt;
+	&lt;li&gt;Second&lt;/li&gt;
+	&lt;li&gt;Third
+		&lt;p&gt;+1 level indentation after current list will create the body of the list.&lt;/p&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+<h1 id="Check-List">Check List</h1>
+<pre><code class="language-gr">[ ] To-do one 
+[ ] To-do two
+[x] Done three
+[x] Done four</code></pre>
+
+<pre><code class="language-html">&lt;ol class=&quot;todo-list&quot;&gt;
+	&lt;li&gt;&lt;input type=&quot;checkbox&quot;&gt; To-do one&lt;/li&gt;
+	&lt;li&gt;&lt;input type=&quot;checkbox&quot;&gt; To-do two&lt;/li&gt;
+	&lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt; Done three&lt;/li&gt;
+	&lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt; Done four&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+
+<h1 id="Definition-List">Definition List</h1>
+<pre><code class="language-gr">AP :: Appliances
+AU :: Automotive
+GA :: Garden shop
+HB :: Health and beauty
+HO :: Home decor
+SP :: Sporting goods</code></pre>
+
+<pre><code class="language-html">&lt;dl&gt;
+	&lt;dt&gt;AP&lt;/dt&gt; &lt;dd&gt;Appliances&lt;dd&gt;
+	&lt;dt&gt;AU&lt;/dt&gt; &lt;dd&gt;Automotive&lt;dd&gt;
+	&lt;dt&gt;GA&lt;/dt&gt; &lt;dd&gt;Garden shop&lt;dd&gt;
+	&lt;dt&gt;HB&lt;/dt&gt; &lt;dd&gt;Health and beauty&lt;dd&gt;
+	&lt;dt&gt;HO&lt;/dt&gt; &lt;dd&gt;Home decor&lt;dd&gt;
+	&lt;dt&gt;SP&lt;/dt&gt; &lt;dd&gt;Sporting goods&lt;dd&gt;
+&lt;/dl&gt;</code></pre>
+
+<pre><code class="language-gr">CD Player Unit ::
+	With auto-search, auto-off, power door,
+	and a two-year warranty.</code></pre>
+
+<pre><code class="language-html">&lt;dl&gt;
+	&lt;dt&gt;CD Player Unit&lt;/dt&gt; 
+	&lt;dd&gt;
+		&lt;p&gt;With auto-search, auto-off, power door,
+		and a two-year warranty.&lt;/p&gt;
+	&lt;dd&gt;
+&lt;/dl&gt;</code></pre>
+
+<h1 id="Code">Code</h1>
+<h2 id="Block-Code">Block Code</h2>
+<p>Anything between three or more equals will be considered as code.
+And make sure to have same equals count between opening and ending.</p>
+
+<h3 id="Anonymous-Block">Anonymous Block</h3>
+<pre><code class="language-gr">---
+plain text or do fancy syntax detection here
+---</code></pre>
+
+<pre><code class="language-html">&lt;pre&gt;&lt;code&gt;plain text or do fancy syntax detection here&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+<h3 id="Labeled-Block">Labeled Block</h3>
+<pre><code class="language-gr">--- cpp
+#include &lt;iostream&gt;
+
+int main() 
+{
+	std::cout &lt;&lt; &quot;Hello World\n&quot;;
+
+	return 0;
+}
+---</code></pre>
+
+<pre><code class="language-html">&lt;pre&gt;&lt;code class=&quot;language-cpp&quot;&gt;#include &lt;iostream&gt;
+
+int main() 
+{
+	std::cout &amp;lt;&amp;lt; &quot;Hello World\n&quot;;
+
+	return 0;
+}&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+<h2 id="Inline-Code">Inline Code</h2>
+<h3 id="Anonymous-Inline">Anonymous Inline</h3>
+<pre><code class="language-gr">Why do we use `console.log(&#39;here&#39;)` instead of the majestic breakpoint?</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;Why do we use &lt;code&gt;console.log(&#39;here&#39;)&lt;/code&gt; instead of the majestic breakpoint?&lt;/p&gt;</code></pre>
+
+<h3 id="Labeled-Inline">Labeled Inline</h3>
+<pre><code class="language-gr">Let&#39;s say `latex``\pi = 3` then the building is likely collapsed.</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;Let&#39;s say &lt;code class=&quot;language-latex&quot;&gt;\pi = 3&lt;/code&gt; then the building is likely collapsed.&lt;/p&gt;</code></pre>
+
+<h1 id="Table-">Table </h1>
+<h2 id="Table-Data-Only">Table Data Only</h2>
+<pre><code class="language-gr">| 1 | 2 |
+| 3 | 4 |</code></pre>
+
+<pre><code class="language-html">&lt;table&gt;
+	&lt;tr&gt;
+		&lt;td&gt;1&lt;/td&gt;
+		&lt;td&gt;2&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;3&lt;/td&gt;
+		&lt;td&gt;4&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+
+<h2 id="Table-With-Heading">Table With Heading</h2>
+<pre><code class="language-gr">| ID | Name   |
+|----|--------|
+|  1 | Name 1 |
+|  2 | Name 2 |</code></pre>
+
+<pre><code class="language-html">&lt;table&gt;
+	&lt;tr&gt;
+		&lt;th&gt;ID&lt;/th&gt;
+		&lt;th&gt;Name&lt;/th&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;1&lt;/td&gt;
+		&lt;td&gt;Name 1&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;2&lt;/td&gt;
+		&lt;td&gt;Name 2&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+
+<h2 id="Table-With-Heading-And-Alignment">Table With Heading And Alignment</h2>
+<pre><code class="language-gr">| Left | Center | Right |
+|:-----|:------:|------:|
+| 1    |  Ada   |    19 |
+| 2    | Fowler |    23 |</code></pre>
+
+<pre><code class="language-html">&lt;table&gt;
+	&lt;tr&gt;
+		&lt;th class=&quot;text-left&quot;&gt;Left&lt;/th&gt;
+		&lt;th class=&quot;text-left&quot;&gt;Center&lt;/th&gt;
+		&lt;th class=&quot;text-left&quot;&gt;Right&lt;/th&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td class=&quot;text-center&quot;&gt;1&lt;/td&gt;
+		&lt;td class=&quot;text-center&quot;&gt;Ada&lt;/td&gt;
+		&lt;td class=&quot;text-center&quot;&gt;19&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td class=&quot;text-right&quot;&gt;2&lt;/td&gt;
+		&lt;td class=&quot;text-right&quot;&gt;Fowler&lt;/td&gt;
+		&lt;td class=&quot;text-right&quot;&gt;23&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+
+<h2 id="Table-With-Heading-And-Footer">Table With Heading And Footer</h2>
+<p>Footer only works if the heading is defined.</p>
+
+<pre><code class="language-gr">| ID | Name   |
+|----|--------|
+|  1 | Name 1 |
+|  2 | Name 2 |
+|----|--------|
+| ID | Name   |</code></pre>
+
+<pre><code class="language-html">&lt;table&gt;
+	&lt;tr&gt;
+		&lt;th&gt;ID&lt;/th&gt;
+		&lt;th&gt;Name&lt;/th&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;1&lt;/td&gt;
+		&lt;td&gt;Name 1&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;2&lt;/td&gt;
+		&lt;td&gt;Name 2&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;th&gt;ID&lt;/th&gt;
+		&lt;th&gt;Name&lt;/th&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+
+<h1 id="Admonition">Admonition</h1>
+<pre><code class="language-gr">&lt;Note&gt; A note
+&lt;Hint&gt; A hint
+&lt;Important&gt; Important stuff
+&lt;Warning&gt; Warning stuff
+&lt;See also&gt; The Amazing Spiderman 2
+&lt;Tip&gt; A tip</code></pre>
+
+<pre><code class="language-html">&lt;div class=&quot;admon&quot;&gt;
+	&lt;div class=&quot;label&quot;&gt;Note&lt;/div&gt;
+	&lt;div class=&quot;content&quot;&gt;A note&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;admon&quot;&gt;
+	&lt;div class=&quot;label&quot;&gt;Hint&lt;/div&gt;
+	&lt;div class=&quot;content&quot;&gt;a Hint&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;admon&quot;&gt;
+	&lt;div class=&quot;label&quot;&gt;Important&lt;/div&gt;
+	&lt;div class=&quot;content&quot;&gt;Important stuff&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;admon&quot;&gt;
+	&lt;div class=&quot;label&quot;&gt;Warning&lt;/div&gt;
+	&lt;div class=&quot;content&quot;&gt;Warning sfuff&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;admon&quot;&gt;
+	&lt;div class=&quot;label&quot;&gt;See also&lt;/div&gt;
+	&lt;div class=&quot;content&quot;&gt;The Amazing Spiderman 2&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;admon&quot;&gt;
+	&lt;div class=&quot;label&quot;&gt;Tip&lt;/div&gt;
+	&lt;div class=&quot;content&quot;&gt;A tip&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+<pre><code class="language-gr">&lt;Note&gt;
+	Long note.
+	Very long note.</code></pre>
+
+<pre><code class="language-html">&lt;div class=&quot;admon&quot;&gt;
+	&lt;div class=&quot;label&quot;&gt;Note&lt;/div&gt;
+	&lt;div class=&quot;content&quot;&gt;
+		&lt;p&gt;Long note.
+		Very long note.&lt;/p&gt;
+	&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+<h1 id="DateTime">Date&#8208;Time</h1>
+<pre><code class="language-gr">Diary &lt;2018-05-10&gt;
+
+Met Sofia at &lt;10:00&gt; talked about her newborn child.
+He said his first word today.</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;Diary &lt;time datetime=&quot;2018-05-10&quot;&gt;2018-15-10&lt;/time&gt;
+
+&lt;p&gt;Met Sofia at &lt;time datetime=&quot;10:00&quot;&gt;10:00&lt;/time&gt; talked about her newborn child.
+He said his first word today.&lt;/p&gt;</code></pre>
+
+<h1 id="Tag">Tag</h1>
+<h2 id="Account-Tag">Account Tag</h2>
+<pre><code class="language-regex">@[A-Za-z0-9_]+</code></pre>
+
+<pre><code class="language-gr">@MrAnderson</code></pre>
+
+<pre><code class="language-html">&lt;a class=&quot;account-tag&quot; href=&quot;MrAnderson&quot;&gt;@MrAnderson&lt;/a&gt;</code></pre>
+
+<h2 id="Hash-Tag">Hash Tag</h2>
+<pre><code class="language-regex">#[A-Za-z0-9_]+</code></pre>
+
+<pre><code class="language-gr">#someTopic</code></pre>
+
+<pre><code class="language-html">&lt;a class=&quot;hash-tag&quot; href=&quot;someTopic&quot;&gt;#someTopic&lt;/a&gt;</code></pre>
+
+<h1 id="Linker">Linker</h1>
+<h2 id="Net-Link">Net Link</h2>
+<pre><code class="language-gr">[http://google.com]</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;http://google.com&quot;&gt;http://google.com&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h3 id="With-Label">With Label</h3>
+<pre><code class="language-gr">[http://google.com](Google)</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;http://google.com&quot;&gt;Google&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h2 id="Heading-Link">Heading Link</h2>
+<pre><code class="language-gr">[&gt;Laminal Flow]</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;#Laminar-Flow&quot;&gt;Laminar Flow&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h3 id="With-Label">With Label</h3>
+<pre><code class="language-gr">[&gt;Laminal Flow](see this segment)</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;#Laminar-Flow&quot;&gt;see this segment&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h2 id="Local-Link">Local Link</h2>
+<pre><code class="language-gr">[Another Document.gr]</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;Another Document.gr&quot;&gt;Another Document&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h3 id="With-Label">With Label</h3>
+<pre><code class="language-gr">[Another Document.gr](see this document)</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;Another Document.gr&quot;&gt;see this document&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h3 id="With-Specified-Heading">With Specified Heading</h3>
+<pre><code>[Another Document.gr&gt;Legal Section]</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;Another%20Document.gr#Legal-Section&quot;&gt;Another Document Legal Section&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h3 id="With-Specified-Heading-and-Label">With Specified Heading and Label</h3>
+<pre><code>[Another Document.gr&gt;Legal Section](see this section)</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a href=&quot;Another%20Document.gr#Legal-Section&quot;&gt;see this section&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h1 id="Viewer">Viewer</h1>
+<p>Depends on the target ability to view the resource.
+Like tsv can be presented as table or code block or a link to the resource.</p>
+
+<h2 id="URL">URL</h2>
+<pre><code class="language-gr">![https://www.youtube.com/watch?v=dQw4w9WgXcQ]</code></pre>
+
+<h2 id="Assets">Assets <small>Image</small></h2>
+<pre><code class="language-gr">![cat.png]</code></pre>
+
+<pre><code class="language-html">&lt;img src=&quot;cat.png&quot;&gt;</code></pre>
+
+<pre><code class="language-gr">![cat.png](A cat)</code></pre>
+
+<pre><code class="language-html">&lt;figure&gt;
+	&lt;img src=&quot;cat.png&quot;&gt;
+	&lt;figcaption&gt;A cat&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+
+<h3 id="Others">Others</h3>
+<pre><code class="language-gr">![mydata.tsv]</code></pre>
+
+<h1 id="Inclusion">Inclusion</h1>
+<p>Include file and parse the content as gularen markup.</p>
+
+<div class="admon note" data-label="Note">
+ Only local file that allowed to be included.</div>
+
+<pre><code class="language-gr">?[chapter-1.gr]
+?[chapter-2.gr]</code></pre>
+
+<h1 id="Citation">Citation</h1>
+<h2 id="Citation">Citation</h2>
+<pre><code class="language-gr">&quot;So that&#39;s why birds are real&quot; ^[birds-real]. ~ auto generated label.
+Hans wrote a book ^[bird-not-real](Bird is Not real) to refute Derwing ideas.</code></pre>
+
+<h2 id="References">References</h2>
+<pre><code>^[birds-real]:
+	title: Birds are Real
+	authors: James Derwing
+	year: 2002 
+	page: 245
+
+^[bird-not-real]:
+	title: Bird is Not Real
+	author: Thomas Hans
+	year: 2004. </code></pre>
+
+<h1 id="Footnote">Footnote</h1>
+<p>Footnote description automatically injected in the correct page.</p>
+
+<pre><code class="language-gr ">Here&#39;s a simple footnote,^(This is the first footnote.) and here&#39;s a another one.^(Very important part)</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;Here&#39;s a simple footnote,&lt;sup&gt;&lt;a href=&quot;Footnote-1&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;
+and here&#39;s a another one.&lt;sup&gt;&lt;a href=&quot;Footnote-2&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;div class=&quot;footnote-desc&quot;&gt;
+	&lt;p&gt;&lt;sup&gt;1&lt;/sup&gt; This is the first footnote.&lt;/p&gt;
+	&lt;p&gt;&lt;sup&gt;2&lt;/sup&gt; Very important part&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<h1 id="Punctuation">Punctuation</h1>
+<h2 id="Quotation">Quotation</h2>
+<p>Any single or double apostrophe will be converted into the correct left and right quotes.</p>
+
+<pre><code class="language-gr">&quot;Don&#39;t you dare!&quot; He said calmly.</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&amp;#8223;Don&amp;#8217;t you dare!&amp;#8221; He said calmly.&lt;/p&gt;</code></pre>
+
+<h2 id="Hyphen-En-Dash-Em-Dash">Hyphen, En Dash, Em Dash</h2>
+<p>Two hyphen will make en dash.
+Three hyphen will make em dash.</p>
+
+<pre><code class="language-gr">A closed-door meetings
+I’ll schedule you from 4:30--5:00
+Wait! I forgot to tell you---</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;A closed&amp;#8208;door meetings
+I’ll schedule you from 4:30&amp;#8211;5:00
+Wait! I forgot to tell you&amp;#8212;&lt;/p&gt;</code></pre>
+
+<h1 id="Emoji">Emoji</h1>
+<pre><code class="language-regex">:[a-z-]+:</code></pre>
+
+<pre><code class="language-gr">I look forward to see you soon :smile:!
+
+:coffee:</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;I look forward to see you soon &lt;span class=&quot;emoji&quot;&gt;smile&lt;/span&gt;!&lt;/p&gt;
+
+&lt;p&gt;&lt;span class=&quot;emoji&quot;&gt;coffee&lt;/span&gt;</code></pre>
+
+<h2 id="Expression">Expression</h2>
+<p>smile: 😄,
+small&#8208;smil: 🙂,
+laughing: 😆,
+blush: 😊,
+smiley: 😃,
+relaxed: ☺️,
+smirk: 😏,
+heart&#8208;eyes: 😍,
+kissing&#8208;heart: 😘,
+kissing&#8208;closed&#8208;eyes: 😚,
+flushed: 😳,
+relieved: 😌,
+satisfied: 😆,
+grin: 😁,
+wink: 😉,
+stuck&#8208;out&#8208;tongue&#8208;winking&#8208;eye: 😜,
+stuck&#8208;out&#8208;tongue&#8208;closed&#8208;eyes: 😝,
+grinning: 😀,
+kissing: 😗,
+kissing&#8208;smiling&#8208;eyes: 😙,
+stuck&#8208;out&#8208;tongue: 😛,
+sleeping: 😴,
+worried: 😟,
+frowning: 😦,
+anguished: 😧,
+open&#8208;mouth: 😮,
+grimacing: 😬,
+confused: 😕,
+hushed: 😯,
+expressionless: 😑,
+unamused: 😒,
+sweat&#8208;smile: 😅,
+sweat: 😓,
+disappointed&#8208;relieved: 😥,
+weary: 😩,
+pensive: 😔,
+disappointed: 😞,
+confounded: 😖,
+fearful: 😨,
+cold&#8208;sweat: 😰,
+persevere: 😣,
+cry: 😢,
+sob: 😭,
+joy: 😂,
+astonished: 😲,
+scream: 😱,
+tired&#8208;face: 😫,
+angry: 😠,
+rage: 😡,
+triumph: 😤,
+sleepy: 😪,
+yum: 😋,
+mask: 😷,
+sunglasses: 😎,
+dizzy&#8208;face: 😵,
+imp: 👿,
+smiling&#8208;imp: 😈,
+neutral&#8208;face: 😐,
+no&#8208;mouth: 😶,
+innocent: 😇,
+alien: 👽,
+yellow&#8208;heart: 💛,
+blue&#8208;heart: 💙,
+purple&#8208;heart: 💜,
+heart: ❤️,
+green&#8208;heart: 💚,
+broken&#8208;heart: 💔,
+heartbeat: 💓,
+heartpulse: 💗,
+two&#8208;hearts: 💕,
+revolving&#8208;hearts: 💞,
+cupid: 💘,
+sparkling&#8208;heart: 💖,
+sparkles: ✨,
+star: ⭐,
+shining&#8208;star: 🌟,
+dizzy: 💫,
+boom: 💥,
+collision: 💥,
+anger: 💢,
+exclamation: ❗,
+question: ❓,
+grey&#8208;exclamation: ❕,
+grey&#8208;question: ❔,
+zzz: 💤,
+dash: 💨,
+sweat&#8208;drops: 💦,
+notes: 🎶,
+musical&#8208;note: 🎵,
+fire: 🔥,
+hankey: 💩,
+poop: 💩,
+shit: 💩,
+thumbsup: 👍,
+thumbsdown: 👎,
+ok&#8208;hand: 👌,
+punch: 👊,
+facepunch: 👊,
+fist: ✊,
+two&#8208;fingers: ✌️,
+one&#8208;finger: ☝️,
+wave: 👋,
+hand: ✋,
+raised&#8208;hand: ✋,
+open&#8208;hands: 👐,
+point&#8208;down: 👇,
+point&#8208;left: 👈,
+point&#8208;right: 👉,
+raised&#8208;hands: 🙌,
+pray: 🙏,
+point&#8208;up: 👆,
+clap: 👏,
+muscle: 💪,
+metal: 🤘,
+fu: 🖕,
+walking: 🚶,
+runner: 🏃,
+running: 🏃,
+couple: 👫,
+family: 👪,
+two&#8208;men&#8208;holding&#8208;hands: 👬,
+two&#8208;women&#8208;holding&#8208;hands: 👭,
+dancer: 💃,
+dancers: 👯,
+ok&#8208;woman: 🙆‍♀️,
+no&#8208;good: 🙅,
+information&#8208;desk&#8208;person: 💁,
+raising&#8208;hand: 🙋,
+bride&#8208;with&#8208;veil: 👰‍♀️,
+bow: 🙇,
+couplekiss: 💏,
+couple&#8208;with&#8208;heart: 💑,
+massage: 💆,
+haircut: 💇,
+nail&#8208;care: 💅,
+boy: 👦,
+girl: 👧,
+woman: 👩,
+man: 👨,
+baby: 👶,
+older&#8208;woman: 👵,
+older&#8208;man: 👴,
+man&#8208;with&#8208;gua&#8208;pi&#8208;mao: 👲,
+man&#8208;with&#8208;turban: 👳‍♂️,
+construction&#8208;worker: 👷,
+cop: 👮,
+angel: 👼,
+princess: 👸,
+smiley&#8208;cat: 😺,
+smile&#8208;cat: 😸,
+heart&#8208;eyes&#8208;cat: 😻,
+kissing&#8208;cat: 😽,
+smirk&#8208;cat: 😼,
+scream&#8208;cat: 🙀,
+crying&#8208;cat&#8208;face: 😿,
+joy&#8208;cat: 😹,
+pouting&#8208;cat: 😾,
+japanese&#8208;ogre: 👹,
+japanese&#8208;goblin: 👺,
+see&#8208;no&#8208;evil: 🙈,
+hear&#8208;no&#8208;evil: 🙉,
+speak&#8208;no&#8208;evil: 🙊,
+guardsman: 💂‍♂️,
+skull: 💀,
+feet: 🐾,
+lips: 👄,
+kiss: 💋,
+droplet: 💧,
+ear: 👂,
+eye: 👁️,
+eyes: 👀,
+nose: 👃,
+tongue: 👅,
+love&#8208;letter: 💌,
+bust&#8208;in&#8208;silhouette: 👤,
+busts&#8208;in&#8208;silhouette: 👥,
+speech&#8208;balloon: 💬,
+thought&#8208;balloon: 💭,</p>
+
+<h2 id="Nature">Nature</h2>
+<p>sun: ☀️,
+sunny: ☀️,
+umbrella: ☔,
+cloud: ☁️,
+rainy: 🌧️,
+snowflake: ❄️,
+snowman: ⛄,
+zap: ⚡,
+cyclone: 🌀,
+foggy: 🌁,
+ocean: 🌊,
+cat&#8208;face: 🐱,
+dog&#8208;face: 🐶,
+mouse&#8208;face: 🐭,
+hamster&#8208;face: 🐹,
+rabbit&#8208;face: 🐰,
+wolf&#8208;face: 🐺,
+frog&#8208;face: 🐸,
+tiger&#8208;face: 🐯,
+koala&#8208;face: 🐨,
+bear&#8208;face: 🐻,
+pig&#8208;face: 🐷,
+pig&#8208;nose: 🐽,
+cow&#8208;face: 🐮,
+boar&#8208;face: 🐗,
+monkey&#8208;face: 🐵,
+monkey: 🐒,
+horse&#8208;face: 🐴,
+racehorse: 🐎,
+camel: 🐫,
+sheep: 🐑,
+elephant: 🐘,
+panda&#8208;face: 🐼,
+snake: 🐍,
+bird&#8208;face: 🐦,
+baby&#8208;chick&#8208;face: 🐤,
+hatched&#8208;chick: 🐥,
+hatching&#8208;chick: 🐣,
+chicken&#8208;face: 🐔,
+penguin&#8208;face: 🐧,
+turtle: 🐢,
+bug: 🐛,
+honeybee: 🐝,
+ant: 🐜,
+beetle: 🪲,
+snail: 🐌,
+octopus: 🐙,
+tropical&#8208;fish: 🐠,
+fish: 🐟,
+spouting&#8208;whale: 🐳,
+whale: 🐋,
+dolphin: 🐬,
+cow: 🐄,
+ram: 🐏,
+rat: 🐀,
+water&#8208;buffalo: 🐃,
+tiger: 🐅,
+rabbit: 🐇,
+dragon: 🐉,
+goat: 🐐,
+rooster: 🐓,
+dog: 🐕,
+pig: 🐖,
+mouse: 🐁,
+ox: 🐂,
+dragon&#8208;face: 🐲,
+blowfish: 🐡,
+crocodile: 🐊,
+dromedary&#8208;camel: 🐪,
+leopard: 🐆,
+cat: 🐈,
+poodle: 🐩,
+paw&#8208;prints: 🐾,
+bouquet: 💐,
+cherry&#8208;blossom: 🌸,
+tulip: 🌷,
+four&#8208;leaf&#8208;clover: 🍀,
+rose: 🌹,
+sunflower: 🌻,
+hibiscus: 🌺,
+maple&#8208;leaf: 🍁,
+leaves: 🍃,
+fallen&#8208;leaf: 🍂,
+herb: 🌿,
+mushroom: 🍄,
+cactus: 🌵,
+palm&#8208;tree: 🌴,
+evergreen&#8208;tree: 🌲,
+deciduous&#8208;tree: 🌳,
+chestnut: 🌰,
+seedling: 🌱,
+blossom: 🌼,
+ear&#8208;of&#8208;rice: 🌾,
+shell: 🐚,
+globe&#8208;with&#8208;meridians: 🌐,
+sun&#8208;with&#8208;face: 🌞,
+full&#8208;moon&#8208;with&#8208;face: 🌝,
+new&#8208;moon&#8208;with&#8208;face: 🌚,
+new&#8208;moon: 🌑,
+waxing&#8208;crescent&#8208;moon: 🌒,
+first&#8208;quarter&#8208;moon: 🌓,
+waxing&#8208;gibbous&#8208;moon: 🌔,
+full&#8208;moon: 🌕,
+waning&#8208;gibbous&#8208;moon: 🌖,
+last&#8208;quarter&#8208;moon: 🌗,
+waning&#8208;crescent&#8208;moon: 🌘,
+last&#8208;quarter&#8208;moon&#8208;with&#8208;face: 🌜,
+first&#8208;quarter&#8208;moon&#8208;with&#8208;face: 🌛,
+moon: 🌔,
+earth&#8208;africa: 🌍,
+earth&#8208;americas: 🌎,
+earth&#8208;asia: 🌏,
+volcano: 🌋,
+milky&#8208;way: 🌌,
+partly&#8208;sunny: ⛅,</p>
+
+<h2 id="Objects">Objects</h2>
+<p>bamboo: 🎍,
+gift&#8208;heart: 💝,
+dolls: 🎎,
+school&#8208;satchel: 🎒,
+mortar&#8208;board: 🎓,
+flags: 🎏,
+fireworks: 🎆,
+sparkler: 🎇,
+wind&#8208;chime: 🎐,
+rice&#8208;scene: 🎑,
+jack&#8208;o&#8208;lantern: 🎃,
+ghost: 👻,
+santa: 🎅,
+christmas&#8208;tree: 🎄,
+gift: 🎁,
+bell: 🔔,
+no&#8208;bell: 🔕,
+tanabata&#8208;tree: 🎋,
+tada: 🎉,
+confetti&#8208;ball: 🎊,
+balloon: 🎈,
+crystal&#8208;ball: 🔮,
+cd: 💿,
+dvd: 📀,
+floppy&#8208;disk: 💾,
+camera: 📷,
+video&#8208;camera: 📹,
+movie&#8208;camera: 🎥,
+computer: 💻,
+tv: 📺,
+iphone: 📱,
+telephone: ☎️,
+telephone&#8208;receiver: 📞,
+pager: 📟,
+fax: 📠,
+minidisc: 💽,
+vhs: 📼,
+sound: 🔉,
+speaker: 🔈,
+mute: 🔇,
+loudspeaker: 📢,
+mega: 📣,
+hourglass: ⌛,
+hourglass&#8208;flowing&#8208;sand: ⏳,
+alarm&#8208;clock: ⏰,
+watch: ⌚,
+radio: 📻,
+satellite: 📡,
+loop: ➿,
+mag: 🔍,
+mag&#8208;right: 🔎,
+unlock: 🔓,
+lock: 🔒,
+lock&#8208;with&#8208;ink&#8208;pen: 🔏,
+closed&#8208;lock&#8208;with&#8208;key: 🔐,
+key: 🔑,
+bulb: 💡,
+flashlight: 🔦,
+high&#8208;brightness: 🔆,
+low&#8208;brightness: 🔅,
+electric&#8208;plug: 🔌,
+battery: 🔋,
+calling: 📲,
+email: 📧,
+mailbox: 📫,
+postbox: 📮,
+bath: 🛀,
+bathtub: 🛁,
+shower: 🚿,
+toilet: 🚽,
+wrench: 🔧,
+nut&#8208;and&#8208;bolt: 🔩,
+hammer: 🔨,
+seat: 💺,
+moneybag: 💰,
+yen: 💴,
+dollar: 💵,
+pound: 💷,
+euro: 💶,
+credit&#8208;card: 💳,
+money&#8208;with&#8208;wings: 💸,
+e&#8208;mail: 📧,
+inbox&#8208;tray: 📥,
+outbox&#8208;tray: 📤,
+envelope: ✉️,
+incoming&#8208;envelope: 📨,
+postal&#8208;horn: 📯,
+mailbox&#8208;closed: 📪,
+mailbox&#8208;with&#8208;mail: 📬,
+mailbox&#8208;with&#8208;no&#8208;mail: 📭,
+door: 🚪,
+smoking: 🚬,
+bomb: 💣,
+gun: 🔫,
+hocho: 🔪,
+pill: 💊,
+syringe: 💉,
+page&#8208;facing&#8208;up: 📄,
+page&#8208;with&#8208;curl: 📃,
+bookmark&#8208;tabs: 📑,
+bar&#8208;chart: 📊,
+chart&#8208;with&#8208;upwards&#8208;trend: 📈,
+chart&#8208;with&#8208;downwards&#8208;trend: 📉,
+scroll: 📜,
+clipboard: 📋,
+calendar: 📆,
+date: 📅,
+card&#8208;index: 📇,
+file&#8208;folder: 📁,
+open&#8208;file&#8208;folder: 📂,
+scissors: ✂️,
+pushpin: 📌,
+paperclip: 📎,
+black&#8208;nib: ✒️,
+pencil: ✏️,
+straight&#8208;ruler: 📏,
+triangular&#8208;ruler: 📐,
+closed&#8208;book: 📕,
+green&#8208;book: 📗,
+blue&#8208;book: 📘,
+orange&#8208;book: 📙,
+notebook: 📓,
+notebook&#8208;with&#8208;decorative&#8208;cover: 📔,
+ledger: 📒,
+books: 📚,
+bookmark: 🔖,
+name&#8208;badge: 📛,
+microscope: 🔬,</p>
+
+<p>telescope: 🔭,
+newspaper: 📰,
+football: 🏈,
+basketball: 🏀,
+soccer: ⚽,
+baseball: ⚾,
+tennis: 🎾,
+eight&#8208;ball: 🎱,
+rugby&#8208;football: 🏉,
+bowling: 🎳,
+golf: ⛳,
+mountain&#8208;bicyclist: 🚵,
+bicyclist: 🚴,
+horse&#8208;racing: 🏇,
+snowboarder: 🏂,
+swimmer: 🏊,
+surfer: 🏄,
+ski: 🎿,
+spades: ♠️,
+hearts: ♥️,
+clubs: ♣️,
+diamonds: ♦️,
+gem: 💎,
+ring: 💍,
+trophy: 🏆,
+musical&#8208;score: 🎼,
+musical&#8208;keyboard: 🎹,
+violin: 🎻,
+space&#8208;invader: 👾,
+video&#8208;game: 🎮,
+black&#8208;joker: 🃏,
+flower&#8208;playing&#8208;cards: 🎴,
+game&#8208;die: 🎲,
+dart: 🎯,
+mahjong: 🀄,
+clapper: 🎬,
+memo: 📝,
+book: 📖,
+art: 🎨,
+microphone: 🎤,
+headphones: 🎧,
+trumpet: 🎺,
+saxophone: 🎷,
+guitar: 🎸,
+shoe: 👞,
+sandal: 👡,
+high&#8208;heel: 👠,
+lipstick: 💄,
+boot: 👢,
+shirt: 👕,
+tshirt: 👕,
+necktie: 👔,
+womans&#8208;clothes: 👚,
+dress: 👗,
+running&#8208;shirt&#8208;with&#8208;sash: 🎽,
+jeans: 👖,
+kimono: 👘,
+bikini: 👙,
+ribbon: 🎀,
+tophat: 🎩,
+crown: 👑,
+womans&#8208;hat: 👒,
+mans&#8208;shoe: 👞,
+closed&#8208;umbrella: 🌂,
+briefcase: 💼,
+handbag: 👜,
+pouch: 👝,
+purse: 👛,
+glasses: 👓,
+fishing&#8208;pole&#8208;and&#8208;fish: 🎣,
+coffee: ☕,
+tea: 🍵,
+sake: 🍶,
+baby&#8208;bottle: 🍼,
+beer: 🍺,
+beers: 🍻,
+cocktail: 🍸,
+tropical&#8208;drink: 🍹,
+wine&#8208;glass: 🍷,
+fork&#8208;and&#8208;knife: 🍴,
+pizza: 🍕,
+hamburger: 🍔,
+fries: 🍟,
+poultry&#8208;leg: 🍗,
+meat&#8208;on&#8208;bone: 🍖,
+spaghetti: 🍝,
+curry: 🍛,
+fried&#8208;shrimp: 🍤,
+bento: 🍱,
+sushi: 🍣,
+fish&#8208;cake: 🍥,
+rice&#8208;ball: 🍙,
+rice&#8208;cracker: 🍘,
+rice: 🍚,
+ramen: 🍜,
+stew: 🍲,
+oden: 🍢,
+dango: 🍡,
+egg: 🥚,
+bread: 🍞,
+doughnut: 🍩,
+custard: 🍮,
+icecream: 🍦,
+ice&#8208;cream: 🍨,
+shaved&#8208;ice: 🍧,
+birthday: 🎂,
+cake: 🍰,
+cookie: 🍪,
+chocolate&#8208;bar: 🍫,
+candy: 🍬,
+lollipop: 🍭,
+honey&#8208;pot: 🍯,
+apple: 🍎,
+green&#8208;apple: 🍏,
+tangerine: 🍊,
+lemon: 🍋,
+cherries: 🍒,
+grapes: 🍇,
+watermelon: 🍉,
+strawberry: 🍓,
+peach: 🍑,
+melon: 🍈,
+banana: 🍌,
+pear: 🍐,
+pineapple: 🍍,
+sweet&#8208;potato: 🍠,
+eggplant: 🍆,
+tomato: 🍅,
+corn: 🌽,</p>
+
+<h2 id="Places">Places</h2>
+<p>house: 🏠,
+house&#8208;with&#8208;garden: 🏡,
+school: 🏫,
+office: 🏢,
+post&#8208;office: 🏣,
+hospital: 🏥,
+bank: 🏦,
+convenience&#8208;store: 🏪,
+love&#8208;hotel: 🏩,
+hotel: 🏨,
+wedding: 💒,
+church: ⛪,
+department&#8208;store: 🏬,
+european&#8208;post&#8208;office: 🏤,
+city&#8208;sunrise: 🌇,
+city&#8208;sunset: 🌆,
+japanese&#8208;castle: 🏯,
+european&#8208;castle: 🏰,
+tent: ⛺,
+factory: 🏭,
+tokyo&#8208;tower: 🗼,
+japan: 🗾,
+mount&#8208;fuji: 🗻,
+sunrise&#8208;over&#8208;mountains: 🌄,
+sunrise: 🌅,
+stars: 🌠,
+statue&#8208;of&#8208;liberty: 🗽,
+bridge&#8208;at&#8208;night: 🌉,
+carousel&#8208;horse: 🎠,
+rainbow: 🌈,
+ferris&#8208;wheel: 🎡,
+fountain: ⛲,
+roller&#8208;coaster: 🎢,
+ship: 🚢,
+speedboat: 🚤,
+boat: ⛵,
+sailboat: ⛵,
+rowboat: 🚣,
+anchor: ⚓,
+rocket: 🚀,
+airplane: ✈️,
+helicopter: 🚁,
+steam&#8208;locomotive: 🚂,
+tram: 🚊,
+mountain&#8208;railway: 🚞,
+bike: 🚲,
+aerial&#8208;tramway: 🚡,
+suspension&#8208;railway: 🚟,
+mountain&#8208;cableway: 🚠,
+tractor: 🚜,
+blue&#8208;car: 🚙,
+oncoming&#8208;automobile: 🚘,
+car: 🚗,
+red&#8208;car: 🚗,
+taxi: 🚕,
+oncoming&#8208;taxi: 🚖,
+articulated&#8208;lorry: 🚛,
+bus: 🚌,
+oncoming&#8208;bus: 🚍,
+rotating&#8208;light: 🚨,
+police&#8208;car: 🚓,
+oncoming&#8208;police&#8208;car: 🚔,
+fire&#8208;engine: 🚒,
+ambulance: 🚑,
+minibus: 🚐,
+truck: 🚚,
+railway&#8208;car: 🚋,
+station: 🚉,
+train: 🚆,
+bullettrain&#8208;front: 🚅,
+bullettrain&#8208;side: 🚄,
+light&#8208;rail: 🚈,
+monorail: 🚝,
+railway&#8208;car: 🚃,
+trolleybus: 🚎,
+ticket: 🎫,
+fuelpump: ⛽,
+vertical&#8208;traffic&#8208;light: 🚦,
+traffic&#8208;light: 🚥,
+warning: ⚠️,
+construction: 🚧,
+beginner: 🔰,
+atm: 🏧,
+slot&#8208;machine: 🎰,
+busstop: 🚏,
+barber: 💈,
+hotsprings: ♨️,
+checkered&#8208;flag: 🏁,
+crossed&#8208;flags: 🎌,
+izakaya&#8208;lantern: 🏮,
+moyai: 🗿,
+circus&#8208;tent: 🎪,
+performing&#8208;arts: 🎭,
+round&#8208;pushpin: 📍,</p>
+
+</article>
+</body>
+
+</html>
