@@ -73,7 +73,7 @@ public:
 	}
 
 	void reserve(unsigned int size) {
-		if (_capacity < _size) {
+		if (_capacity < size) {
 			_allocate(size);
 		}
 	}

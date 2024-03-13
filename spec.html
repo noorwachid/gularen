@@ -107,7 +107,7 @@ Single new line won&#39;t make new paragraph.&lt;/p&gt;
 / / -- Markus Aurelius
 / Say what now?</code></pre>
 
-<pre><code class="language-html">&lt;blockquote class=&quot;block-quote&quot;&gt;
+<pre><code class="language-html">&lt;blockquote class=&quot;quote&quot;&gt;
 	&lt;blockquote class=&quot;quote&quot;&gt;
 		&lt;p&gt;&amp;#8223;You have power over your mind&amp;#8212;not outside events. Realize this, and you will find strength.&amp;#8221;
 		&amp;#8211; Markus Aurelius&lt;/p&gt;
@@ -227,7 +227,7 @@ If on another file [Chapter 1.gr&gt;Laminal Flow]</code></pre>
 [x] Done three
 [x] Done four</code></pre>
 
-<pre><code class="language-html">&lt;ol class=&quot;todo-list&quot;&gt;
+<pre><code class="language-html">&lt;ol class=&quot;check-list&quot;&gt;
 	&lt;li&gt;&lt;input type=&quot;checkbox&quot;&gt; To-do one&lt;/li&gt;
 	&lt;li&gt;&lt;input type=&quot;checkbox&quot;&gt; To-do two&lt;/li&gt;
 	&lt;li&gt;&lt;input type=&quot;checkbox&quot; checked&gt; Done three&lt;/li&gt;
@@ -542,20 +542,42 @@ Like tsv can be presented as table or code block or a link to the resource.</p>
 
 <h1 id="Citation">Citation</h1>
 <h2 id="Citation">Citation</h2>
-<pre><code class="language-gr">&quot;So that&#39;s why birds are real&quot; ^[birds-real]. ~ auto generated label.
-Hans wrote a book ^[bird-not-real](Bird is Not real) to refute Derwing ideas.</code></pre>
+<pre><code class="language-gr">^[12-rules] ^[lateral-thinking] ^[good-omens] ^[my-lady-jane]</code></pre>
+
+<pre><code class="language-html">&lt;p&gt;&lt;a class=&quot;citation&quot; href=&quot;#Reference-12-rules&quot;&gt;(Peterson, 2018)&lt;/a&gt;
+&lt;a class=&quot;citation&quot; href=&quot;#Reference-lateral-thinking&quot;&gt;(De Bono, 1970)&lt;/a&gt;
+&lt;a class=&quot;citation&quot; href=&quot;#Reference-good-omens&quot;&gt;(Pratchett &amp; Gaiman, 1990)&lt;/a&gt;
+&lt;a class=&quot;citation&quot; href=&quot;#Reference-my-lady-jane&quot;&gt;(Hand et al., 2016)&lt;/a&gt;&lt;/p&gt;</code></pre>
 
 <h2 id="References">References</h2>
-<pre><code>^[birds-real]:
-	title: Birds are Real
-	authors: James Derwing
-	year: 2002 
-	page: 245
+<pre><code>^[12-rules]:
+	title: 12 Rules of Life
+	author: Jordan Peterson
+	year: 2018
+	publisher: Random House Canada
 
-^[bird-not-real]:
-	title: Bird is Not Real
-	author: Thomas Hans
-	year: 2004. </code></pre>
+^[lateral-thinking]:
+	title: Lateral Thinking: Creativity Step by Step
+	author: Edward de Bono
+	year: 1970
+	publisher: Harper &amp; Row
+
+^[good-omens]:
+	title: Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch
+	authors: Terry Pratchett, Neil Gaiman
+	year: 1990
+	publisher: Gollancz 
+
+^[my-lady-jane]:
+	title: My Lady Jane
+	authors: Cynthia Hand, Brodi Ashton, Jodi Meadows
+	year: 2016
+	publisher: HarperCollins</code></pre>
+
+<pre><code class="language-html">&lt;div class=&quot;reference&quot; id=&quot;Reference-12-rules&quot;&gt;Peterson J. (2018). &lt;i&gt;12 Rules of Life&lt;/i&gt;. Random House Canada.&lt;/div&gt;
+&lt;div class=&quot;reference&quot; id=&quot;Reference-lateral-thinking&quot;&gt;De Bono, E. (1970). &lt;i&gt;Lateral Thinking: Creativity Step by Step&lt;/i&gt;. Harper &amp; Row.&lt;/div&gt;
+&lt;div class=&quot;reference&quot; id=&quot;Reference-good-omens&quot;&gt;Pratchett T. &amp; Gaiman N. (1990). &lt;i&gt;Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch&lt;/i&gt;. Gollancz .&lt;/div&gt;
+&lt;div class=&quot;reference&quot; id=&quot;Reference-my-lady-jane&quot;&gt;Hand C., Ashton B., &amp; Meadows J. (2016). &lt;i&gt;My Lady Jane&lt;/i&gt;. HarperCollins.&lt;/div&gt;</code></pre>
 
 <h1 id="Footnote">Footnote</h1>
 <p>Footnote description automatically injected in the correct page.</p>
@@ -569,6 +591,9 @@ and here&#39;s a another one.&lt;sup&gt;&lt;a href=&quot;Footnote-2&quot;&gt;2&l
 	&lt;p&gt;&lt;sup&gt;1&lt;/sup&gt; This is the first footnote.&lt;/p&gt;
 	&lt;p&gt;&lt;sup&gt;2&lt;/sup&gt; Very important part&lt;/p&gt;
 &lt;/div&gt;</code></pre>
+
+<div class="admon see-also" data-label="See also">
+ <a href="21-citation.gr">Citation</a></div>
 
 <h1 id="Punctuation">Punctuation</h1>
 <h2 id="Quotation">Quotation</h2>
@@ -1256,5 +1281,4 @@ round&#8208;pushpin: 📍,</p>
 
 </article>
 </body>
-
 </html>
