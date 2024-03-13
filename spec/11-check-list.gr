@@ -6,7 +6,7 @@
 [x] Done four
 ---
 --- html
-<ol class="todo-list">
+<ol class="check-list">
 	<li><input type="checkbox"> To-do one</li>
 	<li><input type="checkbox"> To-do two</li>
 	<li><input type="checkbox" checked> Done three</li>
