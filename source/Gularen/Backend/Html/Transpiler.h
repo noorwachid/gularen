@@ -3,6 +3,7 @@
 #include "Gularen/Frontend/Parser.h"
 #include "Gularen/Library/String.h"
 #include "Gularen/Library/StringSlice.h"
+#include "Gularen/Library/HashTable.h"
 
 namespace Gularen {
 namespace Html {
@@ -16,6 +17,8 @@ public:
 		_tableLabel = false;
 
 		if (document != nullptr) {
+			_collectReferences(document);
+
 			for (unsigned int i = 0; i < document->children.size(); i += 1) {
 				_compose(document->children.get(i), 0);
 
@@ -42,8 +45,31 @@ public:
 	}
 
 private:
+	void _collectReferences(const Node* node) {
+		if (node->kind == NodeKind::reference) {
+			const Reference* ref = static_cast<const Reference*>(node);
+			HashTable<const ReferenceInfo*> refTable;
+
+			for (unsigned int i = 0; i < ref->children.size(); i += 1) {
+				const ReferenceInfo* info = static_cast<const ReferenceInfo*>(ref->children.get(i));
+				refTable.set(info->key, info);
+			}
+
+			_references.set(ref->id, refTable);
+			return;
+		}
+
+		for (unsigned int i = 0; i < node->children.size(); i += 1) {
+			_collectReferences(node->children.get(i));
+		}
+	}
+
 	void _compose(const Node* node, unsigned int depth) {
 		_preCompose(node, depth);
+
+		if (node->kind == NodeKind::reference) {
+			return;
+		}
 
 		for (unsigned int i = 0; i < node->children.size(); i += 1) {
 			_compose(node->children.get(i), depth + 1);
@@ -123,7 +149,7 @@ private:
 			}
 
 			case NodeKind::checkList: {
-				return _content.append("<ul class=\"todo\">\n");
+				return _content.append("<ul class=\"check-list\">\n");
 			}
 
 			case NodeKind::definitionList: {
@@ -299,6 +325,30 @@ private:
 				_content.append(id);
 				_content.append("</a></sup>");
 				_footnotes.append(ref);
+				return;
+			}
+
+			case NodeKind::citation: {
+				const Citation* cite = static_cast<const Citation*>(node);
+				_content.append("<a class=\"citation\" href=\"#Reference-");
+				_escapeAttribute(cite->id);
+				_content.append("\">");
+				if (cite->label.size() != 0) {
+					_escape(cite->label);
+				} else {
+					_cite(cite->id);
+				}
+				_content.append("</a>");
+				return;
+			}
+
+			case NodeKind::reference: {
+				const Reference* ref = static_cast<const Reference*>(node);
+				_content.append("<div class=\"reference\" id=\"Reference-");
+				_escapeAttribute(ref->id);
+				_content.append("\">");
+				_refer(ref->id);
+				_content.append("</div>\n");
 				return;
 			}
 
@@ -560,6 +610,79 @@ private:
 		}
 	}
 
+	void _cite(StringSlice id) {
+		// APA Style:
+		// Single author
+		// (Author last name, the year of publication)
+		//
+		// Two authors
+		// (First author last name & second author last name, the year of publication)
+		//
+		// More than two authors
+		// (First author last name et al., the year of publication)
+		//
+		// Direct page quatation
+		// (Same rule as above, the year of publication, p. page number)
+		HashTable<const ReferenceInfo*>* table = _references.get(id);
+
+		if (table == nullptr) {
+			return;
+		}
+
+		_content.append("(");
+		const ReferenceInfo** author = table->get("author");
+		if (author != nullptr) {
+			_compose(*author, 0);
+		}
+		const ReferenceInfo** authors = table->get("authors");
+		if (authors != nullptr) {
+			_compose(*authors, 0);
+		}
+		const ReferenceInfo** year = table->get("year");
+		if (year != nullptr) {
+			_content.append(", ");
+			_compose(*year, 0);
+		}
+		_content.append(")");
+	}
+
+	void _refer(StringSlice id) {
+		// APA Style:
+		// Author’s Last Name, First Initial. Second Initial. (Year of publication). <i>Title of the book</i>. Publishing Company. 
+		HashTable<const ReferenceInfo*>* table = _references.get(id);
+
+		if (table == nullptr) {
+			return;
+		}
+
+		const ReferenceInfo** author = table->get("author");
+		if (author != nullptr) {
+			_compose(*author, 0);
+		}
+		const ReferenceInfo** authors = table->get("authors");
+		if (authors != nullptr) {
+			_compose(*authors, 0);
+		}
+		const ReferenceInfo** year = table->get("year");
+		if (year != nullptr) {
+			_content.append(" (");
+			_compose(*year, 0);
+			_content.append(").");
+		}
+		const ReferenceInfo** title = table->get("title");
+		if (title != nullptr) {
+			_content.append(" <i>");
+			_compose(*title, 0);
+			_content.append("</i>.");
+		}
+		const ReferenceInfo** pubisher = table->get("publisher");
+		if (pubisher != nullptr) {
+			_content.append(" ");
+			_compose(*pubisher, 0);
+			_content.append(".");
+		}
+	}
+
 private:
 	String _content;
 
@@ -570,6 +693,9 @@ private:
 	bool _tableLabel;
 
 	Array<const Footnote*> _footnotes;
+
+	// referenceID -> infoKey -> infoValue
+	HashTable<HashTable<const ReferenceInfo*>> _references;
 };
 
 }

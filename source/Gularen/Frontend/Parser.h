@@ -66,14 +66,6 @@ public:
 		_fileInclusion = state;
 	}
 
-	Slice<Reference*> references() {
-		return Slice<Reference*>(_references.pointer(), _references.size());
-	}
-
-	Slice<Heading*> headings() {
-		return Slice<Heading*>(_headings.pointer(), _headings.size());
-	}
-
 private:
 	Document* _parse(StringSlice content) {
 		Lexer lexer;
@@ -336,8 +328,6 @@ private:
 				return nullptr;
 		}
 
-		_headings.append(heading);
-		
 		while (_isBound(0)) {
 			Node* node = _parseInline();
 			if (node == nullptr) {
@@ -812,16 +802,6 @@ private:
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
 			_advance(1);
-
-			if (_isBound(2) && 
-				_get(0).kind == TokenKind::parenOpen && 
-				_get(1).kind == TokenKind::raw && 
-				_get(2).kind == TokenKind::parenClose) {
-
-				view->label = _get(1).content;
-
-				_advance(3);
-			}
 		}
 
 		return view;
@@ -922,8 +902,6 @@ private:
 	Node* _parseReference() {
 		Reference* ref = new Reference(_get(0).position);
 		ref->id = _get(2).content;
-
-		_references.append(ref);
 
 		_advance(6);
 
@@ -1255,10 +1233,6 @@ private:
 	bool _fileInclusion;
 
 	Array<Annotation> _annotations;
-
-	Array<Reference*> _references;
-
-	Array<Heading*> _headings;
 };
 
 }

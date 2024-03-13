@@ -47,6 +47,7 @@ enum class NodeKind {
 	link,
 	view,
 	footnote,
+	citation,
 	reference,
 	referenceInfo,
 
@@ -504,7 +505,7 @@ struct Citation : Node {
 	StringSlice id;
 	StringSlice label;
 
-	Citation(Position position): Node(position, NodeKind::footnote) {
+	Citation(Position position): Node(position, NodeKind::citation) {
 	}
 
 	virtual void print() override {
