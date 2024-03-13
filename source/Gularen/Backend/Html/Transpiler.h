@@ -629,6 +629,7 @@ private:
 			return;
 		}
 
+		// TODO: finish author sytle
 		_content.append("(");
 		const ReferenceInfo** author = table->get("author");
 		if (author != nullptr) {
@@ -655,6 +656,7 @@ private:
 			return;
 		}
 
+		// TODO: finish author sytle
 		const ReferenceInfo** author = table->get("author");
 		if (author != nullptr) {
 			_compose(*author, 0);
