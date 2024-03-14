@@ -525,7 +525,7 @@ private:
 	Node* _parseDefinitionList() {
 		List* list = new List(_get(0).position, NodeKind::definitionList);
 
-		while (_isBound(0)) {
+		while (_isBound(0) && _isParagraph()) {
 			unsigned int previousTokenIndex = _tokenIndex;
 			bool itemOccupied = false;
 
@@ -534,7 +534,7 @@ private:
 
 			item->children.append(term);
 
-			while (_isBound(0)) {
+			while (_isBound(0) && _isParagraph()) {
 				Node* node = _parseInline();
 
 				if (node == nullptr) {
