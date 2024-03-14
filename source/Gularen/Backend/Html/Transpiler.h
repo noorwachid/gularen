@@ -92,6 +92,10 @@ private:
 				}
 			}
 
+			case NodeKind::highlight: {
+				return content.append("<mark>");
+			}
+
 			case NodeKind::heading: {
 				const Heading* heading = static_cast<const Heading*>(node);
 				switch (heading->type) {
@@ -432,6 +436,10 @@ private:
 					case Style::Type::bold: return content.append("</b>");
 					case Style::Type::italic: return content.append("</i>");
 				}
+			}
+
+			case NodeKind::highlight: {
+				return content.append("</mark>");
 			}
 
 			case NodeKind::heading: {
