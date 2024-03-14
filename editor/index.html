@@ -323,11 +323,17 @@
 >> Comment
 Now you see me, ~ now you dont.
 
->> Style, Punctuation, And Line Break
-Hello *darkness* _my old_ friend. <<
-I've come *to _talk with you_ again*.
+~~ title: Gularen 101
+~~ author: Noor Wachid
 
-/ "Hold the flashlight steady!" <<
+>> Style
+Hello *darkness* _my old_ friend.
+
+>> Highlights
+Very =important sentence=.
+
+>> Quote
+/ "Hold the flashlight steady!"
 / ---my Dad
 
 >> Paragraph
@@ -342,17 +348,12 @@ Nulla euismod neque magna.
 Aliquam congue velit ut felis suscipit fermentum.
 Nulla aliquet eget sapien ac ultrices.
 
-Sed lobortis libero id malesuada elementum.
-Nam sagittis enim iaculis, ultricies ipsum vitae, eleifend libero.
-Quisque luctus velit consectetur tellus feugiat porttitor.
-Integer ut pulvinar nunc, quis dictum dolor.
-Donec bibendum nec orci at fringilla.
-Nulla quis sagittis nisl.
-Aliquam quis ex eu purus blandit ornare.
-
 >> Indentation
 	I believe I can fly!
 		Look mom no hand!
+
+>> Emoji
+:coffee:, :rainy:, :small-smile:
 
 >> List
 
@@ -361,14 +362,20 @@ Aliquam quis ex eu purus blandit ornare.
 - Two
 - Three
 
-> Index List
+> Numbered List
 1. One
 2. Two
 3. Three
 
-> Check List
+>> Check List
 [ ] Todo
 [x] Done
+
+>> Definition List
+Elephant ::
+	Large animal
+Bee ::
+	Animal, smaller than an elephant
 
 >> Table
 | Name | Chromosome | Age |
@@ -416,9 +423,6 @@ Muh \`latex\`\`x\` is pretty.
 F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 ---
 
->> Emoji
-:coffee: + :rainy: = :small-smile:
-
 >> Admonition
 <Tip> A tip
 <Note> A note
@@ -429,7 +433,20 @@ F(\\omega) = \\int_{-\\infty}^{\\infty} f(t) \\, e^{-i\\omega t} \\, dt
 <Other> Other stuff
 
 >> Date-Time
-Meet me on <2020-10-10 18:00> at Diner`;
+Meet me on <2020-10-10 18:00> at Diner
+
+>> Citation
+
+> In-text
+On his book ^[think-fs] he made remarkable remark. 
+
+> Reference
+^[think-fs]:
+	title: Thinking Fast Slugish
+	author: James Doe
+	year: 2010
+	publisher: Zebra
+`;
 
 		const urlParams = new URLSearchParams(window.location.search);
 
