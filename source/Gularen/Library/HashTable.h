@@ -101,8 +101,8 @@ public:
 
 				while (entry) {
 					Entry* next = entry->next;
+					entry->value.~T();
 					free(reinterpret_cast<char*>(entry) - entry->key.size());
-					entry = nullptr;
 					entry = next;
 				}
 			}
@@ -268,14 +268,13 @@ private:
 			Entry* entry = _buckets.get(i);
 
 			while (entry) {
+				Entry* next = entry->next;
+				entry->next = nullptr;
 				newTable._place(entry);
-				entry = entry->next;
+				entry = next;
 			}
 		}
 
-		_buckets.~Array();
-
-		_size = newTable.size();
 		_buckets = static_cast<Array<Entry*>&&>(newTable._buckets);
 		newTable._size = 0;
 	}
@@ -302,7 +301,6 @@ private:
 		}
 		
 		previousEntry->next = oldEntry;
-		_size += 1;
 	}
 
 private:

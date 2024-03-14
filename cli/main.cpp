@@ -1,5 +1,6 @@
 #include "Gularen/Frontend/Parser.h"
 #include "Gularen/Backend/Html/Transpiler.h"
+#include "Gularen/Library/HashTable.h"
 
 using namespace Gularen;
 
