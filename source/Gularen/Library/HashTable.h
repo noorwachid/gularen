@@ -102,7 +102,12 @@ public:
 				while (entry) {
 					Entry* next = entry->next;
 					entry->value.~T();
+					#ifdef __EMSCRIPTEN__
+					free(const_cast<char*>(entry->key.pointer()));
+					free(entry);
+					#else
 					free(reinterpret_cast<char*>(entry) - entry->key.size());
+					#endif
 					entry = next;
 				}
 			}
@@ -174,7 +179,7 @@ public:
 
 		// best case scenario
 		if (entry == nullptr) {
-			_buckets.get(index) = createEntry(key, value);
+			_buckets.get(index) = _createEntry(key, value);
 			return;
 		}
 
@@ -191,7 +196,7 @@ public:
 		}
 
 		// worst case scenario
-		previousEntry->next = createEntry(key, value);
+		previousEntry->next = _createEntry(key, value);
 
 		// printf("PLACING: %.*s\n", key.size(), key.data());
 		//
@@ -238,7 +243,17 @@ private:
 	}
 
 
-	Entry* createEntry(StringSlice key, const T& value) {
+	Entry* _createEntry(StringSlice key, const T& value) {
+		#ifdef __EMSCRIPTEN__
+		Entry* entry = static_cast<Entry*>(malloc(sizeof(Entry)));
+		char* bytes = static_cast<char*>(malloc(sizeof(char) + key.size()));
+		memcpy(bytes, key.pointer(), key.size());
+
+		entry->next = nullptr;
+		entry->key = StringSlice(bytes, key.size()); 
+		new(&entry->value) T(value);
+
+		#else
 		// make the key data + Entry in single allocation 
 		// since the key never changes length
 		char* bytes = static_cast<char*>(malloc(sizeof(char) + key.size() + sizeof(Entry)));
@@ -248,7 +263,8 @@ private:
 		Entry* entry = reinterpret_cast<Entry*>(bytes + key.size());
 		entry->next = nullptr;
 		entry->key = StringSlice(bytes, key.size()); 
-		entry->value = value;
+		new(&entry->value) T(value);
+		#endif
 
 		_size += 1;
 
