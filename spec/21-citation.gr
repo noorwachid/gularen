@@ -5,7 +5,7 @@
 ---
 --- html
 <p><a class="citation" href="#Reference-12-rules">(Peterson, 2018)</a>
-<a class="citation" href="#Reference-lateral-thinking">(De Bono, 1970)</a>
+<a class="citation" href="#Reference-lateral-thinking">(de Bono, 1970)</a>
 <a class="citation" href="#Reference-good-omens">(Pratchett & Gaiman, 1990)</a>
 <a class="citation" href="#Reference-my-lady-jane">(Hand et al., 2016)</a></p>
 ---
@@ -14,7 +14,7 @@
 ---
 ^[12-rules]:
 	title: 12 Rules of Life
-	author: Jordan Peterson
+	author: Jordan Bernt Peterson
 	year: 2018
 	publisher: Random House Canada
 
@@ -37,8 +37,8 @@
 	publisher: HarperCollins
 ---
 --- html
-<div class="reference" id="Reference-12-rules">Peterson J. (2018). <i>12 Rules of Life</i>. Random House Canada.</div>
-<div class="reference" id="Reference-lateral-thinking">De Bono, E. (1970). <i>Lateral Thinking: Creativity Step by Step</i>. Harper & Row.</div>
-<div class="reference" id="Reference-good-omens">Pratchett T. & Gaiman N. (1990). <i>Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch</i>. Gollancz .</div>
-<div class="reference" id="Reference-my-lady-jane">Hand C., Ashton B., & Meadows J. (2016). <i>My Lady Jane</i>. HarperCollins.</div>
+<div class="reference" id="Reference-12-rules">Peterson, J.B., (2018). <i>12 Rules of Life</i>. Random House Canada.</div>
+<div class="reference" id="Reference-lateral-thinking">de Bono, E., (1970). <i>Lateral Thinking: Creativity Step by Step</i>. Harper & Row.</div>
+<div class="reference" id="Reference-good-omens">Pratchett, T. & Gaiman, N. (1990). <i>Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch</i>. Gollancz .</div>
+<div class="reference" id="Reference-my-lady-jane">Hand, C., Ashton, B. & Meadows, J. (2016). <i>My Lady Jane</i>. HarperCollins.</div>
 ---

@@ -519,7 +519,7 @@ private:
 				case '&': content.append("&amp;"); break;
 				case '\"': content.append("&quot;"); break;
 				case '\'': content.append("&#39;"); break;
-				default: content.append(content.get(i)); break;
+				default: content.append(in.get(i)); break;
 			}
 		}
 	}
@@ -529,7 +529,7 @@ private:
 			switch (in.get(i)) {
 				case '\"': content.append("&quot;"); break;
 				case '\'': content.append("&#39;"); break;
-				default: content.append(content.get(i)); break;
+				default: content.append(in.get(i)); break;
 			}
 		}
 	}
