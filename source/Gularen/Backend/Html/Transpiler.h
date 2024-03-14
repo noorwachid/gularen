@@ -20,7 +20,7 @@ public:
 			_collectReferences(document);
 
 			for (unsigned int i = 0; i < document->children.size(); i += 1) {
-				_compose(document->children.get(i), 0);
+				_compose(document->children.get(i), _content);
 
 				if (_footnotes.size() != 0) {
 					_content.append("<div class=\"footnote-desc\">\n");
@@ -64,31 +64,31 @@ private:
 		}
 	}
 
-	void _compose(const Node* node, unsigned int depth) {
-		_preCompose(node, depth);
+	void _compose(const Node* node, String& content) {
+		_preCompose(node, content);
 
 		if (node->kind == NodeKind::reference) {
 			return;
 		}
 
 		for (unsigned int i = 0; i < node->children.size(); i += 1) {
-			_compose(node->children.get(i), depth + 1);
+			_compose(node->children.get(i), content);
 		}
 
-		_postCompose(node, depth);
+		_postCompose(node, content);
 	}
 
-	void _preCompose(const Node* node, unsigned int depth) {
+	void _preCompose(const Node* node, String& content) {
 		switch (node->kind) {
 			case NodeKind::text: {
 				const Text* text = static_cast<const Text*>(node);
-				return _content.append(text->content.pointer(), text->content.size());
+				return content.append(text->content.pointer(), text->content.size());
 			}
 
 			case NodeKind::style: {
 				switch (static_cast<const Style*>(node)->type) {
-					case Style::Type::bold: return _content.append("<b>");
-					case Style::Type::italic: return _content.append("<i>");
+					case Style::Type::bold: return content.append("<b>");
+					case Style::Type::italic: return content.append("<i>");
 				}
 			}
 
@@ -96,89 +96,89 @@ private:
 				const Heading* heading = static_cast<const Heading*>(node);
 				switch (heading->type) {
 					case Heading::Type::chapter:
-						_content.append("<h1 id=\"");
-						_escapeID(heading);
-						_content.append("\">");
+						content.append("<h1 id=\"");
+						_escapeID(heading, content);
+						content.append("\">");
 						return;
 					case Heading::Type::section:
-						_content.append("<h2 id=\"");
-						_escapeID(heading);
-						_content.append("\">");
+						content.append("<h2 id=\"");
+						_escapeID(heading, content);
+						content.append("\">");
 						return;
 					case Heading::Type::subsection:
-						_content.append("<h3 id=\"");
-						_escapeID(heading);
-						_content.append("\">");
+						content.append("<h3 id=\"");
+						_escapeID(heading, content);
+						content.append("\">");
 						return;
 
 					case Heading::Type::title: return;
-					case Heading::Type::subtitle: return _content.append("<small>");
+					case Heading::Type::subtitle: return content.append("<small>");
 				}
 			}
 
 			case NodeKind::paragraph: {
-				return _content.append("<p>");
+				return content.append("<p>");
 			}
 
 			case NodeKind::space: {
-				return _content.append("\n");
+				return content.append("\n");
 			}
 
 			case NodeKind::lineBreak: {
-				return _content.append("<br>");
+				return content.append("<br>");
 			}
 
 			case NodeKind::pageBreak: {
-				return _content.append("<div class=\"page-break\"></div>\n\n");
+				return content.append("<div class=\"page-break\"></div>\n\n");
 			}
 
 			case NodeKind::dinkus: {
-				return _content.append("<hr>\n\n");
+				return content.append("<hr>\n\n");
 			}
 
 			case NodeKind::indent: {
-				return _content.append("<blockquote>\n");
+				return content.append("<blockquote>\n");
 			}
 
 			case NodeKind::list: {
-				return _content.append("<ul>\n");
+				return content.append("<ul>\n");
 			}
 
 			case NodeKind::numberedList: {
-				return _content.append("<ol>\n");
+				return content.append("<ol>\n");
 			}
 
 			case NodeKind::checkList: {
-				return _content.append("<ul class=\"check-list\">\n");
+				return content.append("<ul class=\"check-list\">\n");
 			}
 
 			case NodeKind::definitionList: {
-				return _content.append("<dl>\n");
+				return content.append("<dl>\n");
 			}
 
 			case NodeKind::definitionTerm: {
-				return _content.append("<dt>");
+				return content.append("<dt>");
 			}
 
 			case NodeKind::definitionDesc: {
-				return _content.append("<dd>");
+				return content.append("<dd>");
 			}
 
 			case NodeKind::item: {
-				return _content.append("<li>");
+				return content.append("<li>");
 			}
 
 			case NodeKind::checkItem: {
 				switch (static_cast<const CheckItem*>(node)->state) {
-					case CheckItem::State::unchecked: return _content.append("<li> <input type=\"checkbox\"> ");
-					case CheckItem::State::checked: return _content.append("<li> <input type=\"checkbox\" checked> ");
+					case CheckItem::State::unchecked: return content.append("<li> <input type=\"checkbox\"> ");
+					case CheckItem::State::checked: return content.append("<li> <input type=\"checkbox\" checked> ");
 				}
 			}
 
 			case NodeKind::table: {
 				const Table* table = static_cast<const Table*>(node);
 				_tableAlignments = Slice<Table::Alignment>(table->alignments.pointer(), table->alignments.size());
-				return _content.append("<table>\n");
+				return content.append("<table>\n");
 			}
 
 			case NodeKind::row: {
@@ -195,7 +195,7 @@ private:
 						break;
 				}
 
-				return _content.append("<tr>\n");
+				return content.append("<tr>\n");
 			}
 
 			case NodeKind::cell: {
@@ -204,31 +204,31 @@ private:
 					_tableColumnIndex += 1;
 
 					switch (alignment) {
-						case Table::Alignment::left: return _content.append(_tableLabel ? "<th class=\"cell-left\">" : "<td class=\"cell-center\">");
-						case Table::Alignment::center: return _content.append(_tableLabel ? "<th class=\"cell-center\">" : "<td class=\"cell-center\">");
-						case Table::Alignment::right: return _content.append(_tableLabel ? "<th class=\"cell-right\">" : "<td class=\"cell-right\">");
+						case Table::Alignment::left: return content.append(_tableLabel ? "<th class=\"cell-left\">" : "<td class=\"cell-center\">");
+						case Table::Alignment::center: return content.append(_tableLabel ? "<th class=\"cell-center\">" : "<td class=\"cell-center\">");
+						case Table::Alignment::right: return content.append(_tableLabel ? "<th class=\"cell-right\">" : "<td class=\"cell-right\">");
 					}
 				}
 
 				_tableColumnIndex += 1;
-				return _content.append(_tableLabel ? "<th>" : "<td>");
+				return content.append(_tableLabel ? "<th>" : "<td>");
 			}
 
 			case NodeKind::code: {
 				const Code* code = static_cast<const Code*>(node);
 
 				if (code->label.size() != 0) {
-					_content.append("<code class=\"language-");
-					_escapeAttribute(code->label);
-					_content.append("\">");
-					_escape(code->content);
-					_content.append("</code>");
+					content.append("<code class=\"language-");
+					_escapeAttribute(code->label, content);
+					content.append("\">");
+					_escape(code->content, content);
+					content.append("</code>");
 					return;
 				}
 
-				_content.append("<code>");
-				_escape(code->content);
-				_content.append("</code>");
+				content.append("<code>");
+				_escape(code->content, content);
+				content.append("</code>");
 				return;
 			}
 
@@ -236,43 +236,43 @@ private:
 				const CodeBlock* code = static_cast<const CodeBlock*>(node);
 
 				if (code->label.size() != 0) {
-					_content.append("<pre><code class=\"language-");
-					_escapeAttribute(code->label);
-					_content.append("\">");
-					_escape(code->content);
-					_content.append("</code></pre>\n\n");
+					content.append("<pre><code class=\"language-");
+					_escapeAttribute(code->label, content);
+					content.append("\">");
+					_escape(code->content, content);
+					content.append("</code></pre>\n\n");
 					return;
 				}
 
-				_content.append("<pre><code>");
-				_escape(code->content);
-				_content.append("</code></pre>\n\n");
+				content.append("<pre><code>");
+				_escape(code->content, content);
+				content.append("</code></pre>\n\n");
 				return;
 			}
 
 			case NodeKind::link: {
 				const Link* link = static_cast<const Link*>(node);
-				_content.append("<a href=\"");
-				_escapeAttribute(link->resource);
+				content.append("<a href=\"");
+				_escapeAttribute(link->resource, content);
 
 				if (link->heading.size() != 0) {
-					_content.append("#");
-					_escapeID(link->heading);
+					content.append("#");
+					_escapeID(link->heading, content);
 				}
 
-				_content.append("\">");
+				content.append("\">");
 
 				if (link->label.size() == 0) {
-					_escape(link->resource);
+					_escape(link->resource, content);
 
 					if (link->heading.size() != 0) {
-						_content.append(" ");
-						_escape(link->heading);
+						content.append(" ");
+						_escape(link->heading, content);
 					}
 				} else {
-					_escape(link->label);
+					_escape(link->label, content);
 				}
-				_content.append("</a>");
+				content.append("</a>");
 				return;
 			}
 
@@ -284,84 +284,84 @@ private:
 						StringSlice extension(view->resource.pointer() + i, view->resource.size() - i);
 						if (extension == "jpg" || extension == "jpeg" || extension == "png" || extension == "gif") {
 							if (view->label.size() != 0) {
-								_content.append("<figure>");
-								_content.append("<img src=\"");
-								_escapeAttribute(view->resource);
-								_content.append("\">");
-								_content.append("<figcaption>");
-								_escape(view->label);
-								_content.append("</figcaption>");
-								_content.append("</figure>");
+								content.append("<figure>");
+								content.append("<img src=\"");
+								_escapeAttribute(view->resource, content);
+								content.append("\">");
+								content.append("<figcaption>");
+								_escape(view->label, content);
+								content.append("</figcaption>");
+								content.append("</figure>");
 							}
 
-							_content.append("<img src=\"");
-							_escapeAttribute(view->resource);
-							_content.append("\">");
+							content.append("<img src=\"");
+							_escapeAttribute(view->resource, content);
+							content.append("\">");
 							return;
 						}
 						break;
 					}
 				}
 
-				_content.append("<a href=\"");
-				_escapeAttribute(view->resource);
-				_content.append("\">");
+				content.append("<a href=\"");
+				_escapeAttribute(view->resource, content);
+				content.append("\">");
 
 				if (view->label.size() == 0) {
-					_escape(view->resource);
+					_escape(view->resource, content);
 				} else {
-					_escape(view->label);
+					_escape(view->label, content);
 				}
-				_content.append("</a>");
+				content.append("</a>");
 				return;
 			}
 
 			case NodeKind::footnote: {
 				const Footnote* ref = static_cast<const Footnote*>(node);
 				String id = String::fromInt(_footnotes.size() + 1);
-				_content.append("<sup><a href=\"#Footnote-");
-				_content.append(id);
-				_content.append("\">");
-				_content.append(id);
-				_content.append("</a></sup>");
+				content.append("<sup><a href=\"#Footnote-");
+				content.append(id);
+				content.append("\">");
+				content.append(id);
+				content.append("</a></sup>");
 				_footnotes.append(ref);
 				return;
 			}
 
 			case NodeKind::citation: {
 				const Citation* cite = static_cast<const Citation*>(node);
-				_content.append("<a class=\"citation\" href=\"#Reference-");
-				_escapeAttribute(cite->id);
-				_content.append("\">");
+				content.append("<a class=\"citation\" href=\"#Reference-");
+				_escapeAttribute(cite->id, content);
+				content.append("\">");
 				if (cite->label.size() != 0) {
-					_escape(cite->label);
+					_escape(cite->label, content);
 				} else {
-					_cite(cite->id);
+					_cite(cite->id, content);
 				}
-				_content.append("</a>");
+				content.append("</a>");
 				return;
 			}
 
 			case NodeKind::reference: {
 				const Reference* ref = static_cast<const Reference*>(node);
-				_content.append("<div class=\"reference\" id=\"Reference-");
-				_escapeAttribute(ref->id);
-				_content.append("\">");
-				_refer(ref->id);
-				_content.append("</div>\n");
+				content.append("<div class=\"reference\" id=\"Reference-");
+				_escapeAttribute(ref->id, content);
+				content.append("\">");
+				_refer(ref->id, content);
+				content.append("</div>\n");
 				return;
 			}
 
 			case NodeKind::admon: {
 				const Admon* ref = static_cast<const Admon*>(node);
-				_content.append("<div class=\"admon ");
-				_escapeClass(ref->label);
-				_content.append("\" data-label=\"");
-				_escapeAttribute(ref->label);
-				_content.append("\">");
+				content.append("<div class=\"admon ");
+				_escapeClass(ref->label, content);
+				content.append("\" data-label=\"");
+				_escapeAttribute(ref->label, content);
+				content.append("\">");
 
 				if (ref->children.size() != 0) {
-					_content.append("\n");
+					content.append("\n");
 				}
 				return;
 			}
@@ -369,55 +369,55 @@ private:
 			case NodeKind::punct: {
 				const Punct* punct = static_cast<const Punct*>(node);
 				switch (punct->type) {
-					case Punct::Type::hypen: return _content.append("&#8208;");
-					case Punct::Type::enDash: return _content.append("&#8211;");
-					case Punct::Type::emDash: return _content.append("&#8212;");
-					case Punct::Type::quoteOpen: return _content.append("&#8223;");
-					case Punct::Type::quoteClose: return _content.append("&#8221;");
-					case Punct::Type::squoteOpen: return _content.append("&#8216;");
-					case Punct::Type::squoteClose: return _content.append("&#8217;");
+					case Punct::Type::hypen: return content.append("&#8208;");
+					case Punct::Type::enDash: return content.append("&#8211;");
+					case Punct::Type::emDash: return content.append("&#8212;");
+					case Punct::Type::quoteOpen: return content.append("&#8223;");
+					case Punct::Type::quoteClose: return content.append("&#8221;");
+					case Punct::Type::squoteOpen: return content.append("&#8216;");
+					case Punct::Type::squoteClose: return content.append("&#8217;");
 				}
 			}
 
 			case NodeKind::emoji: {
 				const Emoji* emoji = static_cast<const Emoji*>(node);
-				_content.append("<span class=\"emoji\">");
-				_escape(emoji->code);
-				_content.append("</span>");
+				content.append("<span class=\"emoji\">");
+				_escape(emoji->code, content);
+				content.append("</span>");
 				return;
 			}
 
 			case NodeKind::dateTime: {
 				const DateTime* dateTime = static_cast<const DateTime*>(node);
-				_content.append("<time datetime=\"");
-				_escapeAttribute(dateTime->content);
-				_content.append("\">");
-				_escape(dateTime->content);
-				_content.append("</time>");
+				content.append("<time datetime=\"");
+				_escapeAttribute(dateTime->content, content);
+				content.append("\">");
+				_escape(dateTime->content, content);
+				content.append("</time>");
 				return;
 			}
 
 			case NodeKind::blockquote: {
-				return _content.append("<blockquote class=\"quote\">\n");
+				return content.append("<blockquote class=\"quote\">\n");
 			}
 
 			case NodeKind::accountTag: {
 				const AccountTag* accountTag = static_cast<const AccountTag*>(node);
-				_content.append("<a class=\"account-tag\" href=\"");
-				_escapeAttribute(accountTag->resource);
-				_content.append("\">@");
-				_escape(accountTag->resource);
-				_content.append("</a>");
+				content.append("<a class=\"account-tag\" href=\"");
+				_escapeAttribute(accountTag->resource, content);
+				content.append("\">@");
+				_escape(accountTag->resource, content);
+				content.append("</a>");
 				return;
 			}
 
 			case NodeKind::hashTag: {
 				const HashTag* hashTag = static_cast<const HashTag*>(node);
-				_content.append("<a class=\"hash-tag\" href=\"");
-				_escapeAttribute(hashTag->resource);
-				_content.append("\">#");
-				_escape(hashTag->resource);
-				_content.append("</a>");
+				content.append("<a class=\"hash-tag\" href=\"");
+				_escapeAttribute(hashTag->resource, content);
+				content.append("\">#");
+				_escape(hashTag->resource, content);
+				content.append("</a>");
 				return;
 			}
 
@@ -425,118 +425,118 @@ private:
 		}
 	}
 
-	void _postCompose(const Node* node, unsigned int depth) {
+	void _postCompose(const Node* node, String& content) {
 		switch (node->kind) {
 			case NodeKind::style: {
 				switch (static_cast<const Style*>(node)->type) {
-					case Style::Type::bold: return _content.append("</b>");
-					case Style::Type::italic: return _content.append("</i>");
+					case Style::Type::bold: return content.append("</b>");
+					case Style::Type::italic: return content.append("</i>");
 				}
 			}
 
 			case NodeKind::heading: {
 				switch (static_cast<const Heading*>(node)->type) {
-					case Heading::Type::chapter: return _content.append("</h1>\n");
-					case Heading::Type::section: return _content.append("</h2>\n");
-					case Heading::Type::subsection: return _content.append("</h3>\n");
-					case Heading::Type::title: return _content.append(" ");
-					case Heading::Type::subtitle: return _content.append("</small>");
+					case Heading::Type::chapter: return content.append("</h1>\n");
+					case Heading::Type::section: return content.append("</h2>\n");
+					case Heading::Type::subsection: return content.append("</h3>\n");
+					case Heading::Type::title: return content.append(" ");
+					case Heading::Type::subtitle: return content.append("</small>");
 				}
 			}
 
 			case NodeKind::paragraph: {
-				return _content.append("</p>\n\n");
+				return content.append("</p>\n\n");
 			}
 
 			case NodeKind::indent: {
-				return _content.append("</blockquote>\n");
+				return content.append("</blockquote>\n");
 			}
 
 			case NodeKind::list: {
-				return _content.append("</ul>\n\n");
+				return content.append("</ul>\n\n");
 			}
 
 			case NodeKind::numberedList: {
-				return _content.append("</ol>\n\n");
+				return content.append("</ol>\n\n");
 			}
 
 			case NodeKind::checkList: {
-				return _content.append("</ul>\n\n");
+				return content.append("</ul>\n\n");
 			}
 
 			case NodeKind::definitionList: {
-				return _content.append("</dl>\n\n");
+				return content.append("</dl>\n\n");
 			}
 
 			case NodeKind::definitionTerm: {
-				return _content.append("</dt>\n");
+				return content.append("</dt>\n");
 			}
 
 			case NodeKind::definitionDesc: {
-				return _content.append("</dd>\n");
+				return content.append("</dd>\n");
 			}
 
 			case NodeKind::item: {
-				return _content.append("</li>\n");
+				return content.append("</li>\n");
 			}
 
 			case NodeKind::checkItem: {
 				switch (static_cast<const CheckItem*>(node)->state) {
-					case CheckItem::State::unchecked: return _content.append("</li>\n");
-					case CheckItem::State::checked: return _content.append("</li>\n");
+					case CheckItem::State::unchecked: return content.append("</li>\n");
+					case CheckItem::State::checked: return content.append("</li>\n");
 				}
 			}
 
 			case NodeKind::table: {
-				return _content.append("</table>\n\n");
+				return content.append("</table>\n\n");
 			}
 
 			case NodeKind::row: {
-				return _content.append("</tr>\n");
+				return content.append("</tr>\n");
 			}
 
 			case NodeKind::cell: {
-				return _content.append(_tableLabel ? "</th>\n" : "</td>\n");
+				return content.append(_tableLabel ? "</th>\n" : "</td>\n");
 			}
 
 			case NodeKind::admon: {
-				return _content.append("</div>\n\n");
+				return content.append("</div>\n\n");
 			}
 
 			case NodeKind::blockquote: {
-				return _content.append("</blockquote>\n\n");
+				return content.append("</blockquote>\n\n");
 			}
 
 			default: break;
 		}
 	}
 
-	void _escape(StringSlice content) {
-		for (unsigned int i = 0; i < content.size(); i += 1) {
-			switch (content.get(i)) {
-				case '<': _content.append("&lt;"); break;
-				case '>': _content.append("&gt;"); break;
-				case '&': _content.append("&amp;"); break;
-				case '\"': _content.append("&quot;"); break;
-				case '\'': _content.append("&#39;"); break;
-				default: _content.append(content.get(i)); break;
+	void _escape(StringSlice in, String& content) {
+		for (unsigned int i = 0; i < in.size(); i += 1) {
+			switch (in.get(i)) {
+				case '<': content.append("&lt;"); break;
+				case '>': content.append("&gt;"); break;
+				case '&': content.append("&amp;"); break;
+				case '\"': content.append("&quot;"); break;
+				case '\'': content.append("&#39;"); break;
+				default: content.append(content.get(i)); break;
 			}
 		}
 	}
 
-	void _escapeAttribute(StringSlice content) {
-		for (unsigned int i = 0; i < content.size(); i += 1) {
-			switch (content.get(i)) {
-				case '\"': _content.append("&quot;"); break;
-				case '\'': _content.append("&#39;"); break;
-				default: _content.append(content.get(i)); break;
+	void _escapeAttribute(StringSlice in, String& content) {
+		for (unsigned int i = 0; i < in.size(); i += 1) {
+			switch (in.get(i)) {
+				case '\"': content.append("&quot;"); break;
+				case '\'': content.append("&#39;"); break;
+				default: content.append(content.get(i)); break;
 			}
 		}
 	}
 
-	void _escapeID(StringSlice content) {
-		for (unsigned int i = 0; i < content.size(); i += 1) {
-			switch (content.get(i)) {
+	void _escapeID(StringSlice in, String& content) {
+		for (unsigned int i = 0; i < in.size(); i += 1) {
+			switch (in.get(i)) {
 				case '0': case '1': case '2': case '3': case '4':
 				case '5': case '6': case '7': case '8': case '9':
 
@@ -549,12 +549,12 @@ private:
 				case 'h': case 'i': case 'j': case 'k': case 'l': case 'm':
 				case 'n': case 'o': case 'p': case 'q': case 'r': case 's': case 't': 
 				case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
-					_content.append(content.get(i));
+					content.append(in.get(i));
 					break;
 
 				case '-':
 				case ' ': 
-					_content.append('-'); 
+					content.append('-'); 
 					break;
 
 				default: 
@@ -563,31 +563,31 @@ private:
 		}
 	}
 
-	void _escapeClass(StringSlice content) {
-		for (unsigned int i = 0; i < content.size(); i += 1) {
-			switch (content.get(i)) {
+	void _escapeClass(StringSlice in, String& content) {
+		for (unsigned int i = 0; i < in.size(); i += 1) {
+			switch (in.get(i)) {
 				case '0': case '1': case '2': case '3': case '4':
 				case '5': case '6': case '7': case '8': case '9':
-					_content.append(content.get(i));
+					content.append(in.get(i));
 					break;
 
 				case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G':
 				case 'H': case 'I': case 'J': case 'K': case 'L': case 'M':
 				case 'N': case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': 
 				case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
-					_content.append(content.get(i) + ' ');
+					content.append(in.get(i) + ' ');
 					break;
 
 				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g':
 				case 'h': case 'i': case 'j': case 'k': case 'l': case 'm':
 				case 'n': case 'o': case 'p': case 'q': case 'r': case 's': case 't': 
 				case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
-					_content.append(content.get(i));
+					content.append(in.get(i));
 					break;
 
 				case '-':
 				case ' ': 
-					_content.append('-'); 
+					content.append('-'); 
 					break;
 
 				default: 
@@ -596,9 +596,9 @@ private:
 		}
 	}
 
-	void _escapeID(const Node* node) {
+	void _escapeID(const Node* node, String& content) {
 		if (node->kind == NodeKind::text) {
-			_escapeID(static_cast<const Text*>(node)->content);
+			_escapeID(static_cast<const Text*>(node)->content, content);
 		}
 
 		if (node->kind == NodeKind::heading && static_cast<const Heading*>(node)->type == Heading::Type::subtitle) {
@@ -606,11 +606,11 @@ private:
 		}
 
 		for (unsigned int i = 0; i < node->children.size(); i += 1) {
-			_escapeID(node->children.get(i));
+			_escapeID(node->children.get(i), content);
 		}
 	}
 
-	void _cite(StringSlice id) {
+	void _cite(StringSlice id, String& content) {
 		// APA Style:
 		// Single author
 		// (Author last name, the year of publication)
@@ -629,25 +629,45 @@ private:
 			return;
 		}
 
-		// TODO: finish author sytle
-		_content.append("(");
+		content.append("(");
 		const ReferenceInfo** author = table->get("author");
 		if (author != nullptr) {
-			_compose(*author, 0);
+			String authorContent;
+			_compose(*author, authorContent);
+			Array<StringSlice> nameParts = splitName(StringSlice(authorContent.pointer(), authorContent.size()));
+			StringSlice lastName = nameParts.get(nameParts.size() - 1);
+			content.append(lastName.pointer(), lastName.size());
 		}
 		const ReferenceInfo** authors = table->get("authors");
 		if (authors != nullptr) {
-			_compose(*authors, 0);
+			String authorsContent;
+			_compose(*authors, authorsContent);
+			Array<StringSlice> names = splitCSV(StringSlice(authorsContent.pointer(), authorsContent.size()));
+			if (names.size() == 2) {
+				Array<StringSlice> nameParts0 = splitName(names.get(0));
+				StringSlice lastName0 = nameParts0.get(nameParts0.size() - 1);
+				content.append(lastName0.pointer(), lastName0.size());
+				content.append(" & ");
+
+				Array<StringSlice> nameParts1 = splitName(names.get(1));
+				StringSlice lastName1 = nameParts1.get(nameParts1.size() - 1);
+				content.append(lastName1.pointer(), lastName1.size());
+			} else {
+				Array<StringSlice> nameParts0 = splitName(names.get(0));
+				StringSlice lastName0 = nameParts0.get(nameParts0.size() - 1);
+				content.append(lastName0.pointer(), lastName0.size());
+				content.append(" et al.");
+			}
 		}
 		const ReferenceInfo** year = table->get("year");
 		if (year != nullptr) {
-			_content.append(", ");
-			_compose(*year, 0);
+			content.append(", ");
+			_compose(*year, content);
 		}
-		_content.append(")");
+		content.append(")");
 	}
 
-	void _refer(StringSlice id) {
+	void _refer(StringSlice id, String& content) {
 		// APA Style:
 		// Author’s Last Name, First Initial. Second Initial. (Year of publication). <i>Title of the book</i>. Publishing Company. 
 		HashTable<const ReferenceInfo*>* table = _references.get(id);
@@ -656,33 +676,71 @@ private:
 			return;
 		}
 
-		// TODO: finish author sytle
 		const ReferenceInfo** author = table->get("author");
 		if (author != nullptr) {
-			_compose(*author, 0);
+			String authorContent;
+			_compose(*author, authorContent);
+			Array<StringSlice> nameParts = splitName(StringSlice(authorContent.pointer(), authorContent.size()));
+			_composeLastNameInitials(nameParts, content);
+			content.append(",");
 		}
 		const ReferenceInfo** authors = table->get("authors");
 		if (authors != nullptr) {
-			_compose(*authors, 0);
+			String authorsContent;
+			_compose(*authors, authorsContent);
+			Array<StringSlice> names = splitCSV(StringSlice(authorsContent.pointer(), authorsContent.size()));
+			if (names.size() > 1) {
+				for (unsigned int i = 0; i < names.size() - 1; i += 1) {
+					if (i != 0) {
+						content.append(", ");
+					}
+					Array<StringSlice> nameParts = splitName(names.get(i));
+					_composeLastNameInitials(nameParts, content);
+				}
+			}
+
+			content.append(" & ");
+			Array<StringSlice> nameParts = splitName(names.get(names.size() - 1));
+			_composeLastNameInitials(nameParts, content);
 		}
 		const ReferenceInfo** year = table->get("year");
 		if (year != nullptr) {
-			_content.append(" (");
-			_compose(*year, 0);
-			_content.append(").");
+			content.append(" (");
+			_compose(*year, content);
+			content.append(").");
 		}
 		const ReferenceInfo** title = table->get("title");
 		if (title != nullptr) {
-			_content.append(" <i>");
-			_compose(*title, 0);
-			_content.append("</i>.");
+			content.append(" <i>");
+			_compose(*title, content);
+			content.append("</i>.");
 		}
 		const ReferenceInfo** pubisher = table->get("publisher");
 		if (pubisher != nullptr) {
-			_content.append(" ");
-			_compose(*pubisher, 0);
-			_content.append(".");
+			content.append(" ");
+			_compose(*pubisher, content);
+			content.append(".");
 		}
+	}
+
+	void _composeLastNameInitials(Array<StringSlice>& nameParts, String& content) {
+		if (nameParts.size() == 0) {
+			return;
+		}
+
+		if (nameParts.size() == 1) {
+			content.append(nameParts.get(0).pointer(), nameParts.get(0).size());
+			return;
+		}
+
+		content.append(nameParts.get(nameParts.size() - 1).pointer(), nameParts.get(nameParts.size() - 1).size());
+		content.append(", ");
+
+		for (unsigned int i = 0; i < nameParts.size() - 1; i += 1) {
+			content.append(nameParts.get(i).pointer(), 1);
+			content.append(".");
+		}
+
 	}
 
 private:
