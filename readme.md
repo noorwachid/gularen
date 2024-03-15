@@ -1,5 +1,5 @@
 # Gularen
-A sweet-spot of markup language
+A sweet-spot in markup languages
 
 ## Overview
 <img width="1425" alt="Gularen Overview" src="https://github.com/noorwachid/gularen/assets/42460975/6910811f-f75c-4ee2-93b3-82b3a3111f14">
