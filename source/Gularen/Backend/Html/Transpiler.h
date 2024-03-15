@@ -360,9 +360,11 @@ private:
 				const Admon* ref = static_cast<const Admon*>(node);
 				content.append("<div class=\"admon ");
 				_escapeClass(ref->label, content);
-				content.append("\" data-label=\"");
-				_escapeAttribute(ref->label, content);
-				content.append("\">");
+				content.append("\">\n");
+				content.append("<div class=\"label\">");
+				_escape(ref->label, content);
+				content.append("</div>\n");
+				content.append("<div class=\"content\">");
 
 				if (ref->children.size() != 0) {
 					content.append("\n");
@@ -508,7 +510,7 @@ private:
 			}
 
 			case NodeKind::admon: {
-				return content.append("</div>\n\n");
+				return content.append("\n</div>\n</div>\n\n");
 			}
 
 			case NodeKind::blockquote: {
