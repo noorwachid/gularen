@@ -276,7 +276,7 @@ private:
 					break;
 
 				case '<':
-					if (_isBound(1) && !(_get(1) >= '0' && _get(1) <= '9')) {
+					if (_isBound(1) && !(_get(1) >= '0' && _get(1) <= '9') && _get(1) != '<') {
 						unsigned int oldContentIndex = _contentIndex;
 
 						while (_isBound(0) && _get(0) != '>') {
