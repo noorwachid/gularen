@@ -1,6 +1,10 @@
 # Gularen
 A sweet-spot in markup languages
 
+## Overview
+
+<img width="1423" alt="Overview" src="https://github.com/noorwachid/gularen/assets/42460975/0cd74172-1790-4e01-9227-29e7dc20dbb9">
+
 ## Live Demo
 [Right over here](https://noorwach.id/gularen/editor/)
 
