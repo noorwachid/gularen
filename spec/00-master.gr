@@ -1,9 +1,6 @@
 ~~ title: Gularen Markup Language Specification
 ~~ author: Noor Wachid
 
->>> Table of Contents
-~~ generate: table-of-contents
-
 ?[01-comment.gr]
 ?[02-annotation.gr]
 ?[03-paragraph.gr]

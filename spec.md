@@ -225,7 +225,7 @@ If on another file [Chapter 1.gr>Laminal Flow]
 </ul>
 ```
 
-## Ordered List
+## Numbered List
 ```gr
 1. One
 2. Two 
@@ -684,7 +684,8 @@ Like tsv can be presented as table or code block or a link to the resource.
 ![https://www.youtube.com/watch?v=dQw4w9WgXcQ]
 ```
 
-## Assets: Image
+## Assets
+### Image
 ```gr
 ![cat.png]
 ```
@@ -710,9 +711,9 @@ Like tsv can be presented as table or code block or a link to the resource.
 ```
 
 # Inclusion
-Include file and parse the content as gularen markup.
+Split the document into multiple files.
 
-Only local files that are allowed to be included.
+Only local files are allowed to be included.
 
 ```gr
 ?[chapter-1.gr]
@@ -720,7 +721,7 @@ Only local files that are allowed to be included.
 ```
 
 # Citation
-## Citation
+## In‐Text
 ```gr
 ^[12-rules] ^[lateral-thinking] ^[good-omens] ^[my-lady-jane]
 ```
