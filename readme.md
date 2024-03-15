@@ -34,7 +34,7 @@ A sweet-spot in markup languages
 I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any drastic changes to the syntax and structures.
 
 ## Specification and Examples
-[Right over here](https://noorwach.id/gularen/spec.html)
+[Right over here](spec.md)
 
 ## Changelog
 ### Version 1.0.0
