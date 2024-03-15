@@ -8,7 +8,7 @@ A sweet-spot in markup languages
 ## Live Demo
 [Right over here](https://noorwach.id/gularen/editor/)
 
-## CLI
+## CLI & Installation
 [Right over there](cli/readme.md)
 
 ## Contributors
