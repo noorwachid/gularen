@@ -2,12 +2,6 @@
 
 ## Project Structures
 
-### `binding`
-Contains code for language bindings. Currently, it only includes JavaScript binding.
-
-### `editor`
-Code for the live-demo website.
-
 ### `cli`
 Code for the command line interface.
 
