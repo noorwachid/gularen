@@ -1,10 +1,11 @@
 >>> Footnote
 Footnote description automatically injected in the correct page.
 
+In html footnote should be included before page break or heading.
+
 --- gr 
 Here's a simple footnote,^(This is the first footnote.) and here's a another one.^(Very important part)
 ---
-
 --- html
 <p>Here's a simple footnote,<sup><a href="Footnote-1">1</a></sup>
 and here's a another one.<sup><a href="Footnote-2">2</a></sup></p>
