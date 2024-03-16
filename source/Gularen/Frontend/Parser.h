@@ -1030,7 +1030,7 @@ private:
 		const Token& token = _eat();
 		Admon* admon = new Admon(token.position, token.content);
 
-		while (_isBound(0)) {
+		while (_isBound(0) && _isParagraph()) {
 			Node* node = _parseInline();
 
 			if (node == nullptr) {
