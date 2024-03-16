@@ -651,7 +651,7 @@ private:
 		if (author != nullptr) {
 			String authorContent;
 			_compose(*author, authorContent);
-			Array<StringSlice> nameParts = splitName(StringSlice(authorContent.pointer(), authorContent.size()));
+			Array<StringSlice> nameParts = _splitName(StringSlice(authorContent.pointer(), authorContent.size()));
 			StringSlice lastName = nameParts.get(nameParts.size() - 1);
 			content.append(lastName.pointer(), lastName.size());
 		}
@@ -659,18 +659,18 @@ private:
 		if (authors != nullptr) {
 			String authorsContent;
 			_compose(*authors, authorsContent);
-			Array<StringSlice> names = splitCSV(StringSlice(authorsContent.pointer(), authorsContent.size()));
+			Array<StringSlice> names = _splitByComma(StringSlice(authorsContent.pointer(), authorsContent.size()));
 			if (names.size() == 2) {
-				Array<StringSlice> nameParts0 = splitName(names.get(0));
+				Array<StringSlice> nameParts0 = _splitName(names.get(0));
 				StringSlice lastName0 = nameParts0.get(nameParts0.size() - 1);
 				content.append(lastName0.pointer(), lastName0.size());
 				content.append(" & ");
 
-				Array<StringSlice> nameParts1 = splitName(names.get(1));
+				Array<StringSlice> nameParts1 = _splitName(names.get(1));
 				StringSlice lastName1 = nameParts1.get(nameParts1.size() - 1);
 				content.append(lastName1.pointer(), lastName1.size());
 			} else {
-				Array<StringSlice> nameParts0 = splitName(names.get(0));
+				Array<StringSlice> nameParts0 = _splitName(names.get(0));
 				StringSlice lastName0 = nameParts0.get(nameParts0.size() - 1);
 				content.append(lastName0.pointer(), lastName0.size());
 				content.append(" et al.");
@@ -697,7 +697,7 @@ private:
 		if (author != nullptr) {
 			String authorContent;
 			_compose(*author, authorContent);
-			Array<StringSlice> nameParts = splitName(StringSlice(authorContent.pointer(), authorContent.size()));
+			Array<StringSlice> nameParts = _splitName(StringSlice(authorContent.pointer(), authorContent.size()));
 			_composeLastNameInitials(nameParts, content);
 			content.append(",");
 		}
@@ -705,19 +705,19 @@ private:
 		if (authors != nullptr) {
 			String authorsContent;
 			_compose(*authors, authorsContent);
-			Array<StringSlice> names = splitCSV(StringSlice(authorsContent.pointer(), authorsContent.size()));
+			Array<StringSlice> names = _splitByComma(StringSlice(authorsContent.pointer(), authorsContent.size()));
 			if (names.size() > 1) {
 				for (unsigned int i = 0; i < names.size() - 1; i += 1) {
 					if (i != 0) {
 						content.append(", ");
 					}
-					Array<StringSlice> nameParts = splitName(names.get(i));
+					Array<StringSlice> nameParts = _splitName(names.get(i));
 					_composeLastNameInitials(nameParts, content);
 				}
 			}
 
 			content.append(" & ");
-			Array<StringSlice> nameParts = splitName(names.get(names.size() - 1));
+			Array<StringSlice> nameParts = _splitName(names.get(names.size() - 1));
 			_composeLastNameInitials(nameParts, content);
 		}
 		const ReferenceInfo** year = table->get("year");
@@ -758,6 +758,58 @@ private:
 			content.append(".");
 		}
 
+	}
+
+	Array<StringSlice> _splitByComma(StringSlice from) {
+		Array<StringSlice> parts;
+
+		unsigned int begin = 0;
+		unsigned int i = 0;
+		while (i < from.size()) {
+			if (from.get(i) == ',') {
+				parts.append(from.cut(begin, i - begin));
+				i += 1;
+				while (i < from.size() && from.get(i) == ' ') {
+					i += 1;
+				}
+				begin = i;
+				continue;
+			}
+			i += 1;
+		}
+
+		if (begin < i) {
+			parts.append(from.cut(begin, i - begin));
+		}
+
+		return parts;
+	}
+
+	Array<StringSlice> _splitName(StringSlice name) {
+		Array<StringSlice> parts;
+
+		unsigned int begin = 0;
+		unsigned int i = 0;
+		while (i < name.size()) {
+			if (name.get(i) == ' ') {
+				if (name.get(begin) >= 'A' && name.get(begin) <= 'Z') {
+					parts.append(name.cut(begin, i - begin));
+					i += 1;
+					while (i < name.size() && name.get(i) == ' ') {
+						i += 1;
+					}
+					begin = i;
+					continue;
+				}
+			}
+			i += 1;
+		}
+
+		if (begin < i) {
+			parts.append(name.cut(begin, i - begin));
+		}
+
+		return parts;
 	}
 
 private:
