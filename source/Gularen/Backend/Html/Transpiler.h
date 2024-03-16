@@ -21,30 +21,33 @@ public:
 
 			for (unsigned int i = 0; i < document->children.size(); i += 1) {
 				_compose(document->children.get(i), _content);
-
-				if (_footnotes.size() != 0) {
-					_content.append("<div class=\"footnote-desc\">\n");
-					for (unsigned int i = 0; i < _footnotes.size(); i += 1) {
-						const Footnote* footnote = _footnotes.get(i);
-
-						_content.append("<p>");
-						_content.append("<sup>");
-						_content.append(String::fromInt(i + 1));
-						_content.append("</sup> ");
-						_content.append(footnote->description.pointer(), footnote->description.size());
-						_content.append("</p>\n");
-					}
-					_content.append("</div>\n");
-
-					_footnotes = Array<const Footnote*>();
-				}
 			}
 		}
+
+		_composeFootnote();
 
 		return StringSlice(_content.pointer(), _content.size());
 	}
 
 private:
+	void _composeFootnote() {
+		if (_footnotes.size() != 0) {
+			_content.append("<div class=\"footnote-desc\">\n");
+			for (unsigned int i = 0; i < _footnotes.size(); i += 1) {
+				const Footnote* footnote = _footnotes.get(i);
+
+				_content.append("<p>");
+				_content.append("<sup>");
+				_content.append(String::fromInt(i + 1));
+				_content.append("</sup> ");
+				_content.append(footnote->description.pointer(), footnote->description.size());
+				_content.append("</p>\n");
+			}
+			_content.append("</div>\n");
+
+			_footnotes = Array<const Footnote*>();
+		}
+	}
 	void _collectReferences(const Node* node) {
 		if (node->kind == NodeKind::reference) {
 			const Reference* ref = static_cast<const Reference*>(node);
@@ -97,6 +100,8 @@ private:
 			}
 
 			case NodeKind::heading: {
+				_composeFootnote();
+
 				const Heading* heading = static_cast<const Heading*>(node);
 				switch (heading->type) {
 					case Heading::Type::chapter:
@@ -133,6 +138,7 @@ private:
 			}
 
 			case NodeKind::pageBreak: {
+				_composeFootnote();
 				return content.append("<div class=\"page-break\"></div>\n\n");
 			}
 
