@@ -8,6 +8,31 @@
 namespace Gularen {
 namespace Gfm {
 
+// [x] comment
+// [ ] annotation (cannot be implemented)
+// [x] paragraph
+// [x] style
+// [ ] highlight (cannot be implemented)
+// [x] break
+// [ ] indentation (cannot be implemented)
+// [x] blockquote
+// [x] heading
+// [x] list
+// [x] check-list
+// [ ] definition-list
+// [x] code
+// [ ] table
+// [ ] admonition
+// [ ] datetime (cannot be implemented)
+// [x] tag
+// [x] linker
+// [x] viewer
+// [ ] inclusion (cannot be implemented)
+// [ ] citation
+// [ ] footnote
+// [x] punctuation
+// [ ] emoji
+
 class Transpiler {
 public:
 	StringSlice transpile(Document* document) {
@@ -250,6 +275,53 @@ private:
 				StringSlice content = static_cast<const Code*>(node)->content;
 				_content.append(content.pointer(), content.size());
 				_content.append("`");
+			}
+			case NodeKind::link: {
+				const Link* link = static_cast<const Link*>(node);
+				_content.append("[");
+				if (link->label.size() == 0) {
+					_content.append(link->resource.pointer(), link->resource.size());
+					if (link->heading.size() != 0) {
+						_content.append("#");
+						_content.append(link->heading.pointer(), link->heading.size());
+					}
+				} else {
+					_content.append(link->label.pointer(), link->label.size());
+				}
+				_content.append("](");
+				_content.append(link->resource.pointer(), link->resource.size());
+				if (link->heading.size() != 0) {
+					_content.append("#");
+					_content.append(link->heading.pointer(), link->heading.size());
+				}
+				_content.append(")");
+				break;
+			}
+			case NodeKind::view: {
+				const View* view = static_cast<const View*>(node);
+				_content.append("![");
+				if (view->label.size() == 0) {
+					_content.append(view->resource.pointer(), view->resource.size());
+				} else {
+					_content.append(view->label.pointer(), view->label.size());
+				}
+				_content.append("](");
+				_content.append(view->resource.pointer(), view->resource.size());
+				_content.append(")");
+				break;
+			}
+			case NodeKind::emoji: {
+				const Emoji* emoji = static_cast<const Emoji*>(node);
+
+				_content.append(':');
+				for (unsigned int i = 0; i < emoji->code.size(); i += 1) {
+					if (emoji->code.get(i) == '-') {
+						_content.append('_');
+					} else {
+						_content.append(emoji->code.get(i));
+					}
+				}
+				_content.append(':');
 			}
 			default: 
 				break;
