@@ -302,6 +302,7 @@ private:
 								_escape(view->label, content);
 								content.append("</figcaption>");
 								content.append("</figure>");
+								return;
 							}
 
 							content.append("<img src=\"");

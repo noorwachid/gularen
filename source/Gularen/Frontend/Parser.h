@@ -4,6 +4,10 @@
 #include "Gularen/Library/String.h"
 #include <stdio.h>
 
+// TODO: break definition list on indentClose
+// TODO: allow double newline on blockquote 
+// TODO: escaping with \
+
 namespace Gularen {
 
 class Parser {
