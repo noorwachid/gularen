@@ -4,7 +4,6 @@
 #include "Gularen/Library/String.h"
 #include <stdio.h>
 
-// TODO: break definition list on indentClose
 // TODO: allow double newline on blockquote 
 // TODO: escaping with \
 
@@ -532,6 +531,7 @@ private:
 		while (_isBound(0) && _isParagraph()) {
 			unsigned int previousTokenIndex = _tokenIndex;
 			bool itemOccupied = false;
+			bool itemColoncolon = false;
 
 			DefinitionItem* item = new DefinitionItem(_get(0).position);
 			DefinitionTerm* term = new DefinitionTerm(_get(0).position);
@@ -553,6 +553,7 @@ private:
 					if (_get(0).kind == TokenKind::coloncolon) {
 						DefinitionDesc* desc = new DefinitionDesc(_eat().position);
 						item->children.append(desc);
+						itemColoncolon = true;
 
 						while (_isBound(0)) {
 							Node* node = _parseInline();
@@ -600,7 +601,11 @@ private:
 			}
 
 			itemEnd:
-			list->children.append(item);
+
+			if (itemColoncolon) {
+				list->children.append(item);
+				goto listEnd;
+			}
 			continue;
 		}
 
