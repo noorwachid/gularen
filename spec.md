@@ -206,7 +206,7 @@ If on another file [Chapter 1.gr>Laminal Flow]
 
 <p>See <a href="#Laminar-Flow">Laminal Flow</a></p>
 
-<p>If on another file <a href="Chapter 1.gr#Laminal Flow">Chapter 1 Laminar Flow</a></p>
+<p>If on another file <a href="Chapter 1.gr#Laminal-Flow">Chapter 1.gr Laminal Flow</a></p>
 ```
 
 # List
