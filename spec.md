@@ -1,5 +1,5 @@
 # Comment
-Any character after tilde won’t be parsed until newline or end of document.
+Any character after tilde won’t be parsed until newline or the end of document.
 
 ```gr
 Now you see me. ~ Now you dont.
@@ -100,7 +100,7 @@ This will create<<line-break.
 ```
 
 # Indentation
-1 tab 
+1 tab is equal to 1 indent
 
 ```gr
 Level 0 indentation.
@@ -343,8 +343,8 @@ CD Player Unit ::
 
 # Code
 ## Block Code
-Anything between three or more equals will be considered as code.
-And make sure to have same equals count between opening and ending.
+Anything between three or more dashes will be considered as code.
+And make sure to have same dashes count between opening and ending.
 
 ### Anonymous Block
 ```gr
@@ -569,7 +569,7 @@ He said his first word today.
 ```
 
 ```html
-<p>Diary <time datetime="2018-05-10">2018-15-10</time>
+<p>Diary <time datetime="2018-05-10">2018-05-10</time></p>
 
 <p>Met Sofia at <time datetime="10:00">10:00</time> talked about her newborn child.
 He said his first word today.</p>
@@ -770,6 +770,8 @@ Only local files are allowed to be included.
 # Footnote
 Footnote description automatically injected in the correct page.
 
+In html footnote should be included before page break or heading.
+
 ```gr 
 Here's a simple footnote,^(This is the first footnote.) and here's a another one.^(Very important part)
 ```
@@ -831,7 +833,7 @@ I look forward to see you soon :smile:!
 
 ## Expression
 smile: 😄,
-small‐smil: 🙂,
+small‐smile: 🙂,
 laughing: 😆,
 blush: 😊,
 smiley: 😃,

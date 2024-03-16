@@ -1,8 +1,8 @@
 >>> Code
 
 >> Block Code
-Anything between three or more equals will be considered as code.
-And make sure to have same equals count between opening and ending.
+Anything between three or more dashes will be considered as code.
+And make sure to have same dashes count between opening and ending.
 
 > Anonymous Block
 ---- gr
