@@ -1,6 +1,6 @@
 #include "Gularen/Frontend/Parser.h"
 #include "Gularen/Backend/Html/Transpiler.h"
-#include "Gularen/Library/HashTable.h"
+#include "Gularen/Backend/Gfm/Transpiler.h"
 
 using namespace Gularen;
 
@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
 		printf("  convert specified file-path to specified content-type\n");
 		printf("  content-type can be one of:\n");
 		printf("    - html\n");
+		printf("    - gfm (github flavored markdown)\n");
 		printf("\n");
 		printf("%s parse file-path.gr\n", argv[0]);
 		printf("  convert specified file-path to abstract syntax tree\n\n");
@@ -69,6 +70,15 @@ int main(int argc, char** argv) {
 
 		if (target == "html") {
 			Html::Transpiler transpiler;
+			StringSlice content = transpiler.transpile(document);
+
+			printf("%.*s", content.size(), content.pointer());
+
+			return 0;
+		}
+
+		if (target == "gfm") {
+			Gfm::Transpiler transpiler;
 			StringSlice content = transpiler.transpile(document);
 
 			printf("%.*s", content.size(), content.pointer());
