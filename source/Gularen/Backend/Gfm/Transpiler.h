@@ -222,6 +222,7 @@ private:
 					case Punct::Type::enDash: _content.append("–"); break;
 					case Punct::Type::emDash: _content.append("—"); break;
 				}
+				break;
 			}
 			case NodeKind::indent: {
 				_indent += 1;
