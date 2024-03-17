@@ -9,7 +9,8 @@ A sweet-spot in markup languages
 [Right over here](https://noorwach.id/gularen-editor/)
 
 ## CLI & Installation
-[Right over here](cli/readme.md)
+- [Rendering to HTML & Markdown](cli/readme.md)
+- [Rendering to PDF](https://github.com/noorwachid/gularen-pdf)
 
 ## Specification & Examples
 [Right over here](spec.md)
