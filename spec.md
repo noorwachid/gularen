@@ -10,6 +10,9 @@ Now you see me. ~ Now you dont.
 ```
 
 # Annotation
+## Document Metadata
+First annotation at the begining of document belongs to `Document`[#Document](#Document) node.
+
 ```regex
 ~~ [a-zA-Z-0-9-]+:.*
 ```
@@ -20,6 +23,17 @@ Now you see me. ~ Now you dont.
 ~~ created-at: 2021-01-10
 ~~ published-at: 2024-01-03
 ~~ category: Science-Fiction
+
+```
+
+## Entity Annotation
+```gr
+~~ text-alignment: center
+A paragraph annotation
+```
+
+```html
+<p class="text-alignment--center">A paragraph annotation</p>
 ```
 
 # Paragraph
