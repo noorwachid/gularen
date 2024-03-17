@@ -11,7 +11,7 @@ Now you see me. ~ Now you dont.
 
 # Annotation
 ## Document Metadata
-First annotation at the begining of document belongs to `Document`[#Document](#Document) node.
+First annotation at the begining of document belongs to `Document` node.
 
 ```regex
 ~~ [a-zA-Z-0-9-]+:.*

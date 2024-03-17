@@ -275,6 +275,7 @@ private:
 				StringSlice content = static_cast<const Code*>(node)->content;
 				_content.append(content.pointer(), content.size());
 				_content.append("`");
+				break;
 			}
 			case NodeKind::link: {
 				const Link* link = static_cast<const Link*>(node);
