@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Gularen/Frontend/Node.h"
+#include "Gularen/Library/Disk/File.h"
 #include "Gularen/Library/String.h"
 #include <stdio.h>
 
@@ -36,25 +37,13 @@ public:
 			_documentPath = String(".");
 		}
 
-		char pathC[512];
-		unsigned int pathSize = path.size() < 511 ? path.size() : 511;
-		memcpy(pathC, path.pointer(), pathSize);
-		pathC[pathSize] = 0;
-
-		FILE* file = fopen(pathC, "r");
-
-		if (file == nullptr) {
+		String content = Disk::File::readAll(path);
+		if (content.size() == 0) {
 			delete _document;
-			_document = nullptr;
 			return nullptr;
 		}
 
-		fseek(file, 0, SEEK_END);
-		char* data = _document->content.expand(ftell(file));
-		fseek(file, 0, SEEK_SET);
-
-		fread(data, _document->content.size(), sizeof(char), file);
-		fclose(file);
+		_document->content = static_cast<String&&>(content);
 
 		return _parse(StringSlice(_document->content.pointer(), _document->content.size()));
 	}

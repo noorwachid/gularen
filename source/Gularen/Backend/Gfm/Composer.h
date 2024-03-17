@@ -33,9 +33,9 @@ namespace Gfm {
 // [x] punctuation
 // [ ] emoji
 
-class Transpiler {
+class Composer {
 public:
-	StringSlice transpile(Document* document) {
+	StringSlice compose(Document* document) {
 		_content = String();
 		_listItem = false;
 		_listCount = 0;

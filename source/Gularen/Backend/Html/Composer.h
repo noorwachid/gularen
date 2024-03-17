@@ -8,9 +8,9 @@
 namespace Gularen {
 namespace Html {
 
-class Transpiler {
+class Composer {
 public:
-	StringSlice transpile(Document* document) {
+	StringSlice compose(Document* document) {
 		_content = String();
 		_tableAlignments = Slice<Table::Alignment>(nullptr, 0);
 		_tableColumnIndex = 0;
@@ -29,7 +29,70 @@ public:
 		return StringSlice(_content.pointer(), _content.size());
 	}
 
+	StringSlice composeToc(Document* document) {
+		_toc.append("<ul class=\"toc\">\n");
+		_composeToc(document);
+		_toc.append("</ul>\n");
+		return StringSlice(_toc.pointer(), _toc.size());
+	}
+
 private:
+	void _composeToc(const Node* node) {
+		if (node->kind == NodeKind::heading) {
+			auto heading = static_cast<const Heading*>(node);
+
+			if (heading->type == Heading::Type::chapter ||
+				heading->type == Heading::Type::section ||
+				heading->type == Heading::Type::subsection) {
+
+				String content;
+
+				for (unsigned int i = 0; i < heading->children.size(); i += 1) {
+					if (heading->children.get(i)->kind == NodeKind::heading) {
+						if (static_cast<const Heading*>(heading->children.get(i))->type == Heading::Type::title) {
+							_compose(heading->children.get(i), content);
+							break;
+						}
+					}
+					_compose(heading->children.get(i), content);
+				}
+
+				if (content.size() != 0) {
+					while (content.get(content.size() - 1) == ' ') {
+						content.drop();
+					}
+				}
+
+				_toc.append("<li class=\"");
+
+				switch (heading->type) {
+					case Heading::Type::chapter:
+						_toc.append("chapter");
+						break;
+					case Heading::Type::section:
+						_toc.append("section");
+						break;
+					case Heading::Type::subsection:
+						_toc.append("subsection");
+						break;
+					default: break;
+				}
+
+				String id;
+				_toc.append("\"><a href=\"#");
+				_escapeID(StringSlice(content.pointer(), content.size()), id);
+				_toc.append(id);
+				_toc.append("\">");
+				_toc.append(content);
+				_toc.append("</a></li>\n");
+			}
+		}
+
+		for (unsigned int i = 0; i < node->children.size(); i += 1) {
+			_composeToc(node->children.get(i));
+		}
+	}
+
 	void _composeFootnote() {
 		if (_footnotes.size() != 0) {
 			_content.append("<div class=\"footnote-desc\">\n");
@@ -813,6 +876,8 @@ private:
 	}
 
 private:
+	String _toc;
+
 	String _content;
 
 	Slice<Table::Alignment> _tableAlignments;

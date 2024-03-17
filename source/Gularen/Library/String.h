@@ -109,6 +109,10 @@ public:
 		}
 	}
 
+	void drop() {
+		_size -= 1;
+	}
+
 	inline char get(unsigned int index) const {
 		return _data[index];
 	}
