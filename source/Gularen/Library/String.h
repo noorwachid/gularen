@@ -125,6 +125,10 @@ public:
 		return _size;
 	}
 
+	inline unsigned int capacity() const {
+		return _capacity;
+	}
+
 	inline const char* pointer() const {
 		return _data;
 	}

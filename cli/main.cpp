@@ -2,6 +2,7 @@
 #include "Gularen/Backend/Html/Composer.h"
 #include "Gularen/Backend/Html/TemplateManager.h"
 #include "Gularen/Backend/Gfm/Composer.h"
+#include "Gularen/Backend/Json/Composer.h"
 
 using namespace Gularen;
 
@@ -44,6 +45,7 @@ int main(int argc, char** argv) {
 		printf("  target can be one of:\n");
 		printf("    - html\n");
 		printf("    - gfm (github flavored markdown)\n");
+		printf("    - json\n");
 		printf("\n");
 		printf("%s parse input-path.gr\n", argv[0]);
 		printf("  convert specified input path to abstract syntax tree\n\n");
@@ -130,6 +132,15 @@ int main(int argc, char** argv) {
 
 		if (target == "gfm") {
 			Gfm::Composer transpiler;
+			StringSlice content = transpiler.compose(document);
+
+			printf("%.*s", content.size(), content.pointer());
+
+			return 0;
+		}
+
+		if (target == "json") {
+			Json::Composer transpiler;
 			StringSlice content = transpiler.compose(document);
 
 			printf("%.*s", content.size(), content.pointer());
