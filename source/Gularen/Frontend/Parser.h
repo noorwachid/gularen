@@ -250,18 +250,25 @@ private:
 		unsigned int previousTokenIndex = _tokenIndex;
 
 		Paragraph* paragraph = new Paragraph(token.position);
+		bool newline = false;
 
 		while (_isBound(0) && _isParagraph()) {
 			Node* node = _parseInline();
 
 			if (node == nullptr) {
 				if (_get(0).kind == TokenKind::coloncolon) {
-					delete paragraph;
-					_tokenIndex = previousTokenIndex;
-					return _parseDefinitionList();
+					if (!newline) {
+						delete paragraph;
+						_tokenIndex = previousTokenIndex;
+						return _parseDefinitionList();
+					} else {
+						_advance(1);
+					}
 				}
 
 				if (_get(0).kind == TokenKind::newline) {
+					newline = true;
+
 					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
 						_advance(1);
 

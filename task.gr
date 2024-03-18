@@ -1,7 +1,7 @@
 >>> Todo
 
 >> Bugs
-[ ] Nested definition list broken if the body starts with paragraph
+[x] Nested definition list broken if the body starts with paragraph
 	> OK
 	--- gr
 	A ::
