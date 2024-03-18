@@ -10,15 +10,14 @@
 ----
 ---
 document 
-  chapter
-    text one
   section
-    text two
+    text one
   subsection
-    title
-      text three
+    text two
+  subsubsection
+    text three
     subtitle
       text four
-  subsection
+  subsubsection
     text five
 ---
