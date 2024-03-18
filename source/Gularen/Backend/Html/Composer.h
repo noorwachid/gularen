@@ -41,9 +41,9 @@ private:
 		if (node->kind == NodeKind::heading) {
 			auto heading = static_cast<const Heading*>(node);
 
-			if (heading->type == Heading::Type::chapter ||
-				heading->type == Heading::Type::section ||
-				heading->type == Heading::Type::subsection) {
+			if (heading->type == Heading::Type::section ||
+				heading->type == Heading::Type::subsection ||
+				heading->type == Heading::Type::subsubsection) {
 
 				String content;
 
@@ -66,14 +66,14 @@ private:
 				_toc.append("<li class=\"");
 
 				switch (heading->type) {
-					case Heading::Type::chapter:
-						_toc.append("chapter");
-						break;
 					case Heading::Type::section:
 						_toc.append("section");
 						break;
 					case Heading::Type::subsection:
 						_toc.append("subsection");
+						break;
+					case Heading::Type::subsubsection:
+						_toc.append("subsubsection");
 						break;
 					default: break;
 				}
@@ -172,12 +172,12 @@ private:
 						_escapeID(heading, content);
 						content.append("\">");
 						return;
-					case Heading::Type::section:
+					case Heading::Type::subsection:
 						content.append("<h2 id=\"");
 						_escapeID(heading, content);
 						content.append("\">");
 						return;
-					case Heading::Type::subsection:
+					case Heading::Type::subsubsection:
 						content.append("<h3 id=\"");
 						_escapeID(heading, content);
 						content.append("\">");
@@ -517,8 +517,8 @@ private:
 			case NodeKind::heading: {
 				switch (static_cast<const Heading*>(node)->type) {
 					case Heading::Type::chapter: return content.append("</h1>\n");
-					case Heading::Type::section: return content.append("</h2>\n");
-					case Heading::Type::subsection: return content.append("</h3>\n");
+					case Heading::Type::subsection: return content.append("</h2>\n");
+					case Heading::Type::subsubsection: return content.append("</h3>\n");
 					case Heading::Type::title: return content.append(" ");
 					case Heading::Type::subtitle: return content.append("</small>");
 				}

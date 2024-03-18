@@ -69,9 +69,9 @@ private:
 				break;
 			case NodeKind::heading: {
 				switch (static_cast<const Heading*>(node)->type) {
-					case Heading::Type::chapter: _content.append("# "); break;
-					case Heading::Type::section: _content.append("## "); break;
-					case Heading::Type::subsection: _content.append("### "); break;
+					case Heading::Type::section: _content.append("# "); break;
+					case Heading::Type::subsection: _content.append("## "); break;
+					case Heading::Type::subsubsection: _content.append("### "); break;
 					default: break;
 				}
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {

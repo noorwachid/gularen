@@ -205,9 +205,9 @@ struct Paragraph : Node {
 
 struct Heading : Node {
 	enum class Type {
-		chapter,
 		section,
 		subsection,
+		subsubsection,
 
 		title,
 		subtitle,
@@ -220,9 +220,9 @@ struct Heading : Node {
 
 	virtual void print() override {
 		switch (type) {
-			case Type::chapter: printf("chapter\n"); break;
 			case Type::section: printf("section\n"); break;
 			case Type::subsection: printf("subsection\n"); break;
+			case Type::subsubsection: printf("subsubsection\n"); break;
 
 			case Type::title: printf("title\n"); break;
 			case Type::subtitle: printf("subtitle\n"); break;

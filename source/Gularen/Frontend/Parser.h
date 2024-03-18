@@ -304,15 +304,15 @@ private:
 
 		switch (token.kind) {
 			case TokenKind::head3:
-				heading->type = Heading::Type::chapter;
-				break;
-
-			case TokenKind::head2:
 				heading->type = Heading::Type::section;
 				break;
 
-			case TokenKind::head1:
+			case TokenKind::head2:
 				heading->type = Heading::Type::subsection;
+				break;
+
+			case TokenKind::head1:
+				heading->type = Heading::Type::subsubsection;
 				break;
 
 			default: 
