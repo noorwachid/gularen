@@ -1,8 +1,8 @@
 #include "Gularen/Frontend/Parser.h"
 #include "Gularen/Backend/Html/Composer.h"
 #include "Gularen/Backend/Html/TemplateManager.h"
-// #include "Gularen/Backend/Gfm/Composer.h"
-// #include "Gularen/Backend/Json/Composer.h"
+#include "Gularen/Backend/Gfm/Composer.h"
+#include "Gularen/Backend/Json/Composer.h"
 
 using namespace Gularen;
 
@@ -131,19 +131,19 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 
-		// if (target == "gfm") {
-		// 	Gfm::Composer composer;
-		// 	std::cout << composer.compose(document);
-		//
-		// 	return 0;
-		// }
-		//
-		// if (target == "json") {
-		// 	Json::Composer composer;
-		// 	std::cout << composer.compose(document);
-		//
-		// 	return 0;
-		// }
+		if (target == "gfm") {
+			Gfm::Composer composer;
+			std::cout << composer.compose(document);
+
+			return 0;
+		}
+
+		if (target == "json") {
+			Json::Composer composer;
+			std::cout << composer.compose(document);
+
+			return 0;
+		}
 
 		std::cout << "unknown target\n";
 		return 1;

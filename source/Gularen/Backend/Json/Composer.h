@@ -1,30 +1,27 @@
 #pragma once
 
 #include "Gularen/Frontend/Parser.h"
-#include "Gularen/Library/String.h"
-#include "Gularen/Library/StringSlice.h"
-#include "Gularen/Library/HashTable.h"
 
 namespace Gularen {
 namespace Json {
 
 class Composer {
 public:
-	StringSlice compose(Document* document) {
-		_content = String("[");
+	std::string_view compose(Document* document) {
+		_content = std::string("[");
 
 		if (document != nullptr) {
 			for (unsigned int i = 0; i < document->children.size(); i += 1) {
 				if (i != 0) {
 					_content.append(",");
 				}
-				_compose(document->children.get(i));
+				_compose(document->children[i]);
 			}
 		}
 
 		_content.append("]");
 
-		return StringSlice(_content.pointer(), _content.size());
+		return std::string_view(_content.data(), _content.size());
 	}
 
 private:
@@ -326,7 +323,7 @@ private:
 				if (i != 0) {
 					_content.append(",");
 				}
-				_compose(node->children.get(i));
+				_compose(node->children[i]);
 			}
 
 			_content.append("]");
@@ -335,10 +332,10 @@ private:
 		_content.append("}");
 	}
 
-	void _escape(StringSlice content) {
+	void _escape(std::string_view content) {
 		unsigned int i = 0;
 		while (i < content.size()) {
-			unsigned char byte = content.get(i);
+			unsigned char byte = content[i];
 			switch (byte) {
 				case '"':
 					_content.append("\\\"");
@@ -375,7 +372,7 @@ private:
 
 				default: {
 					if (byte >= ' ' && byte <= '~') {
-						_content.append(byte);
+						_content.append(1, byte);
 						i += 1;
 					} else {
 						unsigned int codepoint = 0;
@@ -386,32 +383,30 @@ private:
 							i += 1;
 						} else if ((i + 1) < content.size() && (byte & 0b11100000) == 0b11000000) {
 							// Two-bytes
-							codepoint = ((byte & 0b00011111) << 6) | (content.get(i + 1) & 0b00111111);
+							codepoint = ((byte & 0b00011111) << 6) | (content[i + 1] & 0b00111111);
 							i += 2;
 						} else if ((i + 2) < content.size() && (byte & 0b11110000) == 0b11100000) {
 							// Three-bytes
 							codepoint = 
 								((byte & 0b00001111) << 12) | 
-								((content.get(i + 1) & 0b00111111) << 6) |
-								(content.get(i + 2) & 0b00111111);
+								((content[i + 1] & 0b00111111) << 6) |
+								(content[i + 2] & 0b00111111);
 							i += 3;
 						} else if ((i + 3) < content.size() && (byte & 0b11111000) == 0b11110000) {
 							// Four-bytes
 							codepoint = 
 								((byte & 0b00000111) << 18) | 
-								((content.get(i + 1) & 0b00111111) << 12) |
-								((content.get(i + 2) & 0b00111111) << 6) | 
-								(content.get(i + 3) & 0b00111111);
+								((content[i + 1] & 0b00111111) << 12) |
+								((content[i + 2] & 0b00111111) << 6) | 
+								(content[i + 3] & 0b00111111);
 							i += 4;
 						} else {
 							codepoint = byte;
 							i += 1;
 						}
 
-						char bytes[5];
-						snprintf(bytes, 5, "%04x", codepoint & 0xFFFF);
 						_content.append("\\u");
-						_content.append(bytes, 4);
+						_content.append(_toHexString(static_cast<uint16_t>(codepoint)));
 					}
 					break;
 				}
@@ -419,8 +414,18 @@ private:
 		}
 	}
 
+	template <typename I> 
+	std::string _toHexString(I w, size_t length = sizeof(I)<<1) {
+		static const char* digits = "0123456789ABCDEF";
+		std::string rc(length, '0');
+		for (size_t i = 0, j = (length - 1) * 4 ; i < length; ++i, j -= 4) {
+			rc[i] = digits[(w>>j) & 0x0f];
+		}
+		return rc;
+	}
+
 private:
-	String _content;
+	std::string _content;
 };
 
 }

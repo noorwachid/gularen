@@ -421,7 +421,7 @@ private:
 				content.append("<a class=\"in-text\" href=\"#Reference-");
 				_escapeAttribute(inText->id, content);
 				content.append("\">");
-				_cite(inText->id, content);
+				_inText(inText->id, content);
 				content.append("</a>");
 				return;
 			}
@@ -431,7 +431,7 @@ private:
 				content.append("<div class=\"reference\" id=\"Reference-");
 				_escapeAttribute(ref->id, content);
 				content.append("\">");
-				_refer(ref->id, content);
+				_reference(ref->id, content);
 				content.append("</div>\n");
 				return;
 			}
@@ -719,7 +719,7 @@ private:
 		}
 	}
 
-	void _cite(std::string_view id, std::string& content) {
+	void _inText(std::string_view id, std::string& content) {
 		// APA Style:
 		// Single author
 		// (Author last name, the year of publication)
@@ -732,7 +732,7 @@ private:
 		//
 		// Direct page quatation
 		// (Same rule as above, the year of publication, p. page number)
-		if (_references.count(id)) {
+		if (!_references.count(id)) {
 			return;
 		}
 
@@ -776,11 +776,11 @@ private:
 		content.append(")");
 	}
 
-	void _refer(std::string_view id, std::string& content) {
+	void _reference(std::string_view id, std::string& content) {
 		// APA Style:
 		// Author’s Last Name, First Initial. Second Initial. (Year of publication). <i>Title of the book</i>. Publishing Company. 
 
-		if (_references.count(id)) {
+		if (!_references.count(id)) {
 			return;
 		}
 

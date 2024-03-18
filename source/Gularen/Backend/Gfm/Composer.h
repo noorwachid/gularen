@@ -1,9 +1,6 @@
 #pragma once
 
 #include "Gularen/Frontend/Parser.h"
-#include "Gularen/Library/String.h"
-#include "Gularen/Library/StringSlice.h"
-#include "Gularen/Library/HashTable.h"
 
 namespace Gularen {
 namespace Gfm {
@@ -35,8 +32,8 @@ namespace Gfm {
 
 class Composer {
 public:
-	StringSlice compose(Document* document) {
-		_content = String();
+	std::string_view compose(Document* document) {
+		_content = std::string();
 		_listItem = false;
 		_listCount = 0;
 		_blockQuote = 0;
@@ -44,11 +41,11 @@ public:
 
 		if (document != nullptr) {
 			for (unsigned int i = 0; i < document->children.size(); i += 1) {
-				_composeBlock(document->children.get(i));
+				_composeBlock(document->children[i]);
 			}
 		}
 
-		return StringSlice(_content.pointer(), _content.size());
+		return std::string_view(_content.data(), _content.size());
 	}
 
 private:
@@ -58,13 +55,13 @@ private:
 			case NodeKind::blockquote:
 				_blockQuote += 1;
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					_composeBlock(node->children.get(i));
+					_composeBlock(node->children[i]);
 				}
 				_blockQuote -= 1;
 				break;
 			case NodeKind::document:
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					_composeBlock(node->children.get(i));
+					_composeBlock(node->children[i]);
 				}
 				break;
 			case NodeKind::heading: {
@@ -75,7 +72,7 @@ private:
 					default: break;
 				}
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					_composeInline(node->children.get(i));
+					_composeInline(node->children[i]);
 				}
 				_content.append("\n");
 				break;
@@ -83,9 +80,9 @@ private:
 			case NodeKind::codeBlock: {
 				const CodeBlock* block = static_cast<const CodeBlock*>(node);
 				_content.append("```");
-				_content.append(block->label.pointer(), block->label.size());
+				_content.append(block->label.data(), block->label.size());
 				_content.append("\n");
-				_content.append(block->content.pointer(), block->content.size());
+				_content.append(block->content.data(), block->content.size());
 				_content.append("\n```\n\n");
 				break;
 			}
@@ -101,7 +98,7 @@ private:
 				_listItem = false;
 				_listCount = node->kind == NodeKind::numberedList ? 1 : 0;
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					_composeBlock(node->children.get(i));
+					_composeBlock(node->children[i]);
 				}
 				if (!prevListItem) {
 					_content.append("\n");
@@ -116,24 +113,24 @@ private:
 				if (_listCount == 0) {
 					_content.append("- ");
 				} else {
-					String count = String::fromInt(_listCount);
-					_content.append(count.pointer(), count.size());
+					std::string count = std::to_string(_listCount);
+					_content.append(count.data(), count.size());
 					_content.append(". ");
 					_listCount += 1;
 				}
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					if (node->children.get(i)->kind == NodeKind::list ||
-						node->children.get(i)->kind == NodeKind::numberedList ||
-						node->children.get(i)->kind == NodeKind::checkList) {
+					if (node->children[i]->kind == NodeKind::list ||
+						node->children[i]->kind == NodeKind::numberedList ||
+						node->children[i]->kind == NodeKind::checkList) {
 						_indent += 1;
 						_content.append("\n");
 						for (unsigned int i = 0; i < node->children.size(); i += 1) {
-							_composeBlock(node->children.get(i));
+							_composeBlock(node->children[i]);
 						}
 						_indent -= 1;
 						continue;
 					}
-					_composeInline(node->children.get(i));
+					_composeInline(node->children[i]);
 				}
 				_content.append("\n");
 				break;
@@ -145,16 +142,16 @@ private:
 				_content.append(static_cast<const CheckItem*>(node)->state == CheckItem::State::unchecked ? " " : "x");
 				_content.append("] ");
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					if (node->children.get(i)->kind == NodeKind::list) {
+					if (node->children[i]->kind == NodeKind::list) {
 						_indent += 1;
 						_content.append("\n");
 						for (unsigned int i = 0; i < node->children.size(); i += 1) {
-							_composeBlock(node->children.get(i));
+							_composeBlock(node->children[i]);
 						}
 						_indent -= 1;
 						continue;
 					}
-					_composeInline(node->children.get(i));
+					_composeInline(node->children[i]);
 				}
 				_content.append("\n");
 				break;
@@ -163,7 +160,7 @@ private:
 				_indent += 1;
 				_content.append("\n");
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					_composeBlock(node->children.get(i));
+					_composeBlock(node->children[i]);
 				}
 				_indent -= 1;
 				break;
@@ -189,11 +186,11 @@ private:
 			_composePrefix();
 
 			while (i < node->children.size()) {
-				if (node->children.get(i)->kind == NodeKind::space) {
+				if (node->children[i]->kind == NodeKind::space) {
 					_content.append("\n");
 					break;
 				}
-				_composeInline(node->children.get(i));
+				_composeInline(node->children[i]);
 				i += 1;
 			}
 			i += 1;
@@ -204,8 +201,8 @@ private:
 	void _composeInline(const Node* node) {
 		switch (node->kind) {
 			case NodeKind::text: {
-				StringSlice content = static_cast<const Text*>(node)->content;
-				_content.append(content.pointer(), content.size());
+				std::string_view content = static_cast<const Text*>(node)->content;
+				_content.append(content.data(), content.size());
 				break;
 			}
 			case NodeKind::style: {
@@ -213,7 +210,7 @@ private:
 					case Style::Type::bold: {
 						_content.append("**");
 						for (unsigned int i = 0; i < node->children.size(); i += 1) {
-							_composeInline(node->children.get(i));
+							_composeInline(node->children[i]);
 						}
 						_content.append("**");
 						break;
@@ -221,7 +218,7 @@ private:
 					case Style::Type::italic: {
 						_content.append("_");
 						for (unsigned int i = 0; i < node->children.size(); i += 1) {
-							_composeInline(node->children.get(i));
+							_composeInline(node->children[i]);
 						}
 						_content.append("_");
 						break;
@@ -249,27 +246,27 @@ private:
 				_indent += 1;
 				_content.append("\n");
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					_composeBlock(node->children.get(i));
+					_composeBlock(node->children[i]);
 				}
 				_indent -= 1;
 				break;
 			}
 			case NodeKind::accountTag: {
-				StringSlice res = static_cast<const AccountTag*>(node)->resource;
+				std::string_view res = static_cast<const AccountTag*>(node)->resource;
 				_content.append("@");
-				_content.append(res.pointer(), res.size());
+				_content.append(res.data(), res.size());
 				break;
 			}
 			case NodeKind::hashTag: {
-				StringSlice res = static_cast<const HashTag*>(node)->resource;
+				std::string_view res = static_cast<const HashTag*>(node)->resource;
 				_content.append("#");
-				_content.append(res.pointer(), res.size());
+				_content.append(res.data(), res.size());
 				break;
 			}
 			case NodeKind::code: {
 				_content.append("`");
-				StringSlice content = static_cast<const Code*>(node)->content;
-				_content.append(content.pointer(), content.size());
+				std::string_view content = static_cast<const Code*>(node)->content;
+				_content.append(content.data(), content.size());
 				_content.append("`");
 				break;
 			}
@@ -277,19 +274,19 @@ private:
 				const Link* link = static_cast<const Link*>(node);
 				_content.append("[");
 				if (link->label.size() == 0) {
-					_content.append(link->resource.pointer(), link->resource.size());
+					_content.append(link->resource.data(), link->resource.size());
 					if (link->heading.size() != 0) {
 						_content.append("#");
-						_content.append(link->heading.pointer(), link->heading.size());
+						_content.append(link->heading.data(), link->heading.size());
 					}
 				} else {
-					_content.append(link->label.pointer(), link->label.size());
+					_content.append(link->label.data(), link->label.size());
 				}
 				_content.append("](");
-				_content.append(link->resource.pointer(), link->resource.size());
+				_content.append(link->resource.data(), link->resource.size());
 				if (link->heading.size() != 0) {
 					_content.append("#");
-					_content.append(link->heading.pointer(), link->heading.size());
+					_content.append(link->heading.data(), link->heading.size());
 				}
 				_content.append(")");
 				break;
@@ -298,32 +295,32 @@ private:
 				const View* view = static_cast<const View*>(node);
 				_content.append("![");
 				if (view->label.size() == 0) {
-					_content.append(view->resource.pointer(), view->resource.size());
+					_content.append(view->resource.data(), view->resource.size());
 				} else {
-					_content.append(view->label.pointer(), view->label.size());
+					_content.append(view->label.data(), view->label.size());
 				}
 				_content.append("](");
-				_content.append(view->resource.pointer(), view->resource.size());
+				_content.append(view->resource.data(), view->resource.size());
 				_content.append(")");
 				break;
 			}
 			case NodeKind::emoji: {
 				const Emoji* emoji = static_cast<const Emoji*>(node);
 
-				_content.append(':');
+				_content.append(":");
 				for (unsigned int i = 0; i < emoji->code.size(); i += 1) {
-					if (emoji->code.get(i) == '-') {
-						_content.append('_');
+					if (emoji->code[i] == '-') {
+						_content.append("_");
 					} else {
-						_content.append(emoji->code.get(i));
+						_content.append(1, emoji->code[i]);
 					}
 				}
-				_content.append(':');
+				_content.append(":");
 			}
 			case NodeKind::subtitle:
 				_content.append(": ");
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					_composeInline(node->children.get(i));
+					_composeInline(node->children[i]);
 				}
 				break;
 			default: 
@@ -332,7 +329,7 @@ private:
 	}
 
 private:
-	String _content;
+	std::string _content;
 	bool _listItem;
 	unsigned int _listCount;
 	unsigned int _blockQuote;
