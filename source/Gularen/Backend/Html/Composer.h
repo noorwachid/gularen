@@ -48,11 +48,8 @@ private:
 				String content;
 
 				for (unsigned int i = 0; i < heading->children.size(); i += 1) {
-					if (heading->children.get(i)->kind == NodeKind::heading) {
-						if (static_cast<const Heading*>(heading->children.get(i))->type == Heading::Type::title) {
-							_compose(heading->children.get(i), content);
-							break;
-						}
+					if (heading->children.get(i)->kind == NodeKind::subtitle) {
+						break;
 					}
 					_compose(heading->children.get(i), content);
 				}
@@ -182,10 +179,11 @@ private:
 						_escapeID(heading, content);
 						content.append("\">");
 						return;
-
-					case Heading::Type::title: return;
-					case Heading::Type::subtitle: return content.append("<small>");
 				}
+			}
+
+			case NodeKind::subtitle: {
+				return content.append("<small>");
 			}
 
 			case NodeKind::paragraph: {
@@ -403,14 +401,14 @@ private:
 			}
 
 			case NodeKind::inText: {
-				const InText* cite = static_cast<const InText*>(node);
-				content.append("<a class=\"citation\" href=\"#Reference-");
-				_escapeAttribute(cite->id, content);
+				const InText* inText = static_cast<const InText*>(node);
+				content.append("<a class=\"in-text\" href=\"#Reference-");
+				_escapeAttribute(inText->id, content);
 				content.append("\">");
-				if (cite->label.size() != 0) {
-					_escape(cite->label, content);
+				if (inText->label.size() != 0) {
+					_escape(inText->label, content);
 				} else {
-					_cite(cite->id, content);
+					_cite(inText->id, content);
 				}
 				content.append("</a>");
 				return;
@@ -519,9 +517,11 @@ private:
 					case Heading::Type::section: return content.append("</h1>\n");
 					case Heading::Type::subsection: return content.append("</h2>\n");
 					case Heading::Type::subsubsection: return content.append("</h3>\n");
-					case Heading::Type::title: return content.append(" ");
-					case Heading::Type::subtitle: return content.append("</small>");
 				}
+			}
+
+			case NodeKind::subtitle: {
+				return content.append("</small>");
 			}
 
 			case NodeKind::paragraph: {
@@ -681,7 +681,7 @@ private:
 			_escapeID(static_cast<const Text*>(node)->content, content);
 		}
 
-		if (node->kind == NodeKind::heading && static_cast<const Heading*>(node)->type == Heading::Type::subtitle) {
+		if (node->kind == NodeKind::subtitle) {
 			return;
 		}
 

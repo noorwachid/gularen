@@ -332,20 +332,11 @@ private:
 					_advance(1);
 
 					if (_isBound(0) && _get(0).kind == TokenKind::head1)  {
-						Node* subtitle = _parseHeading();
+						Node* subtitle = _parseSubtitle();
 						if (subtitle == nullptr) {
 							delete heading;
 							return nullptr;
 						}
-
-						Heading* title = heading;
-
-						heading = new Heading(token.position);
-						heading->type = title->type;
-						heading->children.append(title);
-
-						title->type = Heading::Type::title;
-						static_cast<Heading*>(subtitle)->type = Heading::Type::subtitle;
 
 						heading->children.append(subtitle);
 					}
@@ -361,6 +352,33 @@ private:
 		}
 
 		return heading;
+	}
+
+	Node* _parseSubtitle() {
+		const Token& token = _eat();
+		Subtitle* subtitle = new Subtitle(token.position);
+
+		while (_isBound(0)) {
+			Node* node = _parseInline();
+			if (node == nullptr) {
+				if (_get(0).kind == TokenKind::newlinePlus) {
+					_advance(1);
+					break;
+				}
+
+				if (_get(0).kind == TokenKind::newline) {
+					_advance(1);
+					break;
+				}
+
+				delete subtitle;
+				return _expect("newline or block");
+			}
+
+			subtitle->children.append(node);
+		}
+
+		return subtitle;
 	}
 
 	Node* _parseIndent() {

@@ -127,13 +127,11 @@ private:
 					case Heading::Type::subsubsection:
 						_content.append("\"kind\":\"heading\",\"type\":\"subsubsection\"");
 						break;
-					case Heading::Type::title:
-						_content.append("\"kind\":\"title\"");
-						break;
-					case Heading::Type::subtitle:
-						_content.append("\"kind\":\"subtitle\"");
-						break;
 				}
+				break;
+			}
+			case NodeKind::subtitle: {
+				_content.append("\"kind\":\"subtitle\"");
 				break;
 			}
 			case NodeKind::list: {

@@ -75,10 +75,6 @@ private:
 					default: break;
 				}
 				for (unsigned int i = 0; i < node->children.size(); i += 1) {
-					if (node->children.get(i)->kind == NodeKind::heading &&
-						static_cast<const Heading*>(node->children.get(i))->type == Heading::Type::subtitle) {
-						_content.append(": ");
-					}
 					_composeInline(node->children.get(i));
 				}
 				_content.append("\n");
@@ -324,6 +320,12 @@ private:
 				}
 				_content.append(':');
 			}
+			case NodeKind::subtitle:
+				_content.append(": ");
+				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+					_composeInline(node->children.get(i));
+				}
+				break;
 			default: 
 				break;
 		}

@@ -23,6 +23,7 @@ enum class NodeKind {
 	dinkus,
 
 	heading,
+	subtitle,
 
 	indent,
 
@@ -208,9 +209,6 @@ struct Heading : Node {
 		section,
 		subsection,
 		subsubsection,
-
-		title,
-		subtitle,
 	};
 
 	Type type;
@@ -223,10 +221,16 @@ struct Heading : Node {
 			case Type::section: printf("section\n"); break;
 			case Type::subsection: printf("subsection\n"); break;
 			case Type::subsubsection: printf("subsubsection\n"); break;
-
-			case Type::title: printf("title\n"); break;
-			case Type::subtitle: printf("subtitle\n"); break;
 		}
+	}
+};
+
+struct Subtitle : Node {
+	Subtitle(Position position): Node(position, NodeKind::subtitle) {
+	}
+
+	virtual void print() override {
+		printf("subtitle\n");
 	}
 };
 
