@@ -169,41 +169,41 @@ Level 0 indentation.
 
 # Heading
 ```gr
->>> Chapter
+>>> Section
 
->> Section
+>> Subection
 
-> Subsection
+> Subsubsection
 ```
 
 ```html
-<h1 id="Chapter">Chapter</h1>
+<h1 id="Section">Section</h1>
 
-<h2 id="Section">Section</h2>
+<h2 id="Subection">Subsection</h2>
 
-<h3 id="Subsection">Subsection</h3>
+<h3 id="Subsubsection">Subsubsection</h3>
 ```
 
 ## Heading Subtitle
 If the subsection modifier is placed in the next line of any headings. It will be parsed as subtitle.
 
 ```gr
->>> Chapter
-> Chapter Subtitle
-
->> Section
+>>> Section
 > Section Subtitle
 
-> Subsection
+>> Subsection
 > Subsection Subtitle
+
+> Subsubsection
+> Subsubsection Subtitle
 ```
 
 ```html
-<h1 id="Chapter">Chapter <small>Chapter Subtitle</small></h1>
+<h1 id="Section">Section <small>Section Subtitle</small></h1>
 
-<h2 id="Section">Section <small>Section Subtitle</small></h2>
+<h2 id="Subsection">Subsection <small>Subsection Subtitle</small></h2>
 
-<h3 id="Subsection">Subsection <small>Subsection Subtitle</small><h3>
+<h3 id="Subsubsection">Subsubsection <small>Subsubsection Subtitle</small><h3>
 ```
 
 ## Heading Link
