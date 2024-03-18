@@ -1,2 +1,2 @@
-clang++ -o binary/gularen-test -std=c++11 -I source test/main.cpp
+clang++ -o binary/gularen-test -std=c++17 -I source test/main.cpp
 

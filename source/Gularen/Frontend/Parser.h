@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Gularen/Frontend/Node.h"
-#include "Gularen/Library/Disk/File.h"
-#include "Gularen/Library/String.h"
-#include <stdio.h>
+#include <fstream>
 
 // TODO: allow double newline on blockquote 
 // TODO: escaping with \
@@ -22,33 +20,35 @@ public:
 		_document = nullptr;
 	}
 
-	Document* parseFile(StringSlice path) {
+	Document* parseFile(std::string_view path) {
 		_document = new Document();
-		_document->path = String(path.pointer(), path.size());
+		_document->path = path;
 
 		for (unsigned int i = path.size(); i > 0; i -= 1) {
-			if (path.get(i - 1) == '/') {
-				_documentPath = String(path.pointer(), i - 1);
+			if (path[i - 1] == '/') {
+				_documentPath = std::string(path.data(), i - 1);
 				break;
 			}
 		}
 
 		if (_documentPath.size() == 0) {
-			_documentPath = String(".");
+			_documentPath = ".";
 		}
 
-		String content = Disk::File::readAll(path);
-		if (content.size() == 0) {
+		std::ifstream file(path);
+
+		if (!file.is_open()) {
 			delete _document;
 			return nullptr;
 		}
 
-		_document->content = static_cast<String&&>(content);
+		_document->content.assign(std::filesystem::file_size(path), '\0');
+		file.read(_document->content.data(), _document->content.size());
 
-		return _parse(StringSlice(_document->content.pointer(), _document->content.size()));
+		return _parse(std::string_view(_document->content.data(), _document->content.size()));
 	}
 
-	Document* parse(StringSlice content) {
+	Document* parse(std::string_view content) {
 		_document = new Document();
 
 		return _parse(content);
@@ -59,9 +59,8 @@ public:
 	}
 
 private:
-	Document* _parse(StringSlice content) {
-		Lexer lexer;
-		_tokens = lexer.parse(content);
+	Document* _parse(std::string_view content) {
+		_lexer.parse(content);
 		_tokenIndex = 0;
 
 		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
@@ -78,7 +77,7 @@ private:
 				if (firstAnnotation) {
 					firstAnnotation = false;
 					_document->annotations = _annotations;
-					_annotations = Array<Annotation>();
+					_annotations.clear();
 				}
 			}
 
@@ -92,35 +91,35 @@ private:
 				_advance(1);
 				continue;
 			}
-			_document->children.append(node);
+			_document->children.push_back(node);
 
 			if (_annotations.size() != 0) {
 				node->annotations = _annotations;
-				_annotations = Array<Annotation>();
+				_annotations.clear();
 			}
 		}
 
 		return _document;
 	}
 
-	decltype(nullptr) _wrong(StringSlice message) {
-		printf("[ParsingError] %.*s\n", message.size(), message.pointer());
+	decltype(nullptr) _wrong(std::string_view message) {
+		std::cout << "[ParsingError] " << message << "\n";
 		return nullptr;
 	}
 
-	decltype(nullptr) _expect(StringSlice message) {
+	decltype(nullptr) _expect(std::string_view message) {
 		if (!_isBound(0)) {
-			printf("[ParsingError] unxpected end of file, expect %.*s\n", message.size(), message.pointer());
+			std::cout << "[ParsingError] unxpected end of file, expect " << message << "\n";
 			return nullptr;
 		}
 
-		StringSlice kind = toStringSlice(_get(0).kind);
-		printf("[ParsingError] unxpected token %.*s, expect %.*s\n", kind.size(), kind.pointer(), message.size(), message.pointer());
+		std::string_view kind = toStringView(_get(0).kind);
+		std::cout << "[ParsingError] unxpected token " << kind << ", expect " << message << "\n";
 		return nullptr;
 	}
 
 	bool _isBound(unsigned int offset) const {
-		return _tokenIndex + offset < _tokens.size();
+		return _tokenIndex + offset < _lexer.size();
 	}
 
 	void _advance(unsigned int offset) {
@@ -128,12 +127,12 @@ private:
 	}
 
 	const Token& _get(unsigned int offset) const {
-		return _tokens.get(_tokenIndex + offset);
+		return _lexer[_tokenIndex + offset];
 	}
 
 	const Token& _eat() {
 		_tokenIndex += 1;
-		return _tokens.get(_tokenIndex - 1);
+		return _lexer[_tokenIndex - 1];
 	}
 
 	Node* _parseStyle(Style::Type type) {
@@ -148,7 +147,7 @@ private:
 				return nullptr;
 			}
 
-			style->children.append(child);
+			style->children.push_back(child);
 		}
 
 		if (_isBound(0) && _get(0).kind != token.kind) {
@@ -173,7 +172,7 @@ private:
 				return nullptr;
 			}
 
-			highlight->children.append(child);
+			highlight->children.push_back(child);
 		}
 
 		if (_isBound(0) && _get(0).kind != token.kind) {
@@ -278,7 +277,7 @@ private:
 							return nullptr;
 						}
 
-						paragraph->children.append(indent);
+						paragraph->children.push_back(indent);
 						continue;
 					}
 
@@ -288,14 +287,14 @@ private:
 					}
 
 					const Token& token = _eat();
-					paragraph->children.append(new Space(token.position));
+					paragraph->children.push_back(new Space(token.position));
 					continue;
 				}
 
 				continue;
 			}
 
-			paragraph->children.append(node);
+			paragraph->children.push_back(node);
 		}
 
 		if (_get(0).kind == TokenKind::newlinePlus) {
@@ -345,7 +344,7 @@ private:
 							return nullptr;
 						}
 
-						heading->children.append(subtitle);
+						heading->children.push_back(subtitle);
 					}
 
 					break;
@@ -355,7 +354,7 @@ private:
 				return _expect("newline or block");
 			}
 
-			heading->children.append(node);
+			heading->children.push_back(node);
 		}
 
 		return heading;
@@ -382,7 +381,7 @@ private:
 				return _expect("newline or block");
 			}
 
-			subtitle->children.append(node);
+			subtitle->children.push_back(node);
 		}
 
 		return subtitle;
@@ -400,7 +399,7 @@ private:
 				return nullptr;
 			}
 
-			indent->children.append(node);
+			indent->children.push_back(node);
 		}
 
 		if (!(_isBound(0) && _get(0).kind == TokenKind::indentClose)) {
@@ -463,7 +462,7 @@ private:
 								return ItemResult::error;
 							}
 
-							item->children.append(subnode);
+							item->children.push_back(subnode);
 						}
 
 						break;
@@ -481,7 +480,7 @@ private:
 				return ItemResult::earlyExit;
 			}
 
-			item->children.append(node);
+			item->children.push_back(node);
 		}
 
 		return ItemResult::ok;
@@ -492,7 +491,7 @@ private:
 
 		while (_isBound(0) && _get(0).kind == tokenKind) {
 			Item* item = new Item(_eat().position);
-			list->children.append(item);
+			list->children.push_back(item);
 
 			ItemResult result = _parseItem(list, item);
 
@@ -516,9 +515,9 @@ private:
 		while (_isBound(0) && _get(0).kind == TokenKind::checkbox) {
 			const Token& token = _eat();
 			CheckItem* item = new CheckItem(token.position);
-			list->children.append(item);
+			list->children.push_back(item);
 
-			switch (token.content.get(1)) {
+			switch (token.content[1]) {
 				case ' ': item->state = CheckItem::State::unchecked; break;
 				case 'x': item->state = CheckItem::State::checked; break;
 			}
@@ -550,7 +549,7 @@ private:
 			DefinitionItem* item = new DefinitionItem(_get(0).position);
 			DefinitionTerm* term = new DefinitionTerm(_get(0).position);
 
-			item->children.append(term);
+			item->children.push_back(term);
 
 			while (_isBound(0) && _isParagraph()) {
 				Node* node = _parseInline();
@@ -566,7 +565,7 @@ private:
 
 					if (_get(0).kind == TokenKind::coloncolon) {
 						DefinitionDesc* desc = new DefinitionDesc(_eat().position);
-						item->children.append(desc);
+						item->children.push_back(desc);
 						itemColoncolon = true;
 
 						while (_isBound(0)) {
@@ -588,7 +587,7 @@ private:
 												return list;
 											}
 
-											desc->children.append(subnode);
+											desc->children.push_back(subnode);
 										}
 
 										goto itemEnd;
@@ -600,24 +599,24 @@ private:
 
 								if (_get(0).kind == TokenKind::newlinePlus) {
 									_advance(1);
-									list->children.append(item);
+									list->children.push_back(item);
 									goto listEnd;
 								}
 							}
-							desc->children.append(node);
+							desc->children.push_back(node);
 						}
 					}
 					break;
 				}
 
-				term->children.append(node);
+				term->children.push_back(node);
 				itemOccupied = true;
 			}
 
 			itemEnd:
 
 			if (itemColoncolon) {
-				list->children.append(item);
+				list->children.push_back(item);
 				goto listEnd;
 			}
 			continue;
@@ -632,7 +631,7 @@ private:
 		// content only table
 		if (type == Row::Type::header) {
 			for (unsigned int i = 0; i < node->children.size(); i += 1) {
-				static_cast<Row*>(node->children.get(i))->type = Row::Type::content;
+				static_cast<Row*>(node->children[i])->type = Row::Type::content;
 			}
 		}
 
@@ -658,21 +657,21 @@ private:
 							case TokenKind::teeLeft:
 								_advance(1);
 								if (type == Row::Type::header) {
-									table->alignments.append(Table::Alignment::left);
+									table->alignments.push_back(Table::Alignment::left);
 								}
 								goto nextTeeCell;
 
 							case TokenKind::teeCenter:
 								_advance(1);
 								if (type == Row::Type::header) {
-									table->alignments.append(Table::Alignment::center);
+									table->alignments.push_back(Table::Alignment::center);
 								}
 								goto nextTeeCell;
 
 							case TokenKind::teeRight:
 								_advance(1);
 								if (type == Row::Type::header) {
-									table->alignments.append(Table::Alignment::right);
+									table->alignments.push_back(Table::Alignment::right);
 								}
 								goto nextTeeCell;
 
@@ -708,7 +707,7 @@ private:
 
 			Row* row = new Row(token.position);
 			row->type = type;
-			table->children.append(row);
+			table->children.push_back(row);
 
 			while (_isBound(0)) {
 				Cell* cell = new Cell(_get(0).position);
@@ -737,11 +736,11 @@ private:
 						}
 					}
 
-					cell->children.append(node);
+					cell->children.push_back(node);
 				}
 
 				nextCell:
-				row->children.append(cell);
+				row->children.push_back(cell);
 			}
 
 			nextRow:
@@ -871,13 +870,13 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-			StringSlice filePath = _eat().content;
-			String path = _documentPath + String("/");
-			path.append(filePath.pointer(), filePath.size());
+			std::string_view filePath = _eat().content;
+			std::string path = _documentPath + std::string("/");
+			path.append(filePath);
 
 			if (_fileInclusion) {
 				Parser parser;
-				document = parser.parseFile(StringSlice(path.pointer(), path.size()));
+				document = parser.parseFile(std::string_view(path.data(), path.size()));
 
 				if (document != nullptr) {
 					document->position = token.position;
@@ -886,7 +885,7 @@ private:
 				parser._document = nullptr;
 			} else {
 				document = new Document();
-				document->path = String(filePath.pointer(), filePath.size());
+				document->path = std::string(filePath.data(), filePath.size());
 				document->position = token.position;
 			}
 		}
@@ -932,9 +931,9 @@ private:
 			_advance(1);
 
 			while (_isBound(0)) {
-				// printf("GotToken %.*s\n", 
-				// 	toStringSlice(_get(0).kind).size(),
-				// 	toStringSlice(_get(0).kind).pointer()
+				// std::cout << "GotToken %.*s\n", 
+				// 	tostd::string_view(_get(0).kind).size(),
+				// 	tostd::string_view(_get(0).kind).data()
 				// );
 				//
 				if (_get(0).kind == TokenKind::indentClose) {
@@ -953,10 +952,10 @@ private:
 					if (node == nullptr) {
 						break;
 					}
-					info->children.append(node);
+					info->children.push_back(node);
 				}
 
-				ref->children.append(info);
+				ref->children.push_back(info);
 
 				if (_isBound(0)) {
 					if (_get(0).kind == TokenKind::newline) {
@@ -1033,7 +1032,7 @@ private:
 				return nullptr;
 			}
 
-			indent->children.append(node);
+			indent->children.push_back(node);
 		}
 
 		if (!(_isBound(0) && _get(0).kind == TokenKind::blockquoteClose)) {
@@ -1059,7 +1058,7 @@ private:
 			if (node == nullptr) {
 				if (_get(0).kind == TokenKind::newline) {
 					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
-						admon->children.append(new Space(_get(0).position));
+						admon->children.push_back(new Space(_get(0).position));
 						_advance(2);
 
 						while (_isBound(0)) {
@@ -1078,7 +1077,7 @@ private:
 								return _expect("indent pop");
 							}
 
-							admon->children.append(subnode);
+							admon->children.push_back(subnode);
 						}
 
 						break;
@@ -1094,7 +1093,7 @@ private:
 				}
 			}
 
-			admon->children.append(node);
+			admon->children.push_back(node);
 		}
 
 		return admon;
@@ -1107,7 +1106,7 @@ private:
 			if (_isBound(0) && _get(0).kind == TokenKind::annotationValue) {
 				annotation.value = _eat().content;
 			}
-			_annotations.append(annotation);
+			_annotations.push_back(annotation);
 		}
 	}
 
@@ -1245,17 +1244,17 @@ private:
 	}
 
 private:
-	Slice<Token> _tokens;
+	Lexer _lexer;
 
 	unsigned int _tokenIndex;
 
 	Document* _document;
 
-	String _documentPath;
+	std::string _documentPath;
 
 	bool _fileInclusion;
 
-	Array<Annotation> _annotations;
+	std::vector<Annotation> _annotations;
 };
 
 }

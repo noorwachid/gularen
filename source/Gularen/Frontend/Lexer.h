@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Gularen/Library/Array.h"
-#include "Gularen/Library/Slice.h"
-#include "Gularen/Library/StringSlice.h"
+#include <iostream>
+#include <vector>
+#include <string_view>
 
 namespace Gularen {
 
@@ -86,7 +86,7 @@ enum class TokenKind {
 	hashTag,
 };
 
-StringSlice toStringSlice(TokenKind kind) {
+std::string_view toStringView(TokenKind kind) {
 	switch (kind) {
 		case TokenKind::comment: return "comment";
 		case TokenKind::annotationKey: return "annotationKey";
@@ -175,33 +175,31 @@ struct Position {
 struct Token {
 	Position position;
 	TokenKind kind;
-	StringSlice content;
+	std::string_view content;
 
 	void print() const {
-		StringSlice kindString = toStringSlice(kind);
-
-		printf("%.*s", kindString.size(), kindString.pointer());
+		std::cout << toStringView(kind);
 
 		if (content.size() != 0) {
-			printf(" = ");
+			std::cout << " = ";
 			for (unsigned int i = 0; i < content.size(); i += 1) {
-				if (content.get(i) < ' ') {
-					switch (content.get(i)) {
+				if (content[i] < ' ') {
+					switch (content[i]) {
 						case '\t':
-							printf("\\t");
+							std::cout << "\\t";
 							break;
 
 						case '\n':
-							printf("\\n");
+							std::cout << "\\n";
 							break;
 
 						default:
-							printf("\\x%02X", content.get(i) & 0xFF);
+							std::cout << "\\x" << static_cast<int>(content[i]);
 							break;
 					}
 					continue;
 				}
-				printf("%c", content.get(i));
+				std::cout << content[i];
 			}
 		}
 
@@ -211,7 +209,7 @@ struct Token {
 
 class Lexer {
 public:
-	Slice<Token> parse(StringSlice content) {
+	void parse(std::string_view content) {
 		_content = content;
 		_contentIndex = 0;
 		_indentLevel = 0;
@@ -226,11 +224,11 @@ public:
 		_parseBlock();
 
 		if (_tokens.size() != 0) {
-			switch (_tokens.get(_tokens.size() - 1).kind) {
+			switch (_tokens[_tokens.size() - 1].kind) {
 				case TokenKind::newlinePlus: 
 					break;
 				case TokenKind::newline: 
-					_tokens.get(_tokens.size() - 1).kind = TokenKind::newlinePlus;
+					_tokens[_tokens.size() - 1].kind = TokenKind::newlinePlus;
 					break;
 				default: 
 					_append(TokenKind::newlinePlus);
@@ -238,9 +236,14 @@ public:
 					break;
 			}
 		}
+	}
 
+	const Token& operator[](size_t index) const {
+		return _tokens[index];
+	}
 
-		return Slice<Token>(_tokens.pointer(), _tokens.size());
+	inline size_t size() const {
+		return _tokens.size();
 	}
 
 private:
@@ -501,7 +504,7 @@ private:
 
 				case '"':
 					_consumeQuote(
-						(_tokens.size() != 0 && _tokens.get(_tokens.size() - 1).kind == TokenKind::squoteOpen), // ‘“ case
+						(_tokens.size() != 0 && _tokens.back().kind == TokenKind::squoteOpen), // ‘“ case
 						TokenKind::quoteOpen, 
 						TokenKind::quoteClose
 					);
@@ -510,7 +513,7 @@ private:
 
 				case '\'':
 					_consumeQuote(
-						(_tokens.size() != 0 && _tokens.get(_tokens.size() - 1).kind == TokenKind::quoteOpen), // “‘ case
+						(_tokens.size() != 0 && _tokens.back().kind == TokenKind::quoteOpen), // “‘ case
 						TokenKind::squoteOpen, 
 						TokenKind::squoteClose
 					);
@@ -598,7 +601,7 @@ private:
 	}
 
 	char _get(unsigned int offset) const {
-		return _content.get(_contentIndex + offset);
+		return _content[_contentIndex + offset];
 	}
 
 	void _append(TokenKind kind, unsigned int index = 0, unsigned int size = 0) {
@@ -606,8 +609,8 @@ private:
 		token.position.line = _oldLine;
 		token.position.column = _oldColumn;
 		token.kind = kind;
-		token.content = _content.cut(index, size);
-		_tokens.append(static_cast<Token&&>(token));
+		token.content = _content.substr(index, size);
+		_tokens.push_back(static_cast<Token&&>(token));
 	}
 
 	void _consumeIndent() {
@@ -671,9 +674,9 @@ private:
 
 	void _consumeQuote(bool condition, TokenKind left, TokenKind right) {
 		if (_contentIndex == 0 || 
-			_content.get(_contentIndex - 1) == ' ' || 
-            _content.get(_contentIndex - 1) == '\t' || 
-            _content.get(_contentIndex - 1) == '\n' || 
+			_content[_contentIndex - 1] == ' ' || 
+            _content[_contentIndex - 1] == '\t' || 
+            _content[_contentIndex - 1] == '\n' || 
             condition) {
 			_append(left, _contentIndex, 1);
 			_advance(1);
@@ -1042,7 +1045,7 @@ private:
 	}
 
 private:
-	StringSlice _content;
+	std::string_view _content;
 
 	unsigned int _contentIndex;
 
@@ -1054,7 +1057,7 @@ private:
 
 	unsigned int _oldColumn;
 
-	Array<Token> _tokens;
+	std::vector<Token> _tokens;
 
 	unsigned int _indentLevel;
 

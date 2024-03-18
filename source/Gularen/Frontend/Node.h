@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Gularen/Library/String.h"
-#include "Gularen/Library/StringHelper.h"
 #include "Gularen/Frontend/Lexer.h"
 
 namespace Gularen {
@@ -65,24 +63,23 @@ enum class NodeKind {
 };
 
 struct Annotation {
-	StringSlice key;
-	StringSlice value;
+	std::string_view key;
+	std::string_view value;
 };
 
 struct Node {
 	Position position;
 	NodeKind kind;
-	Array<Node*> children;
-	Array<Annotation> annotations;
+	std::vector<Node*> children;
+	std::vector<Annotation> annotations;
 
 	Node(Position position, NodeKind kind): position(position), kind(kind)  {
 	}
 
 	virtual ~Node() {
 		for (unsigned int i = 0; i < children.size(); i += 1) {
-			children.get(i)->~Node();
-			delete children.get(i);
-			children.get(i) = nullptr;
+			delete children[i];
+			children[i] = nullptr;
 		}
 	}
 
@@ -91,40 +88,40 @@ struct Node {
 };
 
 struct Document : Node {
-	String path;
-	String content;
+	std::string path;
+	std::string content;
 
 	Document(): Node({}, NodeKind::document) {
 	}
 
-	Document(Position position, StringSlice path): Node(position, NodeKind::document), path(path.pointer(), path.size()) {
+	Document(Position position, std::string_view path): Node(position, NodeKind::document), path(path) {
 	}
 
 	virtual void print() override {
-		printf("document %.*s\n", path.size(), path.pointer());
+		std::cout << "document " << path << "\n";
 	}
 };
 
 
 struct Comment : Node {
-	StringSlice content;
+	std::string_view content;
 
-	Comment(Position position, StringSlice content): Node(position, NodeKind::comment), content(content) {
+	Comment(Position position, std::string_view content): Node(position, NodeKind::comment), content(content) {
 	}
 
 	virtual void print() override {
-		printf("comment %.*s\n", content.size(), content.pointer());
+		std::cout << "comment " << content << "\n";
 	}
 };
 
 struct Text : Node {
-	StringSlice content;
+	std::string_view content;
 
-	Text(Position position, StringSlice content): Node(position, NodeKind::text), content(content) {
+	Text(Position position, std::string_view content): Node(position, NodeKind::text), content(content) {
 	}
 
 	virtual void print() override {
-		printf("text %.*s\n", content.size(), content.pointer());
+		std::cout << "text " << content << "\n";
 	}
 };
 
@@ -133,7 +130,7 @@ struct Space : Node {
 	}
 
 	virtual void print() override {
-		printf("space\n");
+		std::cout << "space\n";
 	}
 };
 
@@ -142,7 +139,7 @@ struct LineBreak : Node {
 	}
 
 	virtual void print() override {
-		printf("lineBreak\n");
+		std::cout << "lineBreak\n";
 	}
 };
 
@@ -151,7 +148,7 @@ struct PageBreak : Node {
 	}
 
 	virtual void print() override {
-		printf("pageBreak\n");
+		std::cout << "pageBreak\n";
 	}
 };
 
@@ -160,7 +157,7 @@ struct Dinkus : Node {
 	}
 
 	virtual void print() override {
-		printf("dinkus\n");
+		std::cout << "dinkus\n";
 	}
 };
 
@@ -177,11 +174,11 @@ struct Style : Node {
 
 
 	virtual void print() override {
-		printf("style ");
+		std::cout << "style ";
 
 		switch (type) {
-			case Type::bold: printf("bold\n"); break;
-			case Type::italic: printf("italic\n"); break;
+			case Type::bold: std::cout << "bold\n"; break;
+			case Type::italic: std::cout << "italic\n"; break;
 		}
 	}
 };
@@ -191,7 +188,7 @@ struct Highlight : Node {
 	}
 
 	virtual void print() override {
-		printf("highlight\n");
+		std::cout << "highlight\n";
 	}
 };
 
@@ -200,7 +197,7 @@ struct Paragraph : Node {
 	}
 
 	virtual void print() override {
-		printf("paragraph\n");
+		std::cout << "paragraph\n";
 	}
 };
 
@@ -218,9 +215,9 @@ struct Heading : Node {
 
 	virtual void print() override {
 		switch (type) {
-			case Type::section: printf("section\n"); break;
-			case Type::subsection: printf("subsection\n"); break;
-			case Type::subsubsection: printf("subsubsection\n"); break;
+			case Type::section: std::cout << "section\n"; break;
+			case Type::subsection: std::cout << "subsection\n"; break;
+			case Type::subsubsection: std::cout << "subsubsection\n"; break;
 		}
 	}
 };
@@ -230,7 +227,7 @@ struct Subtitle : Node {
 	}
 
 	virtual void print() override {
-		printf("subtitle\n");
+		std::cout << "subtitle\n";
 	}
 };
 
@@ -239,7 +236,7 @@ struct Indent : Node {
 	}
 
 	virtual void print() override {
-		printf("indent\n");
+		std::cout << "indent\n";
 	}
 };
 
@@ -249,10 +246,10 @@ struct List : Node {
 
 	virtual void print() override {
 		switch (kind) {
-			case NodeKind::list: printf("list\n"); break;
-			case NodeKind::numberedList: printf("numberList\n"); break;
-			case NodeKind::checkList: printf("checkList\n"); break;
-			case NodeKind::definitionList: printf("definitionList\n"); break;
+			case NodeKind::list: std::cout << "list\n"; break;
+			case NodeKind::numberedList: std::cout << "numberList\n"; break;
+			case NodeKind::checkList: std::cout << "checkList\n"; break;
+			case NodeKind::definitionList: std::cout << "definitionList\n"; break;
 			default: break;
 		}
 	}
@@ -263,7 +260,7 @@ struct Item : Node {
 	}
 
 	virtual void print() override {
-		printf("item\n");
+		std::cout << "item\n";
 	}
 };
 
@@ -279,10 +276,10 @@ struct CheckItem : Node {
 	}
 
 	virtual void print() override {
-		printf("checkItem ");
+		std::cout << "checkItem ";
 		switch (state) {
-			case State::unchecked: printf("todo\n"); break;
-			case State::checked: printf("done\n"); break;
+			case State::unchecked: std::cout << "todo\n"; break;
+			case State::checked: std::cout << "done\n"; break;
 		}
 	}
 };
@@ -292,7 +289,7 @@ struct DefinitionItem : Node {
 	}
 
 	virtual void print() override {
-		printf("definitionItem\n");
+		std::cout << "definitionItem\n";
 	}
 };
 
@@ -301,7 +298,7 @@ struct DefinitionTerm : Node {
 	}
 
 	virtual void print() override {
-		printf("definitionTerm\n");
+		std::cout << "definitionTerm\n";
 	}
 };
 
@@ -310,7 +307,7 @@ struct DefinitionDesc : Node {
 	}
 
 	virtual void print() override {
-		printf("definitionDesc\n");
+		std::cout << "definitionDesc\n";
 	}
 };
 
@@ -321,26 +318,26 @@ struct Table : Node {
 		right,
 	};
 
-	Array<Alignment> alignments;
+	std::vector<Alignment> alignments;
 
 	Table(Position position): Node(position, NodeKind::table) {
 	}
 
 	virtual void print() override {
-		printf("table ");
+		std::cout << "table ";
 
 		for (unsigned int i = 0; i < alignments.size(); i += 1) {
 			if (i != 0) {
-				printf(", ");
+				std::cout << ", ";
 			}
-			switch (alignments.get(i)) {
-				case Alignment::left: printf("left"); break;
-				case Alignment::center: printf("center"); break;
-				case Alignment::right: printf("right"); break;
+			switch (alignments[i]) {
+				case Alignment::left: std::cout << "left"; break;
+				case Alignment::center: std::cout << "center"; break;
+				case Alignment::right: std::cout << "right"; break;
 			}
 		}
 
-		printf("\n");
+		std::cout << "\n";
 	}
 };
 
@@ -357,12 +354,12 @@ struct Row : Node {
 	}
 
 	virtual void print() override {
-		printf("row ");
+		std::cout << "row ";
 
 		switch (type) {
-			case Type::header: printf("header\n"); break;
-			case Type::content: printf("content\n"); break;
-			case Type::footer: printf("footer\n"); break;
+			case Type::header: std::cout << "header\n"; break;
+			case Type::content: std::cout << "content\n"; break;
+			case Type::footer: std::cout << "footer\n"; break;
 		}
 	}
 };
@@ -372,47 +369,47 @@ struct Cell : Node {
 	}
 
 	virtual void print() override {
-		printf("cell\n");
+		std::cout << "cell\n";
 	}
 };
 
 struct Code : Node {
-	StringSlice label;
-	StringSlice content;
+	std::string_view label;
+	std::string_view content;
 
 	Code(Position position): Node(position, NodeKind::code) {
 	}
 
 	virtual void print() override {
-		printf("code ");
+		std::cout << "code ";
 
 		if (label.size()) {
-			printf("%.*s ", label.size(), label.pointer());
+			std::cout << label << " ";
 		}
 
 		printContent();
-		printf("\n");
+		std::cout << "\n";
 	}
 
 	void printContent() {
 		for (unsigned int i = 0; i < content.size(); i += 1) {
-			if (content.get(i) < ' ') {
-				switch (content.get(i)) {
+			if (content[i] < ' ') {
+				switch (content[i]) {
 					case '\t':
-						printf("\\t");
+						std::cout << "\\t";
 					break;
 
 					case '\n':
-						printf("\\n");
+						std::cout << "\\n";
 					break;
 
 					default:
-						printf("\\x%02X", content.get(i) & 0xFF);
+						std::cout << "\\x" << static_cast<int>(content[i]);
 					break;
 				}
 				continue;
 			}
-			printf("%c", content.get(i));
+			std::cout << content[i];
 		}
 	}
 };
@@ -423,136 +420,129 @@ struct CodeBlock : Code {
 	}
 
 	virtual void print() override {
-		printf("codeBlock ");
+		std::cout << "codeBlock ";
 
 		if (label.size()) {
-			printf("%.*s ", label.size(), label.pointer());
+			std::cout << label << " ";
 		}
 
 		printContent();
-		printf("\n");
+		std::cout << "\n";
 	}
 };
 
 struct Link : Node {
-	StringSlice resource;
-	StringSlice heading;
-	StringSlice label;
+	std::string_view resource;
+	std::string_view heading;
+	std::string_view label;
 
 	Link(Position position): Node(position, NodeKind::link) {
 	}
 
-	void setResource(StringSlice resource) {
+	void setResource(std::string_view resource) {
 		unsigned int i = 0;
 
-		while (i < resource.size() && resource.get(i) != '>') {
+		while (i < resource.size() && resource[i] != '>') {
 			i += 1;
 		}
 
-		this->resource = resource.cut(0, i);
+		this->resource = resource.substr(0, i);
 
 		if (i < resource.size()) {
-			this->heading = resource.cut(i + 1, resource.size() - i - 1);
+			this->heading = resource.substr(i + 1, resource.size() - i - 1);
 		}
 	}
 
 	virtual void print() override {
-		printf("link ");
+		std::cout << "link";
 
 		if (resource.size()) {
-			printf("%.*s ", resource.size(), resource.pointer());
+			std::cout << " " << resource;
 		}
 
 
 		if (heading.size()) {
-			printf(">%.*s ", heading.size(), heading.pointer());
+			std::cout << " >" << heading;
 		}
 
 		if (label.size()) {
-			printf("%.*s", label.size(), label.pointer());
+			std::cout << " " << label;
 		}
 
-		printf("\n");
+		std::cout << "\n";
 	}
 };
 
 struct View : Node {
-	StringSlice resource;
-	StringSlice label;
+	std::string_view resource;
+	std::string_view label;
 
 	View(Position position): Node(position, NodeKind::view) {
 	}
 
 	virtual void print() override {
-		printf("view %.*s", resource.size(), resource.pointer());
+		std::cout << "view " << resource;
 
 		if (label.size()) {
-			printf(" %.*s", label.size(), label.pointer());
+			std::cout << " " << label;
 		}
 
-		printf("\n");
+		std::cout << "\n";
 	}
 };
 
 struct Footnote : Node {
-	StringSlice desc;
+	std::string_view desc;
 
-	Footnote(Position position, StringSlice description): Node(position, NodeKind::footnote), desc(description) {
+	Footnote(Position position, std::string_view description): Node(position, NodeKind::footnote), desc(description) {
 	}
 
 	virtual void print() override {
-		printf("footnote %.*s\n", desc.size(), desc.pointer());
+		std::cout << "footnote " << desc << "\n";
 	}
 };
 
 struct InText : Node {
-	StringSlice id;
-	StringSlice label;
+	std::string_view id;
 
 	InText(Position position): Node(position, NodeKind::inText) {
 	}
 
 	virtual void print() override {
-		printf("inText %.*s", id.size(), id.pointer());
-
-		if (label.size() != 0) {
-			printf(" %.*s ", label.size(), label.pointer());
-		}
-
-		printf("\n");
+		std::cout << "inText " << id << "\n";
 	}
 };
 
 struct ReferenceInfo : Node {
-	StringSlice key;
+	std::string_view key;
 
-	ReferenceInfo(Position position, StringSlice key): Node(position, NodeKind::referenceInfo), key(key) {
+	ReferenceInfo(Position position, std::string_view key): Node(position, NodeKind::referenceInfo), key(key) {
 	}
 
 	virtual void print() override {
-		printf("referenceInfo %.*s\n", key.size(), key.pointer());
+		std::cout << "referenceInfo " << key << "\n";
 	}
 };
 
 struct Reference : Node {
-	StringSlice id;
+	std::string_view id;
 
 	Reference(Position position): Node(position, NodeKind::reference) {
 	}
 
 	virtual void print() override {
-		printf("reference %.*s\n", id.size(), id.pointer());
+		std::cout << "reference " << id << "\n";
 	}
 };
 
 struct Emoji : Node {
-	StringSlice code;
+	std::string_view code;
 
-	Emoji(Position position, StringSlice code): Node(position, NodeKind::emoji), code(code) {
+	Emoji(Position position, std::string_view code): Node(position, NodeKind::emoji), code(code) {
 	}
 
 	virtual void print() override {
-		printf("emoji %.*s\n", code.size(), code.pointer());
+		std::cout << "emoji " << code << "\n";
 	}
 };
 
@@ -561,51 +551,51 @@ struct Blockquote : Node {
 	}
 
 	virtual void print() override {
-		printf("blockquote\n");
+		std::cout << "blockquote\n";
 	}
 };
 
 struct DateTime : Node {
-	StringSlice date;
-	StringSlice time;
+	std::string_view date;
+	std::string_view time;
 
-	StringSlice content;
+	std::string_view content;
 
-	DateTime(Position position, StringSlice content): Node(position, NodeKind::dateTime), content(content) {
+	DateTime(Position position, std::string_view content): Node(position, NodeKind::dateTime), content(content) {
 		bool hasDate = false;
 		bool hasTime = false;
 
 		unsigned int timeBegin = 0;
 
 		for (unsigned int iter = 0; iter < content.size(); iter += 1) {
-			if (content.get(iter) == '-') {
+			if (content[iter] == '-') {
 				hasDate = true;
 			}
-			if (content.get(iter) == ':') {
+			if (content[iter] == ':') {
 				hasTime = true;
 			}
-			if (content.get(iter) == ' ') {
+			if (content[iter] == ' ') {
 				timeBegin = iter + 1;
 			}
 		}
 
 		if (hasDate) {
-			date = content.cut(0, timeBegin == 0 ? content.size() : timeBegin - 1);
+			date = content.substr(0, timeBegin == 0 ? content.size() : timeBegin - 1);
 		}
 		if (hasTime) {
-			time = content.cut(timeBegin, content.size() - timeBegin);
+			time = content.substr(timeBegin, content.size() - timeBegin);
 		}
 	}
 
 	virtual void print() override {
-		printf("dateTime");
+		std::cout << "dateTime";
 		if (date.size() != 0) {
-			printf(" %.*s", date.size(), date.pointer());
+			std::cout << " " << date;
 		}
 		if (time.size() != 0) {
-			printf(" %.*s", time.size(), time.pointer());
+			std::cout << " " << time;
 		}
-		printf("\n");
+		std::cout << "\n";
 	}
 };
 
@@ -627,50 +617,50 @@ struct Punct : Node {
 	}
 
 	virtual void print() override {
-		printf("punct ");
+		std::cout << "punct ";
 		switch (type) {
-			case Type::hypen: printf("hyphen\n"); break;
-			case Type::enDash: printf("enDash\n"); break;
-			case Type::emDash: printf("emDash\n"); break;
+			case Type::hypen: std::cout << "hyphen\n"; break;
+			case Type::enDash: std::cout << "enDash\n"; break;
+			case Type::emDash: std::cout << "emDash\n"; break;
 
-			case Type::quoteOpen: printf("quoteOpen\n"); break;
-			case Type::quoteClose: printf("quoteClose\n"); break;
-			case Type::squoteOpen: printf("squoteOpen\n"); break;
-			case Type::squoteClose: printf("squoteClose\n"); break;
+			case Type::quoteOpen: std::cout << "quoteOpen\n"; break;
+			case Type::quoteClose: std::cout << "quoteClose\n"; break;
+			case Type::squoteOpen: std::cout << "squoteOpen\n"; break;
+			case Type::squoteClose: std::cout << "squoteClose\n"; break;
 		}
 	}
 };
 
 struct Admon : Node {
-	StringSlice label;
+	std::string_view label;
 
-	Admon(Position position, StringSlice label): Node(position, NodeKind::admon), label(label) {
+	Admon(Position position, std::string_view label): Node(position, NodeKind::admon), label(label) {
 	}
 
 	virtual void print() override {
-		printf("admon %.*s\n", label.size(), label.pointer());
+		std::cout << "admon " << label << "\n";
 	}
 };
 
 struct AccountTag : Node {
-	StringSlice resource;
+	std::string_view resource;
 
-	AccountTag(Position position, StringSlice resource): Node(position, NodeKind::accountTag), resource(resource) {
+	AccountTag(Position position, std::string_view resource): Node(position, NodeKind::accountTag), resource(resource) {
 	}
 
 	virtual void print() override {
-		printf("accountTag %.*s\n", resource.size(), resource.pointer());
+		std::cout << "accountTag " << resource << "\n";
 	}
 };
 
 struct HashTag : Node {
-	StringSlice resource;
+	std::string_view resource;
 
-	HashTag(Position position, StringSlice resource): Node(position, NodeKind::hashTag), resource(resource) {
+	HashTag(Position position, std::string_view resource): Node(position, NodeKind::hashTag), resource(resource) {
 	}
 
 	virtual void print() override {
-		printf("hashTag %.*s\n", resource.size(), resource.pointer());
+		std::cout << "hashTag " << resource << "\n";
 	}
 };
 

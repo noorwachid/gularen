@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Gularen/Frontend/Node.h"
 #include "Gularen/Backend/Html/Composer.h"
-#include "Gularen/Library/Disk/File.h"
-#include "Gularen/Library/HashTable.h"
 
 namespace Gularen {
 namespace Html {
@@ -17,16 +14,18 @@ public:
 		_document = document;
 
 		for (unsigned int j = 0; j < _document->annotations.size(); j += 1) {
-			const Annotation& annotation = _document->annotations.get(j);
-			_documentAnnotations.set(annotation.key, annotation.value);
+			const Annotation& annotation = _document->annotations[j];
+			_documentAnnotations[annotation.key] = annotation.value;
 		}
 	}
 
-	void setTemplateFile(const StringSlice path) {
-		_templateContent = Disk::File::readAll(path);
+	void setTemplateFile(const std::string_view path) {
+		std::ifstream file(path);
+		_templateContent.assign(std::filesystem::file_size(path), '\0');
+		file.read(_templateContent.data(), _templateContent.size());
 	}
 
-	StringSlice render() {
+	std::string_view render() {
 		_templateIndex = 0;
 
 		while (_isBound(0)) {
@@ -51,7 +50,7 @@ public:
 					_advance(1);
 				}
 
-				StringSlice key = StringSlice(_templateContent.pointer() + keyIndex, _templateIndex - keyIndex);
+				std::string_view key = std::string_view(_templateContent.data() + keyIndex, _templateIndex - keyIndex);
 
 				if (_isBound(0) && _get(0) == ']') {
 					_advance(1);
@@ -64,19 +63,19 @@ public:
 				if (_isBound(2) && _get(0) == '-' && _get(1) == '-' && _get(2) == '>') {
 					_advance(3);
 					if (annotation) {
-						StringSlice* value = _documentAnnotations.get(key);
-						if (value != nullptr) {
-							_escape(*value);
+						if (_documentAnnotations.count(key)) {
+							std::string_view value = _documentAnnotations[key];
+							_escape(value);
 						}
 					} else {
 						if (key == "content") {
 							Composer composer;
-							StringSlice content = composer.compose(_document);
-							_content.append(content.pointer(), content.size());
+							std::string_view content = composer.compose(_document);
+							_content.append(content.data(), content.size());
 						} else if (key == "toc") {
 							Composer composer;
-							StringSlice content = composer.composeToc(_document);
-							_content.append(content.pointer(), content.size());
+							std::string_view content = composer.composeToc(_document);
+							_content.append(content.data(), content.size());
 						}
 					}
 				}
@@ -84,11 +83,11 @@ public:
 				continue;
 			}
 
-			_content.append(_get(0));
+			_content.push_back(_get(0));
 			_advance(1);
 		}
 
-		return StringSlice(_content.pointer(), _content.size());
+		return std::string_view(_content.data(), _content.size());
 	}
 
 private:
@@ -97,36 +96,36 @@ private:
 	}
 
 	char _get(unsigned int offset) {
-		return _templateContent.get(_templateIndex + offset);
+		return _templateContent[_templateIndex + offset];
 	}
 
 	void _advance(unsigned int offset) {
 		_templateIndex += offset;
 	}
 
-	void _escape(StringSlice in) {
+	void _escape(std::string_view in) {
 		for (unsigned int i = 0; i < in.size(); i += 1) {
-			switch (in.get(i)) {
+			switch (in[i]) {
 				case '<': _content.append("&lt;"); break;
 				case '>': _content.append("&gt;"); break;
 				case '&': _content.append("&amp;"); break;
 				case '\"': _content.append("&quot;"); break;
 				case '\'': _content.append("&#39;"); break;
-				default: _content.append(in.get(i)); break;
+				default: _content.append(1, in[i]); break;
 			}
 		}
 	}
 
 private:
-	String _templateContent;
+	std::string _templateContent;
 
 	unsigned int _templateIndex;
 
-	HashTable<StringSlice> _documentAnnotations;
+	std::unordered_map<std::string_view, std::string_view> _documentAnnotations;
 
 	Document* _document;
 
-	String _content;
+	std::string _content;
 };
 
 }

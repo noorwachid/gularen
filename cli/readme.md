@@ -7,7 +7,7 @@
 ### Windows
 I do not have windows machine, 
 but the code does not use platform specific features.
-You should be able to compile it on any platform that support `C++11`.
+You should be able to compile it on any platform that support `C++17`.
 
 ## Manual
 **Display help page**
