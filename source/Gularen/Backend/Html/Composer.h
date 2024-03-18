@@ -103,7 +103,7 @@ private:
 				_content.append("<sup>");
 				_content.append(String::fromInt(i + 1));
 				_content.append("</sup> ");
-				_content.append(footnote->description.pointer(), footnote->description.size());
+				_content.append(footnote->desc.pointer(), footnote->desc.size());
 				_content.append("</p>\n");
 			}
 			_content.append("</div>\n");
@@ -167,7 +167,7 @@ private:
 
 				const Heading* heading = static_cast<const Heading*>(node);
 				switch (heading->type) {
-					case Heading::Type::chapter:
+					case Heading::Type::section:
 						content.append("<h1 id=\"");
 						_escapeID(heading, content);
 						content.append("\">");
@@ -402,8 +402,8 @@ private:
 				return;
 			}
 
-			case NodeKind::citation: {
-				const Citation* cite = static_cast<const Citation*>(node);
+			case NodeKind::inText: {
+				const InText* cite = static_cast<const InText*>(node);
 				content.append("<a class=\"citation\" href=\"#Reference-");
 				_escapeAttribute(cite->id, content);
 				content.append("\">");
@@ -516,7 +516,7 @@ private:
 
 			case NodeKind::heading: {
 				switch (static_cast<const Heading*>(node)->type) {
-					case Heading::Type::chapter: return content.append("</h1>\n");
+					case Heading::Type::section: return content.append("</h1>\n");
 					case Heading::Type::subsection: return content.append("</h2>\n");
 					case Heading::Type::subsubsection: return content.append("</h3>\n");
 					case Heading::Type::title: return content.append(" ");

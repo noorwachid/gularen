@@ -788,7 +788,7 @@ private:
 	}
 
 	Node* _parseCitation() {
-		Citation* view = new Citation(_eat().position);
+		InText* view = new InText(_eat().position);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
 			_advance(1);

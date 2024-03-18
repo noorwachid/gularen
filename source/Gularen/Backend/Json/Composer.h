@@ -117,7 +117,202 @@ private:
 				break;
 			}
 			case NodeKind::heading: {
-				_content.append("\"kind\":\"heading\"");
+				switch (static_cast<const Heading*>(node)->type) {
+					case Heading::Type::section: 
+						_content.append("\"kind\":\"heading\",\"type\":\"section\"");
+						break;
+					case Heading::Type::subsection:
+						_content.append("\"kind\":\"heading\",\"type\":\"subsection\"");
+						break;
+					case Heading::Type::subsubsection:
+						_content.append("\"kind\":\"heading\",\"type\":\"subsubsection\"");
+						break;
+					case Heading::Type::title:
+						_content.append("\"kind\":\"title\"");
+						break;
+					case Heading::Type::subtitle:
+						_content.append("\"kind\":\"subtitle\"");
+						break;
+				}
+				break;
+			}
+			case NodeKind::list: {
+				_content.append("\"kind\":\"list\"");
+				break;
+			}
+			case NodeKind::numberedList: {
+				_content.append("\"kind\":\"numberedList\"");
+				break;
+			}
+			case NodeKind::item: {
+				_content.append("\"kind\":\"item\"");
+				break;
+			}
+			case NodeKind::checkList: {
+				_content.append("\"kind\":\"checkList\"");
+				break;
+			}
+			case NodeKind::checkItem: {
+				_content.append("\"kind\":\"checkItem\",\"checked\":");
+				_content.append(static_cast<const CheckItem*>(node)->state == CheckItem::State::checked ? "true" : "false");
+				break;
+			}
+			case NodeKind::definitionList: {
+				_content.append("\"kind\":\"definitionList\"");
+				break;
+			}
+			case NodeKind::definitionItem: {
+				_content.append("\"kind\":\"definitionItem\"");
+				break;
+			}
+			case NodeKind::definitionTerm: {
+				_content.append("\"kind\":\"definitionTerm\"");
+				break;
+			}
+			case NodeKind::definitionDesc: {
+				_content.append("\"kind\":\"definitionDesc\"");
+				break;
+			}
+			case NodeKind::code: {
+				auto code = static_cast<const Code*>(node);
+
+				_content.append("\"kind\":\"code\",\"label\":\"");
+				_escape(code->label);
+				_content.append("\",\"content\":\"");
+				_escape(code->content);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::codeBlock: {
+				auto code = static_cast<const CodeBlock*>(node);
+
+				_content.append("\"kind\":\"codeBlock\",\"label\":\"");
+				_escape(code->label);
+				_content.append("\",\"content\":\"");
+				_escape(code->content);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::table: {
+				_content.append("\"kind\":\"table\"");
+				break;
+			}
+			case NodeKind::row: {
+				_content.append("\"kind\":\"row\"");
+				break;
+			}
+			case NodeKind::cell: {
+				_content.append("\"kind\":\"cell\"");
+				break;
+			}
+			case NodeKind::admon: {
+				auto admon = static_cast<const Admon*>(node);
+				_content.append("\"kind\":\"admon\",\"label\":\"");
+				_escape(admon->label);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::dateTime: {
+				auto dateTime = static_cast<const DateTime*>(node);
+				_content.append("\"kind\":\"dateTime\"");
+				if (dateTime->date.size() != 0) {
+					_content.append(",\"date\":\"");
+					_escape(dateTime->date);
+					_content.append("\"");
+				}
+				if (dateTime->time.size() != 0) {
+					_content.append(",\"time\":\"");
+					_escape(dateTime->time);
+					_content.append("\"");
+				}
+				break;
+			}
+			case NodeKind::accountTag: {
+				auto tag = static_cast<const AccountTag*>(node);
+				_content.append("\"kind\":\"accountTag\",\"resource\":\"");
+				_escape(tag->resource);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::hashTag: {
+				auto tag = static_cast<const AccountTag*>(node);
+				_content.append("\"kind\":\"hashTag\",\"resource\":\"");
+				_escape(tag->resource);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::link: {
+				auto link = static_cast<const Link*>(node);
+				_content.append("\"kind\":\"link\"");
+				if (link->resource.size() != 0) {
+					_content.append(",\"resource\":\"");
+					_escape(link->resource);
+					_content.append("\"");
+				}
+				if (link->heading.size() != 0) {
+					_content.append(",\"resourceHeading\":\"");
+					_escape(link->heading);
+					_content.append("\"");
+				}
+				if (link->label.size() != 0) {
+					_content.append(",\"label\":\"");
+					_escape(link->label);
+					_content.append("\"");
+				}
+				break;
+			}
+			case NodeKind::view: {
+				auto view = static_cast<const View*>(node);
+				_content.append("\"kind\":\"view\"");
+				if (view->resource.size() != 0) {
+					_content.append(",\"resource\":\"");
+					_escape(view->resource);
+					_content.append("\"");
+				}
+				if (view->label.size() != 0) {
+					_content.append(",\"label\":\"");
+					_escape(view->label);
+					_content.append("\"");
+				}
+				break;
+			}
+			case NodeKind::document: {
+				_content.append("\"kind\":\"document\"");
+				break;
+			}
+			case NodeKind::footnote: {
+				auto footnote = static_cast<const Footnote*>(node);
+				_content.append("\"kind\":\"footnote\",\"desc\":\"");
+				_escape(footnote->desc);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::emoji: {
+				auto emoji = static_cast<const Emoji*>(node);
+				_content.append("\"kind\":\"emoji\",\"code\":\"");
+				_escape(emoji->code);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::inText: {
+				auto citation = static_cast<const InText*>(node);
+				_content.append("\"kind\":\"inText\",\"id\":\"");
+				_escape(citation->id);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::reference: {
+				auto reference = static_cast<const Reference*>(node);
+				_content.append("\"kind\":\"reference\",\"id\":\"");
+				_escape(reference->id);
+				_content.append("\"");
+				break;
+			}
+			case NodeKind::referenceInfo: {
+				auto reference = static_cast<const ReferenceInfo*>(node);
+				_content.append("\"kind\":\"referenceInfo\",\"key\":\"");
+				_escape(reference->key);
+				_content.append("\"");
 				break;
 			}
 			default: {
@@ -143,15 +338,85 @@ private:
 	}
 
 	void _escape(StringSlice content) {
-		for (unsigned int i = 0; i < content.size(); i += 1) {
-			char byte = content.get(i);
-			if (byte == '"' || byte == '\\' || ('\x00' <= byte && byte <= '\x1f')) {
-				char bytes[4];
-				snprintf(bytes, 4, "%04x", static_cast<short>(byte));
-				_content.append("\\u");
-				_content.append(bytes, 4);
-			} else {
-				_content.append(byte);
+		unsigned int i = 0;
+		while (i < content.size()) {
+			unsigned char byte = content.get(i);
+			switch (byte) {
+				case '"':
+					_content.append("\\\"");
+					i += 1;
+					break;
+				case '\\':
+					_content.append("\\\\");
+					i += 1;
+					break;
+				case '/':
+					_content.append("\\/");
+					i += 1;
+					break;
+				case 8:
+					_content.append("\\b");
+					i += 1;
+					break;
+				case 12:
+					_content.append("\\f");
+					i += 1;
+					break;
+				case '\r':
+					_content.append("\\r");
+					i += 1;
+					break;
+				case '\n':
+					_content.append("\\n");
+					i += 1;
+					break;
+				case '\t':
+					_content.append("\\t");
+					i += 1;
+					break;
+
+				default: {
+					if (byte >= ' ' && byte <= '~') {
+						_content.append(byte);
+						i += 1;
+					} else {
+						unsigned int codepoint = 0;
+
+						if ((byte & 0b10000000) == 0b00000000) {
+							// Single-bytes
+							codepoint = byte;
+							i += 1;
+						} else if ((i + 1) < content.size() && (byte & 0b11100000) == 0b11000000) {
+							// Two-bytes
+							codepoint = ((byte & 0b00011111) << 6) | (content.get(i + 1) & 0b00111111);
+							i += 2;
+						} else if ((i + 2) < content.size() && (byte & 0b11110000) == 0b11100000) {
+							// Three-bytes
+							codepoint = 
+								((byte & 0b00001111) << 12) | 
+								((content.get(i + 1) & 0b00111111) << 6) |
+								(content.get(i + 2) & 0b00111111);
+							i += 3;
+						} else if ((i + 3) < content.size() && (byte & 0b11111000) == 0b11110000) {
+							// Four-bytes
+							codepoint = 
+								((byte & 0b00000111) << 18) | 
+								((content.get(i + 1) & 0b00111111) << 12) |
+								((content.get(i + 2) & 0b00111111) << 6) | 
+								(content.get(i + 3) & 0b00111111);
+							i += 4;
+						} else {
+							codepoint = byte;
+							i += 1;
+						}
+
+						char bytes[5];
+						snprintf(bytes, 5, "%04x", codepoint & 0xFFFF);
+						_content.append("\\u");
+						_content.append(bytes, 4);
+					}
+					break;
+				}
 			}
 		}
 	}

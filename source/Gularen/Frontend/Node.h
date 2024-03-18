@@ -47,7 +47,7 @@ enum class NodeKind {
 	link,
 	view,
 	footnote,
-	citation,
+	inText,
 	reference,
 	referenceInfo,
 
@@ -491,25 +491,25 @@ struct View : Node {
 };
 
 struct Footnote : Node {
-	StringSlice description;
+	StringSlice desc;
 
-	Footnote(Position position, StringSlice description): Node(position, NodeKind::footnote), description(description) {
+	Footnote(Position position, StringSlice description): Node(position, NodeKind::footnote), desc(description) {
 	}
 
 	virtual void print() override {
-		printf("footnote %.*s\n", description.size(), description.pointer());
+		printf("footnote %.*s\n", desc.size(), desc.pointer());
 	}
 };
 
-struct Citation : Node {
+struct InText : Node {
 	StringSlice id;
 	StringSlice label;
 
-	Citation(Position position): Node(position, NodeKind::citation) {
+	InText(Position position): Node(position, NodeKind::inText) {
 	}
 
 	virtual void print() override {
-		printf("citation %.*s", id.size(), id.pointer());
+		printf("inText %.*s", id.size(), id.pointer());
 
 		if (label.size() != 0) {
 			printf(" %.*s ", label.size(), label.pointer());
@@ -562,106 +562,44 @@ struct Blockquote : Node {
 };
 
 struct DateTime : Node {
-	bool date;
-	bool time;
-	
-	unsigned int year;
-	unsigned char month;
-	unsigned char day;
-
-	unsigned char hour;
-	unsigned char minute;
-	unsigned char second;
+	StringSlice date;
+	StringSlice time;
 
 	StringSlice content;
 
 	DateTime(Position position, StringSlice content): Node(position, NodeKind::dateTime), content(content) {
-		date = false;
-		time = false;
-
-		year = 0; month = 0; hour = 0; minute = 0; second = 0;
+		bool hasDate = false;
+		bool hasTime = false;
 
 		unsigned int timeBegin = 0;
 
 		for (unsigned int iter = 0; iter < content.size(); iter += 1) {
 			if (content.get(iter) == '-') {
-				date = true;
+				hasDate = true;
 			}
 			if (content.get(iter) == ':') {
-				time = true;
+				hasTime = true;
 			}
 			if (content.get(iter) == ' ') {
 				timeBegin = iter + 1;
 			}
 		}
 
-		if (date) {
-			parseDate(content, 0);
-			return;
+		if (hasDate) {
+			date = content.cut(0, timeBegin == 0 ? content.size() : timeBegin - 1);
 		}
-
-		if (time) {
-			parseTime(content, timeBegin);
-		}
-	}
-
-	void parseDate(StringSlice content, unsigned int iter) {
-		unsigned int begin = iter;
-		for (; iter < content.size() && content.get(iter) != '-'; iter += 1);
-
-		if (content.get(iter) == '-') {
-			year = toInt(content.cut(begin, iter - begin));
-		}
-
-		iter += 1;
-		begin = iter;
-		for (; iter < content.size() && content.get(iter) != '-'; iter += 1);
-
-		if (content.get(iter) == '-') {
-			month = toInt(content.cut(begin, iter - begin));
-		}
-
-		iter += 1;
-		begin = iter;
-		for (; iter < content.size(); iter += 1);
-
-		if (iter == content.size()) {
-			day = toInt(content.cut(begin, iter - begin));
-		}
-	}
-
-	void parseTime(StringSlice content, unsigned int iter) {
-		unsigned int begin = iter;
-		for (; iter < content.size() && content.get(iter) != ':'; iter += 1);
-
-		if (content.get(iter) == ':') {
-			hour = toInt(content.cut(begin, iter - begin));
-		}
-
-		iter += 1;
-		begin = iter;
-		for (; iter < content.size() && content.get(iter) != ':'; iter += 1);
-
-		if (content.get(iter) == ':' || iter == content.size()) {
-			minute = toInt(content.cut(begin, iter - begin));
-		}
-
-		if (iter < content.size()) {
-			iter += 1;
-			begin = iter;
-			for (; iter < content.size(); iter += 1);
-
-			second = toInt(content.cut(begin, iter - begin));
+		if (hasTime) {
+			time = content.cut(timeBegin, content.size() - timeBegin);
 		}
 	}
 
 	virtual void print() override {
-		printf("dateTime ");
-		if (date) {
-			printf("%04d-%02d-%02d ", year, month, day);
+		printf("dateTime");
+		if (date.size() != 0) {
+			printf(" %.*s", date.size(), date.pointer());
 		}
-		if (time) {
-			printf("%02d:%02d:%02d ", hour, minute, second);
+		if (time.size() != 0) {
+			printf(" %.*s", time.size(), time.pointer());
 		}
 		printf("\n");
 	}
