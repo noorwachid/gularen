@@ -26,5 +26,8 @@ You should be able to compile it on any platform that support `C++11`.
 **Transpile gularen file to GFM (Github Flavored Markdown)**
 - `gularen to gfm document.gr`
 
+**Transpile gularen file to JSON**
+- `gularen to json document.gr`
+
 **Parse gularen file to AST**
 - `gularen parse document.gr`
