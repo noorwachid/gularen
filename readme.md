@@ -34,6 +34,12 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 [Please read](contributor.md)
 
 ## Changelog
+### Version 1.1.0
+**2024-03-18**
+Breaking changes:
+- Moving from `C++11` to `C++17`
+- Replacing homebrew template library with `stl`
+
 ### Version 1.0.0
 **2024-03-13**
 
