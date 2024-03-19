@@ -1501,3 +1501,5 @@ circus‐tent: 🎪,
 performing‐arts: 🎭,
 round‐pushpin: 📍,
 
+*escaped
+

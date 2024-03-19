@@ -519,6 +519,16 @@ private:
 					);
 					break;
 
+				case '\\':
+					if (_isBound(1)) {
+						_advance(1);
+						_append(TokenKind::text, _contentIndex, 1);
+						_advance(1);
+						break;
+					}
+					_consumeText();
+					break;
+
 				case '\n': {
 					size_t count = 0;
 
