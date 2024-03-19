@@ -1501,5 +1501,14 @@ circus‐tent: 🎪,
 performing‐arts: 🎭,
 round‐pushpin: 📍,
 
-*escaped
+# Escape
+Anything after backslash is will be rendered as is
+
+```gr
+\*escaped
+```
+
+```html
+<p>*escaped</p>
+```
 
