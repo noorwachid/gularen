@@ -331,7 +331,6 @@ private:
 				Node* blockView = view;
 				blockView->children = std::move(paragraph->children);
 				blockView->children.erase(blockView->children.begin() + viewIndex);
-				std::cout << "viewIndex: " << viewIndex << "\n";
 				delete paragraph;
 				return blockView;
 			} else { // comments only

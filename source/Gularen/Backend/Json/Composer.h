@@ -8,18 +8,41 @@ namespace Json {
 class Composer {
 public:
 	std::string_view compose(Document* document) {
-		_content = std::string("[");
+		_content = "{\"kind\":\"document\"";
 
-		if (document != nullptr) {
-			for (unsigned int i = 0; i < document->children.size(); i += 1) {
+		if (document->annotations.size() != 0) {
+			_content.append(",\"annotations\":{");
+
+			for (unsigned int i = 0; i < document->annotations.size(); i += 1) {
 				if (i != 0) {
 					_content.append(",");
 				}
-				_compose(document->children[i]);
+				_content.append("\"");
+				_escape(document->annotations[i].key);
+				_content.append("\":\"");
+				_escape(document->annotations[i].key);
+				_content.append("\"");
 			}
+
+			_content.append("}");
 		}
 
-		_content.append("]");
+		if (!document->children.empty()) {
+			_content.append(",\"children\":[");
+
+			if (document != nullptr) {
+				for (unsigned int i = 0; i < document->children.size(); i += 1) {
+					if (i != 0) {
+						_content.append(",");
+					}
+					_compose(document->children[i]);
+				}
+			}
+
+			_content.append("]");
+		}
+
+		_content.append("}");
 
 		return std::string_view(_content.data(), _content.size());
 	}
@@ -314,6 +337,23 @@ private:
 				_content.append("\"kind\":\"unknown\"");
 				break;
 			}
+		}
+
+		if (node->annotations.size() != 0) {
+			_content.append(",\"annotations\":{");
+
+			for (unsigned int i = 0; i < node->annotations.size(); i += 1) {
+				if (i != 0) {
+					_content.append(",");
+				}
+				_content.append("\"");
+				_escape(node->annotations[i].key);
+				_content.append("\":\"");
+				_escape(node->annotations[i].key);
+				_content.append("\"");
+			}
+
+			_content.append("}");
 		}
 
 		if (node->children.size() != 0) {
