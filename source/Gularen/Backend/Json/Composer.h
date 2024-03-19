@@ -13,7 +13,7 @@ public:
 		if (document->annotations.size() != 0) {
 			_content.append(",\"annotations\":{");
 
-			for (unsigned int i = 0; i < document->annotations.size(); i += 1) {
+			for (size_t i = 0; i < document->annotations.size(); i += 1) {
 				if (i != 0) {
 					_content.append(",");
 				}
@@ -31,7 +31,7 @@ public:
 			_content.append(",\"children\":[");
 
 			if (document != nullptr) {
-				for (unsigned int i = 0; i < document->children.size(); i += 1) {
+				for (size_t i = 0; i < document->children.size(); i += 1) {
 					if (i != 0) {
 						_content.append(",");
 					}
@@ -342,7 +342,7 @@ private:
 		if (node->annotations.size() != 0) {
 			_content.append(",\"annotations\":{");
 
-			for (unsigned int i = 0; i < node->annotations.size(); i += 1) {
+			for (size_t i = 0; i < node->annotations.size(); i += 1) {
 				if (i != 0) {
 					_content.append(",");
 				}
@@ -359,7 +359,7 @@ private:
 		if (node->children.size() != 0) {
 			_content.append(",\"children\":[");
 
-			for (unsigned int i = 0; i < node->children.size(); i += 1) {
+			for (size_t i = 0; i < node->children.size(); i += 1) {
 				if (i != 0) {
 					_content.append(",");
 				}
@@ -373,7 +373,7 @@ private:
 	}
 
 	void _escape(std::string_view content) {
-		unsigned int i = 0;
+		size_t i = 0;
 		while (i < content.size()) {
 			unsigned char byte = content[i];
 			switch (byte) {

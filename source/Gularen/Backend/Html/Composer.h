@@ -17,7 +17,7 @@ public:
 		if (document != nullptr) {
 			_collectReferences(document);
 
-			for (unsigned int i = 0; i < document->children.size(); i += 1) {
+			for (size_t i = 0; i < document->children.size(); i += 1) {
 				_compose(document->children[i], _content);
 			}
 		}
@@ -45,7 +45,7 @@ private:
 
 				std::string content;
 
-				for (unsigned int i = 0; i < heading->children.size(); i += 1) {
+				for (size_t i = 0; i < heading->children.size(); i += 1) {
 					if (heading->children[i]->kind == NodeKind::subtitle) {
 						break;
 					}
@@ -83,7 +83,7 @@ private:
 			}
 		}
 
-		for (unsigned int i = 0; i < node->children.size(); i += 1) {
+		for (size_t i = 0; i < node->children.size(); i += 1) {
 			_composeToc(node->children[i]);
 		}
 	}
@@ -91,7 +91,7 @@ private:
 	void _composeFootnote() {
 		if (_footnotes.size() != 0) {
 			_content.append("<div class=\"footnote-desc\">\n");
-			for (unsigned int i = 0; i < _footnotes.size(); i += 1) {
+			for (size_t i = 0; i < _footnotes.size(); i += 1) {
 				const Footnote* footnote = _footnotes[i];
 
 				_content.append("<p>");
@@ -111,7 +111,7 @@ private:
 			const Reference* ref = static_cast<const Reference*>(node);
 			auto& refTable = _references[ref->id];
 
-			for (unsigned int i = 0; i < ref->children.size(); i += 1) {
+			for (size_t i = 0; i < ref->children.size(); i += 1) {
 				const ReferenceInfo* info = static_cast<const ReferenceInfo*>(ref->children[i]);
 				refTable[info->key] = info;
 			}
@@ -119,7 +119,7 @@ private:
 			return;
 		}
 
-		for (unsigned int i = 0; i < node->children.size(); i += 1) {
+		for (size_t i = 0; i < node->children.size(); i += 1) {
 			_collectReferences(node->children[i]);
 		}
 	}
@@ -131,7 +131,7 @@ private:
 			return;
 		}
 
-		for (unsigned int i = 0; i < node->children.size(); i += 1) {
+		for (size_t i = 0; i < node->children.size(); i += 1) {
 			_compose(node->children[i], content);
 		}
 
@@ -166,19 +166,22 @@ private:
 					case Heading::Type::section:
 						content.append("<h1 id=\"");
 						_escapeID(heading, content);
-						content.append("\">");
-						return;
+						content.append("\"");
+						break;
 					case Heading::Type::subsection:
 						content.append("<h2 id=\"");
 						_escapeID(heading, content);
-						content.append("\">");
-						return;
+						content.append("\"");
+						break;
 					case Heading::Type::subsubsection:
 						content.append("<h3 id=\"");
 						_escapeID(heading, content);
-						content.append("\">");
-						return;
+						content.append("\"");
+						break;
 				}
+				_composeAnnotations(node->annotations);
+				content.append(">");
+				return;
 			}
 
 			case NodeKind::subtitle: {
@@ -187,7 +190,9 @@ private:
 			}
 
 			case NodeKind::paragraph: {
-				content.append("<p>");
+				content.append("<p");
+				_composeAnnotations(node->annotations);
+				content.append(">");
 				return;
 			}
 
@@ -208,32 +213,44 @@ private:
 			}
 
 			case NodeKind::dinkus: {
-				content.append("<hr>\n\n");
+				content.append("<hr");
+				_composeAnnotations(node->annotations);
+				content.append(">\n\n");
 				return;
 			}
 
 			case NodeKind::indent: {
-				content.append("<blockquote>\n");
+				content.append("<blockquote");
+				_composeAnnotations(node->annotations);
+				content.append(">\n");
 				return;
 			}
 
 			case NodeKind::list: {
-				content.append("<ul>\n");
+				content.append("<ul");
+				_composeAnnotations(node->annotations);
+				content.append(">\n");
 				return;
 			}
 
 			case NodeKind::numberedList: {
-				content.append("<ol>\n");
+				content.append("<ol");
+				_composeAnnotations(node->annotations);
+				content.append(">\n");
 				return;
 			}
 
 			case NodeKind::checkList: {
-				content.append("<ul class=\"check-list\">\n");
+				content.append("<ul class=\"check-list");
+				_composeInnerAnnotations(node->annotations);
+				content.append("\">\n");
 				return;
 			}
 
 			case NodeKind::definitionList: {
-				content.append("<dl>\n");
+				content.append("<dl");
+				_composeAnnotations(node->annotations);
+				content.append(">\n");
 				return;
 			}
 
@@ -262,7 +279,9 @@ private:
 			case NodeKind::table: {
 				const Table* table = static_cast<const Table*>(node);
 				_tableAlignments = &table->alignments;
-				content.append("<table>\n");
+				content.append("<table");
+				_composeAnnotations(node->annotations);
+				content.append(">\n");
 				return;
 			}
 
@@ -325,13 +344,16 @@ private:
 				if (code->label.size() != 0) {
 					content.append("<pre><code class=\"language-");
 					_escapeAttribute(code->label, content);
-					content.append("\">");
+					_composeAnnotations(node->annotations);
+					content.append(">");
 					_escape(code->content, content);
 					content.append("</code></pre>\n\n");
 					return;
 				}
 
-				content.append("<pre><code>");
+				content.append("<pre><code");
+				_composeAnnotations(node->annotations);
+				content.append(">");
 				_escape(code->content, content);
 				content.append("</code></pre>\n\n");
 				return;
@@ -366,12 +388,14 @@ private:
 			case NodeKind::view: {
 				const View* view = static_cast<const View*>(node);
 
-				for (unsigned int i = view->resource.size(); i > 0; i -= 1) {
+				for (size_t i = view->resource.size(); i > 0; i -= 1) {
 					if (view->resource[i - 1] == '.') {
 						std::string_view extension(view->resource.data() + i, view->resource.size() - i);
 						if (extension == "jpg" || extension == "jpeg" || extension == "png" || extension == "gif") {
 							if (view->label.size() != 0) {
-								content.append("<figure>");
+								content.append("<figure");
+								_composeAnnotations(node->annotations);
+								content.append(">");
 								content.append("<img src=\"");
 								_escapeAttribute(view->resource, content);
 								content.append("\">");
@@ -384,7 +408,9 @@ private:
 
 							content.append("<img src=\"");
 							_escapeAttribute(view->resource, content);
-							content.append("\">");
+							content.append("\"");
+							_composeAnnotations(node->annotations);
+							content.append(">");
 							return;
 						}
 						break;
@@ -393,7 +419,9 @@ private:
 
 				content.append("<a href=\"");
 				_escapeAttribute(view->resource, content);
-				content.append("\">");
+				content.append("\"");
+				_composeAnnotations(node->annotations);
+				content.append(">");
 
 				if (view->label.size() == 0) {
 					_escape(view->resource, content);
@@ -428,7 +456,9 @@ private:
 
 			case NodeKind::reference: {
 				const Reference* ref = static_cast<const Reference*>(node);
-				content.append("<div class=\"reference\" id=\"Reference-");
+				content.append("<div class=\"reference");
+				_composeInnerAnnotations(node->annotations);
+				content.append("\" id=\"Reference-");
 				_escapeAttribute(ref->id, content);
 				content.append("\">");
 				_reference(ref->id, content);
@@ -440,6 +470,7 @@ private:
 				const Admon* ref = static_cast<const Admon*>(node);
 				content.append("<div class=\"admon ");
 				_escapeClass(ref->label, content);
+				_composeInnerAnnotations(node->annotations);
 				content.append("\">\n");
 				content.append("<div class=\"label\">");
 				_escape(ref->label, content);
@@ -484,7 +515,9 @@ private:
 			}
 
 			case NodeKind::blockquote: {
-				content.append("<blockquote class=\"quote\">\n");
+				content.append("<blockquote class=\"quote");
+				_composeInnerAnnotations(node->annotations);
+				content.append("\">\n");
 				return;
 			}
 
@@ -620,8 +653,32 @@ private:
 		}
 	}
 
+	void _composeAnnotations(const std::vector<Annotation>& annotations) {
+		if (!annotations.empty()) {
+			_content.append(" class=\"");
+			for (size_t i = 0; i < annotations.size(); i += 1) {
+				if (i != 0) {
+					_content.append(" ");
+				}
+				_escapeClass(annotations[i].key, _content);
+				_content.append("--");
+				_escapeClass(annotations[i].value, _content);
+			}
+			_content.append("\"");
+		}
+	}
+
+	void _composeInnerAnnotations(const std::vector<Annotation>& annotations) {
+		for (size_t i = 0; i < annotations.size(); i += 1) {
+			_content.append(" ");
+			_escapeClass(annotations[i].key, _content);
+			_content.append("--");
+			_escapeClass(annotations[i].value, _content);
+		}
+	}
+
 	void _escape(std::string_view in, std::string& content) {
-		for (unsigned int i = 0; i < in.size(); i += 1) {
+		for (size_t i = 0; i < in.size(); i += 1) {
 			switch (in[i]) {
 				case '<': content.append("&lt;"); break;
 				case '>': content.append("&gt;"); break;
@@ -634,7 +691,7 @@ private:
 	}
 
 	void _escapeAttribute(std::string_view in, std::string& content) {
-		for (unsigned int i = 0; i < in.size(); i += 1) {
+		for (size_t i = 0; i < in.size(); i += 1) {
 			switch (in[i]) {
 				case '\"': content.append("&quot;"); break;
 				case '\'': content.append("&#39;"); break;
@@ -644,7 +701,7 @@ private:
 	}
 
 	void _escapeID(std::string_view in, std::string& content) {
-		for (unsigned int i = 0; i < in.size(); i += 1) {
+		for (size_t i = 0; i < in.size(); i += 1) {
 			switch (in[i]) {
 				case '0': case '1': case '2': case '3': case '4':
 				case '5': case '6': case '7': case '8': case '9':
@@ -673,7 +730,7 @@ private:
 	}
 
 	void _escapeClass(std::string_view in, std::string& content) {
-		for (unsigned int i = 0; i < in.size(); i += 1) {
+		for (size_t i = 0; i < in.size(); i += 1) {
 			switch (in[i]) {
 				case '0': case '1': case '2': case '3': case '4':
 				case '5': case '6': case '7': case '8': case '9':
@@ -714,7 +771,7 @@ private:
 			return;
 		}
 
-		for (unsigned int i = 0; i < node->children.size(); i += 1) {
+		for (size_t i = 0; i < node->children.size(); i += 1) {
 			_escapeID(node->children[i], content);
 		}
 	}
@@ -800,7 +857,7 @@ private:
 			_compose(authors, authorsContent);
 			std::vector<std::string_view> names = _splitByComma(std::string_view(authorsContent.data(), authorsContent.size()));
 			if (names.size() > 1) {
-				for (unsigned int i = 0; i < names.size() - 1; i += 1) {
+				for (size_t i = 0; i < names.size() - 1; i += 1) {
 					if (i != 0) {
 						content.append(", ");
 					}
@@ -846,7 +903,7 @@ private:
 		content.append(nameParts.back());
 		content.append(", ");
 
-		for (unsigned int i = 0; i < nameParts.size() - 1; i += 1) {
+		for (size_t i = 0; i < nameParts.size() - 1; i += 1) {
 			content.append(nameParts[i].data(), 1);
 			content.append(".");
 		}
@@ -856,8 +913,8 @@ private:
 	std::vector<std::string_view> _splitByComma(std::string_view from) {
 		std::vector<std::string_view> parts;
 
-		unsigned int begin = 0;
-		unsigned int i = 0;
+		size_t begin = 0;
+		size_t i = 0;
 		while (i < from.size()) {
 			if (from[i] == ',') {
 				parts.push_back(from.substr(begin, i - begin));
@@ -881,8 +938,8 @@ private:
 	std::vector<std::string_view> _splitName(std::string_view name) {
 		std::vector<std::string_view> parts;
 
-		unsigned int begin = 0;
-		unsigned int i = 0;
+		size_t begin = 0;
+		size_t i = 0;
 		while (i < name.size()) {
 			if (name[i] == ' ') {
 				if (name[begin] >= 'A' && name[begin] <= 'Z') {
@@ -912,7 +969,7 @@ private:
 
 	const std::vector<Table::Alignment>* _tableAlignments;
 
-	unsigned int _tableColumnIndex;
+	size_t _tableColumnIndex;
 
 	bool _tableLabel;
 

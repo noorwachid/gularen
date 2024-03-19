@@ -40,7 +40,7 @@ public:
 		_indent = 0;
 
 		if (document != nullptr) {
-			for (unsigned int i = 0; i < document->children.size(); i += 1) {
+			for (size_t i = 0; i < document->children.size(); i += 1) {
 				_composeBlock(document->children[i]);
 			}
 		}
@@ -54,13 +54,13 @@ private:
 			case NodeKind::paragraph: return _composeParagraph(node);
 			case NodeKind::blockquote:
 				_blockQuote += 1;
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeBlock(node->children[i]);
 				}
 				_blockQuote -= 1;
 				break;
 			case NodeKind::document:
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeBlock(node->children[i]);
 				}
 				break;
@@ -71,7 +71,7 @@ private:
 					case Heading::Type::subsubsection: _content.append("### "); break;
 					default: break;
 				}
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeInline(node->children[i]);
 				}
 				_content.append("\n");
@@ -94,10 +94,10 @@ private:
 			case NodeKind::numberedList:
 			case NodeKind::checkList: {
 				bool prevListItem = _listItem;
-				unsigned int prevListCount = _listCount;
+				size_t prevListCount = _listCount;
 				_listItem = false;
 				_listCount = node->kind == NodeKind::numberedList ? 1 : 0;
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeBlock(node->children[i]);
 				}
 				if (!prevListItem) {
@@ -118,13 +118,13 @@ private:
 					_content.append(". ");
 					_listCount += 1;
 				}
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					if (node->children[i]->kind == NodeKind::list ||
 						node->children[i]->kind == NodeKind::numberedList ||
 						node->children[i]->kind == NodeKind::checkList) {
 						_indent += 1;
 						_content.append("\n");
-						for (unsigned int i = 0; i < node->children.size(); i += 1) {
+						for (size_t i = 0; i < node->children.size(); i += 1) {
 							_composeBlock(node->children[i]);
 						}
 						_indent -= 1;
@@ -141,11 +141,11 @@ private:
 				_content.append("- [");
 				_content.append(static_cast<const CheckItem*>(node)->state == CheckItem::State::unchecked ? " " : "x");
 				_content.append("] ");
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					if (node->children[i]->kind == NodeKind::list) {
 						_indent += 1;
 						_content.append("\n");
-						for (unsigned int i = 0; i < node->children.size(); i += 1) {
+						for (size_t i = 0; i < node->children.size(); i += 1) {
 							_composeBlock(node->children[i]);
 						}
 						_indent -= 1;
@@ -159,7 +159,7 @@ private:
 			case NodeKind::indent: {
 				_indent += 1;
 				_content.append("\n");
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeBlock(node->children[i]);
 				}
 				_indent -= 1;
@@ -172,16 +172,16 @@ private:
 	}
 
 	void _composePrefix() {
-		for (unsigned int i = 0; i < _blockQuote; i += 1) {
+		for (size_t i = 0; i < _blockQuote; i += 1) {
 			_content.append("> ");
 		}
-		for (unsigned int i = 0; i < _indent; i += 1) {
+		for (size_t i = 0; i < _indent; i += 1) {
 			_content.append("\t");
 		}
 	}
 
 	void _composeParagraph(const Node* node) {
-		unsigned int i = 0;
+		size_t i = 0;
 		while (i < node->children.size()) {
 			_composePrefix();
 
@@ -209,7 +209,7 @@ private:
 				switch (static_cast<const Style*>(node)->type) {
 					case Style::Type::bold: {
 						_content.append("**");
-						for (unsigned int i = 0; i < node->children.size(); i += 1) {
+						for (size_t i = 0; i < node->children.size(); i += 1) {
 							_composeInline(node->children[i]);
 						}
 						_content.append("**");
@@ -217,7 +217,7 @@ private:
 					}
 					case Style::Type::italic: {
 						_content.append("_");
-						for (unsigned int i = 0; i < node->children.size(); i += 1) {
+						for (size_t i = 0; i < node->children.size(); i += 1) {
 							_composeInline(node->children[i]);
 						}
 						_content.append("_");
@@ -245,7 +245,7 @@ private:
 			case NodeKind::indent: {
 				_indent += 1;
 				_content.append("\n");
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeBlock(node->children[i]);
 				}
 				_indent -= 1;
@@ -308,7 +308,7 @@ private:
 				const Emoji* emoji = static_cast<const Emoji*>(node);
 
 				_content.append(":");
-				for (unsigned int i = 0; i < emoji->code.size(); i += 1) {
+				for (size_t i = 0; i < emoji->code.size(); i += 1) {
 					if (emoji->code[i] == '-') {
 						_content.append("_");
 					} else {
@@ -319,7 +319,7 @@ private:
 			}
 			case NodeKind::subtitle:
 				_content.append(": ");
-				for (unsigned int i = 0; i < node->children.size(); i += 1) {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeInline(node->children[i]);
 				}
 				break;
@@ -331,9 +331,9 @@ private:
 private:
 	std::string _content;
 	bool _listItem;
-	unsigned int _listCount;
-	unsigned int _blockQuote;
-	unsigned int _indent;
+	size_t _listCount;
+	size_t _blockQuote;
+	size_t _indent;
 };
 
 }
