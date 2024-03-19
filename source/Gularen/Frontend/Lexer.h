@@ -168,8 +168,8 @@ std::string_view toStringView(TokenKind kind) {
 }
 
 struct Position {
-	unsigned int line;
-	unsigned int column;
+	size_t line;
+	size_t column;
 };
 
 struct Token {
@@ -182,7 +182,7 @@ struct Token {
 
 		if (content.size() != 0) {
 			std::cout << " = ";
-			for (unsigned int i = 0; i < content.size(); i += 1) {
+			for (size_t i = 0; i < content.size(); i += 1) {
 				if (content[i] < ' ') {
 					switch (content[i]) {
 						case '\t':
@@ -280,7 +280,7 @@ private:
 
 				case '<':
 					if (_isBound(1) && !(_get(1) >= '0' && _get(1) <= '9') && _get(1) != '<') {
-						unsigned int oldContentIndex = _contentIndex;
+						size_t oldContentIndex = _contentIndex;
 
 						while (_isBound(0) && _get(0) != '>') {
 							_advance(1);
@@ -394,7 +394,7 @@ private:
 						break;
 					}
 
-					unsigned int oldContentIndex = _contentIndex;
+					size_t oldContentIndex = _contentIndex;
 
 					_advance(1);
 
@@ -485,7 +485,7 @@ private:
 						break;
 					}
 					
-					unsigned int openingContextIndex = _contentIndex;
+					size_t openingContextIndex = _contentIndex;
 					if (_isBound(1) && ((_get(1) >= 'a' && _get(1) <= 'z') || _get(1) == '-')) {
 						_advance(1);
 						while (_isBound(0) && ((_get(0) >= 'a' && _get(0) <= 'z') || _get(0) == '-')) {
@@ -520,7 +520,7 @@ private:
 					break;
 
 				case '\n': {
-					unsigned int count = 0;
+					size_t count = 0;
 
 					while (_isBound(0) && _get(0) == '\n') {
 						_advanceLine(1);
@@ -541,7 +541,7 @@ private:
 
 				case '@': {
 					_advance(1);
-					unsigned int oldContentIndex = _contentIndex;
+					size_t oldContentIndex = _contentIndex;
 
 					while (_isBound(0) && (
 						(_get(0) >= 'a' && _get(0) <= 'z') ||
@@ -558,7 +558,7 @@ private:
 
 				case '#': {
 					_advance(1);
-					unsigned int oldContentIndex = _contentIndex;
+					size_t oldContentIndex = _contentIndex;
 
 					while (_isBound(0) && (
 						(_get(0) >= 'a' && _get(0) <= 'z') ||
@@ -581,16 +581,16 @@ private:
 	}
 
 private:
-	bool _isBound(unsigned int offset) const {
+	bool _isBound(size_t offset) const {
 		return _contentIndex + offset < _content.size();
 	}
 
-	void _advance(unsigned int offset) {
+	void _advance(size_t offset) {
 		_contentIndex += offset;
 		_column += 1;
 	}
 
-	void _advanceLine(unsigned int offset) {
+	void _advanceLine(size_t offset) {
 		_line += offset;
 		_column = 0;
 	}
@@ -600,11 +600,11 @@ private:
 		_oldColumn = _column;
 	}
 
-	char _get(unsigned int offset) const {
+	char _get(size_t offset) const {
 		return _content[_contentIndex + offset];
 	}
 
-	void _append(TokenKind kind, unsigned int index = 0, unsigned int size = 0) {
+	void _append(TokenKind kind, size_t index = 0, size_t size = 0) {
 		Token token;
 		token.position.line = _oldLine;
 		token.position.column = _oldColumn;
@@ -614,7 +614,7 @@ private:
 	}
 
 	void _consumeIndent() {
-		unsigned int indentLevel = 0;
+		size_t indentLevel = 0;
 		while (_isBound(0) && _get(0) == '\t') {
 			indentLevel += 1;
 			_advance(1);
@@ -642,7 +642,7 @@ private:
 	}
 
 	void _consumeBlockquote() {
-		unsigned int quoteLevel = 0;
+		size_t quoteLevel = 0;
 		while (_isBound(1) && _get(0) == '/' && _get(1) == ' ') {
 			quoteLevel += 1;
 			_advance(2);
@@ -689,11 +689,11 @@ private:
 	}
 
 	void _consumeComment() {
-		unsigned int beginIndex = _contentIndex + 1;
+		size_t beginIndex = _contentIndex + 1;
 		
 		if (_isBound(2) && _get(1) == '~' && _get(2) == ' ') {
 			_advance(3);
-			unsigned int keyIndex = _contentIndex;
+			size_t keyIndex = _contentIndex;
 
 			while (_isBound(0) && (
 				(_get(0) >= 'a' && _get(0) <= 'z') ||
@@ -710,7 +710,7 @@ private:
 				while (_isBound(0) && _get(0) == ' ') {
 					_advance(1);
 				}
-				unsigned int valueIndex = _contentIndex;
+				size_t valueIndex = _contentIndex;
 
 				while (_isBound(0) && _get(0) != '\n') {
 					_advance(1);
@@ -741,7 +741,7 @@ private:
 
 	void _consumeText() {
 		bool previousAlphanumeric = false;
-		unsigned int beginIndex = _contentIndex;
+		size_t beginIndex = _contentIndex;
 
 		while (_isBound(0)) {
 			switch (_get(0)) {
@@ -827,7 +827,7 @@ private:
 	}
 
 	void _consumeIndex() {
-		unsigned int beginIndex = _contentIndex;
+		size_t beginIndex = _contentIndex;
 
 		while (_isBound(0) && _get(0) >= '0' && _get(0) <= '9') {
 			_advance(1);
@@ -905,7 +905,7 @@ private:
 		_advance(1);
 		_savePosition();
 
-		unsigned int oldContextIndex = _contentIndex;
+		size_t oldContextIndex = _contentIndex;
 
 		while (_isBound(0) && _get(0) != ')') {
 			_advance(1);
@@ -924,7 +924,7 @@ private:
 		_append(TokenKind::squareOpen, _contentIndex, 1);
 		_advance(1);
 
-		unsigned int oldContextIndex = _contentIndex;
+		size_t oldContextIndex = _contentIndex;
 
 		while (_isBound(0) && _get(0) != ']') {
 			_advance(1);
@@ -952,7 +952,7 @@ private:
 		_advance(1);
 		_savePosition();
 
-		unsigned int oldContextIndex = _contentIndex;
+		size_t oldContextIndex = _contentIndex;
 
 		while (_isBound(0) && _get(0) != '`') {
 			_advance(1);
@@ -968,25 +968,25 @@ private:
 		}
 	}
 
-	void _consumeCodeBlockContent(unsigned int dashCount) {
-		unsigned int oldContextIndex = _contentIndex;
-		unsigned int oldIndentLevel = _indentLevel;
+	void _consumeCodeBlockContent(size_t dashCount) {
+		size_t oldContextIndex = _contentIndex;
+		size_t oldIndentLevel = _indentLevel;
 
 		while (_isBound(0)) {
 			if (_isBound(0) && _get(0) == '\n') {
 				_advanceLine(1);
 				_advance(1);
-				unsigned int indentLevel = 0;
+				size_t indentLevel = 0;
 				while (_isBound(0) && _get(0) == '\t') {
 					_advance(1);
 					indentLevel += 1;
 				}
 
 				if (_get(0) == '-' && indentLevel == oldIndentLevel) {
-					unsigned int i = 0;
+					size_t i = 0;
 					while (_isBound(0) && i < dashCount && _get(i) == '-') { i += 1; }
 					if (i == dashCount && (!_isBound(dashCount) || (_isBound(dashCount) && _get(dashCount) == '\n'))) {
-						unsigned int size = _contentIndex - oldContextIndex - oldIndentLevel;
+						size_t size = _contentIndex - oldContextIndex - oldIndentLevel;
 						if (size > 0) {
 							size -= 1;
 
@@ -1010,13 +1010,13 @@ private:
 	}
 
 	void _consumeCodeBlock() {
-		unsigned int oldContentIndex = _contentIndex;
+		size_t oldContentIndex = _contentIndex;
 
 		while (_isBound(0) && _get(0) == '-') {
 			_advance(1);
 		}
 
-		unsigned int dashCount = _contentIndex - oldContentIndex;
+		size_t dashCount = _contentIndex - oldContentIndex;
 
 		if (_isBound(0) && _get(0) == '\n') {
 			_append(TokenKind::fenceOpen, oldContentIndex, _contentIndex - oldContentIndex);
@@ -1025,9 +1025,9 @@ private:
 
 		// capture label
 		if (_isBound(1) && _get(0) == ' ' && _get(1) != '\n') {
-			unsigned int youngContextIndex = _contentIndex;
+			size_t youngContextIndex = _contentIndex;
 			_advance(1);
-			unsigned int middleAgedContentIndex = _contentIndex;
+			size_t middleAgedContentIndex = _contentIndex;
 
 			while (_isBound(0) && _get(0) != '\n') {
 				_advance(1);
@@ -1047,21 +1047,21 @@ private:
 private:
 	std::string_view _content;
 
-	unsigned int _contentIndex;
+	size_t _contentIndex;
 
-	unsigned int _line;
+	size_t _line;
 
-	unsigned int _column;
+	size_t _column;
 
-	unsigned int _oldLine;
+	size_t _oldLine;
 
-	unsigned int _oldColumn;
+	size_t _oldColumn;
 
 	std::vector<Token> _tokens;
 
-	unsigned int _indentLevel;
+	size_t _indentLevel;
 
-	unsigned int _quoteLevel;
+	size_t _quoteLevel;
 };
 
 }

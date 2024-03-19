@@ -24,7 +24,7 @@ public:
 		_document = new Document();
 		_document->path = path;
 
-		for (unsigned int i = path.size(); i > 0; i -= 1) {
+		for (size_t i = path.size(); i > 0; i -= 1) {
 			if (path[i - 1] == '/') {
 				_documentPath = std::string(path.data(), i - 1);
 				break;
@@ -63,7 +63,7 @@ private:
 		_lexer.parse(content);
 		_tokenIndex = 0;
 
-		// for (unsigned int i = 0; i < _tokens.size(); i += 1) {
+		// for (size_t i = 0; i < _tokens.size(); i += 1) {
 		// 	_tokens.get(i).print();
 		// }
 		// return nullptr;
@@ -72,13 +72,18 @@ private:
 
 		while (_isBound(0)) {
 			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-				_advance(1);
-
-				if (firstAnnotation) {
-					firstAnnotation = false;
-					_document->annotations = _annotations;
-					_annotations.clear();
+				if (!_annotations.empty()) {
+					if (firstAnnotation) {
+						firstAnnotation = false;
+						_document->annotations = std::move(_annotations);
+					} else {
+						Node* node = new Paragraph(_get(0).position);
+						node->annotations = std::move(_annotations);
+						_document->children.push_back(node);
+					}
 				}
+
+				_advance(1);
 			}
 
 			if (_get(0).kind == TokenKind::annotationKey) {
@@ -94,8 +99,7 @@ private:
 			_document->children.push_back(node);
 
 			if (_annotations.size() != 0) {
-				node->annotations = _annotations;
-				_annotations.clear();
+				node->annotations = std::move(_annotations);
 			}
 		}
 
@@ -118,15 +122,15 @@ private:
 		return nullptr;
 	}
 
-	bool _isBound(unsigned int offset) const {
+	bool _isBound(size_t offset) const {
 		return _tokenIndex + offset < _lexer.size();
 	}
 
-	void _advance(unsigned int offset) {
+	void _advance(size_t offset) {
 		_tokenIndex += offset;
 	}
 
-	const Token& _get(unsigned int offset) const {
+	const Token& _get(size_t offset) const {
 		return _lexer[_tokenIndex + offset];
 	}
 
@@ -246,10 +250,16 @@ private:
 
 	Node* _parseParagraph() {
 		const Token& token = _get(0);
-		unsigned int previousTokenIndex = _tokenIndex;
+		size_t previousTokenIndex = _tokenIndex;
 
 		Paragraph* paragraph = new Paragraph(token.position);
 		bool newline = false;
+
+		Node* view = nullptr;
+		size_t viewIndex = 0;
+		size_t commentCounts = 0;
+		size_t viewCounts = 0;
+		size_t otherCounts = 0;
 
 		while (_isBound(0) && _isParagraph()) {
 			Node* node = _parseInline();
@@ -294,11 +304,42 @@ private:
 				continue;
 			}
 
+			switch (node->kind) {
+				case NodeKind::comment:
+					commentCounts += 1;
+					break;
+				case NodeKind::view:
+					viewCounts += 1;
+					viewIndex = paragraph->children.size();
+					view = node;
+					break;
+				default:
+					otherCounts += 1;
+					break;
+			}
+
 			paragraph->children.push_back(node);
 		}
 
 		if (_get(0).kind == TokenKind::newlinePlus) {
 			_advance(1);
+		}
+
+		if (otherCounts == 0) {
+			// paragraph with only single view as a child 
+			if (viewCounts == 1) {
+				Node* blockView = view;
+				blockView->children = std::move(paragraph->children);
+				blockView->children.erase(blockView->children.begin() + viewIndex);
+				std::cout << "viewIndex: " << viewIndex << "\n";
+				delete paragraph;
+				return blockView;
+			} else { // comments only
+				if (_annotations.empty()) {
+					// delete paragraph;
+					// return nullptr;
+				}
+			}
 		}
 
 		return paragraph;
@@ -542,7 +583,7 @@ private:
 		List* list = new List(_get(0).position, NodeKind::definitionList);
 
 		while (_isBound(0) && _isParagraph()) {
-			unsigned int previousTokenIndex = _tokenIndex;
+			size_t previousTokenIndex = _tokenIndex;
 			bool itemOccupied = false;
 			bool itemColoncolon = false;
 
@@ -630,7 +671,7 @@ private:
 	Node* _checkTableRow(Node* node, Row::Type type) {
 		// content only table
 		if (type == Row::Type::header) {
-			for (unsigned int i = 0; i < node->children.size(); i += 1) {
+			for (size_t i = 0; i < node->children.size(); i += 1) {
 				static_cast<Row*>(node->children[i])->type = Row::Type::content;
 			}
 		}
@@ -1246,7 +1287,7 @@ private:
 private:
 	Lexer _lexer;
 
-	unsigned int _tokenIndex;
+	size_t _tokenIndex;
 
 	Document* _document;
 

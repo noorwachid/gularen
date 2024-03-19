@@ -6,21 +6,21 @@
 
 using namespace Gularen;
 
-void print(Node* node, unsigned int depth = 0) {
-	for (unsigned int i = 0; i < depth; i += 1) {
+void print(Node* node, size_t depth = 0) {
+	for (size_t i = 0; i < depth; i += 1) {
 		std::cout << "  ";
 	}
 	node->print();
 
-	for (unsigned int j = 0; j < node->annotations.size(); j += 1) {
-		for (unsigned int i = 0; i < depth + 1; i += 1) {
+	for (size_t j = 0; j < node->annotations.size(); j += 1) {
+		for (size_t i = 0; i < depth + 1; i += 1) {
 			std::cout << "  ";
 		}
 		const Annotation& annotation = node->annotations[j];
 		std::cout << "~~ " << annotation.key << ": " << annotation.value << "\n";
 	}
 
-	for (unsigned int i = 0; i < node->children.size(); i += 1) {
+	for (size_t i = 0; i < node->children.size(); i += 1) {
 		print(node->children[i], depth + 1);
 	}
 }
