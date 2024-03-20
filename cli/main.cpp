@@ -10,6 +10,8 @@ void print(Node* node, size_t depth = 0) {
 	for (size_t i = 0; i < depth; i += 1) {
 		std::cout << "  ";
 	}
+	std::cout << (node->range.startLine + 1) << "," << (node->range.startColumn + 1) << "-";
+	std::cout << (node->range.endLine + 1) << "," << (node->range.endColumn + 1) << " ";
 	node->print();
 
 	for (size_t j = 0; j < node->annotations.size(); j += 1) {

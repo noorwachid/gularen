@@ -167,13 +167,15 @@ std::string_view toStringView(TokenKind kind) {
 	}
 }
 
-struct Position {
-	size_t line;
-	size_t column;
+struct Range {
+	size_t startLine;
+	size_t startColumn;
+	size_t endLine;
+	size_t endColumn;
 };
 
 struct Token {
-	Position position;
+	Range range;
 	TokenKind kind;
 	std::string_view content;
 
@@ -218,7 +220,7 @@ public:
 		_line = 0;
 		_column = 0;
 
-		_savePosition();
+		_saveRangeStart();
 
 		_consumeIndent();
 		_parseBlock();
@@ -249,7 +251,7 @@ public:
 private:
 	void _parseBlock() {
 		while (_isBound(0)) {
-			_savePosition();
+			_saveRangeStart();
 
 			switch (_get(0)) {
 				case '>': 
@@ -349,7 +351,7 @@ private:
 
 	void _parseInline() {
 		while (_isBound(0)) {
-			_savePosition();
+			_saveRangeStart();
 
 			switch (_get(0)) {
 				case '~':
@@ -533,9 +535,9 @@ private:
 					size_t count = 0;
 
 					while (_isBound(0) && _get(0) == '\n') {
-						_advanceLine(1);
 						count += 1;
 						_advance(1);
+						_advanceLine(1);
 					}
 
 					if (count == 1) {
@@ -597,7 +599,7 @@ private:
 
 	void _advance(size_t offset) {
 		_contentIndex += offset;
-		_column += 1;
+		_column += offset;
 	}
 
 	void _advanceLine(size_t offset) {
@@ -605,7 +607,7 @@ private:
 		_column = 0;
 	}
 
-	void _savePosition() {
+	void _saveRangeStart() {
 		_oldLine = _line;
 		_oldColumn = _column;
 	}
@@ -616,14 +618,17 @@ private:
 
 	void _append(TokenKind kind, size_t index = 0, size_t size = 0) {
 		Token token;
-		token.position.line = _oldLine;
-		token.position.column = _oldColumn;
+		token.range.startLine = _oldLine;
+		token.range.startColumn = _oldColumn;
+		token.range.endLine = _line;
+		token.range.endColumn = _column + (size == 0 ? 0 : size - 1);
 		token.kind = kind;
 		token.content = _content.substr(index, size);
 		_tokens.push_back(static_cast<Token&&>(token));
 	}
 
 	void _consumeIndent() {
+		size_t beginIndex = _contentIndex;
 		size_t indentLevel = 0;
 		while (_isBound(0) && _get(0) == '\t') {
 			indentLevel += 1;
@@ -636,7 +641,13 @@ private:
 
 		if (_indentLevel < indentLevel) {
 			while (_indentLevel < indentLevel) {
-				_append(TokenKind::indentOpen);
+				Token token;
+				token.range.startLine = _oldLine;
+				token.range.startColumn = _oldColumn;
+				token.range.endLine = _oldLine;
+				token.range.endColumn = _oldColumn;
+				token.kind = TokenKind::indentOpen;
+				_tokens.push_back(static_cast<Token&&>(token));
 				_indentLevel += 1;
 			}
 		}
@@ -737,11 +748,17 @@ private:
 		}
 
 		while (_isBound(0) && _get(0) != '\n') {
-			_advanceLine(1);
 			_advance(1);
 		}
 
-		_append(TokenKind::comment, beginIndex, _contentIndex - beginIndex);
+		Token token;
+		token.range.startLine = _oldLine;
+		token.range.startColumn = _oldColumn;
+		token.range.endLine = _line;
+		token.range.endColumn = _column - 1;
+		token.kind = TokenKind::comment;
+		token.content = _content.substr(beginIndex, _contentIndex - beginIndex);
+		_tokens.push_back(static_cast<Token&&>(token));
 
 		if (_isBound(0) && _get(0) == '\n') {
 			_advanceLine(1);
@@ -831,7 +848,14 @@ private:
 
 		end:
 
-		_append(TokenKind::text, beginIndex, _contentIndex - beginIndex);
+		Token token;
+		token.range.startLine = _oldLine;
+		token.range.startColumn = _oldColumn;
+		token.range.endLine = _line;
+		token.range.endColumn = _column - 1;
+		token.kind = TokenKind::text;
+		token.content = _content.substr(beginIndex, _contentIndex - beginIndex);
+		_tokens.push_back(static_cast<Token&&>(token));
 
 		return;
 	}
@@ -913,7 +937,7 @@ private:
 	void _consumeLabel() {
 		_append(TokenKind::parenOpen, _contentIndex, 1);
 		_advance(1);
-		_savePosition();
+		_saveRangeStart();
 
 		size_t oldContextIndex = _contentIndex;
 
@@ -922,7 +946,7 @@ private:
 		}
 
 		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
-		_savePosition();
+		_saveRangeStart();
 
 		if (_isBound(0) && _get(0) == ')') {
 			_append(TokenKind::parenClose, _contentIndex, 1);
@@ -960,7 +984,7 @@ private:
 	void _consumeCode() {
 		_append(TokenKind::backtick, _contentIndex, 1);
 		_advance(1);
-		_savePosition();
+		_saveRangeStart();
 
 		size_t oldContextIndex = _contentIndex;
 
@@ -969,12 +993,12 @@ private:
 		}
 
 		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
-		_savePosition();
+		_saveRangeStart();
 
 		if (_isBound(0) && _get(0) == '`') {
 			_append(TokenKind::backtick, _contentIndex, 1);
 			_advance(1);
-			_savePosition();
+			_saveRangeStart();
 		}
 	}
 

@@ -68,12 +68,12 @@ struct Annotation {
 };
 
 struct Node {
-	Position position;
+	Range range;
 	NodeKind kind;
 	std::vector<Node*> children;
 	std::vector<Annotation> annotations;
 
-	Node(Position position, NodeKind kind): position(position), kind(kind)  {
+	Node(Range range, NodeKind kind): range(range), kind(kind)  {
 	}
 
 	virtual ~Node() {
@@ -94,7 +94,7 @@ struct Document : Node {
 	Document(): Node({}, NodeKind::document) {
 	}
 
-	Document(Position position, std::string_view path): Node(position, NodeKind::document), path(path) {
+	Document(Range range, std::string_view path): Node(range, NodeKind::document), path(path) {
 	}
 
 	virtual void print() override {
@@ -106,7 +106,7 @@ struct Document : Node {
 struct Comment : Node {
 	std::string_view content;
 
-	Comment(Position position, std::string_view content): Node(position, NodeKind::comment), content(content) {
+	Comment(Range range, std::string_view content): Node(range, NodeKind::comment), content(content) {
 	}
 
 	virtual void print() override {
@@ -117,7 +117,7 @@ struct Comment : Node {
 struct Text : Node {
 	std::string_view content;
 
-	Text(Position position, std::string_view content): Node(position, NodeKind::text), content(content) {
+	Text(Range range, std::string_view content): Node(range, NodeKind::text), content(content) {
 	}
 
 	virtual void print() override {
@@ -126,7 +126,7 @@ struct Text : Node {
 };
 
 struct Space : Node {
-	Space(Position position): Node(position, NodeKind::space) {
+	Space(Range range): Node(range, NodeKind::space) {
 	}
 
 	virtual void print() override {
@@ -135,7 +135,7 @@ struct Space : Node {
 };
 
 struct LineBreak : Node {
-	LineBreak(Position position): Node(position, NodeKind::lineBreak) {
+	LineBreak(Range range): Node(range, NodeKind::lineBreak) {
 	}
 
 	virtual void print() override {
@@ -144,7 +144,7 @@ struct LineBreak : Node {
 };
 
 struct PageBreak : Node {
-	PageBreak(Position position): Node(position, NodeKind::pageBreak) {
+	PageBreak(Range range): Node(range, NodeKind::pageBreak) {
 	}
 
 	virtual void print() override {
@@ -153,7 +153,7 @@ struct PageBreak : Node {
 };
 
 struct Dinkus : Node {
-	Dinkus(Position position): Node(position, NodeKind::dinkus) {
+	Dinkus(Range range): Node(range, NodeKind::dinkus) {
 	}
 
 	virtual void print() override {
@@ -169,7 +169,7 @@ struct Style : Node {
 
 	Type type;
 
-	Style(Position position, Type type): Node(position, NodeKind::style), type(type) {
+	Style(Range range, Type type): Node(range, NodeKind::style), type(type) {
 	}
 
 
@@ -184,7 +184,7 @@ struct Style : Node {
 };
 
 struct Highlight : Node {
-	Highlight(Position position): Node(position, NodeKind::highlight) {
+	Highlight(Range range): Node(range, NodeKind::highlight) {
 	}
 
 	virtual void print() override {
@@ -193,7 +193,7 @@ struct Highlight : Node {
 };
 
 struct Paragraph : Node {
-	Paragraph(Position position): Node(position, NodeKind::paragraph) {
+	Paragraph(Range range): Node(range, NodeKind::paragraph) {
 	}
 
 	virtual void print() override {
@@ -210,7 +210,7 @@ struct Heading : Node {
 
 	Type type;
 
-	Heading(Position position): Node(position, NodeKind::heading) {
+	Heading(Range range): Node(range, NodeKind::heading) {
 	}
 
 	virtual void print() override {
@@ -223,7 +223,7 @@ struct Heading : Node {
 };
 
 struct Subtitle : Node {
-	Subtitle(Position position): Node(position, NodeKind::subtitle) {
+	Subtitle(Range range): Node(range, NodeKind::subtitle) {
 	}
 
 	virtual void print() override {
@@ -232,7 +232,7 @@ struct Subtitle : Node {
 };
 
 struct Indent : Node {
-	Indent(Position position): Node(position, NodeKind::indent) {
+	Indent(Range range): Node(range, NodeKind::indent) {
 	}
 
 	virtual void print() override {
@@ -241,7 +241,7 @@ struct Indent : Node {
 };
 
 struct List : Node {
-	List(Position position, NodeKind kind): Node(position, kind) {
+	List(Range range, NodeKind kind): Node(range, kind) {
 	}
 
 	virtual void print() override {
@@ -256,7 +256,7 @@ struct List : Node {
 };
 
 struct Item : Node {
-	Item(Position position): Node(position, NodeKind::item) {
+	Item(Range range): Node(range, NodeKind::item) {
 	}
 
 	virtual void print() override {
@@ -272,7 +272,7 @@ struct CheckItem : Node {
 
 	State state;
 
-	CheckItem(Position position): Node(position, NodeKind::checkItem) {
+	CheckItem(Range range): Node(range, NodeKind::checkItem) {
 	}
 
 	virtual void print() override {
@@ -285,7 +285,7 @@ struct CheckItem : Node {
 };
 
 struct DefinitionItem : Node {
-	DefinitionItem(Position position): Node(position, NodeKind::definitionItem) {
+	DefinitionItem(Range range): Node(range, NodeKind::definitionItem) {
 	}
 
 	virtual void print() override {
@@ -294,7 +294,7 @@ struct DefinitionItem : Node {
 };
 
 struct DefinitionTerm : Node {
-	DefinitionTerm(Position position): Node(position, NodeKind::definitionTerm) {
+	DefinitionTerm(Range range): Node(range, NodeKind::definitionTerm) {
 	}
 
 	virtual void print() override {
@@ -303,7 +303,7 @@ struct DefinitionTerm : Node {
 };
 
 struct DefinitionDesc : Node {
-	DefinitionDesc(Position position): Node(position, NodeKind::definitionDesc) {
+	DefinitionDesc(Range range): Node(range, NodeKind::definitionDesc) {
 	}
 
 	virtual void print() override {
@@ -320,7 +320,7 @@ struct Table : Node {
 
 	std::vector<Alignment> alignments;
 
-	Table(Position position): Node(position, NodeKind::table) {
+	Table(Range range): Node(range, NodeKind::table) {
 	}
 
 	virtual void print() override {
@@ -350,7 +350,7 @@ struct Row : Node {
 
 	Type type;
 
-	Row(Position position): Node(position, NodeKind::row) {
+	Row(Range range): Node(range, NodeKind::row) {
 	}
 
 	virtual void print() override {
@@ -365,7 +365,7 @@ struct Row : Node {
 };
 
 struct Cell : Node {
-	Cell(Position position): Node(position, NodeKind::cell) {
+	Cell(Range range): Node(range, NodeKind::cell) {
 	}
 
 	virtual void print() override {
@@ -377,7 +377,7 @@ struct Code : Node {
 	std::string_view label;
 	std::string_view content;
 
-	Code(Position position): Node(position, NodeKind::code) {
+	Code(Range range): Node(range, NodeKind::code) {
 	}
 
 	virtual void print() override {
@@ -415,7 +415,7 @@ struct Code : Node {
 };
 
 struct CodeBlock : Code {
-	CodeBlock(Position position): Code(position) {
+	CodeBlock(Range range): Code(range) {
 		kind = NodeKind::codeBlock;
 	}
 
@@ -436,7 +436,7 @@ struct Link : Node {
 	std::string_view heading;
 	std::string_view label;
 
-	Link(Position position): Node(position, NodeKind::link) {
+	Link(Range range): Node(range, NodeKind::link) {
 	}
 
 	void setResource(std::string_view resource) {
@@ -477,7 +477,7 @@ struct View : Node {
 	std::string_view resource;
 	std::string_view label;
 
-	View(Position position): Node(position, NodeKind::view) {
+	View(Range range): Node(range, NodeKind::view) {
 	}
 
 	virtual void print() override {
@@ -494,7 +494,7 @@ struct View : Node {
 struct Footnote : Node {
 	std::string_view desc;
 
-	Footnote(Position position, std::string_view description): Node(position, NodeKind::footnote), desc(description) {
+	Footnote(Range range, std::string_view description): Node(range, NodeKind::footnote), desc(description) {
 	}
 
 	virtual void print() override {
@@ -505,7 +505,7 @@ struct Footnote : Node {
 struct InText : Node {
 	std::string_view id;
 
-	InText(Position position): Node(position, NodeKind::inText) {
+	InText(Range range): Node(range, NodeKind::inText) {
 	}
 
 	virtual void print() override {
@@ -516,7 +516,7 @@ struct InText : Node {
 struct ReferenceInfo : Node {
 	std::string_view key;
 
-	ReferenceInfo(Position position, std::string_view key): Node(position, NodeKind::referenceInfo), key(key) {
+	ReferenceInfo(Range range, std::string_view key): Node(range, NodeKind::referenceInfo), key(key) {
 	}
 
 	virtual void print() override {
@@ -527,7 +527,7 @@ struct ReferenceInfo : Node {
 struct Reference : Node {
 	std::string_view id;
 
-	Reference(Position position): Node(position, NodeKind::reference) {
+	Reference(Range range): Node(range, NodeKind::reference) {
 	}
 
 	virtual void print() override {
@@ -538,7 +538,7 @@ struct Reference : Node {
 struct Emoji : Node {
 	std::string_view code;
 
-	Emoji(Position position, std::string_view code): Node(position, NodeKind::emoji), code(code) {
+	Emoji(Range range, std::string_view code): Node(range, NodeKind::emoji), code(code) {
 	}
 
 	virtual void print() override {
@@ -547,7 +547,7 @@ struct Emoji : Node {
 };
 
 struct Blockquote : Node {
-	Blockquote(Position position): Node(position, NodeKind::blockquote) {
+	Blockquote(Range range): Node(range, NodeKind::blockquote) {
 	}
 
 	virtual void print() override {
@@ -561,7 +561,7 @@ struct DateTime : Node {
 
 	std::string_view content;
 
-	DateTime(Position position, std::string_view content): Node(position, NodeKind::dateTime), content(content) {
+	DateTime(Range range, std::string_view content): Node(range, NodeKind::dateTime), content(content) {
 		bool hasDate = false;
 		bool hasTime = false;
 
@@ -613,7 +613,7 @@ struct Punct : Node {
 
 	Type type;
 
-	Punct(Position position, Type type): Node(position, NodeKind::punct), type(type) {
+	Punct(Range range, Type type): Node(range, NodeKind::punct), type(type) {
 	}
 
 	virtual void print() override {
@@ -634,7 +634,7 @@ struct Punct : Node {
 struct Admon : Node {
 	std::string_view label;
 
-	Admon(Position position, std::string_view label): Node(position, NodeKind::admon), label(label) {
+	Admon(Range range, std::string_view label): Node(range, NodeKind::admon), label(label) {
 	}
 
 	virtual void print() override {
@@ -645,7 +645,7 @@ struct Admon : Node {
 struct AccountTag : Node {
 	std::string_view resource;
 
-	AccountTag(Position position, std::string_view resource): Node(position, NodeKind::accountTag), resource(resource) {
+	AccountTag(Range range, std::string_view resource): Node(range, NodeKind::accountTag), resource(resource) {
 	}
 
 	virtual void print() override {
@@ -656,7 +656,7 @@ struct AccountTag : Node {
 struct HashTag : Node {
 	std::string_view resource;
 
-	HashTag(Position position, std::string_view resource): Node(position, NodeKind::hashTag), resource(resource) {
+	HashTag(Range range, std::string_view resource): Node(range, NodeKind::hashTag), resource(resource) {
 	}
 
 	virtual void print() override {

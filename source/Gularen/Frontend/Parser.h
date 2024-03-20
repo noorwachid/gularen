@@ -63,9 +63,11 @@ private:
 		_lexer.parse(content);
 		_tokenIndex = 0;
 
-		// for (size_t i = 0; i < _tokens.size(); i += 1) {
-		// 	_tokens.get(i).print();
-		// }
+		for (size_t i = 0; i < _lexer.size(); i += 1) {
+			std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
+			std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
+			_lexer[i].print();
+		}
 		// return nullptr;
 
 		bool firstAnnotation = true;
@@ -77,7 +79,7 @@ private:
 						firstAnnotation = false;
 						_document->annotations = std::move(_annotations);
 					} else {
-						Node* node = new Paragraph(_get(0).position);
+						Node* node = new Paragraph(_get(0).range);
 						node->annotations = std::move(_annotations);
 						_document->children.push_back(node);
 					}
@@ -96,11 +98,16 @@ private:
 				_advance(1);
 				continue;
 			}
+
 			_document->children.push_back(node);
 
 			if (_annotations.size() != 0) {
 				node->annotations = std::move(_annotations);
 			}
+		}
+
+		if (_document && !_document->children.empty()) {
+			_updateEndRange(_document->range, _document->children.back()->range);
 		}
 
 		return _document;
@@ -141,7 +148,7 @@ private:
 
 	Node* _parseStyle(Style::Type type) {
 		const Token& token = _eat();
-		Style* style = new Style(token.position, type);
+		Style* style = new Style(token.range, type);
 
 		while (_isBound(0) && _get(0).kind != token.kind) {
 			Node* child = _parseInline();
@@ -159,6 +166,7 @@ private:
 			return _expect("asterisk");
 		}
 
+		_updateEndRange(style->range, _get(0).range);
 		_advance(1);
 
 		return style;
@@ -166,7 +174,7 @@ private:
 
 	Node* _parseHighlight() {
 		const Token& token = _eat();
-		Highlight* highlight = new Highlight(token.position);
+		Highlight* highlight = new Highlight(token.range);
 
 		while (_isBound(0) && _get(0).kind != token.kind) {
 			Node* child = _parseInline();
@@ -184,6 +192,7 @@ private:
 			return _expect("equal");
 		}
 
+		_updateEndRange(highlight->range, _get(0).range);
 		_advance(1);
 
 		return highlight;
@@ -191,68 +200,128 @@ private:
 
 	Node* _parseComment() {
 		const Token& token = _eat();
-		return new Comment(token.position, token.content);
+		return new Comment(token.range, token.content);
 	}
 
 	Node* _parseText() {
 		const Token& token = _eat();
-		return new Text(token.position, token.content);
+		return new Text(token.range, token.content);
 	}
 
 	Node* _parseInline() {
+		Node* node = nullptr;
 		switch (_get(0).kind) {
-			case TokenKind::comment: return _parseComment();
+			case TokenKind::comment: 
+				node = _parseComment();
+				break;
 
-			case TokenKind::text: return _parseText();
+			case TokenKind::text: 
+				node = _parseText();
+				break;
 
-			case TokenKind::asterisk: return _parseStyle(Style::Type::bold);
-			case TokenKind::underscore: return _parseStyle(Style::Type::italic);
-			case TokenKind::equal: return _parseHighlight();
+			case TokenKind::asterisk: 
+				node = _parseStyle(Style::Type::bold);
+				break;
 
-			case TokenKind::lineBreak: return new LineBreak(_eat().position);
+			case TokenKind::underscore: 
+				node = _parseStyle(Style::Type::italic);
+				break;
 
-			case TokenKind::backtick: return _parseCode();
-			case TokenKind::squareOpen: return _parseLink();
-			case TokenKind::exclamation: return _parseView();
+			case TokenKind::equal: 
+				node = _parseHighlight();
+				break;
+
+			case TokenKind::lineBreak: 
+				node = new LineBreak(_eat().range);
+				break;
+
+			case TokenKind::backtick: 
+				node = _parseCode();
+				break;
+
+			case TokenKind::squareOpen: 
+				node = _parseLink();
+				break;
+
+			case TokenKind::exclamation: 
+				node = _parseView();
+				break;
+
 			case TokenKind::caret: {
 				if (_isBound(1)) {
 					if (_get(1).kind == TokenKind::parenOpen) {
-						return _parseFootnote();
+						node = _parseFootnote();
+						break;
 					}
 					if (_get(1).kind == TokenKind::squareOpen) {
-						return _parseCitation();
+						node = _parseCitation();
+						break;
 					}
 				}
-				return nullptr;
+				node = nullptr;
+				break;
 			}
-			case TokenKind::emoji: return _parseEmoji();
-			case TokenKind::dateTime: return _parseDateTime();
 
-			case TokenKind::hyphen: return new Punct(_eat().position, Punct::Type::hypen);
-			case TokenKind::enDash: return new Punct(_eat().position, Punct::Type::enDash);
-			case TokenKind::emDash: return new Punct(_eat().position, Punct::Type::emDash);
+			case TokenKind::emoji: 
+			       node = _parseEmoji();
+			       break;
 
-			case TokenKind::quoteOpen: return new Punct(_eat().position, Punct::Type::quoteOpen);
-			case TokenKind::quoteClose: return new Punct(_eat().position, Punct::Type::quoteClose);
-			case TokenKind::squoteOpen: return new Punct(_eat().position, Punct::Type::squoteOpen);
-			case TokenKind::squoteClose: return new Punct(_eat().position, Punct::Type::squoteClose);
+			case TokenKind::dateTime: 
+			       node = _parseDateTime();
+			       break;
 
-			case TokenKind::accountTag: return new AccountTag(_get(0).position, _eat().content);
-			case TokenKind::hashTag: return new HashTag(_get(0).position, _eat().content);
+			case TokenKind::hyphen: 
+			       node = new Punct(_eat().range, Punct::Type::hypen);
+			       break;
 
-			case TokenKind::colon: return _parseText();
+			case TokenKind::enDash: 
+			       node = new Punct(_eat().range, Punct::Type::enDash);
+			       break;
 
-			default: {
-				return nullptr;
-			}
+			case TokenKind::emDash: 
+			       node = new Punct(_eat().range, Punct::Type::emDash);
+			       break;
+
+			case TokenKind::quoteOpen: 
+			       node = new Punct(_eat().range, Punct::Type::quoteOpen);
+			       break;
+
+			case TokenKind::quoteClose: 
+			       node = new Punct(_eat().range, Punct::Type::quoteClose);
+			       break;
+
+			case TokenKind::squoteOpen: 
+			       node = new Punct(_eat().range, Punct::Type::squoteOpen);
+			       break;
+
+			case TokenKind::squoteClose: 
+			       node = new Punct(_eat().range, Punct::Type::squoteClose);
+			       break;
+
+			case TokenKind::accountTag: 
+			       node = new AccountTag(_get(0).range, _eat().content);
+			       break;
+
+			case TokenKind::hashTag: 
+			       node = new HashTag(_get(0).range, _eat().content);
+			       break;
+
+			case TokenKind::colon: 
+			       node = _parseText();
+			       break;
+
+			default:
+				break;
 		}
+
+		return node;
 	}
 
 	Node* _parseParagraph() {
 		const Token& token = _get(0);
 		size_t previousTokenIndex = _tokenIndex;
 
-		Paragraph* paragraph = new Paragraph(token.position);
+		Paragraph* paragraph = new Paragraph(token.range);
 		bool newline = false;
 
 		Node* view = nullptr;
@@ -297,7 +366,7 @@ private:
 					}
 
 					const Token& token = _eat();
-					paragraph->children.push_back(new Space(token.position));
+					paragraph->children.push_back(new Space(token.range));
 					continue;
 				}
 
@@ -341,12 +410,16 @@ private:
 			}
 		}
 
+		if (paragraph && !paragraph->children.empty()) {
+			_updateEndRange(paragraph->range, paragraph->children.back()->range);
+		}
+
 		return paragraph;
 	}
 
 	Node* _parseHeading() {
 		const Token& token = _eat();
-		Heading* heading = new Heading(token.position);
+		Heading* heading = new Heading(token.range);
 
 		switch (token.kind) {
 			case TokenKind::head3:
@@ -402,7 +475,7 @@ private:
 
 	Node* _parseSubtitle() {
 		const Token& token = _eat();
-		Subtitle* subtitle = new Subtitle(token.position);
+		Subtitle* subtitle = new Subtitle(token.range);
 
 		while (_isBound(0)) {
 			Node* node = _parseInline();
@@ -429,7 +502,7 @@ private:
 
 	Node* _parseIndent() {
 		const Token& token = _eat();
-		Indent* indent = new Indent(token.position);
+		Indent* indent = new Indent(token.range);
 
 		while (_isBound(0) && _get(0).kind != TokenKind::indentClose) {
 			Node* node = _parseBlock();
@@ -452,11 +525,15 @@ private:
 			_eat();
 		}
 
+		if (indent && !indent->children.empty()) {
+			_updateEndRange(indent->range, indent->children.back()->range);
+		}
+
 		return indent;
 	}
 
 	Node* _parsePageBreak() {
-		Node* node = new PageBreak(_eat().position);
+		Node* node = new PageBreak(_eat().range);
 
 		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
 			_advance(1);
@@ -466,7 +543,7 @@ private:
 	}
 
 	Node* _parseDinkus() {
-		Node* node = new Dinkus(_eat().position);
+		Node* node = new Dinkus(_eat().range);
 
 		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
 			_advance(1);
@@ -527,10 +604,10 @@ private:
 	}
 
 	Node* _parseList(TokenKind tokenKind, NodeKind nodeKind) {
-		List* list = new List(_get(0).position, nodeKind);
+		List* list = new List(_get(0).range, nodeKind);
 
 		while (_isBound(0) && _get(0).kind == tokenKind) {
-			Item* item = new Item(_eat().position);
+			Item* item = new Item(_eat().range);
 			list->children.push_back(item);
 
 			ItemResult result = _parseItem(list, item);
@@ -550,11 +627,11 @@ private:
 	}
 
 	Node* _parseCheckList() {
-		List* list = new List(_get(0).position, NodeKind::checkList);
+		List* list = new List(_get(0).range, NodeKind::checkList);
 
 		while (_isBound(0) && _get(0).kind == TokenKind::checkbox) {
 			const Token& token = _eat();
-			CheckItem* item = new CheckItem(token.position);
+			CheckItem* item = new CheckItem(token.range);
 			list->children.push_back(item);
 
 			switch (token.content[1]) {
@@ -579,15 +656,15 @@ private:
 	}
 
 	Node* _parseDefinitionList() {
-		List* list = new List(_get(0).position, NodeKind::definitionList);
+		List* list = new List(_get(0).range, NodeKind::definitionList);
 
 		while (_isBound(0) && _isParagraph()) {
 			size_t previousTokenIndex = _tokenIndex;
 			bool itemOccupied = false;
 			bool itemColoncolon = false;
 
-			DefinitionItem* item = new DefinitionItem(_get(0).position);
-			DefinitionTerm* term = new DefinitionTerm(_get(0).position);
+			DefinitionItem* item = new DefinitionItem(_get(0).range);
+			DefinitionTerm* term = new DefinitionTerm(_get(0).range);
 
 			item->children.push_back(term);
 
@@ -604,7 +681,7 @@ private:
 					}
 
 					if (_get(0).kind == TokenKind::coloncolon) {
-						DefinitionDesc* desc = new DefinitionDesc(_eat().position);
+						DefinitionDesc* desc = new DefinitionDesc(_eat().range);
 						item->children.push_back(desc);
 						itemColoncolon = true;
 
@@ -679,7 +756,7 @@ private:
 	}
 
 	Node* _parseTable() {
-		Table* table = new Table(_get(0).position);
+		Table* table = new Table(_get(0).range);
 
 		Row::Type type = Row::Type::header;
 
@@ -745,12 +822,12 @@ private:
 				continue;
 			}
 
-			Row* row = new Row(token.position);
+			Row* row = new Row(token.range);
 			row->type = type;
 			table->children.push_back(row);
 
 			while (_isBound(0)) {
-				Cell* cell = new Cell(_get(0).position);
+				Cell* cell = new Cell(_get(0).range);
 
 				while (_isBound(0)) {
 					Node* node = _parseInline();
@@ -792,7 +869,7 @@ private:
 
 
 	Node* _parseLink() {
-		Link* link = new Link(_eat().position);
+		Link* link = new Link(_eat().range);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
 			link->setResource(_eat().content);
@@ -820,7 +897,7 @@ private:
 	}
 
 	Node* _parseView() {
-		View* view = new View(_eat().position);
+		View* view = new View(_eat().range);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
 			_advance(1);
@@ -852,7 +929,7 @@ private:
 	}
 
 	Node* _parseCitation() {
-		InText* view = new InText(_eat().position);
+		InText* view = new InText(_eat().range);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
 			_advance(1);
@@ -871,12 +948,12 @@ private:
 
 	Node* _parseEmoji() {
 		const Token& token = _eat();
-		return new Emoji(token.position, token.content);
+		return new Emoji(token.range, token.content);
 	}
 
 	Node* _parseDateTime() {
 		const Token& token = _eat();
-		return new DateTime(token.position, token.content);
+		return new DateTime(token.range, token.content);
 	}
 
 	Node* _parseInclude() {
@@ -919,14 +996,14 @@ private:
 				document = parser.parseFile(std::string_view(path.data(), path.size()));
 
 				if (document != nullptr) {
-					document->position = token.position;
+					document->range = token.range;
 				}
 
 				parser._document = nullptr;
 			} else {
 				document = new Document();
 				document->path = std::string(filePath.data(), filePath.size());
-				document->position = token.position;
+				document->range = token.range;
 			}
 		}
 
@@ -951,7 +1028,7 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
-			ref = new Footnote(token.position, _eat().content);
+			ref = new Footnote(token.range, _eat().content);
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::parenClose) {
@@ -962,7 +1039,7 @@ private:
 	}
 
 	Node* _parseReference() {
-		Reference* ref = new Reference(_get(0).position);
+		Reference* ref = new Reference(_get(0).range);
 		ref->id = _get(2).content;
 
 		_advance(6);
@@ -984,7 +1061,7 @@ private:
 				if (!(_isBound(1) && _get(0).kind == TokenKind::text && _get(1).kind == TokenKind::colon)) {
 					break;
 				}
-				ReferenceInfo* info = new ReferenceInfo(_get(0).position, _get(0).content);
+				ReferenceInfo* info = new ReferenceInfo(_get(0).range, _get(0).content);
 				_advance(2);
 
 				while (_isBound(0) && (_get(0).kind != TokenKind::newline || _get(0).kind != TokenKind::newlinePlus)) {
@@ -1014,7 +1091,7 @@ private:
 	}
 
 	Node* _parseCode() {
-		Code* code = new Code(_eat().position);
+		Code* code = new Code(_eat().range);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
 			code->content = _eat().content;
@@ -1039,7 +1116,7 @@ private:
 	}
 
 	Node* _parseCodeBlock() {
-		CodeBlock* codeBlock = new CodeBlock(_eat().position);
+		CodeBlock* codeBlock = new CodeBlock(_eat().range);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::text) {
 			codeBlock->label = _eat().content;
@@ -1062,7 +1139,7 @@ private:
 
 	Node* _parseBlockquote() {
 		const Token& token = _eat();
-		Blockquote* indent = new Blockquote(token.position);
+		Blockquote* indent = new Blockquote(token.range);
 
 		while (_isBound(0) && _get(0).kind != TokenKind::blockquoteClose) {
 			Node* node = _parseBlock();
@@ -1090,7 +1167,7 @@ private:
 
 	Node* _parseAdmon() {
 		const Token& token = _eat();
-		Admon* admon = new Admon(token.position, token.content);
+		Admon* admon = new Admon(token.range, token.content);
 
 		while (_isBound(0) && _isParagraph()) {
 			Node* node = _parseInline();
@@ -1098,7 +1175,7 @@ private:
 			if (node == nullptr) {
 				if (_get(0).kind == TokenKind::newline) {
 					if (_isBound(1) && _get(1).kind == TokenKind::indentOpen) {
-						admon->children.push_back(new Space(_get(0).position));
+						admon->children.push_back(new Space(_get(0).range));
 						_advance(2);
 
 						while (_isBound(0)) {
@@ -1195,6 +1272,8 @@ private:
 			return nullptr;
 		}
 
+		Node* node = nullptr;
+
 		switch (_get(0).kind) {
 			case TokenKind::comment:
 			case TokenKind::text:
@@ -1224,7 +1303,8 @@ private:
 			case TokenKind::hashTag:
 
 			case TokenKind::colon:
-				return _parseParagraph();
+				node = _parseParagraph();
+				break;
 
 			case TokenKind::caret: {
 				if (_isBound(5) && 
@@ -1234,53 +1314,74 @@ private:
 					_get(4).kind == TokenKind::colon &&
 					_get(5).kind == TokenKind::newline
 					) {
-					return _parseReference();
+					node = _parseReference();
+					break;
 				}
 
-				return _parseParagraph();
+				node = _parseParagraph();
+				break;
 			}
 
 			case TokenKind::head1:
 			case TokenKind::head2:
 			case TokenKind::head3:
-				return _parseHeading();
+				node = _parseHeading();
+				break;
 
 			case TokenKind::indentOpen:
-				return _parseIndent();
+				node = _parseIndent();
+				break;
 
 			case TokenKind::pageBreak:
-				return _parsePageBreak();
+				node = _parsePageBreak();
+				break;
 
 			case TokenKind::dinkus:
-				return _parseDinkus();
+				node = _parseDinkus();
+				break;
 
 			case TokenKind::question:
-				return _parseInclude();
+				node = _parseInclude();
+				break;
 
 			case TokenKind::bullet:
-				return _parseList(TokenKind::bullet, NodeKind::list);
+				node = _parseList(TokenKind::bullet, NodeKind::list);
+				break;
 
 			case TokenKind::index:
-				return _parseList(TokenKind::index, NodeKind::numberedList);
+				node = _parseList(TokenKind::index, NodeKind::numberedList);
+				break;
 
 			case TokenKind::checkbox:
-				return _parseCheckList();
+				node = _parseCheckList();
+				break;
 
 			case TokenKind::pipe:
-				return _parseTable();
+				node = _parseTable();
+				break;
 
 			case TokenKind::fenceOpen:
-				return _parseCodeBlock();
+				node = _parseCodeBlock();
+				break;
 
 			case TokenKind::blockquoteOpen:
-				return _parseBlockquote();
+				node = _parseBlockquote();
+				break;
 
 			case TokenKind::admon:
-				return _parseAdmon();
+				node = _parseAdmon();
+				break;
 
 			default:
-				return nullptr;
+				break;
 		}
+
+		return node;
+	}
+
+	void _updateEndRange(Range& start, const Range& end) {
+		start.endLine = end.endLine;
+		start.endColumn = end.endColumn;
 	}
 
 private:
