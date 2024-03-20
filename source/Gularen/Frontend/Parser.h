@@ -470,6 +470,10 @@ private:
 			heading->children.push_back(node);
 		}
 
+		if (heading && !heading->children.empty()) {
+			_updateEndRange(heading->range, heading->children.back()->range);
+		}
+
 		return heading;
 	}
 
@@ -495,6 +499,10 @@ private:
 			}
 
 			subtitle->children.push_back(node);
+		}
+
+		if (subtitle && !subtitle->children.empty()) {
+			_updateEndRange(subtitle->range, subtitle->children.back()->range);
 		}
 
 		return subtitle;
@@ -1160,6 +1168,10 @@ private:
 
 		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
 			_eat();
+		}
+
+		if (indent && !indent->children.empty()) {
+			_updateEndRange(indent->range, indent->children.back()->range);
 		}
 
 		return indent;

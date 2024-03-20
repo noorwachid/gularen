@@ -680,7 +680,13 @@ private:
 
 		if (_quoteLevel < quoteLevel) {
 			while (_quoteLevel < quoteLevel) {
-				_append(TokenKind::blockquoteOpen);
+				Token token;
+				token.range.startLine = _oldLine;
+				token.range.startColumn = _oldColumn;
+				token.range.endLine = _oldLine;
+				token.range.endColumn = _oldColumn;
+				token.kind = TokenKind::blockquoteOpen;
+				_tokens.push_back(static_cast<Token&&>(token));
 				_quoteLevel += 1;
 			}
 		}
