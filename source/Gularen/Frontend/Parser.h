@@ -620,6 +620,10 @@ private:
 
 			ItemResult result = _parseItem(list, item);
 
+			if (item && !item->children.empty()) {
+				_updateEndRange(item->range, item->children.back()->range);
+			}
+
 			switch (result) {
 				case ItemResult::ok: break;
 				case ItemResult::error: 
@@ -630,6 +634,10 @@ private:
 		}
 
 		listEnd:
+
+		if (list && !list->children.empty()) {
+			_updateEndRange(list->range, list->children.back()->range);
+		}
 
 		return list;
 	}
@@ -643,11 +651,15 @@ private:
 			list->children.push_back(item);
 
 			switch (token.content[1]) {
-				case ' ': item->state = CheckItem::State::unchecked; break;
-				case 'x': item->state = CheckItem::State::checked; break;
+				case ' ': item->checked = false; break;
+				case 'x': item->checked = true; break;
 			}
 
 			ItemResult result = _parseItem(list, item);
+
+			if (item && !item->children.empty()) {
+				_updateEndRange(item->range, item->children.back()->range);
+			}
 
 			switch (result) {
 				case ItemResult::ok: break;
@@ -659,6 +671,10 @@ private:
 		}
 
 		listEnd:
+
+		if (list && !list->children.empty()) {
+			_updateEndRange(list->range, list->children.back()->range);
+		}
 
 		return list;
 	}
@@ -742,12 +758,25 @@ private:
 
 			if (itemColoncolon) {
 				list->children.push_back(item);
+
+				if (!item->children.empty()) {
+					_updateEndRange(item->children.front()->range, item->children.front()->children.back()->range);
+					_updateEndRange(item->children.back()->range, item->children.back()->children.back()->range);
+
+					_updateEndRange(item->range, item->children.back()->range);
+				}
+
+
 				goto listEnd;
 			}
 			continue;
 		}
 
 		listEnd:
+
+		if (list && !list->children.empty()) {
+			_updateEndRange(list->range, list->children.back()->range);
+		}
 
 		return list;
 	}

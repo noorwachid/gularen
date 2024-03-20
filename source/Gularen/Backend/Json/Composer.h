@@ -172,7 +172,7 @@ private:
 			}
 			case NodeKind::checkItem: {
 				_content.append("\"kind\":\"checkItem\",\"checked\":");
-				_content.append(static_cast<const CheckItem*>(node)->state == CheckItem::State::checked ? "true" : "false");
+				_content.append(static_cast<const CheckItem*>(node)->checked ? "true" : "false");
 				break;
 			}
 			case NodeKind::definitionList: {

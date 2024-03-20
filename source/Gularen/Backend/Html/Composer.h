@@ -270,10 +270,13 @@ private:
 			}
 
 			case NodeKind::checkItem: {
-				switch (static_cast<const CheckItem*>(node)->state) {
-					case CheckItem::State::unchecked: content.append("<li> <input type=\"checkbox\"> "); return;
-					case CheckItem::State::checked: content.append("<li> <input type=\"checkbox\" checked> "); return;
+				if (static_cast<const CheckItem*>(node)->checked) {
+					content.append("<li> <input type=\"checkbox\" checked> "); 
+					return;
 				}
+
+				content.append("<li> <input type=\"checkbox\"> "); 
+				return;
 			}
 
 			case NodeKind::table: {
@@ -618,10 +621,8 @@ private:
 			}
 
 			case NodeKind::checkItem: {
-				switch (static_cast<const CheckItem*>(node)->state) {
-					case CheckItem::State::unchecked: content.append("</li>\n"); return;
-					case CheckItem::State::checked: content.append("</li>\n"); return;
-				}
+				content.append("</li>\n"); 
+				return;
 			}
 
 			case NodeKind::table: {

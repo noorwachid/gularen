@@ -139,7 +139,7 @@ private:
 				_composePrefix();
 				_listItem = true;
 				_content.append("- [");
-				_content.append(static_cast<const CheckItem*>(node)->state == CheckItem::State::unchecked ? " " : "x");
+				_content.append(static_cast<const CheckItem*>(node)->checked ? " " : "x");
 				_content.append("] ");
 				for (size_t i = 0; i < node->children.size(); i += 1) {
 					if (node->children[i]->kind == NodeKind::list) {

@@ -265,22 +265,17 @@ struct Item : Node {
 };
 
 struct CheckItem : Node {
-	enum class State {
-		unchecked,
-		checked,
-	};
-
-	State state;
+	bool checked;
 
 	CheckItem(Range range): Node(range, NodeKind::checkItem) {
 	}
 
 	virtual void print() override {
-		std::cout << "checkItem ";
-		switch (state) {
-			case State::unchecked: std::cout << "todo\n"; break;
-			case State::checked: std::cout << "done\n"; break;
+		std::cout << "checkItem";
+		if (checked) {
+			std::cout << " checked";
 		}
+		std::cout << "\n";
 	}
 };
 

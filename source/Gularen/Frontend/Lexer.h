@@ -540,13 +540,23 @@ private:
 						_advanceLine(1);
 					}
 
+					Token token;
+					token.range.startLine = _oldLine;
+					token.range.startColumn = _oldColumn;
+					token.range.endLine = _oldLine;
+					token.range.endColumn = _oldColumn;
+
 					if (count == 1) {
-						_append(TokenKind::newline);
+						token.kind = TokenKind::newline;
+						_tokens.push_back(static_cast<Token&&>(token));
+						_saveRangeStart();
 						_consumeIndent();
 						return;
 					}
 
-					_append(TokenKind::newlinePlus);
+					token.kind = TokenKind::newlinePlus;
+					_tokens.push_back(static_cast<Token&&>(token));
+					_saveRangeStart();
 					_consumeIndent();
 					return;
 				}
@@ -874,9 +884,8 @@ private:
 		}
 
 		if (_isBound(1) && _get(0) == '.' && _get(1) == ' ') {
-			_advance(1);
-			_append(TokenKind::index, beginIndex, _contentIndex - beginIndex);
-			_advance(1);
+			_append(TokenKind::index, beginIndex, _contentIndex - beginIndex + 1);
+			_advance(2);
 			return;
 		}
 
