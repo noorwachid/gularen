@@ -39,6 +39,7 @@ public:
 
 		if (!file.is_open()) {
 			delete _document;
+			_document = nullptr;
 			return nullptr;
 		}
 

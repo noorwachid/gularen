@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
 		Document* document = parser.parseFile(argv[2]);
 
 		if (document == nullptr) {
-			std::cout << "failed to parse \"" << argv[2] << "\n";
+			std::cout << "failed to parse \"" << argv[2] << "\"\n";
 
 			return 1;
 		}
