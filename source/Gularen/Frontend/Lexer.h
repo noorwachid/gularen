@@ -945,7 +945,7 @@ private:
 					return;
 
 				default:
-					_consumeText();
+					_parseInline();
 					break;
 			}
 		}

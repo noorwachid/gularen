@@ -839,10 +839,10 @@ private:
 
 							case TokenKind::newlinePlus:
 								_advance(1);
-								return table;
+								goto returnWithoutCheck;
 								
 							default:
-								return table; // early exit
+								goto returnWithoutCheck;
 						}
 					}
 
@@ -882,11 +882,17 @@ private:
 							case TokenKind::newlinePlus:
 								_advance(1);
 								delete cell;
-								return _checkTableRow(table, type);
+								if (row && !row->children.empty()) {
+									_updateEndRange(row->range, row->children.back()->range);
+								}
+								goto returnWithCheck;
 								
 							default:
 								delete cell;
-								return _checkTableRow(table, type); // early exit
+								if (row && !row->children.empty()) {
+									_updateEndRange(row->range, row->children.back()->range);
+								}
+								goto returnWithCheck;
 						}
 					}
 
@@ -895,13 +901,30 @@ private:
 
 				nextCell:
 				row->children.push_back(cell);
+
+				if (cell && !cell->children.empty()) {
+					_updateEndRange(cell->range, cell->children.back()->range);
+					cell->range.endColumn += 1; // account for pipe
+				}
 			}
 
 			nextRow:
+			if (row && !row->children.empty()) {
+				_updateEndRange(row->range, row->children.back()->range);
+			}
+
 			continue;
 		}
 
-		return _checkTableRow(table, type);
+		returnWithCheck:
+		_checkTableRow(table, type);
+
+		returnWithoutCheck:
+		if (table && !table->children.empty()) {
+			_updateEndRange(table->range, table->children.back()->range);
+		}
+
+		return table;
 	}
 
 
