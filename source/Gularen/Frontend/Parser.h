@@ -1078,6 +1078,7 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_updateEndRange(document->range, _get(0).range);
 			_advance(1);
 		}
 
