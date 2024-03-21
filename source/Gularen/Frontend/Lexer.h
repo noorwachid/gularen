@@ -494,7 +494,9 @@ private:
 							_advance(1);
 						}
 						if (_isBound(0) && _get(0) == ':') {
-							_append(TokenKind::emoji, openingContextIndex + 1, _contentIndex - openingContextIndex - 1);
+							_append(TokenKind::emoji, openingContextIndex + 1, _contentIndex - openingContextIndex - 1, Range {
+								_oldLine, _oldColumn, _line, _column
+							});
 							_advance(1);
 							break;
 						}
