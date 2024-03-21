@@ -1104,6 +1104,7 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::parenClose) {
+			_updateEndRange(ref->range, _get(0).range);
 			_advance(1);
 		}
 
