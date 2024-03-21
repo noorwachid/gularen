@@ -785,8 +785,8 @@ private:
 		_tokens.push_back(static_cast<Token&&>(token));
 
 		if (_isBound(0) && _get(0) == '\n') {
-			_advanceLine(1);
 			_advance(1);
+			_advanceLine(1);
 		}
 	}
 
@@ -832,6 +832,7 @@ private:
 				case '-':
 				case '"':
 				case '\'':
+				case '\\':
 				case '\n':
 					goto end;
 
@@ -970,7 +971,9 @@ private:
 			_advance(1);
 		}
 
-		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex, Range{
+			_oldLine, _oldColumn, _line, _column - 1
+		});
 		_saveRangeStart();
 
 		if (_isBound(0) && _get(0) == ')') {
@@ -982,6 +985,7 @@ private:
 	void _consumeLink() {
 		_append(TokenKind::squareOpen, _contentIndex, 1);
 		_advance(1);
+		_saveRangeStart();
 
 		size_t oldContextIndex = _contentIndex;
 
@@ -989,7 +993,10 @@ private:
 			_advance(1);
 		}
 
-		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex, Range{
+			_oldLine, _oldColumn, _line, _column - 1
+		});
+		_saveRangeStart();
 
 		if (_isBound(0) && _get(0) == ']') {
 			_append(TokenKind::squareClose, _contentIndex, 1);
@@ -999,8 +1006,10 @@ private:
 		if (_isBound(1) && _get(0) == ':' && _get(1) == '\n') {
 			_append(TokenKind::colon, _contentIndex, 1);
 			_advance(1);
+			_saveRangeStart();
 		} else {
 			if (_isBound(0) && _get(0) == '(') {
+				_saveRangeStart();
 				_consumeLabel();
 			}
 		}

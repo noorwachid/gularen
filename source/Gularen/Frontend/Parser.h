@@ -930,12 +930,14 @@ private:
 
 	Node* _parseLink() {
 		Link* link = new Link(_eat().range);
+		Range rangeEnd;
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
 			link->setResource(_eat().content);
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			rangeEnd = _get(0).range;
 			_advance(1);
 
 			if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
@@ -945,6 +947,7 @@ private:
 
 					link->label = _get(1).content;
 
+					rangeEnd = _get(2).range;
 					_advance(3);
 				} else {
 					delete link;
@@ -952,6 +955,8 @@ private:
 				}
 			}
 		}
+
+		_updateEndRange(link->range, rangeEnd);
 
 		return link;
 	}
