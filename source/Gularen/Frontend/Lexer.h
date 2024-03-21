@@ -574,7 +574,7 @@ private:
 						_advance(1);
 					}
 
-					_append(TokenKind::accountTag, oldContentIndex, _contentIndex - oldContentIndex);
+					_append(TokenKind::accountTag, oldContentIndex, _contentIndex - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column - 1 });
 					break;
 				}
 
@@ -591,7 +591,7 @@ private:
 						_advance(1);
 					}
 
-					_append(TokenKind::hashTag, oldContentIndex, _contentIndex - oldContentIndex);
+					_append(TokenKind::hashTag, oldContentIndex, _contentIndex - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column - 1 });
 					break;
 				}
 
