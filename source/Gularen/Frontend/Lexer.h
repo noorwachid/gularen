@@ -406,7 +406,7 @@ private:
 						}
 
 						if (_isBound(0) && _get(0) == '>') {
-							_append(TokenKind::dateTime, oldContentIndex + 1, _contentIndex - oldContentIndex - 1);
+							_append(TokenKind::dateTime, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column });
 							_advance(1);
 							break;
 						}
