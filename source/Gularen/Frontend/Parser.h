@@ -1256,8 +1256,7 @@ private:
 									if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
 										_advance(1);
 									}
-									return admon;
-									break;
+									goto end;
 								}
 
 								delete admon;
@@ -1276,11 +1275,17 @@ private:
 				
 				if (_get(0).kind == TokenKind::newlinePlus) {
 					_advance(1);
-					return admon;
+					goto end;
 				}
 			}
 
 			admon->children.push_back(node);
+		}
+
+		end:
+
+		if (admon && !admon->children.empty()) {
+			_updateEndRange(admon->range, admon->children.back()->range);
 		}
 
 		return admon;

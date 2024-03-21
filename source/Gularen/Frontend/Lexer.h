@@ -289,7 +289,7 @@ private:
 						}
 
 						if (_isBound(0) && _get(0) == '>') {
-							_append(TokenKind::admon, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex);
+							_append(TokenKind::admon, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column });
 							_advance(1);
 							break;
 						}
@@ -632,6 +632,14 @@ private:
 		token.range.startColumn = _oldColumn;
 		token.range.endLine = _line;
 		token.range.endColumn = _column + (size == 0 ? 0 : size - 1);
+		token.kind = kind;
+		token.content = _content.substr(index, size);
+		_tokens.push_back(static_cast<Token&&>(token));
+	}
+
+	void _append(TokenKind kind, size_t index, size_t size, Range range) {
+		Token token;
+		token.range = range;
 		token.kind = kind;
 		token.content = _content.substr(index, size);
 		_tokens.push_back(static_cast<Token&&>(token));
