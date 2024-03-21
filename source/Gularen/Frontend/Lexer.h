@@ -500,7 +500,9 @@ private:
 						}
 					}
 					_advance(1);
-					_append(TokenKind::text, openingContextIndex, _contentIndex - openingContextIndex);
+					_append(TokenKind::text, openingContextIndex, _contentIndex - openingContextIndex, Range {
+						_oldLine, _oldColumn, _line, _column - 1
+					});
 					break;
 				}
 
