@@ -895,6 +895,8 @@ private:
 
 	void _consumePipe() {
 		while (_isBound(0)) {
+			_saveRangeStart();
+
 			switch (_get(0)) {
 				case '|':
 					_append(TokenKind::pipe);

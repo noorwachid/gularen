@@ -1,0 +1,76 @@
+>>> Table
+>> Merged Cells
+
+> Merged Columns
+--- gr
+| A | B | C |
+|2>  D  | F |
+| G | H | I |
+---
+--- html
+<table>
+	<tr>
+		<td>A</td>
+		<td>B</td>
+		<td>C</td>
+	</tr>
+	<tr>
+		<td colspan="2">D</td>
+		<td>F</td>
+	</tr>
+	<tr>
+		<td>G</td>
+		<td>H</td>
+		<td>I</td>
+	</tr>
+</table>
+---
+
+> Merged Rows
+--- gr
+| A   | B | C |
+|2< D | E | F |
+|     | H | I |
+---
+--- html
+<table>
+	<tr>
+		<td>A</td>
+		<td>B</td>
+		<td>C</td>
+	</tr>
+	<tr>
+		<td rowspan="2">D</td>
+		<td>E</td>
+		<td>F</td>
+	</tr>
+	<tr>
+		<td>H</td>
+		<td>I</td>
+	</tr>
+</table>
+---
+
+> Merged Rows and Columns
+--- gr
+| A  | B  | C |
+|2>2<  D  | F |
+|         | I |
+---
+--- html
+<table>
+	<tr>
+		<td>A</td>
+		<td>B</td>
+		<td>C</td>
+	</tr>
+	<tr>
+		<td colspan="2" rowspan="2">D</td>
+		<td>F</td>
+	</tr>
+	<tr>
+		<td>I</td>
+	</tr>
+</table>
+---
+
