@@ -254,7 +254,7 @@ private:
 						break;
 					}
 					if (_get(1).kind == TokenKind::squareOpen) {
-						node = _parseCitation();
+						node = _parseInText();
 						break;
 					}
 				}
@@ -998,7 +998,7 @@ private:
 		return view;
 	}
 
-	Node* _parseCitation() {
+	Node* _parseInText() {
 		InText* view = new InText(_eat().range);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
@@ -1010,6 +1010,7 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_updateEndRange(view->range, _get(0).range);
 			_advance(1);
 		}
 
@@ -1143,6 +1144,10 @@ private:
 					info->children.push_back(node);
 				}
 
+				if (info && !info->children.empty()) {
+					_updateEndRange(info->range, info->children.back()->range);
+				}
+
 				ref->children.push_back(info);
 
 				if (_isBound(0)) {
@@ -1156,6 +1161,10 @@ private:
 					}
 				}
 			}
+		}
+
+		if (ref && !ref->children.empty()) {
+			_updateEndRange(ref->range, ref->children.back()->range);
 		}
 
 		return ref;
