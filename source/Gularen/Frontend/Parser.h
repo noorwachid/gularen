@@ -1129,12 +1129,14 @@ private:
 
 	Node* _parseCode() {
 		Code* code = new Code(_eat().range);
+		Range endRange;
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
 			code->content = _eat().content;
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::backtick) {
+			endRange = _get(0).range;
 			_advance(1);
 
 			if (_isBound(2) && 
@@ -1145,9 +1147,12 @@ private:
 				code->label = code->content;
 				code->content = _get(1).content;
 
+				endRange = _get(2).range;
 				_advance(3);
 			}
 		}
+
+		_updateEndRange(code->range, endRange);
 
 		return code;
 	}
@@ -1164,6 +1169,7 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::fenceClose) {
+			_updateEndRange(codeBlock->range, _get(0).range);
 			_advance(1);
 
 			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {

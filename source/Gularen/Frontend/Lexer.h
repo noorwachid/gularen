@@ -1007,7 +1007,14 @@ private:
 			_advance(1);
 		}
 
-		_append(TokenKind::raw, oldContextIndex, _contentIndex - oldContextIndex);
+		Token token;
+		token.range.startLine = _oldLine;
+		token.range.startColumn = _oldColumn;
+		token.range.endLine = _line;
+		token.range.endColumn = _column - 1;
+		token.kind = TokenKind::raw;
+		_tokens.push_back(static_cast<Token&&>(token));
+
 		_saveRangeStart();
 
 		if (_isBound(0) && _get(0) == '`') {
@@ -1023,8 +1030,9 @@ private:
 
 		while (_isBound(0)) {
 			if (_isBound(0) && _get(0) == '\n') {
-				_advanceLine(1);
+				size_t oldColumn = _column;
 				_advance(1);
+				_advanceLine(1);
 				size_t indentLevel = 0;
 				while (_isBound(0) && _get(0) == '\t') {
 					_advance(1);
@@ -1043,7 +1051,17 @@ private:
 								size -= 1;
 							}
 						}
-						_append(TokenKind::raw, oldContextIndex + 1, size);
+
+						Token token;
+						token.range.startLine = _oldLine;
+						token.range.startColumn = _oldColumn;
+						token.range.endLine = _line - 1;
+						token.range.endColumn = oldColumn;
+						token.kind = TokenKind::raw;
+						token.content = _content.substr(oldContextIndex + 1, size);
+						_tokens.push_back(static_cast<Token&&>(token));
+						_saveRangeStart();
+
 						_append(TokenKind::fenceClose, _contentIndex, dashCount);
 						_advance(dashCount);
 						return;
@@ -1068,12 +1086,22 @@ private:
 		size_t dashCount = _contentIndex - oldContentIndex;
 
 		if (_isBound(0) && _get(0) == '\n') {
-			_append(TokenKind::fenceOpen, oldContentIndex, _contentIndex - oldContentIndex);
+			Token token;
+			token.range.startLine = _oldLine;
+			token.range.startColumn = _oldColumn;
+			token.range.endLine = _line;
+			token.range.endColumn = _column - 1;
+			token.kind = TokenKind::fenceOpen;
+			token.content = _content.substr(oldContentIndex, _contentIndex - oldContentIndex);
+			_tokens.push_back(static_cast<Token&&>(token));
+			_saveRangeStart();
+
 			return _consumeCodeBlockContent(dashCount);
 		}
 
 		// capture label
 		if (_isBound(1) && _get(0) == ' ' && _get(1) != '\n') {
+			size_t oldColumn = _column;
 			size_t youngContextIndex = _contentIndex;
 			_advance(1);
 			size_t middleAgedContentIndex = _contentIndex;
@@ -1083,8 +1111,26 @@ private:
 			}
 
 			if (_isBound(0) && _get(0) == '\n') {
-				_append(TokenKind::fenceOpen, oldContentIndex, youngContextIndex - oldContentIndex);
-				_append(TokenKind::text, middleAgedContentIndex, _contentIndex - middleAgedContentIndex);
+				Token token;
+				token.range.startLine = _oldLine;
+				token.range.startColumn = _oldColumn;
+				token.range.endLine = _line;
+				token.range.endColumn = oldColumn - 1;
+				token.kind = TokenKind::fenceOpen;
+				token.content = _content.substr(oldContentIndex, youngContextIndex - oldContentIndex);
+				_tokens.push_back(static_cast<Token&&>(token));
+				_saveRangeStart();
+
+				Token token2;
+				token2.range.startLine = _oldLine;
+				token2.range.startColumn = oldColumn + 1;
+				token2.range.endLine = _line;
+				token2.range.endColumn = _column - 1;
+				token2.kind = TokenKind::text;
+				token2.content = _content.substr(middleAgedContentIndex, _contentIndex - middleAgedContentIndex);
+				_tokens.push_back(static_cast<Token&&>(token2));
+				_saveRangeStart();
+
 				return _consumeCodeBlockContent(dashCount);
 			}
 		}
