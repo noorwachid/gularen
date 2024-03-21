@@ -963,6 +963,7 @@ private:
 
 	Node* _parseView() {
 		View* view = new View(_eat().range);
+		Range rangeEnd;
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
 			_advance(1);
@@ -973,6 +974,7 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			rangeEnd = _get(0).range;
 			_advance(1);
 
 			if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
@@ -982,6 +984,7 @@ private:
 
 					view->label = _get(1).content;
 
+					rangeEnd = _get(2).range;
 					_advance(3);
 				} else {
 					delete view;
@@ -989,6 +992,8 @@ private:
 				}
 			}
 		}
+
+		_updateEndRange(view->range, rangeEnd);
 
 		return view;
 	}
