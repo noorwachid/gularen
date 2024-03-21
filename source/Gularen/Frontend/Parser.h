@@ -1030,7 +1030,7 @@ private:
 
 	Node* _parseInclude() {
 		#ifdef __EMSCRIPTEN__
-		Link* link = new Link(_eat().position);
+		Link* link = new Link(_eat().range);
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
 			_advance(1);
@@ -1041,6 +1041,7 @@ private:
 		}
 
 		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
+			_updateEndRange(link->range, _get(0).range);
 			_advance(1);
 		}
 
