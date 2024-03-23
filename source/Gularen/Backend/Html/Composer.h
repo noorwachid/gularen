@@ -347,8 +347,8 @@ private:
 				if (code->label.size() != 0) {
 					content.append("<pre><code class=\"language-");
 					_escapeAttribute(code->label, content);
-					_composeAnnotations(node->annotations);
-					content.append(">");
+					_composeInnerAnnotations(node->annotations);
+					content.append("\">");
 					_escape(code->content, content);
 					content.append("</code></pre>\n\n");
 					return;
