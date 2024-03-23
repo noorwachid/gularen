@@ -13,6 +13,7 @@ public:
 	Parser() {
 		_document = nullptr;
 		_fileInclusion = true;
+		_error = false;
 	}
 
 	~Parser() {
@@ -96,6 +97,9 @@ private:
 
 			Node* node = _parseBlock();
 			if (node == nullptr) {
+				if (_error == true) {
+					return _document;
+				}
 				_advance(1);
 				continue;
 			}
@@ -1066,13 +1070,20 @@ private:
 
 			if (_fileInclusion) {
 				Parser parser;
-				document = parser.parseFile(std::string_view(path.data(), path.size()));
+				if (std::filesystem::exists(path)) {
+					document = parser.parseFile(path);
 
-				if (document != nullptr) {
+					if (document == nullptr) {
+						return nullptr;
+					}
+
 					document->range = token.range;
+					parser._document = nullptr;
+				} else {
+					std::cout << "inclusion failed because file \"" << path << "\" does not exists\n";
+					_error = true;
+					return nullptr;
 				}
-
-				parser._document = nullptr;
 			} else {
 				document = new Document();
 				document->path = std::string(filePath.data(), filePath.size());
@@ -1456,6 +1467,8 @@ private:
 	std::string _documentPath;
 
 	bool _fileInclusion;
+
+	bool _error;
 
 	std::vector<Annotation> _annotations;
 };
