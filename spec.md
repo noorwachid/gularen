@@ -113,55 +113,44 @@ This will create<<line-break.
 <div class="page-break"></div>
 ```
 
-# Indentation
-1 tab is equal to 1 indent
+# Escape
+Anything after backslash is will be rendered as is
 
 ```gr
-Level 0 indentation.
-	Level 1 indentation.
-		Level 2 indentation.
-			Level 3 indentation.
+\*escaped
+```
+
+```html
+<p>*escaped</p>
+```
+
+# Quote
+Quote is done by indenting with tabs.
+
+```gr 
+	"You have power over your mind---not outside events. Realize this, and you will find strength." 
+	--Markus Aurelius
 ```
 
 ```html
 <blockquote>
-	Level 0 indentation.
-	<blockquote>
-		Level 1 indentation.
-		<blockquote>
-			Level 2 indentation.
-			<blockquote>
-				Level 3 indentation.
-			</blockquote>
-		</blockquote>
-	</blockquote>
-</blockquote>
-```
-
-# Block Quote
-```gr 
-/ "You have power over your mind---not outside events. Realize this, and you will find strength." 
-/ -- Markus Aurelius
-```
-
-```html
-<blockquote class="quote">
 	<p>&#8223;You have power over your mind&#8212;not outside events. Realize this, and you will find strength.&#8221;
-	&#8211; Markus Aurelius</p>
+	&#8211;Markus Aurelius</p>
 </blockquote>
 ```
 
+### Nested Quote
 ```gr
-/ / "You have power over your mind---not outside events. Realize this, and you will find strength." 
-/ / -- Markus Aurelius
-/ Say what now?
+		"You have power over your mind---not outside events. Realize this, and you will find strength." 
+		--Markus Aurelius
+	Say what now?
 ```
 
 ```html
-<blockquote class="quote">
-	<blockquote class="quote">
+<blockquote>
+	<blockquote>
 		<p>&#8223;You have power over your mind&#8212;not outside events. Realize this, and you will find strength.&#8221;
-		&#8211; Markus Aurelius</p>
+		&#8211;Markus Aurelius</p>
 	</blockquote>
 	<p>Say what now?</p>
 </blockquote>
@@ -1500,15 +1489,4 @@ moyai: 🗿,
 circus‐tent: 🎪,
 performing‐arts: 🎭,
 round‐pushpin: 📍,
-
-# Escape
-Anything after backslash is will be rendered as is
-
-```gr
-\*escaped
-```
-
-```html
-<p>*escaped</p>
-```
 
