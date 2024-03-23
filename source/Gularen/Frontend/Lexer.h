@@ -986,6 +986,7 @@ private:
 		token.range.endLine = _line;
 		token.range.endColumn = _column - 1;
 		token.kind = TokenKind::raw;
+		token.content = _content.substr(oldContextIndex, _contentIndex - oldContextIndex);
 		_tokens.push_back(static_cast<Token&&>(token));
 
 		_saveRangeStart();
@@ -993,7 +994,6 @@ private:
 		if (_isBound(0) && _get(0) == '`') {
 			_append(TokenKind::backtick, _contentIndex, 1);
 			_advance(1);
-			_saveRangeStart();
 		}
 	}
 
