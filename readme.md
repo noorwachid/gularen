@@ -8,9 +8,7 @@ A sweet-spot in markup languages
 [Right over here](https://noorwach.id/gularen-editor/)
 
 ## CLI & Installation
-- [Transpile to HTML](cli/readme.md#transpile-to-html)
-- [Transpile to GFM (Github Flavored Markdown)](cli/readme.md#transpile-to-gfm-github-flavored-markdown)
-- [Transpile to JSON](cli/readme.md#transpile-to-json)
+- [Transpile to HTML, GFM, and JSON](cli/readme.md)
 - [Transpile to PDF](https://github.com/noorwachid/gularen-pdf)
 
 ## Specification & Examples
