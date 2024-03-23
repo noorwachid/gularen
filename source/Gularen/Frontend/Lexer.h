@@ -464,7 +464,8 @@ private:
 					break;
 
 				case '|':
-					_consumePipe();
+					_append(TokenKind::pipe, _contentIndex, 1);
+					_advance(1);
 					break;
 
 				case ':': {
@@ -908,8 +909,7 @@ private:
 					return;
 
 				default:
-					_parseInline();
-					break;
+					return;
 			}
 		}
 	}

@@ -64,11 +64,11 @@ private:
 		_lexer.parse(content);
 		_tokenIndex = 0;
 
-		// for (size_t i = 0; i < _lexer.size(); i += 1) {
-		// 	std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
-		// 	std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
-		// 	_lexer[i].print();
-		// }
+		for (size_t i = 0; i < _lexer.size(); i += 1) {
+			std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
+			std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
+			_lexer[i].print();
+		}
 		// return nullptr;
 
 		bool firstAnnotation = true;
