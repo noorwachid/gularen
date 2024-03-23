@@ -36,6 +36,13 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 [Please read](contributor.md)
 
 ## Changelog
+### Version 1.3.0
+**2024-03-23**
+
+Breking changes:
+- Indentation are removed
+- Blockquote syntax using `tab` (previously indentation syntax) instead of `/ `
+
 ### Version 1.2.0
 **2024-03-19**
 

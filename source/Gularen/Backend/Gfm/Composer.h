@@ -11,8 +11,7 @@ namespace Gfm {
 // [x] style
 // [ ] highlight (cannot be implemented)
 // [x] break
-// [ ] indentation (cannot be implemented)
-// [x] blockquote
+// [x] quote
 // [x] heading
 // [x] list
 // [x] check-list
@@ -36,7 +35,6 @@ public:
 		_content = std::string();
 		_listItem = false;
 		_listCount = 0;
-		_blockQuote = 0;
 		_indent = 0;
 
 		if (document != nullptr) {
@@ -52,13 +50,6 @@ private:
 	void _composeBlock(const Node* node) {
 		switch (node->kind) {
 			case NodeKind::paragraph: return _composeParagraph(node);
-			case NodeKind::blockquote:
-				_blockQuote += 1;
-				for (size_t i = 0; i < node->children.size(); i += 1) {
-					_composeBlock(node->children[i]);
-				}
-				_blockQuote -= 1;
-				break;
 			case NodeKind::document:
 				for (size_t i = 0; i < node->children.size(); i += 1) {
 					_composeBlock(node->children[i]);
@@ -156,7 +147,7 @@ private:
 				_content.append("\n");
 				break;
 			}
-			case NodeKind::indent: {
+			case NodeKind::quote: {
 				_indent += 1;
 				_content.append("\n");
 				for (size_t i = 0; i < node->children.size(); i += 1) {
@@ -172,9 +163,6 @@ private:
 	}
 
 	void _composePrefix() {
-		for (size_t i = 0; i < _blockQuote; i += 1) {
-			_content.append("> ");
-		}
 		for (size_t i = 0; i < _indent; i += 1) {
 			_content.append("\t");
 		}
@@ -242,7 +230,7 @@ private:
 				}
 				break;
 			}
-			case NodeKind::indent: {
+			case NodeKind::quote: {
 				_indent += 1;
 				_content.append("\n");
 				for (size_t i = 0; i < node->children.size(); i += 1) {
@@ -332,7 +320,6 @@ private:
 	std::string _content;
 	bool _listItem;
 	size_t _listCount;
-	size_t _blockQuote;
 	size_t _indent;
 };
 

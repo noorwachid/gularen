@@ -128,12 +128,8 @@ private:
 				_content.append("\"kind\":\"dinkus\"");
 				break;
 			}
-			case NodeKind::indent: {
-				_content.append("\"kind\":\"indent\"");
-				break;
-			}
-			case NodeKind::blockquote: {
-				_content.append("\"kind\":\"blockquote\"");
+			case NodeKind::quote: {
+				_content.append("\"kind\":\"quote\"");
 				break;
 			}
 			case NodeKind::heading: {

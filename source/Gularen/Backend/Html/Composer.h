@@ -219,7 +219,7 @@ private:
 				return;
 			}
 
-			case NodeKind::indent: {
+			case NodeKind::quote: {
 				content.append("<blockquote");
 				_composeAnnotations(node->annotations);
 				content.append(">\n");
@@ -517,13 +517,6 @@ private:
 				return;
 			}
 
-			case NodeKind::blockquote: {
-				content.append("<blockquote class=\"quote");
-				_composeInnerAnnotations(node->annotations);
-				content.append("\">\n");
-				return;
-			}
-
 			case NodeKind::accountTag: {
 				const AccountTag* accountTag = static_cast<const AccountTag*>(node);
 				content.append("<a class=\"account-tag\" href=\"");
@@ -580,7 +573,7 @@ private:
 				return;
 			}
 
-			case NodeKind::indent: {
+			case NodeKind::quote: {
 				content.append("</blockquote>\n");
 				return;
 			}
@@ -642,11 +635,6 @@ private:
 
 			case NodeKind::admon: {
 				content.append("\n</div>\n</div>\n\n");
-				return;
-			}
-
-			case NodeKind::blockquote: {
-				content.append("</blockquote>\n\n");
 				return;
 			}
 

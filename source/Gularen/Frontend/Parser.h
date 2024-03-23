@@ -511,7 +511,7 @@ private:
 
 	Node* _parseIndent() {
 		const Token& token = _eat();
-		Indent* indent = new Indent(token.range);
+		Quote* indent = new Quote(token.range);
 
 		while (_isBound(0) && _get(0).kind != TokenKind::indentClose) {
 			Node* node = _parseBlock();
@@ -1226,38 +1226,6 @@ private:
 		return codeBlock;
 	}
 
-	Node* _parseBlockquote() {
-		const Token& token = _eat();
-		Blockquote* indent = new Blockquote(token.range);
-
-		while (_isBound(0) && _get(0).kind != TokenKind::blockquoteClose) {
-			Node* node = _parseBlock();
-
-			if (node == nullptr) {
-				delete indent;
-				return nullptr;
-			}
-
-			indent->children.push_back(node);
-		}
-
-		if (!(_isBound(0) && _get(0).kind == TokenKind::blockquoteClose)) {
-			return _expect("blockquote pop");
-		}
-
-		_advance(1);
-
-		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-			_eat();
-		}
-
-		if (indent && !indent->children.empty()) {
-			_updateEndRange(indent->range, indent->children.back()->range);
-		}
-
-		return indent;
-	}
-
 	Node* _parseAdmon() {
 		const Token& token = _eat();
 		Admon* admon = new Admon(token.range, token.content);
@@ -1460,10 +1428,6 @@ private:
 
 			case TokenKind::fenceOpen:
 				node = _parseCodeBlock();
-				break;
-
-			case TokenKind::blockquoteOpen:
-				node = _parseBlockquote();
 				break;
 
 			case TokenKind::admon:

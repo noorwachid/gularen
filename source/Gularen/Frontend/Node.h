@@ -23,7 +23,7 @@ enum class NodeKind {
 	heading,
 	subtitle,
 
-	indent,
+	quote,
 
 	list,
 	numberedList,
@@ -49,8 +49,6 @@ enum class NodeKind {
 	inText,
 	reference,
 	referenceInfo,
-
-	blockquote,
 
 	punct,
 
@@ -231,8 +229,8 @@ struct Subtitle : Node {
 	}
 };
 
-struct Indent : Node {
-	Indent(Range range): Node(range, NodeKind::indent) {
+struct Quote : Node {
+	Quote(Range range): Node(range, NodeKind::quote) {
 	}
 
 	virtual void print() override {
@@ -538,15 +536,6 @@ struct Emoji : Node {
 
 	virtual void print() override {
 		std::cout << "emoji " << code << "\n";
-	}
-};
-
-struct Blockquote : Node {
-	Blockquote(Range range): Node(range, NodeKind::blockquote) {
-	}
-
-	virtual void print() override {
-		std::cout << "blockquote\n";
 	}
 };
 

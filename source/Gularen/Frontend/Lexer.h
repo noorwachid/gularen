@@ -32,9 +32,6 @@ enum class TokenKind {
 	indentOpen,
 	indentClose,
 
-	blockquoteOpen,
-	blockquoteClose,
-
 	lineBreak,
 	pageBreak,
 
@@ -112,9 +109,6 @@ std::string_view toStringView(TokenKind kind) {
 
 		case TokenKind::indentOpen: return "indentOpen";
 		case TokenKind::indentClose: return "indentClose";
-
-		case TokenKind::blockquoteOpen: return "blockquoteOpen";
-		case TokenKind::blockquoteClose: return "blockquoteClose";
 
 		case TokenKind::lineBreak: return "lineBreak";
 		case TokenKind::pageBreak: return "pageBreak";
@@ -215,7 +209,6 @@ public:
 		_content = content;
 		_contentIndex = 0;
 		_indentLevel = 0;
-		_quoteLevel = 0;
 
 		_line = 0;
 		_column = 0;
@@ -657,10 +650,6 @@ private:
 			_advance(1);
 		}
 
-		if (_indentLevel == indentLevel) {
-			return _consumeBlockquote();
-		}
-
 		if (_indentLevel < indentLevel) {
 			while (_indentLevel < indentLevel) {
 				Token token;
@@ -678,45 +667,6 @@ private:
 			while (_indentLevel > indentLevel) {
 				_append(TokenKind::indentClose);
 				_indentLevel -= 1;
-			}
-		}
-
-		_consumeBlockquote();
-	}
-
-	void _consumeBlockquote() {
-		size_t quoteLevel = 0;
-		while (_isBound(1) && _get(0) == '/' && _get(1) == ' ') {
-			quoteLevel += 1;
-			_advance(2);
-		}
-
-		if (_isBound(1) && _get(0) == '/' && _get(1) == '\n') {
-			quoteLevel += 1;
-			_advance(1);
-		}
-
-		if (_quoteLevel == quoteLevel) {
-			return;
-		}
-
-		if (_quoteLevel < quoteLevel) {
-			while (_quoteLevel < quoteLevel) {
-				Token token;
-				token.range.startLine = _oldLine;
-				token.range.startColumn = _oldColumn;
-				token.range.endLine = _oldLine;
-				token.range.endColumn = _oldColumn;
-				token.kind = TokenKind::blockquoteOpen;
-				_tokens.push_back(static_cast<Token&&>(token));
-				_quoteLevel += 1;
-			}
-		}
-
-		if (_quoteLevel > quoteLevel) {
-			while (_quoteLevel > quoteLevel) {
-				_append(TokenKind::blockquoteClose);
-				_quoteLevel -= 1;
 			}
 		}
 	}
@@ -1178,8 +1128,6 @@ private:
 	std::vector<Token> _tokens;
 
 	size_t _indentLevel;
-
-	size_t _quoteLevel;
 };
 
 }
