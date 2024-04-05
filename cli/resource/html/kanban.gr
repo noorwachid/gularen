@@ -1,4 +1,5 @@
 ~~ title: Project Board
+~~ description: The kanban view of the project board
 
 >>> To Do
 - Define requirements for new feature #requirements
