@@ -156,7 +156,7 @@ Quote is done by indenting with tabs.
 </blockquote>
 ```
 
-# Heading
+# Section Title
 ```gr
 >>> Section
 
@@ -166,15 +166,21 @@ Quote is done by indenting with tabs.
 ```
 
 ```html
-<h1 id="Section">Section</h1>
+<section class="section">
+	<h1 id="Section">Section</h1>
 
-<h2 id="Subection">Subsection</h2>
+	<section class="subsection">
+		<h2 id="Subection">Subsection</h2>
 
-<h3 id="Subsubsection">Subsubsection</h3>
+		<section class="subsubsection">
+			<h3 id="Subsubsection">Subsubsection</h3>
+		</section>
+	</section>
+</section>
 ```
 
-## Heading Subtitle
-If the subsection modifier is placed in the next line of any headings. It will be parsed as subtitle.
+## Section Subtitle
+If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
 ```gr
 >>> Section
@@ -188,14 +194,20 @@ If the subsection modifier is placed in the next line of any headings. It will b
 ```
 
 ```html
-<h1 id="Section">Section <small>Section Subtitle</small></h1>
+<section class="section">
+	<h1 id="Section">Section <small>Section Subtitle</small></h1>
 
-<h2 id="Subsection">Subsection <small>Subsection Subtitle</small></h2>
+	<section class="subsection">
+		<h2 id="Subsection">Subsection <small>Subsection Subtitle</small></h2>
 
-<h3 id="Subsubsection">Subsubsection <small>Subsubsection Subtitle</small><h3>
+		<section class="subsubsection">
+			<h3 id="Subsubsection">Subsubsection <small>Subsubsection Subtitle</small><h3>
+		</section>
+	</section>
+</section>
 ```
 
-## Heading Link
+## Section Link
 ```gr
 >>> Laminal Flow
 
@@ -205,11 +217,13 @@ If on another file [Chapter 1.gr>Laminal Flow]
 ```
 
 ```html
-<h1 id="Laminar-Flow">Laminar Flow</h1>
+<section class="section">
+	<h1 id="Laminar-Flow">Laminar Flow</h1>
 
-<p>See <a href="#Laminar-Flow">Laminal Flow</a></p>
+	<p>See <a href="#Laminar-Flow">Laminal Flow</a></p>
 
-<p>If on another file <a href="Chapter 1.gr#Laminal-Flow">Chapter 1.gr Laminal Flow</a></p>
+	<p>If on another file <a href="Chapter 1.gr#Laminal-Flow">Chapter 1.gr Laminal Flow</a></p>
+</section>
 ```
 
 # List
