@@ -36,20 +36,20 @@ public:
 
 private:
 	void _composeToc(const Node* node) {
-		if (node->kind == NodeKind::heading) {
-			auto heading = static_cast<const Title*>(node);
+		if (node->kind == NodeKind::section) {
+			auto section = static_cast<const Section*>(node);
 
-			if (heading->type == Title::Type::section ||
-				heading->type == Title::Type::subsection ||
-				heading->type == Title::Type::subsubsection) {
+			if (section->type == Section::Type::section ||
+				section->type == Section::Type::subsection ||
+				section->type == Section::Type::subsubsection) {
 
 				std::string content;
 
-				for (size_t i = 0; i < heading->children.size(); i += 1) {
-					if (heading->children[i]->kind == NodeKind::subtitle) {
+				for (size_t i = 0; i < section->children.size(); i += 1) {
+					if (section->children[i]->kind == NodeKind::subtitle) {
 						break;
 					}
-					_compose(heading->children[i], content);
+					_compose(section->children[i], content);
 				}
 
 				if (content.size() != 0) {
@@ -60,14 +60,14 @@ private:
 
 				_toc.append("<li class=\"");
 
-				switch (heading->type) {
-					case Title::Type::section:
+				switch (section->type) {
+					case Section::Type::section:
 						_toc.append("section");
 						break;
-					case Title::Type::subsection:
+					case Section::Type::subsection:
 						_toc.append("subsection");
 						break;
-					case Title::Type::subsubsection:
+					case Section::Type::subsubsection:
 						_toc.append("subsubsection");
 						break;
 					default: break;
@@ -158,22 +158,23 @@ private:
 				return;
 			}
 
-			case NodeKind::heading: {
+			case NodeKind::title: {
 				_composeFootnote();
 
-				const Title* heading = static_cast<const Title*>(node);
-				switch (heading->type) {
-					case Title::Type::section:
+				const Title* heading = static_cast<const Title*>(node->children.front());
+
+				switch (_sectionType) {
+					case Section::Type::section:
 						content.append("<h1 id=\"");
 						_escapeID(heading, content);
 						content.append("\"");
 						break;
-					case Title::Type::subsection:
+					case Section::Type::subsection:
 						content.append("<h2 id=\"");
 						_escapeID(heading, content);
 						content.append("\"");
 						break;
-					case Title::Type::subsubsection:
+					case Section::Type::subsubsection:
 						content.append("<h3 id=\"");
 						_escapeID(heading, content);
 						content.append("\"");
@@ -555,11 +556,11 @@ private:
 				return;
 			}
 
-			case NodeKind::heading: {
-				switch (static_cast<const Title*>(node)->type) {
-					case Title::Type::section: content.append("</h1>\n"); return;
-					case Title::Type::subsection: content.append("</h2>\n"); return;
-					case Title::Type::subsubsection: content.append("</h3>\n"); return;
+			case NodeKind::title: {
+				switch (_sectionType) {
+					case Section::Type::section: content.append("</h1>\n"); return;
+					case Section::Type::subsection: content.append("</h2>\n"); return;
+					case Section::Type::subsubsection: content.append("</h3>\n"); return;
 				}
 			}
 
@@ -966,6 +967,8 @@ private:
 
 	// referenceID -> infoKey -> infoValue
 	std::unordered_map<std::string_view, std::unordered_map<std::string_view, const ReferenceInfo*>> _references;
+
+	Section::Type _sectionType;
 };
 
 }

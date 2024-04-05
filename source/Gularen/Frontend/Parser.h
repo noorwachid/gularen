@@ -422,33 +422,64 @@ private:
 		return paragraph;
 	}
 
+	int getHeadValue(TokenKind token) {
+		switch (token) {
+			case TokenKind::head3: return 1;
+			case TokenKind::head2: return 2;
+			case TokenKind::head1: return 3;
+			default: return 0;
+		}
+	}
+
 	Node* _parseSection() {
-		const Token& token = _eat();
-		Section* section = new Section();
-		return heading;
+		const Token& token = _get(0);
+		Section* section = new Section(token.range);
+
+		switch (token.kind) {
+			case TokenKind::head3:
+				section->type = Section::Type::section;
+				break;
+
+			case TokenKind::head2:
+				section->type = Section::Type::subsection;
+				break;
+
+			case TokenKind::head1:
+				section->type = Section::Type::subsubsection;
+				break;
+
+			default: 
+				delete section;
+				return nullptr;
+		}
+
+		Node* heading = _parseHeading();
+		if (heading == nullptr) {
+			delete section;
+			return nullptr;
+		}
+
+		section->children.push_back(heading);
+
+		int currentValue = getHeadValue(token.kind);
+
+		while (_isBound(0) && getHeadValue(_get(0).kind) > currentValue) {
+			Node* node = _parseBlock();
+
+			if (node == nullptr) {
+				delete section;
+				return nullptr;
+			}
+
+			section->children.push_back(node);
+		}
+
+		return section;
 	}
 
 	Node* _parseHeading() {
 		const Token& token = _eat();
 		Title* heading = new Title(token.range);
-
-		switch (token.kind) {
-			case TokenKind::head3:
-				heading->type = Title::Type::section;
-				break;
-
-			case TokenKind::head2:
-				heading->type = Title::Type::subsection;
-				break;
-
-			case TokenKind::head1:
-				heading->type = Title::Type::subsubsection;
-				break;
-
-			default: 
-				delete heading;
-				return nullptr;
-		}
 
 		while (_isBound(0)) {
 			Node* node = _parseInline();
@@ -1408,7 +1439,7 @@ private:
 			case TokenKind::head1:
 			case TokenKind::head2:
 			case TokenKind::head3:
-				node = _parseHeading();
+				node = _parseSection();
 				break;
 
 			case TokenKind::indentOpen:

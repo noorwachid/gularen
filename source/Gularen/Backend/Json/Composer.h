@@ -132,18 +132,22 @@ private:
 				_content.append("\"kind\":\"quote\"");
 				break;
 			}
-			case NodeKind::heading: {
-				switch (static_cast<const Title*>(node)->type) {
-					case Title::Type::section: 
-						_content.append("\"kind\":\"heading\",\"type\":\"section\"");
+			case NodeKind::section: {
+				switch (static_cast<const Section*>(node)->type) {
+					case Section::Type::section: 
+						_content.append("\"kind\":\"section\",\"type\":\"section\"");
 						break;
-					case Title::Type::subsection:
-						_content.append("\"kind\":\"heading\",\"type\":\"subsection\"");
+					case Section::Type::subsection:
+						_content.append("\"kind\":\"section\",\"type\":\"subsection\"");
 						break;
-					case Title::Type::subsubsection:
-						_content.append("\"kind\":\"heading\",\"type\":\"subsubsection\"");
+					case Section::Type::subsubsection:
+						_content.append("\"kind\":\"section\",\"type\":\"subsubsection\"");
 						break;
 				}
+				break;
+			}
+			case NodeKind::title: {
+				_content.append("\"kind\":\"title\"");
 				break;
 			}
 			case NodeKind::subtitle: {

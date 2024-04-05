@@ -153,11 +153,6 @@ struct Paragraph : Node {
 };
 
 struct Section : Node {
-	Section(Range range): Node(range, NodeKind::section) {
-	}
-};
-
-struct Title : Node {
 	enum class Type {
 		section,
 		subsection,
@@ -166,6 +161,11 @@ struct Title : Node {
 
 	Type type;
 
+	Section(Range range): Node(range, NodeKind::section) {
+	}
+};
+
+struct Title : Node {
 	Title(Range range): Node(range, NodeKind::title) {
 	}
 };
