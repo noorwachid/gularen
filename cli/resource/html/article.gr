@@ -1,4 +1,4 @@
-~~ title: Demystifying Regular Expressions (Regex): A Beginner's Guide
+~~ title: Demystifying Regular Expressions
 ~~ author: Noor Wachid
 
 >>> What is Regex?
@@ -34,9 +34,9 @@ These specify the number of occurrences of a character or group in a string. For
 
 Let's say we want to validate email addresses using regex. A simple regex pattern for this task might look like this:
 
-```
+---
 ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
-```
+---
 
 Breaking it down:
 - `^`: Start of the string.

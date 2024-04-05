@@ -28,63 +28,59 @@ public:
 	}
 
 	std::string_view composeToc(Document* document) {
-		_toc.append("<ul class=\"toc\">\n");
 		_composeToc(document);
-		_toc.append("</ul>\n");
 		return std::string_view(_toc.data(), _toc.size());
 	}
 
 private:
 	void _composeToc(const Node* node) {
-		if (node->kind == NodeKind::section) {
-			auto section = static_cast<const Section*>(node);
-
-			if (section->type == Section::Type::section ||
-				section->type == Section::Type::subsection ||
-				section->type == Section::Type::subsubsection) {
-
-				std::string content;
-
-				for (size_t i = 0; i < section->children[0]->children.size(); i += 1) {
-					if (section->children[0]->children[i]->kind == NodeKind::subtitle) {
-						break;
-					}
-					_compose(section->children[0]->children[i], content);
-				}
-
-				if (content.size() != 0) {
-					while (content[content.size() - 1] == ' ') {
-						content.pop_back();
-					}
-				}
-
-				_toc.append("<li class=\"");
+		switch (node->kind) {
+			case NodeKind::section: {
+				auto section = static_cast<const Section*>(node);
 
 				switch (section->type) {
 					case Section::Type::section:
-						_toc.append("section");
+						_toc.append("<ul class=\"section\">\n");
 						break;
 					case Section::Type::subsection:
-						_toc.append("subsection");
+						_toc.append("<ul class=\"subsection\">\n");
 						break;
 					case Section::Type::subsubsection:
-						_toc.append("subsubsection");
+						_toc.append("<ul class=\"subsubsection\">\n");
 						break;
-					default: break;
 				}
 
-				std::string id;
-				_toc.append("\"><a href=\"#");
-				_escapeID(std::string_view(content.data(), content.size()), id);
-				_toc.append(id);
-				_toc.append("\">");
-				_toc.append(content);
-				_toc.append("</a></li>\n");
-			}
-		}
+				for (size_t i = 0; i < node->children.size(); i += 1) {
+					_composeToc(node->children[i]);
+				}
 
-		for (size_t i = 1; i < node->children.size(); i += 1) {
-			_composeToc(node->children[i]);
+				_toc.append("</ul>\n");
+				break;
+			}
+			case NodeKind::title: {
+				_toc.append("<li>");
+
+				_toc.append("<a href=\"#");
+
+				_escapeID(node, _toc);
+
+				_toc.append("\">");
+
+				for (size_t i = 0; i < node->children.size(); i += 1) {
+					_compose(node->children[i], _toc);
+				}
+
+				_toc.append("</a>");
+
+				_toc.append("</li>\n");
+				break;
+			}
+			default: {
+				for (size_t i = 0; i < node->children.size(); i += 1) {
+					_composeToc(node->children[i]);
+				}
+				break;
+			}
 		}
 	}
 
@@ -182,22 +178,22 @@ private:
 			case NodeKind::title: {
 				_composeFootnote();
 
-				const Title* heading = static_cast<const Title*>(node);
+				const Title* title = static_cast<const Title*>(node);
 
 				switch (_currentSectionType) {
 					case Section::Type::section:
 						content.append("<h1 id=\"");
-						_escapeID(heading, content);
+						_escapeID(title, content);
 						content.append("\"");
 						break;
 					case Section::Type::subsection:
 						content.append("<h2 id=\"");
-						_escapeID(heading, content);
+						_escapeID(title, content);
 						content.append("\"");
 						break;
 					case Section::Type::subsubsection:
 						content.append("<h3 id=\"");
-						_escapeID(heading, content);
+						_escapeID(title, content);
 						content.append("\"");
 						break;
 				}
