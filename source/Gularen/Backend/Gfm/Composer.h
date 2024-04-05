@@ -55,19 +55,22 @@ private:
 					_composeBlock(node->children[i]);
 				}
 				break;
-			// case NodeKind::title: {
-			// 	switch (static_cast<const Title*>(node)->type) {
-			// 		case Title::Type::section: _content.append("# "); break;
-			// 		case Title::Type::subsection: _content.append("## "); break;
-			// 		case Title::Type::subsubsection: _content.append("### "); break;
-			// 		default: break;
-			// 	}
-			// 	for (size_t i = 0; i < node->children.size(); i += 1) {
-			// 		_composeInline(node->children[i]);
-			// 	}
-			// 	_content.append("\n");
-			// 	break;
-			// }
+			case NodeKind::section: {
+				switch (static_cast<const Section*>(node)->type) {
+					case Section::Type::section: _content.append("# "); break;
+					case Section::Type::subsection: _content.append("## "); break;
+					case Section::Type::subsubsection: _content.append("### "); break;
+					default: break;
+				}
+				for (size_t i = 0; i < node->children[0]->children.size(); i += 1) {
+					_composeInline(node->children[0]->children[i]);
+				}
+				_content.append("\n");
+				for (size_t i = 1; i < node->children.size(); i += 1) {
+					_composeBlock(node->children[i]);
+				}
+				break;
+			}
 			case NodeKind::codeBlock: {
 				const CodeBlock* block = static_cast<const CodeBlock*>(node);
 				_content.append("```");
