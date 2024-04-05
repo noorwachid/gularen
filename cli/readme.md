@@ -22,7 +22,7 @@ gularen to html document.gr
 
 Transpile gularen file to HTML with custom HTML template:
 ```sh
-gularen to html --template resource/html/template/article.html document.gr
+gularen to html --template resource/html/article.template.html resource/html/article.gr > article.html
 ```
 
 In the `article.html` file you can add special comments for substitution.

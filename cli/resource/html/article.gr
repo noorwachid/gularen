@@ -1,0 +1,53 @@
+~~ title: Demystifying Regular Expressions (Regex): A Beginner's Guide
+~~ author: Noor Wachid
+
+>>> What is Regex?
+
+Regular expressions, often abbreviated as regex, are powerful tools used in computer science and programming to search, match, and manipulate text strings. While they may seem daunting at first, understanding the basics of regex can significantly enhance your ability to work with textual data efficiently. Let's delve into the world of regex and demystify its fundamentals.
+
+At its core, a regular expression is a sequence of characters that defines a search pattern. This pattern can be used to find, replace, or manipulate strings of text within a larger body of text. Regex is supported in many programming languages, text editors, and command-line utilities, making it a versatile tool for developers, data scientists, and anyone dealing with textual data.
+
+>> Basic Components of Regex
+
+> Literals
+These are characters that match themselves. For example, the regex `hello` will match the string "hello" in the text.
+
+> Metacharacters
+These are special characters with a specific meaning in regex. Some common metacharacters include:
+- `.` (dot): Matches any single character except newline.
+- `^` (caret): Matches the start of a line.
+- `$` (dollar sign): Matches the end of a line.
+- `*`, `+`, `?`: Quantifiers that specify the number of times a character or group can occur.
+- `[]`: Matches any single character within the brackets.
+- `|`: Acts as an OR operator, allowing you to specify alternatives.
+
+> Quantifiers
+These specify the number of occurrences of a character or group in a string. For example:
+- `*`: Matches zero or more occurrences.
+- `+`: Matches one or more occurrences.
+- `?`: Matches zero or one occurrence.
+- `{n}`: Matches exactly `n` occurrences.
+- `{n,}`: Matches `n` or more occurrences.
+- `{n,m}`: Matches between `n` and `m` occurrences.
+
+>> Example Usage
+
+Let's say we want to validate email addresses using regex. A simple regex pattern for this task might look like this:
+
+```
+^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+```
+
+Breaking it down:
+- `^`: Start of the string.
+- `[a-zA-Z0-9._%+-]+`: Matches one or more characters from the set specified (letters, digits, dots, underscores, percent signs, plus signs, and hyphens) for the username part of the email.
+- `@`: Matches the "@" symbol.
+- `[a-zA-Z0-9.-]+`: Matches one or more characters from the set specified (letters, digits, dots, and hyphens) for the domain name part of the email.
+- `\.`: Matches the dot symbol.
+- `[a-zA-Z]{2,}`: Matches two or more alphabetical characters for the top-level domain.
+- `$`: End of the string.
+
+>>> Conclusion
+
+While regex may initially appear complex, learning its fundamentals can greatly enhance your ability to work with textual data effectively. By mastering regex, you gain a powerful tool that allows you to search, match, and manipulate strings with precision and efficiency. Practice and experimentation are key to becoming proficient in regex, so don't hesitate to dive in and explore its capabilities further.
+
