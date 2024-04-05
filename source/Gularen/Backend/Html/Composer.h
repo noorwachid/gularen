@@ -37,11 +37,11 @@ public:
 private:
 	void _composeToc(const Node* node) {
 		if (node->kind == NodeKind::heading) {
-			auto heading = static_cast<const Heading*>(node);
+			auto heading = static_cast<const Title*>(node);
 
-			if (heading->type == Heading::Type::section ||
-				heading->type == Heading::Type::subsection ||
-				heading->type == Heading::Type::subsubsection) {
+			if (heading->type == Title::Type::section ||
+				heading->type == Title::Type::subsection ||
+				heading->type == Title::Type::subsubsection) {
 
 				std::string content;
 
@@ -61,13 +61,13 @@ private:
 				_toc.append("<li class=\"");
 
 				switch (heading->type) {
-					case Heading::Type::section:
+					case Title::Type::section:
 						_toc.append("section");
 						break;
-					case Heading::Type::subsection:
+					case Title::Type::subsection:
 						_toc.append("subsection");
 						break;
-					case Heading::Type::subsubsection:
+					case Title::Type::subsubsection:
 						_toc.append("subsubsection");
 						break;
 					default: break;
@@ -161,19 +161,19 @@ private:
 			case NodeKind::heading: {
 				_composeFootnote();
 
-				const Heading* heading = static_cast<const Heading*>(node);
+				const Title* heading = static_cast<const Title*>(node);
 				switch (heading->type) {
-					case Heading::Type::section:
+					case Title::Type::section:
 						content.append("<h1 id=\"");
 						_escapeID(heading, content);
 						content.append("\"");
 						break;
-					case Heading::Type::subsection:
+					case Title::Type::subsection:
 						content.append("<h2 id=\"");
 						_escapeID(heading, content);
 						content.append("\"");
 						break;
-					case Heading::Type::subsubsection:
+					case Title::Type::subsubsection:
 						content.append("<h3 id=\"");
 						_escapeID(heading, content);
 						content.append("\"");
@@ -556,10 +556,10 @@ private:
 			}
 
 			case NodeKind::heading: {
-				switch (static_cast<const Heading*>(node)->type) {
-					case Heading::Type::section: content.append("</h1>\n"); return;
-					case Heading::Type::subsection: content.append("</h2>\n"); return;
-					case Heading::Type::subsubsection: content.append("</h3>\n"); return;
+				switch (static_cast<const Title*>(node)->type) {
+					case Title::Type::section: content.append("</h1>\n"); return;
+					case Title::Type::subsection: content.append("</h2>\n"); return;
+					case Title::Type::subsubsection: content.append("</h3>\n"); return;
 				}
 			}
 

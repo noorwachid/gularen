@@ -422,21 +422,27 @@ private:
 		return paragraph;
 	}
 
+	Node* _parseSection() {
+		const Token& token = _eat();
+		Section* section = new Section();
+		return heading;
+	}
+
 	Node* _parseHeading() {
 		const Token& token = _eat();
-		Heading* heading = new Heading(token.range);
+		Title* heading = new Title(token.range);
 
 		switch (token.kind) {
 			case TokenKind::head3:
-				heading->type = Heading::Type::section;
+				heading->type = Title::Type::section;
 				break;
 
 			case TokenKind::head2:
-				heading->type = Heading::Type::subsection;
+				heading->type = Title::Type::subsection;
 				break;
 
 			case TokenKind::head1:
-				heading->type = Heading::Type::subsubsection;
+				heading->type = Title::Type::subsubsection;
 				break;
 
 			default: 

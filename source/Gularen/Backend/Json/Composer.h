@@ -133,14 +133,14 @@ private:
 				break;
 			}
 			case NodeKind::heading: {
-				switch (static_cast<const Heading*>(node)->type) {
-					case Heading::Type::section: 
+				switch (static_cast<const Title*>(node)->type) {
+					case Title::Type::section: 
 						_content.append("\"kind\":\"heading\",\"type\":\"section\"");
 						break;
-					case Heading::Type::subsection:
+					case Title::Type::subsection:
 						_content.append("\"kind\":\"heading\",\"type\":\"subsection\"");
 						break;
-					case Heading::Type::subsubsection:
+					case Title::Type::subsubsection:
 						_content.append("\"kind\":\"heading\",\"type\":\"subsubsection\"");
 						break;
 				}

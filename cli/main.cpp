@@ -6,27 +6,6 @@
 
 using namespace Gularen;
 
-void print(Node* node, size_t depth = 0) {
-	for (size_t i = 0; i < depth; i += 1) {
-		std::cout << "  ";
-	}
-	std::cout << (node->range.startLine + 1) << "," << (node->range.startColumn + 1) << "-";
-	std::cout << (node->range.endLine + 1) << "," << (node->range.endColumn + 1) << " ";
-	node->print();
-
-	for (size_t j = 0; j < node->annotations.size(); j += 1) {
-		for (size_t i = 0; i < depth + 1; i += 1) {
-			std::cout << "  ";
-		}
-		const Annotation& annotation = node->annotations[j];
-		std::cout << "~~ " << annotation.key << ": " << annotation.value << "\n";
-	}
-
-	for (size_t i = 0; i < node->children.size(); i += 1) {
-		print(node->children[i], depth + 1);
-	}
-}
-
 int main(int argc, char** argv) {
 	if (argv == 0) {
 		std::cout << "invalid process\n";
@@ -37,7 +16,7 @@ int main(int argc, char** argv) {
 
 	if (argc < 2) {
 		std::cout << "please specify the action\n";
-		std::cout << "  " << program << " [help|to|parse]\n";
+		std::cout << "  " << program << " [help|to]\n";
 		return 1;
 	}
 
@@ -52,9 +31,6 @@ int main(int argc, char** argv) {
 		std::cout << "    - html\n";
 		std::cout << "    - gfm (github flavored markdown)\n";
 		std::cout << "    - json\n";
-		std::cout << "\n";
-		std::cout << program << " parse input-path.gr\n";
-		std::cout << "  convert specified input path to abstract syntax tree\n\n";
 		return 0;
 	}
 
@@ -149,27 +125,6 @@ int main(int argc, char** argv) {
 
 		std::cout << "unknown target\n";
 		return 1;
-	}
-
-	if (action == "parse") {
-		if (argc < 3) {
-			std::cout << "please specify the input path\n";
-			std::cout << "  " << program << " parse input-path.gr\n";
-
-			return 1;
-		}
-
-		Parser parser;
-		Document* document = parser.parseFile(argv[2]);
-
-		if (document == nullptr) {
-			std::cout << "failed to parse \"" << argv[2] << "\"\n";
-
-			return 1;
-		}
-
-		print(document);
-		return 0;
 	}
 
 	std::cout << "unknown action\n";

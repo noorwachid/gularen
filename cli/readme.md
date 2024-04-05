@@ -39,8 +39,3 @@ gularen to gfm document.gr
 ```sh
 gularen to json document.gr
 ```
-
-### Parse gularen file to AST
-```sh
-gularen parse document.gr
-```
