@@ -80,6 +80,11 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 
+		if (std::filesystem::is_directory(inputPath)) {
+			std::cout << "\"" << inputPath << "\" is a folder please provide an input file\n";
+			return 0;
+		}
+
 		Parser parser;
 		Document* document = parser.parseFile(inputPath);
 
@@ -93,6 +98,11 @@ int main(int argc, char** argv) {
 			if (templatePath.size() != 0) {
 				if (!std::filesystem::exists(templatePath)) {
 					std::cout << "template \"" << templatePath << "\" does not exist\n";
+					return 0;
+				}
+
+				if (std::filesystem::is_directory(templatePath)) {
+					std::cout << "\"" << templatePath << "\" is a folder please provide a template file\n";
 					return 0;
 				}
 

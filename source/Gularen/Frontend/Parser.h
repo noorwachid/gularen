@@ -1108,6 +1108,12 @@ private:
 			if (_fileInclusion) {
 				Parser parser;
 				if (std::filesystem::exists(path)) {
+					if (std::filesystem::is_directory(path)) {
+						std::cout << "inclusion failed because \"" << path << "\" is a folder\n";
+						_error = true;
+						return nullptr;
+					}
+
 					document = parser.parseFile(path);
 
 					if (document == nullptr) {
