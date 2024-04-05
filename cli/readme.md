@@ -29,6 +29,7 @@ gularen to html --template resource/html/article.template.html resource/html/art
 
 <img width="1436" alt="Screenshot 2024-04-05 at 18 37 41" src="https://github.com/noorwachid/gularen/assets/42460975/b265c5ac-b220-4021-9370-306e0641ff67">
 
+[Document file](resource/html/article.gr) -
 [Template file](resource/html/article.template.html)
 
 **Kanban**:
@@ -38,6 +39,7 @@ gularen to html --template resource/html/kanban.template.html resource/html/kanb
 
 <img width="1435" alt="Screenshot 2024-04-05 at 17 04 04" src="https://github.com/noorwachid/gularen/assets/42460975/efdcb478-f217-4d66-8eab-b622ff7f251d">
 
+[Document file](resource/html/kanban.gr) -
 [Template file](resource/html/kanban.template.html)
 
 In the template file you can add special comments for substitution.
