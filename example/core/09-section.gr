@@ -2,9 +2,6 @@
 
 >> two
 
-> three
-> four
-
-> five
+three four five
 
 >>> six

@@ -463,7 +463,18 @@ private:
 
 		int currentValue = getHeadValue(token.kind);
 
-		while (_isBound(0) && getHeadValue(_get(0).kind) > currentValue) {
+		while (_isBound(0)) {
+			switch (_get(0).kind) {
+				case TokenKind::head1:
+				case TokenKind::head2:
+				case TokenKind::head3:
+					if (!(getHeadValue(_get(0).kind) > currentValue)) {
+						goto end;
+					}
+					break;
+				default: break;
+			}
+
 			Node* node = _parseBlock();
 
 			if (node == nullptr) {
@@ -473,6 +484,8 @@ private:
 
 			section->children.push_back(node);
 		}
+
+		end:
 
 		return section;
 	}

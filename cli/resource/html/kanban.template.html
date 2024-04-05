@@ -5,20 +5,61 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<meta name="author" content="<!--[[author]]-->">
 	<title><!--[[title]]--></title>
 	
 	<style>
+		body {
+			font-size: 16px;
+			font-family: sans-serif;
+			line-height: 1.2;
+		}
+		.meta {
+			padding: 8px;
+			margin-bottom: 8px;
+		}
+		.meta .title {
+			font-size: 24px;
+		}
 		.board {
 			display: flex;
 			flex-direction: row;
+			overflow-x: auto;
 		}
 		.section {
+			float: left;
+			background-color: #eee;
+			margin-right: 16px;
+			width: 320px;
+			padding: 8px;
+		}
+		.section h1 {
+			margin: 8px 0;
+		}
+		.section > ul {
+			padding: 0;
+			margin: 0;
+		}
+		.section > ul > li {
+			list-style: none;
+			background-color: #ddd;
+			margin-bottom: 8px;
+			padding: 8px;
+		}
+		.hash-tag {
+			background-color: #eb6434;
+			color: #fff;
+			text-decoration: none;
+			font-size: 90%;
+			padding: 2px 5px;
+			border-radius: 2px;
 		}
 	</style>
 </head>
 
 <body>
+	<div class="meta">
+		<div class="title"><!--[[title]]--></div>
+	</div>
 	<div class="board">
 		<!--[content]-->
 	</div>
