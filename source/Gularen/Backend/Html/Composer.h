@@ -22,8 +22,6 @@ public:
 			}
 		}
 
-		_composeFootnote();
-
 		return std::string_view(_content.data(), _content.size());
 	}
 
@@ -176,8 +174,6 @@ private:
 			}
 
 			case NodeKind::title: {
-				_composeFootnote();
-
 				const Title* title = static_cast<const Title*>(node);
 
 				switch (_currentSectionType) {
@@ -581,6 +577,8 @@ private:
 			}
 
 			case NodeKind::section: {
+				_composeFootnote();
+
 				switch (_currentSectionType) {
 					case Section::Type::section: content.append("</section>\n"); return;
 					case Section::Type::subsection: content.append("</section>\n"); return;
