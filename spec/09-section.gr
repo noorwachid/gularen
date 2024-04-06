@@ -22,7 +22,7 @@
 ---
 
 >> Section Subtitle
-If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
+If the subsubsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
 --- gr
 >>> Section
