@@ -5,14 +5,14 @@ A sweet-spot in markup languages
 <img width="1419" alt="Screenshot 2024-03-23 at 17 40 08" src="https://github.com/noorwachid/gularen/assets/42460975/7244d02d-e3b5-4295-9368-655829647411">
 
 ## Live Demo
-[Right over here](https://noorwach.id/gularen-editor/)
+[Try on web browser](https://noorwach.id/gularen-editor/)
 
-## CLI & Installation
-- [Transpile to HTML, GFM, and JSON](cli/readme.md)
-- [Transpile to PDF](https://github.com/noorwachid/gularen-pdf)
+## Installation
+- [To HTML, GFM, and JSON](cli/readme.md)
+- [To PDF](https://github.com/noorwachid/gularen-pdf)
 
-## Specification & Examples
-[Right over here](spec.md)
+## Specification
+[Read specification](resource/spec/readme.md)
 
 ## Editor Support
 - [VS Code](https://marketplace.visualstudio.com/items?itemName=nwachid.gularen)
@@ -31,3 +31,6 @@ I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any dr
 
 ## Contributors
 [Please read](contributor.md)
+
+## Changelog
+[Read changelog](changelog.md)

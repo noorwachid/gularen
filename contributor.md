@@ -35,5 +35,5 @@ Test files.
 ## Unit Test
 Assuming you are using Linux or MacOS:
 
-Run `sh test/build.sh`, you will get the `build/gularen-test` executable.
-Run `sh test/run.sh` to ensure all tests pass.
+Run `sh script/test-build.sh`, you will get the `build/gularen-test` executable.
+Run `sh script/test-run.sh` to ensure all tests pass.

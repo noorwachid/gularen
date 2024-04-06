@@ -1,4 +1,4 @@
-sh build.sh
+sh script/build.sh
 
 OS="`uname`"
 case $OS in
