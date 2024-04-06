@@ -2,7 +2,10 @@
 
 ## Installation
 ### Linux and MacOS
-- Run this command on the root of the project directory `sh install.sh`
+Run this command at the root of the project directory 
+```sh
+sh install.sh
+```
 
 ### Windows
 I do not have windows machine, 

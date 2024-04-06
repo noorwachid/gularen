@@ -6,13 +6,5 @@
 	Note
 ----
 ---
-document 
-  admon Note
-    text  Note
-  admon Note
-    space
-    paragraph
-      text Multiline
-      space
-      text Note
+{"kind":"document","children":[{"kind":"admon","label":"Note","range":[0,0,0,10],"children":[{"kind":"text","content":" Note","range":[0,6,0,10]}]},{"kind":"admon","label":"Note","range":[2,0,4,4],"children":[{"kind":"space","range":[2,6,2,6]},{"kind":"paragraph","range":[3,1,4,4],"children":[{"kind":"text","content":"Multiline","range":[3,1,3,9]},{"kind":"space","range":[3,10,3,10]},{"kind":"text","content":"Note","range":[4,1,4,4]}]}]}]}
 ---

@@ -9,15 +9,5 @@
 > five
 ----
 ---
-document 
-  section
-    text one
-  subsection
-    text two
-  subsubsection
-    text three
-    subtitle
-      text four
-  subsubsection
-    text five
+{"kind":"document","children":[{"kind":"section","type":"section","range":[0,0,7,5],"children":[{"kind":"title","range":[0,0,0,6],"children":[{"kind":"text","content":"one","range":[0,4,0,6]}]},{"kind":"section","type":"subsection","range":[2,0,7,5],"children":[{"kind":"title","range":[2,0,2,5],"children":[{"kind":"text","content":"two","range":[2,3,2,5]}]},{"kind":"section","type":"subsubsection","range":[4,0,5,5],"children":[{"kind":"title","range":[4,0,5,5],"children":[{"kind":"text","content":"three","range":[4,2,4,6]},{"kind":"subtitle","range":[5,0,5,5],"children":[{"kind":"text","content":"four","range":[5,2,5,5]}]}]}]},{"kind":"section","type":"subsubsection","range":[7,0,7,5],"children":[{"kind":"title","range":[7,0,7,5],"children":[{"kind":"text","content":"five","range":[7,2,7,5]}]}]}]}]}]}
 ---

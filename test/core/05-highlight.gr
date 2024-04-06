@@ -2,8 +2,5 @@
 =highlighted=
 ----
 ---
-document 
-  paragraph
-    highlight
-      text highlighted
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,12],"children":[{"kind":"highlight","range":[0,0,0,12],"children":[{"kind":"text","content":"highlighted","range":[0,1,0,11]}]}]}]}
 ---

@@ -20,7 +20,7 @@ public:
 				_content.append("\"");
 				_escape(document->annotations[i].key);
 				_content.append("\":\"");
-				_escape(document->annotations[i].key);
+				_escape(document->annotations[i].value);
 				_content.append("\"");
 			}
 
@@ -359,7 +359,7 @@ private:
 				_content.append("\"");
 				_escape(node->annotations[i].key);
 				_content.append("\":\"");
-				_escape(node->annotations[i].key);
+				_escape(node->annotations[i].value);
 				_content.append("\"");
 			}
 

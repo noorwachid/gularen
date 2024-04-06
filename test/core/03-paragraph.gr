@@ -3,9 +3,5 @@ hello world
 nice day
 ----
 ---
-document 
-  paragraph
-    text hello world
-    space
-    text nice day
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,1,7],"children":[{"kind":"text","content":"hello world","range":[0,0,0,10]},{"kind":"space","range":[0,11,0,11]},{"kind":"text","content":"nice day","range":[1,0,1,7]}]}]}
 ---

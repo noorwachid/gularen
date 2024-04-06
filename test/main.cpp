@@ -3,16 +3,6 @@
 
 using namespace Gularen;
 
-void print(Node* node, size_t depth = 0) {
-	for (size_t i = 0; i < depth; i += 1) {
-		std::cout << "  ";
-	}
-	node->print();
-	for (size_t i = 0; i < node->children.size(); i += 1) {
-		print(node->children[i], depth + 1);
-	}
-}
-
 std::string readFile(const char* path) {
 	std::string content(std::filesystem::file_size(path), '\0');
 	std::ifstream file(path);
@@ -26,12 +16,22 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	if (argc < 3) {
-		std::cout << "please specify the action [parse|expect]\n";
+	if (!std::filesystem::exists(argv[1])) {
+		std::cout << "file does not exists\n";
 		return 1;
 	}
 
-	std::string content = readFile(argv[2]);
+	if (std::filesystem::is_directory(argv[1])) {
+		std::cout << "your specified path is a folder\n";
+		return 1;
+	}
+
+	if (argc < 3) {
+		std::cout << "please specify the codeblock index\n";
+		return 1;
+	}
+
+	std::string content = readFile(argv[1]);
 	std::string_view contentSlice(content.data(), content.size());
 
 	Parser parser;
@@ -45,19 +45,16 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	if (std::string_view(argv[1]) == "parse") {
+	if (std::string_view(argv[2]) == "0") {
 		Parser parser;
 		std::string_view content = static_cast<CodeBlock*>(document->children[0])->content;
-		Document* contentDocument = parser.parse(content);
-		if (contentDocument != nullptr) {
-			print(contentDocument);
-		}
-	}
-
-	if (std::string_view(argv[1]) == "expect") {
+		std::cout << content << "\n";
+	} else if (std::string_view(argv[2]) == "1") {
 		Parser parser;
 		std::string_view content = static_cast<CodeBlock*>(document->children[1])->content;
 		std::cout << content << "\n";
+	} else {
+		std::cout << "index out of bound\n";
 	}
 
 	return 0;

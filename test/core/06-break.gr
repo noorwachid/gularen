@@ -6,11 +6,5 @@ hello << world
 ***
 ----
 ---
-document 
-  paragraph
-    text hello 
-    lineBreak
-    text  world
-  pageBreak
-  dinkus
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,13],"children":[{"kind":"text","content":"hello ","range":[0,0,0,5]},{"kind":"lineBreak","range":[0,6,0,7]},{"kind":"text","content":" world","range":[0,8,0,13]}]},{"kind":"pageBreak","range":[2,0,2,2]},{"kind":"dinkus","range":[4,0,4,2]}]}
 ---
