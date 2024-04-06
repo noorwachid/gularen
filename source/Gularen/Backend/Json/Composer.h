@@ -339,6 +339,16 @@ private:
 			}
 		}
 
+		_content.append(",\"range\":[");
+		_content.append(std::to_string(node->range.startLine));
+		_content.append(",");
+		_content.append(std::to_string(node->range.startColumn));
+		_content.append(",");
+		_content.append(std::to_string(node->range.endLine));
+		_content.append(",");
+		_content.append(std::to_string(node->range.endColumn));
+		_content.append("]");
+
 		if (node->annotations.size() != 0) {
 			_content.append(",\"annotations\":{");
 

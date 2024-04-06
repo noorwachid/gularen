@@ -487,6 +487,10 @@ private:
 
 		end:
 
+		if (section && !section->children.empty()) {
+			_updateEndRange(section->range, section->children.back()->range);
+		}
+
 		return section;
 	}
 
