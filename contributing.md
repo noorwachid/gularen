@@ -1,4 +1,4 @@
-# Contributors
+# Contributing
 
 ## Project Structures
 
@@ -13,14 +13,18 @@ Runtime example of Gularen documents.
 - `Gularen/Frontend`: Parsing code, from Gularen document to AST.
 - `Gularen/Backend`: Composing code, from AST to other content-type.
 
-### `spec`
+### `resource`
+#### `example`
+Example documents.
+
+#### `spec/published`
 Specification documents.
 
-### `spec-draft`
+#### `spec/draft`
 Specification draft documents.
 
-### `resource`
-resource files.
+### `script`
+Utility scripts.
 
 ### `test`
 Test files.

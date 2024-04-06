@@ -29,8 +29,8 @@ A sweet-spot in markup languages
 
 I drew most of my inspiration from AsciiDoc and Markdown, so there aren't any drastic changes to the syntax and structures.
 
-## Contributors
-[Please read](contributor.md)
+## Contributing
+[Contributing to the project](contributing.md)
 
 ## Changelog
 [Read changelog](changelog.md)
