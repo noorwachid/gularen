@@ -5,30 +5,6 @@
 namespace Gularen {
 namespace Gfm {
 
-// [x] comment
-// [ ] annotation (cannot be implemented)
-// [x] paragraph
-// [x] style
-// [ ] highlight (cannot be implemented)
-// [x] break
-// [x] quote
-// [x] heading
-// [x] list
-// [x] check-list
-// [ ] definition-list
-// [x] code
-// [ ] table
-// [ ] admonition
-// [ ] datetime (cannot be implemented)
-// [x] tag
-// [x] linker
-// [x] viewer
-// [ ] inclusion (cannot be implemented)
-// [ ] citation
-// [ ] footnote
-// [x] punctuation
-// [ ] emoji
-
 class Composer {
 public:
 	std::string_view compose(Document* document) {
@@ -266,19 +242,11 @@ private:
 				_content.append("[");
 				if (link->label.size() == 0) {
 					_content.append(link->resource.data(), link->resource.size());
-					if (link->heading.size() != 0) {
-						_content.append("#");
-						_content.append(link->heading.data(), link->heading.size());
-					}
 				} else {
 					_content.append(link->label.data(), link->label.size());
 				}
 				_content.append("](");
 				_content.append(link->resource.data(), link->resource.size());
-				if (link->heading.size() != 0) {
-					_content.append("#");
-					_content.append(link->heading.data(), link->heading.size());
-				}
 				_content.append(")");
 				break;
 			}

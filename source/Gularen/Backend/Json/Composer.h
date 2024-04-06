@@ -267,10 +267,17 @@ private:
 					_escape(link->resource);
 					_content.append("\"");
 				}
-				if (link->heading.size() != 0) {
-					_content.append(",\"resourceHeading\":\"");
-					_escape(link->heading);
-					_content.append("\"");
+				if (link->sections.size() != 0) {
+					_content.append(",\"sections\":[");
+					for (size_t i = 0; i < link->sections.size(); i += 1) {
+						if (i != 0) {
+							_content.append(",");
+						}
+						_content.append("\"");
+						_escape(link->sections[i]);
+						_content.append("\"");
+					}
+					_content.append("]");
 				}
 				if (link->label.size() != 0) {
 					_content.append(",\"label\":\"");

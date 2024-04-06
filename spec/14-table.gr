@@ -19,7 +19,7 @@
 </table>
 ---
 
->> Table With Heading
+>> Table With Header
 
 --- gr
 | ID | Name   |
@@ -44,7 +44,7 @@
 </table>
 ---
 
->> Table With Heading And Alignment
+>> Table With Header And Alignment
 
 --- gr
 | Left | Center | Right |
@@ -72,8 +72,8 @@
 </table>
 ---
 
->> Table With Heading And Footer
-Footer only works if the heading is defined.
+>> Table With Header And Footer
+Footer only works if the header is defined.
 
 --- gr
 | ID | Name   |

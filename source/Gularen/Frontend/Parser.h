@@ -453,13 +453,13 @@ private:
 				return nullptr;
 		}
 
-		Node* heading = _parseHeading();
-		if (heading == nullptr) {
+		Node* title = _parseTitle();
+		if (title == nullptr) {
 			delete section;
 			return nullptr;
 		}
 
-		section->children.push_back(heading);
+		section->children.push_back(title);
 
 		int currentValue = getHeadValue(token.kind);
 
@@ -494,9 +494,9 @@ private:
 		return section;
 	}
 
-	Node* _parseHeading() {
+	Node* _parseTitle() {
 		const Token& token = _eat();
-		Title* heading = new Title(token.range);
+		Title* title = new Title(token.range);
 
 		while (_isBound(0)) {
 			Node* node = _parseInline();
@@ -512,28 +512,28 @@ private:
 					if (_isBound(0) && _get(0).kind == TokenKind::head1)  {
 						Node* subtitle = _parseSubtitle();
 						if (subtitle == nullptr) {
-							delete heading;
+							delete title;
 							return nullptr;
 						}
 
-						heading->children.push_back(subtitle);
+						title->children.push_back(subtitle);
 					}
 
 					break;
 				}
 
-				delete heading;
+				delete title;
 				return _expect("newline or block");
 			}
 
-			heading->children.push_back(node);
+			title->children.push_back(node);
 		}
 
-		if (heading && !heading->children.empty()) {
-			_updateEndRange(heading->range, heading->children.back()->range);
+		if (title && !title->children.empty()) {
+			_updateEndRange(title->range, title->children.back()->range);
 		}
 
-		return heading;
+		return title;
 	}
 
 	Node* _parseSubtitle() {

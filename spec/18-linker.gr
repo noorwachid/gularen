@@ -16,7 +16,7 @@
 <p><a href="http://google.com">Google</a></p>
 ---
 
->> Heading Link
+>> Section Link
 --- gr
 [>Laminal Flow]
 ---
@@ -48,7 +48,7 @@
 <p><a href="Another Document.gr">see this document</a></p>
 ---
 
-> With Specified Heading
+> With Specified Section
 ---
 [Another Document.gr>Legal Section]
 ---
@@ -56,7 +56,7 @@
 <p><a href="Another%20Document.gr#Legal-Section">Another Document Legal Section</a></p>
 ---
 
-> With Specified Heading and Label
+> With Specified Section and Label
 ---
 [Another Document.gr>Legal Section](see this section)
 ---

@@ -385,9 +385,14 @@ private:
 				content.append("<a href=\"");
 				_escapeAttribute(link->resource, content);
 
-				if (link->heading.size() != 0) {
+				if (link->sections.size() != 0) {
 					content.append("#");
-					_escapeID(link->heading, content);
+					for (size_t i = 0; i < link->sections.size(); i += 1) {
+						if (i != 0) {
+							content.append("-");
+						}
+						_escapeID(link->sections[i], content);
+					}
 				}
 
 				content.append("\">");
@@ -395,9 +400,11 @@ private:
 				if (link->label.size() == 0) {
 					_escape(link->resource, content);
 
-					if (link->heading.size() != 0) {
-						content.append(" ");
-						_escape(link->heading, content);
+					if (link->sections.size() != 0) {
+						for (std::string_view section : link->sections) {
+							content.append(" ");
+							_escape(section, content);
+						}
 					}
 				} else {
 					_escape(link->label, content);

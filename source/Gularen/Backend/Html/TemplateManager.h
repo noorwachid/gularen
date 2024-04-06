@@ -13,7 +13,7 @@ public:
 	void setDocument(Document* document) {
 		_document = document;
 
-		for (unsigned int j = 0; j < _document->annotations.size(); j += 1) {
+		for (size_t j = 0; j < _document->annotations.size(); j += 1) {
 			const Annotation& annotation = _document->annotations[j];
 			_documentAnnotations[annotation.key] = annotation.value;
 		}
@@ -44,7 +44,7 @@ public:
 					_advance(1);
 				}
 
-				unsigned int keyIndex = _templateIndex;
+				size_t keyIndex = _templateIndex;
 
 				while (_isBound(0) && _get(0) != ']') {
 					_advance(1);
@@ -91,20 +91,20 @@ public:
 	}
 
 private:
-	bool _isBound(unsigned int offset) {
+	bool _isBound(size_t offset) {
 		return _templateIndex + offset < _templateContent.size();
 	}
 
-	char _get(unsigned int offset) {
+	char _get(size_t offset) {
 		return _templateContent[_templateIndex + offset];
 	}
 
-	void _advance(unsigned int offset) {
+	void _advance(size_t offset) {
 		_templateIndex += offset;
 	}
 
 	void _escape(std::string_view in) {
-		for (unsigned int i = 0; i < in.size(); i += 1) {
+		for (size_t i = 0; i < in.size(); i += 1) {
 			switch (in[i]) {
 				case '<': _content.append("&lt;"); break;
 				case '>': _content.append("&gt;"); break;
@@ -119,7 +119,7 @@ private:
 private:
 	std::string _templateContent;
 
-	unsigned int _templateIndex;
+	size_t _templateIndex;
 
 	std::unordered_map<std::string_view, std::string_view> _documentAnnotations;
 

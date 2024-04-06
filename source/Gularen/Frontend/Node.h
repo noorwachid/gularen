@@ -77,7 +77,7 @@ struct Node {
 	}
 
 	virtual ~Node() {
-		for (unsigned int i = 0; i < children.size(); i += 1) {
+		for (size_t i = 0; i < children.size(); i += 1) {
 			delete children[i];
 			children[i] = nullptr;
 		}
@@ -264,23 +264,39 @@ struct CodeBlock : Code {
 
 struct Link : Node {
 	std::string_view resource;
-	std::string_view heading;
+	std::vector<std::string_view> sections;
 	std::string_view label;
 
 	Link(Range range): Node(range, NodeKind::link) {
 	}
 
 	void setResource(std::string_view resource) {
-		unsigned int i = 0;
+		bool foundSection = false;
+		size_t startIndex = 0;
 
-		while (i < resource.size() && resource[i] != '>') {
-			i += 1;
+		while (startIndex < resource.size()) {
+			if (resource[startIndex] == '>') {
+				foundSection = true;
+				break;
+			}
+			startIndex += 1;
 		}
 
-		this->resource = resource.substr(0, i);
+		this->resource = resource.substr(0, startIndex);
 
-		if (i < resource.size()) {
-			this->heading = resource.substr(i + 1, resource.size() - i - 1);
+		if (foundSection) {
+			size_t index = startIndex + 1;
+			while (index < resource.size()) {
+				if (resource[index] == '>') {
+					std::string_view section = resource.substr(startIndex + 1, index - startIndex - 1);
+					sections.push_back(section);
+					startIndex = index;
+				}
+				index += 1;
+			}
+
+			std::string_view section = resource.substr(startIndex + 1, index - startIndex - 1);
+			sections.push_back(section);
 		}
 	}
 };
@@ -338,9 +354,9 @@ struct DateTime : Node {
 		bool hasDate = false;
 		bool hasTime = false;
 
-		unsigned int timeBegin = 0;
+		size_t timeBegin = 0;
 
-		for (unsigned int iter = 0; iter < content.size(); iter += 1) {
+		for (size_t iter = 0; iter < content.size(); iter += 1) {
 			if (content[iter] == '-') {
 				hasDate = true;
 			}
