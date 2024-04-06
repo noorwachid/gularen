@@ -156,7 +156,8 @@ Quote is done by indenting with tabs.
 </blockquote>
 ```
 
-# Section Title
+# Section
+## Section Title
 ```gr
 >>> Section
 
@@ -226,7 +227,7 @@ If on another file [Chapter 1.gr>Laminal Flow]
 </section>
 ```
 
-## Conflicting Subsection Name Link
+## Conflicting Subsection Link
 In textbook often each chapters have the same subsection name like “Exercises”.
 The backend has to address this issues. Either by always prefixing the subsection with section or
 only prefixing with section if subsection has conflict (shorter section anchor is preferable in `html`).
