@@ -16,8 +16,14 @@ Runtime example of Gularen documents.
 ### `spec`
 Specification documents.
 
+### `spec-draft`
+Specification draft documents.
+
+### `resource`
+resource files.
+
 ### `test`
-Test documents.
+Test files.
 
 ## Naming Convention
 - Use a tab for indentation.
