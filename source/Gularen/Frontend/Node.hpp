@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gularen/Frontend/Lexer.h"
+#include "Gularen/Frontend/Lexer.hpp"
 
 namespace Gularen {
 

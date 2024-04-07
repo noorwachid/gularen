@@ -1,8 +1,7 @@
-#include "Gularen/Frontend/Parser.h"
-#include "Gularen/Backend/Html/Composer.h"
-#include "Gularen/Backend/Html/TemplateManager.h"
-#include "Gularen/Backend/Gfm/Composer.h"
-#include "Gularen/Backend/Json/Composer.h"
+#include "Gularen/Frontend/Parser.hpp"
+#include "Gularen/Backend/Html/TemplateManager.hpp"
+#include "Gularen/Backend/Gfm/Composer.hpp"
+#include "Gularen/Backend/Json/Composer.hpp"
 
 using namespace Gularen;
 

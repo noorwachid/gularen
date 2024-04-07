@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gularen/Frontend/Parser.h"
+#include "Gularen/Frontend/Parser.hpp"
 
 namespace Gularen {
 namespace Gfm {

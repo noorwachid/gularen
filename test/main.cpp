@@ -1,5 +1,5 @@
-#include "Gularen/Frontend/Parser.h"
-#include "Gularen/Frontend/Node.h"
+#include "Gularen/Frontend/Parser.hpp"
+#include "Gularen/Frontend/Node.hpp"
 
 using namespace Gularen;
 

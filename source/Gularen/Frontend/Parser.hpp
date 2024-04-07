@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gularen/Frontend/Node.h"
+#include "Gularen/Frontend/Node.hpp"
 #include <fstream>
 
 // TODO: allow double newline on blockquote 
