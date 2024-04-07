@@ -20,7 +20,7 @@ enum class NodeKind {
 	pageBreak,
 	dinkus,
 
-	section,
+	division,
 	title,
 	subtitle,
 	content,
@@ -152,16 +152,16 @@ struct Paragraph : Node {
 	}
 };
 
-struct Section : Node {
+struct Division : Node {
 	enum class Type {
+		chapter,
 		section,
 		subsection,
-		subsubsection,
 	};
 
 	Type type;
 
-	Section(Range range): Node(range, NodeKind::section) {
+	Division(Range range): Node(range, NodeKind::division) {
 	}
 };
 
@@ -264,19 +264,19 @@ struct CodeBlock : Code {
 
 struct Link : Node {
 	std::string_view resource;
-	std::vector<std::string_view> sections;
+	std::vector<std::string_view> divisions;
 	std::string_view label;
 
 	Link(Range range): Node(range, NodeKind::link) {
 	}
 
 	void setResource(std::string_view resource) {
-		bool foundSection = false;
+		bool found = false;
 		size_t startIndex = 0;
 
 		while (startIndex < resource.size()) {
 			if (resource[startIndex] == '>') {
-				foundSection = true;
+				found = true;
 				break;
 			}
 			startIndex += 1;
@@ -284,19 +284,19 @@ struct Link : Node {
 
 		this->resource = resource.substr(0, startIndex);
 
-		if (foundSection) {
+		if (found) {
 			size_t index = startIndex + 1;
 			while (index < resource.size()) {
 				if (resource[index] == '>') {
-					std::string_view section = resource.substr(startIndex + 1, index - startIndex - 1);
-					sections.push_back(section);
+					std::string_view division = resource.substr(startIndex + 1, index - startIndex - 1);
+					divisions.push_back(division);
 					startIndex = index;
 				}
 				index += 1;
 			}
 
-			std::string_view section = resource.substr(startIndex + 1, index - startIndex - 1);
-			sections.push_back(section);
+			std::string_view division = resource.substr(startIndex + 1, index - startIndex - 1);
+			divisions.push_back(division);
 		}
 	}
 };

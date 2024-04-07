@@ -431,35 +431,35 @@ private:
 		}
 	}
 
-	Node* _parseSection() {
+	Node* _parseDivision() {
 		const Token& token = _get(0);
-		Section* section = new Section(token.range);
+		Division* division = new Division(token.range);
 
 		switch (token.kind) {
 			case TokenKind::head3:
-				section->type = Section::Type::section;
+				division->type = Division::Type::chapter;
 				break;
 
 			case TokenKind::head2:
-				section->type = Section::Type::subsection;
+				division->type = Division::Type::section;
 				break;
 
 			case TokenKind::head1:
-				section->type = Section::Type::subsubsection;
+				division->type = Division::Type::subsection;
 				break;
 
 			default: 
-				delete section;
+				delete division;
 				return nullptr;
 		}
 
 		Node* title = _parseTitle();
 		if (title == nullptr) {
-			delete section;
+			delete division;
 			return nullptr;
 		}
 
-		section->children.push_back(title);
+		division->children.push_back(title);
 
 		int currentValue = getHeadValue(token.kind);
 
@@ -478,20 +478,20 @@ private:
 			Node* node = _parseBlock();
 
 			if (node == nullptr) {
-				delete section;
+				delete division;
 				return nullptr;
 			}
 
-			section->children.push_back(node);
+			division->children.push_back(node);
 		}
 
 		end:
 
-		if (section && !section->children.empty()) {
-			_updateEndRange(section->range, section->children.back()->range);
+		if (division && !division->children.empty()) {
+			_updateEndRange(division->range, division->children.back()->range);
 		}
 
-		return section;
+		return division;
 	}
 
 	Node* _parseTitle() {
@@ -1462,7 +1462,7 @@ private:
 			case TokenKind::head1:
 			case TokenKind::head2:
 			case TokenKind::head3:
-				node = _parseSection();
+				node = _parseDivision();
 				break;
 
 			case TokenKind::indentOpen:

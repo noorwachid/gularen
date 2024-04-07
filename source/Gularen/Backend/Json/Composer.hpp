@@ -132,16 +132,16 @@ private:
 				_content.append("\"kind\":\"quote\"");
 				break;
 			}
-			case NodeKind::section: {
-				switch (static_cast<const Section*>(node)->type) {
-					case Section::Type::section: 
-						_content.append("\"kind\":\"section\",\"type\":\"section\"");
+			case NodeKind::division: {
+				switch (static_cast<const Division*>(node)->type) {
+					case Division::Type::chapter: 
+						_content.append("\"kind\":\"division\",\"type\":\"chapter\"");
 						break;
-					case Section::Type::subsection:
-						_content.append("\"kind\":\"section\",\"type\":\"subsection\"");
+					case Division::Type::section:
+						_content.append("\"kind\":\"division\",\"type\":\"section\"");
 						break;
-					case Section::Type::subsubsection:
-						_content.append("\"kind\":\"section\",\"type\":\"subsubsection\"");
+					case Division::Type::subsection:
+						_content.append("\"kind\":\"division\",\"type\":\"subsection\"");
 						break;
 				}
 				break;
@@ -267,14 +267,14 @@ private:
 					_escape(link->resource);
 					_content.append("\"");
 				}
-				if (link->sections.size() != 0) {
-					_content.append(",\"sections\":[");
-					for (size_t i = 0; i < link->sections.size(); i += 1) {
+				if (link->divisions.size() != 0) {
+					_content.append(",\"divisions\":[");
+					for (size_t i = 0; i < link->divisions.size(); i += 1) {
 						if (i != 0) {
 							_content.append(",");
 						}
 						_content.append("\"");
-						_escape(link->sections[i]);
+						_escape(link->divisions[i]);
 						_content.append("\"");
 					}
 					_content.append("]");

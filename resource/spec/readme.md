@@ -156,59 +156,59 @@ Quote is done by indenting with tabs.
 </blockquote>
 ```
 
-# Section
-## Section Title
+# Division
+## Division Title
 ```gr
->>> Section
+>>> Chapter
 
->> Subection
+>> Section
 
-> Subsubsection
+> Subsection
 ```
 
 ```html
-<section class="section">
-	<h1 id="Section">Section</h1>
+<div class="chapter">
+	<h1 id="Chapter">Chapter</h1>
 
-	<section class="subsection">
-		<h2 id="Subection">Subsection</h2>
+	<div class="section">
+		<h2 id="Section">Section</h2>
 
-		<section class="subsubsection">
-			<h3 id="Subsubsection">Subsubsection</h3>
-		</section>
-	</section>
-</section>
+		<div class="subsection">
+			<h3 id="Subsection">Subsection</h3>
+		</div>
+	</div>
+</div>
 ```
 
-## Section Subtitle
-If the subsubsection modifier is placed in the next line of any title. It will be parsed as subtitle.
+## Division Subtitle
+If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
 ```gr
->>> Section
+>>> Chapter
+> Chapter Subtitle
+
+>> Section
 > Section Subtitle
 
->> Subsection
+> Subsection
 > Subsection Subtitle
-
-> Subsubsection
-> Subsubsection Subtitle
 ```
 
 ```html
-<section class="section">
-	<h1 id="Section">Section <small>Section Subtitle</small></h1>
+<section class="chapter">
+	<h1 id="Chapter">Chapter <small>Chapter Subtitle</small></h1>
 
-	<section class="subsection">
-		<h2 id="Subsection">Subsection <small>Subsection Subtitle</small></h2>
+	<section class="section">
+		<h2 id="Section">Section <small>Section Subtitle</small></h2>
 
-		<section class="subsubsection">
-			<h3 id="Subsubsection">Subsubsection <small>Subsubsection Subtitle</small><h3>
+		<section class="subsection">
+			<h3 id="Subsection">Subsection <small>Subsection Subtitle</small><h3>
 		</section>
 	</section>
 </section>
 ```
 
-## Section Link
+## Division Link
 ```gr
 >>> Laminal Flow
 
@@ -227,12 +227,12 @@ If on another file [Chapter 1.gr>Laminal Flow]
 </section>
 ```
 
-## Conflicting Subsection Link
-In textbook often each chapters have the same subsection name like “Exercises”.
-The backend has to address this issues. Either by always prefixing the subsection with section or
-only prefixing with section if subsection has conflict (shorter section anchor is preferable in `html`).
+## Conflicting Section Link
+In textbook often each chapters have the same section name like “Exercises”.
+The backend has to address this issues. Either by always prefixing the section with chapter or
+only prefixing with chapter if has section conflict.
 
-For subsection conflict you can add another `>` after section.
+For section conflict you can add another `>` after section.
 
 ```gr
 >>> Chapter 1
@@ -256,16 +256,14 @@ For subsection conflict you can add another `>` after section.
 <a href="#Chapter-2-Execises">Chapter 2 Exercises</a>
 ```
 
-For subsubsection conflict you can add another `>` after subsection.
-The backend rule is the same.
-
+For subsection conflict you can add another `>` after section.
 
 ```gr
-[>Section>Subsection>Subsubsection]
+[>Chapter>Section>Subsection]
 ```
 
 ```html
-<a href="#Section-Subsection-Subsubsection">Section Subsection Subsubsection</a>
+<a href="#Chapter-Section-Subsection">Chapter Section Subsection</a>
 ```
 
 # List

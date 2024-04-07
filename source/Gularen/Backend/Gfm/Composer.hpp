@@ -31,11 +31,11 @@ private:
 					_composeBlock(node->children[i]);
 				}
 				break;
-			case NodeKind::section: {
-				switch (static_cast<const Section*>(node)->type) {
-					case Section::Type::section: _content.append("# "); break;
-					case Section::Type::subsection: _content.append("## "); break;
-					case Section::Type::subsubsection: _content.append("### "); break;
+			case NodeKind::division: {
+				switch (static_cast<const Division*>(node)->type) {
+					case Division::Type::chapter: _content.append("# "); break;
+					case Division::Type::section: _content.append("## "); break;
+					case Division::Type::subsection: _content.append("### "); break;
 					default: break;
 				}
 				for (size_t i = 0; i < node->children[0]->children.size(); i += 1) {

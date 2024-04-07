@@ -33,17 +33,17 @@ public:
 private:
 	void _composeToc(const Node* node) {
 		switch (node->kind) {
-			case NodeKind::section: {
-				auto section = static_cast<const Section*>(node);
+			case NodeKind::division: {
+				auto division = static_cast<const Division*>(node);
 
-				switch (section->type) {
-					case Section::Type::section:
+				switch (division->type) {
+					case Division::Type::chapter:
 						_toc.append("<ul class=\"section\">\n");
 						break;
-					case Section::Type::subsection:
+					case Division::Type::section:
 						_toc.append("<ul class=\"subsection\">\n");
 						break;
-					case Section::Type::subsubsection:
+					case Division::Type::subsection:
 						_toc.append("<ul class=\"subsubsection\">\n");
 						break;
 				}
@@ -152,22 +152,22 @@ private:
 				return;
 			}
 
-			case NodeKind::section: {
-				_previousSectionType = _currentSectionType;
+			case NodeKind::division: {
+				_previousDivisionType = _currentDivisionType;
 
-				const Section* section = static_cast<const Section*>(node);
+				const Division* division = static_cast<const Division*>(node);
 
-				_currentSectionType = section->type;
+				_currentDivisionType = division->type;
 
-				switch (section->type) {
-					case Section::Type::section:
-						content.append("<section class=\"section\">\n");
+				switch (division->type) {
+					case Division::Type::chapter:
+						content.append("<div class=\"chapter\">\n");
 						break;
-					case Section::Type::subsection:
-						content.append("<section class=\"subsection\">\n");
+					case Division::Type::section:
+						content.append("<div class=\"section\">\n");
 						break;
-					case Section::Type::subsubsection:
-						content.append("<section class=\"subsubsection\">\n");
+					case Division::Type::subsection:
+						content.append("<div class=\"subsection\">\n");
 						break;
 				}
 				return;
@@ -176,18 +176,18 @@ private:
 			case NodeKind::title: {
 				const Title* title = static_cast<const Title*>(node);
 
-				switch (_currentSectionType) {
-					case Section::Type::section:
+				switch (_currentDivisionType) {
+					case Division::Type::chapter:
 						content.append("<h1 id=\"");
 						_escapeID(title, content);
 						content.append("\"");
 						break;
-					case Section::Type::subsection:
+					case Division::Type::section:
 						content.append("<h2 id=\"");
 						_escapeID(title, content);
 						content.append("\"");
 						break;
-					case Section::Type::subsubsection:
+					case Division::Type::subsection:
 						content.append("<h3 id=\"");
 						_escapeID(title, content);
 						content.append("\"");
@@ -381,13 +381,13 @@ private:
 				content.append("<a href=\"");
 				_escapeAttribute(link->resource, content);
 
-				if (link->sections.size() != 0) {
+				if (link->divisions.size() != 0) {
 					content.append("#");
-					for (size_t i = 0; i < link->sections.size(); i += 1) {
+					for (size_t i = 0; i < link->divisions.size(); i += 1) {
 						if (i != 0) {
 							content.append("-");
 						}
-						_escapeID(link->sections[i], content);
+						_escapeID(link->divisions[i], content);
 					}
 				}
 
@@ -396,8 +396,8 @@ private:
 				if (link->label.size() == 0) {
 					_escape(link->resource, content);
 
-					if (link->sections.size() != 0) {
-						for (std::string_view section : link->sections) {
+					if (link->divisions.size() != 0) {
+						for (std::string_view section : link->divisions) {
 							content.append(" ");
 							_escape(section, content);
 						}
@@ -576,23 +576,23 @@ private:
 				return;
 			}
 
-			case NodeKind::section: {
+			case NodeKind::division: {
 				_composeFootnote();
 
-				switch (_currentSectionType) {
-					case Section::Type::section: content.append("</section>\n"); return;
-					case Section::Type::subsection: content.append("</section>\n"); return;
-					case Section::Type::subsubsection: content.append("</section>\n"); return;
+				switch (_currentDivisionType) {
+					case Division::Type::chapter: content.append("</div>\n"); return;
+					case Division::Type::section: content.append("</div>\n"); return;
+					case Division::Type::subsection: content.append("</div>\n"); return;
 				}
 
-				_currentSectionType = _previousSectionType;
+				_currentDivisionType = _previousDivisionType;
 			}
 
 			case NodeKind::title: {
-				switch (_currentSectionType) {
-					case Section::Type::section: content.append("</h1>\n"); return;
-					case Section::Type::subsection: content.append("</h2>\n"); return;
-					case Section::Type::subsubsection: content.append("</h3>\n"); return;
+				switch (_currentDivisionType) {
+					case Division::Type::chapter: content.append("</h1>\n"); return;
+					case Division::Type::section: content.append("</h2>\n"); return;
+					case Division::Type::subsection: content.append("</h3>\n"); return;
 				}
 			}
 
@@ -1000,8 +1000,8 @@ private:
 	// referenceID -> infoKey -> infoValue
 	std::unordered_map<std::string_view, std::unordered_map<std::string_view, const ReferenceInfo*>> _references;
 
-	Section::Type _previousSectionType;
-	Section::Type _currentSectionType;
+	Division::Type _previousDivisionType;
+	Division::Type _currentDivisionType;
 };
 
 }
