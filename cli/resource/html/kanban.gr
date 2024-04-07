@@ -1,7 +1,7 @@
 ~~ title: Project Board
 ~~ description: The kanban view of the project board
 
->>> To Do
+>> To Do
 - Define requirements for new feature #requirements
 - Create user stories
 - Design UI mockups #ui
@@ -9,17 +9,17 @@
 - Create database schema #database
 - Write unit tests #test
 
->>> In Progress
+>> In Progress
 - Implement backend logic #backend
 - Develop frontend components #frontend
 - Test new feature for bugs and issues #test
 
->>> Review
+>> Review
 - Code review by team members
 - UI/UX review by designers #ui
 - Conduct acceptance testing
 
->>> Done
+>> Done
 - Feature merged into main branch
 - Documentation updated #docs
 - Release feature to production #release
