@@ -127,6 +127,7 @@ Anything after backslash is will be rendered as is
 # Quote
 Quote is done by indenting with tabs.
 
+## Single Quote
 ```gr 
 	"You have power over your mind---not outside events. Realize this, and you will find strength." 
 	--Markus Aurelius
@@ -139,7 +140,7 @@ Quote is done by indenting with tabs.
 </blockquote>
 ```
 
-### Nested Quote
+## Nested Quote
 ```gr
 		"You have power over your mind---not outside events. Realize this, and you will find strength." 
 		--Markus Aurelius
@@ -297,7 +298,7 @@ For subsection conflict you can add another `>` after section.
 </ol>
 ```
 
-## Nested Variation
+## Nested List
 ```gr
 - One 
 - Two 
@@ -353,12 +354,12 @@ For subsection conflict you can add another `>` after section.
 ```
 
 ```html
-<ol class="check-list">
+<ul class="check-list">
 	<li><input type="checkbox"> To-do one</li>
 	<li><input type="checkbox"> To-do two</li>
 	<li><input type="checkbox" checked> Done three</li>
 	<li><input type="checkbox" checked> Done four</li>
-</ol>
+</ul>
 ```
 
 # Definition List
@@ -618,6 +619,16 @@ Footer only works if the header is defined.
 ```
 
 # Date‐Time
+## Full Date‐Time
+```gr
+<2018-05-10 10:10>
+```
+
+```html
+<time datetime="2018-05-10 10:10">2018-05-10 10:10</time>
+```
+
+## Partial Date‐Time
 ```gr
 Diary <2018-05-10>
 
@@ -714,7 +725,7 @@ He said his first word today.</p>
 <p><a href="Another Document.gr">see this document</a></p>
 ```
 
-### With Specified Section
+### With Specified Division Title
 ```
 [Another Document.gr>Legal Section]
 ```
@@ -723,7 +734,7 @@ He said his first word today.</p>
 <p><a href="Another%20Document.gr#Legal-Section">Another Document Legal Section</a></p>
 ```
 
-### With Specified Section and Label
+### With Specified Division Title and Label
 ```
 [Another Document.gr>Legal Section](see this section)
 ```
@@ -787,10 +798,10 @@ Only local files are allowed to be included.
 ```
 
 ```html
-<p><a class="citation" href="#Reference-12-rules">(Peterson, 2018)</a>
-<a class="citation" href="#Reference-lateral-thinking">(de Bono, 1970)</a>
-<a class="citation" href="#Reference-good-omens">(Pratchett & Gaiman, 1990)</a>
-<a class="citation" href="#Reference-my-lady-jane">(Hand et al., 2016)</a></p>
+<p><a class="in-text" href="#Reference-12-rules">(Peterson, 2018)</a>
+<a class="in-text" href="#Reference-lateral-thinking">(de Bono, 1970)</a>
+<a class="in-text" href="#Reference-good-omens">(Pratchett & Gaiman, 1990)</a>
+<a class="in-text" href="#Reference-my-lady-jane">(Hand et al., 2016)</a></p>
 ```
 
 ## References

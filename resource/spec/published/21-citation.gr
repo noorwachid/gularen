@@ -4,10 +4,10 @@
 ^[12-rules] ^[lateral-thinking] ^[good-omens] ^[my-lady-jane]
 ---
 --- html
-<p><a class="citation" href="#Reference-12-rules">(Peterson, 2018)</a>
-<a class="citation" href="#Reference-lateral-thinking">(de Bono, 1970)</a>
-<a class="citation" href="#Reference-good-omens">(Pratchett & Gaiman, 1990)</a>
-<a class="citation" href="#Reference-my-lady-jane">(Hand et al., 2016)</a></p>
+<p><a class="in-text" href="#Reference-12-rules">(Peterson, 2018)</a>
+<a class="in-text" href="#Reference-lateral-thinking">(de Bono, 1970)</a>
+<a class="in-text" href="#Reference-good-omens">(Pratchett & Gaiman, 1990)</a>
+<a class="in-text" href="#Reference-my-lady-jane">(Hand et al., 2016)</a></p>
 ---
 
 >> References

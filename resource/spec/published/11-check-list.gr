@@ -6,12 +6,12 @@
 [x] Done four
 ---
 --- html
-<ol class="check-list">
+<ul class="check-list">
 	<li><input type="checkbox"> To-do one</li>
 	<li><input type="checkbox"> To-do two</li>
 	<li><input type="checkbox" checked> Done three</li>
 	<li><input type="checkbox" checked> Done four</li>
-</ol>
+</ul>
 ---
 
 
