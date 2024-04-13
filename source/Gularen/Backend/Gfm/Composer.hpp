@@ -190,6 +190,14 @@ private:
 						_content.append("_");
 						break;
 					}
+					case Style::Type::underlined: {
+						_content.append("<u>");
+						for (size_t i = 0; i < node->children.size(); i += 1) {
+							_composeInline(node->children[i]);
+						}
+						_content.append("</u>");
+						break;
+					}
 				}
 				break;
 			}

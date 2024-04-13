@@ -17,6 +17,7 @@ enum class TokenKind {
 	newlinePlus,
 
 	asterisk,
+	slash,
 	underscore,
 	backtick,
 
@@ -95,6 +96,7 @@ std::string_view toStringView(TokenKind kind) {
 		case TokenKind::newlinePlus: return "newline+";
 
 		case TokenKind::asterisk: return "asterisk";
+		case TokenKind::slash: return "slash";
 		case TokenKind::underscore: return "underscore";
 		case TokenKind::backtick: return "backtick";
 
@@ -359,6 +361,11 @@ private:
 					}
 
 					_append(TokenKind::asterisk); 
+					_advance(1);
+					break;
+
+				case '/': 
+					_append(TokenKind::slash); 
 					_advance(1);
 					break;
 
@@ -776,6 +783,7 @@ private:
 					break;
 
 				case '*':
+				case '/':
 				case '_':
 				case '`':
 				case '=':

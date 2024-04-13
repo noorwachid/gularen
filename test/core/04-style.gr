@@ -1,5 +1,5 @@
 ----
-*bold* _italic_
+*bold* /italic/ _underlined_
 ----
 ---
 {"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,14],"children":[{"kind":"style","type":"bold","range":[0,0,0,5],"children":[{"kind":"text","content":"bold","range":[0,1,0,4]}]},{"kind":"text","content":" ","range":[0,6,0,6]},{"kind":"style","type":"italic","range":[0,7,0,14],"children":[{"kind":"text","content":"italic","range":[0,8,0,13]}]}]}]}

@@ -108,6 +108,9 @@ private:
 					case Style::Type::italic:
 						_content.append("italic");
 						break;
+					case Style::Type::underlined:
+						_content.append("underlined");
+						break;
 				}
 				_content.append("\"");
 				break;

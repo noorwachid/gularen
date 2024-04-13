@@ -228,8 +228,12 @@ private:
 				node = _parseStyle(Style::Type::bold);
 				break;
 
-			case TokenKind::underscore: 
+			case TokenKind::slash: 
 				node = _parseStyle(Style::Type::italic);
+				break;
+
+			case TokenKind::underscore: 
+				node = _parseStyle(Style::Type::underlined);
 				break;
 
 			case TokenKind::equal: 
@@ -1371,6 +1375,7 @@ private:
 			case TokenKind::newline:
 
 			case TokenKind::asterisk:
+			case TokenKind::slash:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
 			case TokenKind::equal:

@@ -134,6 +134,7 @@ struct Style : Node {
 	enum class Type {
 		bold,
 		italic,
+		underlined,
 	};
 
 	Type type;

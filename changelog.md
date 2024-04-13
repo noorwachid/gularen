@@ -1,5 +1,14 @@
 # Changelog
 
+### Version 1.5.0
+**2024-04-13**
+
+New features:
+- Underlined, denoted with `_underlined_`
+
+Breaking changes:
+- Italic is new denoted with `/italic/` instead of `_italic_`
+
 ### Version 1.4.0
 **2024-04-01**
 

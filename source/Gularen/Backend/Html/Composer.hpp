@@ -144,6 +144,7 @@ private:
 				switch (static_cast<const Style*>(node)->type) {
 					case Style::Type::bold: content.append("<b>"); return;
 					case Style::Type::italic: content.append("<i>"); return;
+					case Style::Type::underlined: content.append("<u>"); return;
 				}
 			}
 
@@ -568,6 +569,7 @@ private:
 				switch (static_cast<const Style*>(node)->type) {
 					case Style::Type::bold: content.append("</b>"); return;
 					case Style::Type::italic: content.append("</i>"); return;
+					case Style::Type::underlined: content.append("</u>"); return;
 				}
 			}
 

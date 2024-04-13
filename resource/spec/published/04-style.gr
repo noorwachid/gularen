@@ -1,21 +1,28 @@
 >>> Style
 
 --- gr
-*Anything inside two asterisks will be rendered as bold font style.*
+*Anything inside two asterisks will be rendered as bold.*
 ---
 --- html
-<p><b>Anything inside two asterisks will be rendered as bold font style.</b></p>
+<p><b>Anything inside two asterisks will be rendered as bold.</b></p>
 ---
 
 --- gr
-_Anything inside two underscores will be rendered as italic font style._
+/Anything inside two underscores will be rendered as italic./
 ---
 --- html
-<p><i>Anything inside two underscores will be rendered as italic font style.</i></p>
+<p><i>Anything inside two underscores will be rendered as italic.</i></p>
 ---
 
 --- gr
-Hello _*darkness* my old_ friend
+_Anything inside two underscores will be rendered as underlined._
+---
+--- html
+<p><u>Anything inside two underscores will be rendered as underlined.</u></p>
+---
+
+--- gr
+Hello /*darkness* my old/ friend
 ---
 --- html
 <p>Hello <i><b>darkness</b> my old</i> friend</p>
