@@ -10,6 +10,7 @@ enum class TokenKind {
 	comment,
 	annotationKey,
 	annotationValue,
+	referenceKey,
 
 	text,
 
@@ -71,6 +72,7 @@ enum class TokenKind {
 	exclamation,
 	question,
 	caret,
+	ampersand,
 
 	hyphen,
 	enDash,
@@ -98,6 +100,7 @@ struct TokenKindHelper {
 			case TokenKind::comment: return "comment";
 			case TokenKind::annotationKey: return "annotationKey";
 			case TokenKind::annotationValue: return "annotationValue";
+			case TokenKind::referenceKey: return "referenceKey";
 
 			case TokenKind::text: return "text";
 
@@ -158,6 +161,7 @@ struct TokenKindHelper {
 			case TokenKind::exclamation: return "exclamation";
 			case TokenKind::question: return "question";
 			case TokenKind::caret: return "caret";
+			case TokenKind::ampersand: return "ampersand";
 
 			case TokenKind::hyphen: return "hyphen";
 			case TokenKind::enDash: return "enDash";
@@ -264,17 +268,23 @@ private:
 					_consumeText();
 					break;
 
-				case '<':
-					if (_isBound(1) && !(_get(1) >= '0' && _get(1) <= '9') && _get(1) != '<') {
+				case '/':
+					if (_isBound(1) && _get(1) == '/') {
+						_advance(1);
+
 						size_t oldContentIndex = _contentIndex;
 
-						while (_isBound(0) && _get(0) != '>') {
+						while (_isBound(0)) {
+							if (_get(0) == '/' && _isBound(1) && _get(1) == '/') {
+								break;
+							}
+
 							_advance(1);
 						}
 
-						if (_isBound(0) && _get(0) == '>') {
+						if (_get(0) == '/' && _isBound(1) && _get(1) == '/') {
 							_append(TokenKind::admon, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column });
-							_advance(1);
+							_advance(2);
 							break;
 						}
 
@@ -470,10 +480,13 @@ private:
 						break;
 					}
 
-					if (_isBound(1) && _get(1) == '(') {
-						_append(TokenKind::caret, _contentIndex, 1);
+					_consumeText();
+					break;
+
+				case '&':
+					if (_isBound(1) && _get(1) == '[') {
+						_append(TokenKind::ampersand, _contentIndex, 1);
 						_advance(1);
-						_consumeLabel();
 						break;
 					}
 
@@ -712,6 +725,21 @@ private:
 			_advance(3);
 			size_t keyIndex = _contentIndex;
 
+			if (_get(0) == '&') {
+				while (_isBound(0) && _get(0) == ' ') {
+					_advance(1);
+				}
+
+				size_t keyIndex = _contentIndex;
+
+				while (_isBound(0) && _get(0) != '\n') {
+					_advance(1);
+				}
+
+				_append(TokenKind::referenceKey, keyIndex, _contentIndex - keyIndex);
+				_advance(1);
+			}
+
 			while (_isBound(0) && (
 				(_get(0) >= 'a' && _get(0) <= 'z') ||
 				(_get(0) >= 'A' && _get(0) <= 'Z') ||
@@ -835,8 +863,9 @@ private:
 					break;
 
 				case '^':
+				case '&':
 					previousAlphanumeric = false;
-					if (_isBound(1) && (_get(1) == '[' || _get(1) == '(')) {
+					if (_isBound(1) && _get(1) == '[') {
 						goto end;
 					}
 
