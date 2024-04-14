@@ -14,21 +14,21 @@ Now you see me. ~ Now you dont.
 First annotation at the begining of document belongs to `Document` node.
 
 ```regex
-~~ [a-zA-Z-0-9-]+:.*
+~~ [a-zA-Z-0-9-]+\s*=\s*.*
 ```
 
 ```gr
-~~ title: Book Title
-~~ author: Author Name
-~~ created-at: 2021-01-10
-~~ published-at: 2024-01-03
-~~ category: Science-Fiction
+~~ title        = Book Title
+~~ author       = Author Name
+~~ created-at   = 2021-01-10
+~~ published-at = 2024-01-03
+~~ category     = Science-Fiction
 
 ```
 
 ## Entity Annotation
 ```gr
-~~ text-alignment: center
+~~ text-alignment = center
 A paragraph annotation
 ```
 
@@ -90,7 +90,7 @@ Hello /*darkness* my old/ friend
 
 # Highlight
 ```gr
-=Anything inside two equal will be rendered as highlighted=
+==Anything inside two equal will be rendered as highlighted==
 ```
 
 ```html
@@ -109,7 +109,7 @@ Hello /*darkness* my old/ friend
 
 ## Line‐Break
 ```gr
-This will create<<line-break.
+This will create<line-break.
 ```
 
 ```html
@@ -118,11 +118,23 @@ This will create<<line-break.
 
 ## Page‐Break
 ```gr
-<<<
+<<
 ```
 
 ```html
 <div class="page-break"></div>
+```
+
+## Document‐Break
+```gr
+hello there
+<<<
+draft work
+not finished
+```
+
+```html
+<p>hello there</p>
 ```
 
 # Escape
@@ -180,17 +192,17 @@ Quote is done by indenting with tabs.
 ```
 
 ```html
-<div class="chapter">
+<section class="chapter">
 	<h1 id="Chapter">Chapter</h1>
 
-	<div class="section">
+	<section class="section">
 		<h2 id="Section">Section</h2>
 
-		<div class="subsection">
+		<section class="subsection">
 			<h3 id="Subsection">Subsection</h3>
-		</div>
-	</div>
-</div>
+		</section>
+	</section>
+</section>
 ```
 
 ## Heading Subtitle
@@ -579,12 +591,12 @@ Footer only works if the header is defined.
 
 # Admonition
 ```gr
-<Note> A note
-<Hint> A hint
-<Important> Important stuff
-<Warning> Warning stuff
-<See also> The Amazing Spiderman 2
-<Tip> A tip
+//Note// A note
+//Hint// A hint
+//Important// Important stuff
+//Warning// Warning stuff
+//See also// The Amazing Spiderman 2
+//Tip// A tip
 ```
 
 ```html
@@ -615,7 +627,7 @@ Footer only works if the header is defined.
 ```
 
 ```gr
-<Note>
+//Note//
 	Long note.
 	Very long note.
 ```
@@ -633,23 +645,23 @@ Footer only works if the header is defined.
 # Date‐Time
 ## Full Date‐Time
 ```gr
-<2018-05-10 10:10>
++2018-05-10 10:00
 ```
 
 ```html
-<time datetime="2018-05-10 10:10">2018-05-10 10:10</time>
+<time datetime="2018-05-10 10:10">10/05/2018 10:00</time>
 ```
 
 ## Partial Date‐Time
 ```gr
-Diary <2018-05-10>
+Diary +2018-05-10
 
-Met Sofia at <10:00> talked about her newborn child.
+Met Sofia at +10:00 talked about her newborn child.
 He said his first word today.
 ```
 
 ```html
-<p>Diary <time datetime="2018-05-10">2018-05-10</time></p>
+<p>Diary <time datetime="2018-05-10">10/05/2018</time></p>
 
 <p>Met Sofia at <time datetime="10:00">10:00</time> talked about her newborn child.
 He said his first word today.</p>
@@ -682,7 +694,7 @@ He said his first word today.</p>
 <a class="hash-tag" href="someTopic">#someTopic</a>
 ```
 
-# Linker
+# Link
 ## Net Link
 ```gr
 [http://google.com]
@@ -738,7 +750,7 @@ He said his first word today.</p>
 ```
 
 ### With Specified Heading Title
-```
+```gr
 [Another Document.gr>Legal Section]
 ```
 
@@ -747,7 +759,7 @@ He said his first word today.</p>
 ```
 
 ### With Specified Heading Title and Label
-```
+```gr
 [Another Document.gr>Legal Section](see this section)
 ```
 
@@ -755,7 +767,7 @@ He said his first word today.</p>
 <p><a href="Another%20Document.gr#Legal-Section">see this section</a></p>
 ```
 
-# Viewer
+# View
 Depends on the target ability to view the resource.
 Like tsv can be presented as table or code block or a link to the resource.
 
@@ -806,48 +818,48 @@ Only local files are allowed to be included.
 # Citation
 ## In‐Text
 ```gr
-^[12-rules] ^[lateral-thinking] ^[good-omens] ^[my-lady-jane]
+&[12 Rules] &[Lateral Thinking] &[Good Omens] &[My Lady Jane]
 ```
 
 ```html
-<p><a class="in-text" href="#Reference-12-rules">(Peterson, 2018)</a>
-<a class="in-text" href="#Reference-lateral-thinking">(de Bono, 1970)</a>
-<a class="in-text" href="#Reference-good-omens">(Pratchett & Gaiman, 1990)</a>
-<a class="in-text" href="#Reference-my-lady-jane">(Hand et al., 2016)</a></p>
+<p><a class="in-text" href="#Reference-12-Rules">(Peterson, 2018)</a>
+<a class="in-text" href="#Reference-Lateral-Thinking">(de Bono, 1970)</a>
+<a class="in-text" href="#Reference-Good-Omens">(Pratchett & Gaiman, 1990)</a>
+<a class="in-text" href="#Reference-My-Lady-Jane">(Hand et al., 2016)</a></p>
 ```
 
 ## References
-```
-^[12-rules]:
-	title: 12 Rules of Life
-	author: Jordan Bernt Peterson
-	year: 2018
-	publisher: Random House Canada
+```gr
+~~ & 12 Rules
+~~ title     = 12 Rules of Life
+~~ author    = Jordan Bernt Peterson
+~~ year      =  2018
+~~ publisher = Random House Canada
 
-^[lateral-thinking]:
-	title: Lateral Thinking: Creativity Step by Step
-	author: Edward de Bono
-	year: 1970
-	publisher: Harper & Row
+~~ & Lateral Thinking
+~~ title     = Lateral Thinking: Creativity Step by Step
+~~ author    = Edward de Bono
+~~ year      = 1970
+~~ publisher = Harper & Row
 
-^[good-omens]:
-	title: Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch
-	authors: Terry Pratchett, Neil Gaiman
-	year: 1990
-	publisher: Gollancz 
+~~ & Good Omens
+~~ title     = Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch
+~~ authors   = Terry Pratchett, Neil Gaiman
+~~ year      = 1990
+~~ publisher = Gollancz 
 
-^[my-lady-jane]:
-	title: My Lady Jane
-	authors: Cynthia Hand, Brodi Ashton, Jodi Meadows
-	year: 2016
-	publisher: HarperCollins
+~~ & My Lady Jane
+~~ title     = My Lady Jane
+~~ authors   = Cynthia Hand, Brodi Ashton, Jodi Meadows
+~~ year      = 2016
+~~ publisher = HarperCollins
 ```
 
 ```html
-<div class="reference" id="Reference-12-rules">Peterson, J.B., (2018). <i>12 Rules of Life</i>. Random House Canada.</div>
-<div class="reference" id="Reference-lateral-thinking">de Bono, E., (1970). <i>Lateral Thinking: Creativity Step by Step</i>. Harper & Row.</div>
-<div class="reference" id="Reference-good-omens">Pratchett, T. & Gaiman, N. (1990). <i>Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch</i>. Gollancz .</div>
-<div class="reference" id="Reference-my-lady-jane">Hand, C., Ashton, B. & Meadows, J. (2016). <i>My Lady Jane</i>. HarperCollins.</div>
+<div class="reference" id="Reference-12-Rules">Peterson, J.B., (2018). <i>12 Rules of Life</i>. Random House Canada.</div>
+<div class="reference" id="Reference-Lateral-Thinking">de Bono, E., (1970). <i>Lateral Thinking: Creativity Step by Step</i>. Harper & Row.</div>
+<div class="reference" id="Reference-Good-Omens">Pratchett, T. & Gaiman, N. (1990). <i>Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch</i>. Gollancz .</div>
+<div class="reference" id="Reference-My-Lady-Jane">Hand, C., Ashton, B. & Meadows, J. (2016). <i>My Lady Jane</i>. HarperCollins.</div>
 ```
 
 # Footnote
@@ -856,7 +868,7 @@ Footnote description automatically injected in the correct page.
 In html footnote should be included before page break or section.
 
 ```gr 
-Here's a simple footnote,^(This is the first footnote.) and here's a another one.^(Very important part)
+Here's a simple footnote,^[This is the first footnote.] and here's a another one.^[Very important part]
 ```
 
 ```html
@@ -1566,4 +1578,23 @@ moyai: 🗿,
 circus‐tent: 🎪,
 performing‐arts: 🎭,
 round‐pushpin: 📍,
+
+# Change
+## Added
+```gr
+=+Anything inside two equal will be rendered as highlighted+=
+```
+
+```html
+<p><ins>Anything inside two equal will be rendered as highlighted</ins></p>
+```
+
+## Removed
+```gr
+=-Anything inside two equal will be rendered as highlighted-=
+```
+
+```html
+<p><del>Anything inside two equal will be rendered as highlighted</del></p>
+```
 

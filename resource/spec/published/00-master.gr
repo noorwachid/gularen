@@ -1,5 +1,5 @@
-~~ title: Gularen Markup Language Specification
-~~ author: Noor Wachid
+~~ title = Gularen Markup Language Specification
+~~ author = Noor Wachid
 
 ?[01-comment.gr]
 ?[02-annotation.gr]
@@ -25,3 +25,4 @@
 ?[22-footnote.gr]
 ?[23-punctuation.gr]
 ?[24-emoji.gr]
+?[25-change.gr]
