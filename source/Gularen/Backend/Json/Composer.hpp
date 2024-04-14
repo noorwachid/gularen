@@ -99,17 +99,17 @@ private:
 				_content.append("\"");
 				break;
 			}
-			case NodeKind::style: {
-				_content.append("\"kind\":\"style\",\"type\":\"");
-				switch (static_cast<const Style*>(node)->type) {
-					case Style::Type::bold:
+			case NodeKind::emphasis: {
+				_content.append("\"kind\":\"emphasis\",\"type\":\"");
+				switch (static_cast<const Emphasis*>(node)->type) {
+					case Emphasis::Type::bold:
 						_content.append("bold");
 						break;
-					case Style::Type::italic:
+					case Emphasis::Type::italic:
 						_content.append("italic");
 						break;
-					case Style::Type::underlined:
-						_content.append("underlined");
+					case Emphasis::Type::underline:
+						_content.append("underline");
 						break;
 				}
 				_content.append("\"");
@@ -135,16 +135,16 @@ private:
 				_content.append("\"kind\":\"quote\"");
 				break;
 			}
-			case NodeKind::division: {
-				switch (static_cast<const Division*>(node)->type) {
-					case Division::Type::chapter: 
-						_content.append("\"kind\":\"division\",\"type\":\"chapter\"");
+			case NodeKind::heading: {
+				switch (static_cast<const Heading*>(node)->type) {
+					case Heading::Type::chapter: 
+						_content.append("\"kind\":\"heading\",\"type\":\"chapter\"");
 						break;
-					case Division::Type::section:
-						_content.append("\"kind\":\"division\",\"type\":\"section\"");
+					case Heading::Type::section:
+						_content.append("\"kind\":\"heading\",\"type\":\"section\"");
 						break;
-					case Division::Type::subsection:
-						_content.append("\"kind\":\"division\",\"type\":\"subsection\"");
+					case Heading::Type::subsection:
+						_content.append("\"kind\":\"heading\",\"type\":\"subsection\"");
 						break;
 				}
 				break;

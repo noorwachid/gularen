@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.6.0
+Breaking changes:
+- Rename node from `Division` to `Heading`
+- Rename none from `Style` to `Emphasis`
+
 ### Version 1.5.0
 **2024-04-13**
 

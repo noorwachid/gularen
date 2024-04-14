@@ -11,7 +11,7 @@ enum class NodeKind {
 
 	text,
 
-	style,
+	emphasis,
 	highlight,
 
 	paragraph,
@@ -20,7 +20,7 @@ enum class NodeKind {
 	pageBreak,
 	dinkus,
 
-	division,
+	heading,
 	title,
 	subtitle,
 	content,
@@ -130,16 +130,16 @@ struct Dinkus : Node {
 	}
 };
 
-struct Style : Node {
+struct Emphasis : Node {
 	enum class Type {
 		bold,
 		italic,
-		underlined,
+		underline,
 	};
 
 	Type type;
 
-	Style(Range range, Type type): Node(range, NodeKind::style), type(type) {
+	Emphasis(Range range, Type type): Node(range, NodeKind::emphasis), type(type) {
 	}
 };
 
@@ -153,7 +153,7 @@ struct Paragraph : Node {
 	}
 };
 
-struct Division : Node {
+struct Heading : Node {
 	enum class Type {
 		chapter,
 		section,
@@ -162,7 +162,7 @@ struct Division : Node {
 
 	Type type;
 
-	Division(Range range): Node(range, NodeKind::division) {
+	Heading(Range range): Node(range, NodeKind::heading) {
 	}
 };
 

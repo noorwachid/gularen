@@ -1,6 +1,6 @@
->>> Division
+>>> Heading
 
->> Division Title
+>> Heading Title
 --- gr
 >>> Chapter
 
@@ -22,7 +22,7 @@
 </div>
 ---
 
->> Division Subtitle
+>> Heading Subtitle
 If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
 --- gr
@@ -49,7 +49,7 @@ If the subsection modifier is placed in the next line of any title. It will be p
 </section>
 ---
 
->> Division Link
+>> Heading Link
 
 --- gr
 >>> Laminal Flow

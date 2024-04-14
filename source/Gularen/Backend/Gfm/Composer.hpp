@@ -31,11 +31,11 @@ private:
 					_composeBlock(node->children[i]);
 				}
 				break;
-			case NodeKind::division: {
-				switch (static_cast<const Division*>(node)->type) {
-					case Division::Type::chapter: _content.append("# "); break;
-					case Division::Type::section: _content.append("## "); break;
-					case Division::Type::subsection: _content.append("### "); break;
+			case NodeKind::heading: {
+				switch (static_cast<const Heading*>(node)->type) {
+					case Heading::Type::chapter: _content.append("# "); break;
+					case Heading::Type::section: _content.append("## "); break;
+					case Heading::Type::subsection: _content.append("### "); break;
 					default: break;
 				}
 				for (size_t i = 0; i < node->children[0]->children.size(); i += 1) {
@@ -172,9 +172,9 @@ private:
 				_content.append(content.data(), content.size());
 				break;
 			}
-			case NodeKind::style: {
-				switch (static_cast<const Style*>(node)->type) {
-					case Style::Type::bold: {
+			case NodeKind::emphasis: {
+				switch (static_cast<const Emphasis*>(node)->type) {
+					case Emphasis::Type::bold: {
 						_content.append("**");
 						for (size_t i = 0; i < node->children.size(); i += 1) {
 							_composeInline(node->children[i]);
@@ -182,7 +182,7 @@ private:
 						_content.append("**");
 						break;
 					}
-					case Style::Type::italic: {
+					case Emphasis::Type::italic: {
 						_content.append("_");
 						for (size_t i = 0; i < node->children.size(); i += 1) {
 							_composeInline(node->children[i]);
@@ -190,7 +190,7 @@ private:
 						_content.append("_");
 						break;
 					}
-					case Style::Type::underlined: {
+					case Emphasis::Type::underline: {
 						_content.append("<u>");
 						for (size_t i = 0; i < node->children.size(); i += 1) {
 							_composeInline(node->children[i]);

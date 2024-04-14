@@ -151,9 +151,9 @@ private:
 		return _lexer[_tokenIndex - 1];
 	}
 
-	Node* _parseStyle(Style::Type type) {
+	Node* _parseStyle(Emphasis::Type type) {
 		const Token& token = _eat();
-		Style* style = new Style(token.range, type);
+		Emphasis* style = new Emphasis(token.range, type);
 
 		while (_isBound(0) && _get(0).kind != token.kind) {
 			Node* child = _parseInline();
@@ -225,15 +225,15 @@ private:
 				break;
 
 			case TokenKind::asterisk: 
-				node = _parseStyle(Style::Type::bold);
+				node = _parseStyle(Emphasis::Type::bold);
 				break;
 
 			case TokenKind::slash: 
-				node = _parseStyle(Style::Type::italic);
+				node = _parseStyle(Emphasis::Type::italic);
 				break;
 
 			case TokenKind::underscore: 
-				node = _parseStyle(Style::Type::underlined);
+				node = _parseStyle(Emphasis::Type::underline);
 				break;
 
 			case TokenKind::equal: 
@@ -437,19 +437,19 @@ private:
 
 	Node* _parseDivision() {
 		const Token& token = _get(0);
-		Division* division = new Division(token.range);
+		Heading* division = new Heading(token.range);
 
 		switch (token.kind) {
 			case TokenKind::head3:
-				division->type = Division::Type::chapter;
+				division->type = Heading::Type::chapter;
 				break;
 
 			case TokenKind::head2:
-				division->type = Division::Type::section;
+				division->type = Heading::Type::section;
 				break;
 
 			case TokenKind::head1:
-				division->type = Division::Type::subsection;
+				division->type = Heading::Type::subsection;
 				break;
 
 			default: 

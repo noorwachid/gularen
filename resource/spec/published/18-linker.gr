@@ -48,7 +48,7 @@
 <p><a href="Another Document.gr">see this document</a></p>
 ---
 
-> With Specified Division Title
+> With Specified Heading Title
 ---
 [Another Document.gr>Legal Section]
 ---
@@ -56,7 +56,7 @@
 <p><a href="Another%20Document.gr#Legal-Section">Another Document Legal Section</a></p>
 ---
 
-> With Specified Division Title and Label
+> With Specified Heading Title and Label
 ---
 [Another Document.gr>Legal Section](see this section)
 ---

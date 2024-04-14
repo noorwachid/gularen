@@ -33,17 +33,17 @@ public:
 private:
 	void _composeToc(const Node* node) {
 		switch (node->kind) {
-			case NodeKind::division: {
-				auto division = static_cast<const Division*>(node);
+			case NodeKind::heading: {
+				auto division = static_cast<const Heading*>(node);
 
 				switch (division->type) {
-					case Division::Type::chapter:
+					case Heading::Type::chapter:
 						_toc.append("<ul class=\"section\">\n");
 						break;
-					case Division::Type::section:
+					case Heading::Type::section:
 						_toc.append("<ul class=\"subsection\">\n");
 						break;
-					case Division::Type::subsection:
+					case Heading::Type::subsection:
 						_toc.append("<ul class=\"subsubsection\">\n");
 						break;
 				}
@@ -140,11 +140,11 @@ private:
 				return;
 			}
 
-			case NodeKind::style: {
-				switch (static_cast<const Style*>(node)->type) {
-					case Style::Type::bold: content.append("<b>"); return;
-					case Style::Type::italic: content.append("<i>"); return;
-					case Style::Type::underlined: content.append("<u>"); return;
+			case NodeKind::emphasis: {
+				switch (static_cast<const Emphasis*>(node)->type) {
+					case Emphasis::Type::bold: content.append("<b>"); return;
+					case Emphasis::Type::italic: content.append("<i>"); return;
+					case Emphasis::Type::underline: content.append("<u>"); return;
 				}
 			}
 
@@ -153,21 +153,21 @@ private:
 				return;
 			}
 
-			case NodeKind::division: {
+			case NodeKind::heading: {
 				_previousDivisionType = _currentDivisionType;
 
-				const Division* division = static_cast<const Division*>(node);
+				const Heading* division = static_cast<const Heading*>(node);
 
 				_currentDivisionType = division->type;
 
 				switch (division->type) {
-					case Division::Type::chapter:
+					case Heading::Type::chapter:
 						content.append("<div class=\"chapter\">\n");
 						break;
-					case Division::Type::section:
+					case Heading::Type::section:
 						content.append("<div class=\"section\">\n");
 						break;
-					case Division::Type::subsection:
+					case Heading::Type::subsection:
 						content.append("<div class=\"subsection\">\n");
 						break;
 				}
@@ -178,17 +178,17 @@ private:
 				const Title* title = static_cast<const Title*>(node);
 
 				switch (_currentDivisionType) {
-					case Division::Type::chapter:
+					case Heading::Type::chapter:
 						content.append("<h1 id=\"");
 						_escapeID(title, content);
 						content.append("\"");
 						break;
-					case Division::Type::section:
+					case Heading::Type::section:
 						content.append("<h2 id=\"");
 						_escapeID(title, content);
 						content.append("\"");
 						break;
-					case Division::Type::subsection:
+					case Heading::Type::subsection:
 						content.append("<h3 id=\"");
 						_escapeID(title, content);
 						content.append("\"");
@@ -565,11 +565,11 @@ private:
 
 	void _postCompose(const Node* node, std::string& content) {
 		switch (node->kind) {
-			case NodeKind::style: {
-				switch (static_cast<const Style*>(node)->type) {
-					case Style::Type::bold: content.append("</b>"); return;
-					case Style::Type::italic: content.append("</i>"); return;
-					case Style::Type::underlined: content.append("</u>"); return;
+			case NodeKind::emphasis: {
+				switch (static_cast<const Emphasis*>(node)->type) {
+					case Emphasis::Type::bold: content.append("</b>"); return;
+					case Emphasis::Type::italic: content.append("</i>"); return;
+					case Emphasis::Type::underline: content.append("</u>"); return;
 				}
 			}
 
@@ -578,13 +578,13 @@ private:
 				return;
 			}
 
-			case NodeKind::division: {
+			case NodeKind::heading: {
 				_composeFootnote();
 
 				switch (_currentDivisionType) {
-					case Division::Type::chapter: content.append("</div>\n"); return;
-					case Division::Type::section: content.append("</div>\n"); return;
-					case Division::Type::subsection: content.append("</div>\n"); return;
+					case Heading::Type::chapter: content.append("</div>\n"); return;
+					case Heading::Type::section: content.append("</div>\n"); return;
+					case Heading::Type::subsection: content.append("</div>\n"); return;
 				}
 
 				_currentDivisionType = _previousDivisionType;
@@ -592,9 +592,9 @@ private:
 
 			case NodeKind::title: {
 				switch (_currentDivisionType) {
-					case Division::Type::chapter: content.append("</h1>\n"); return;
-					case Division::Type::section: content.append("</h2>\n"); return;
-					case Division::Type::subsection: content.append("</h3>\n"); return;
+					case Heading::Type::chapter: content.append("</h1>\n"); return;
+					case Heading::Type::section: content.append("</h2>\n"); return;
+					case Heading::Type::subsection: content.append("</h3>\n"); return;
 				}
 			}
 
@@ -1002,8 +1002,8 @@ private:
 	// referenceID -> infoKey -> infoValue
 	std::unordered_map<std::string_view, std::unordered_map<std::string_view, const ReferenceInfo*>> _references;
 
-	Division::Type _previousDivisionType;
-	Division::Type _currentDivisionType;
+	Heading::Type _previousDivisionType;
+	Heading::Type _currentDivisionType;
 };
 
 }

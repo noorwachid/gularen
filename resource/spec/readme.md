@@ -51,7 +51,8 @@ Single new line won't make new paragraph.</p>
 <p>Only double or more will create new paragraph.</p>
 ```
 
-# Style
+# Emphasis
+## Bold
 ```gr
 *Anything inside two asterisks will be rendered as bold.*
 ```
@@ -60,6 +61,7 @@ Single new line won't make new paragraph.</p>
 <p><b>Anything inside two asterisks will be rendered as bold.</b></p>
 ```
 
+## Italic
 ```gr
 /Anything inside two underscores will be rendered as italic./
 ```
@@ -68,14 +70,16 @@ Single new line won't make new paragraph.</p>
 <p><i>Anything inside two underscores will be rendered as italic.</i></p>
 ```
 
+## Underline
 ```gr
-_Anything inside two underscores will be rendered as underlined._
+_Anything inside two underscores will be rendered as underline._
 ```
 
 ```html
-<p><u>Anything inside two underscores will be rendered as underlined.</u></p>
+<p><u>Anything inside two underscores will be rendered as underline.</u></p>
 ```
 
+## Mixed
 ```gr
 Hello /*darkness* my old/ friend
 ```
@@ -165,8 +169,8 @@ Quote is done by indenting with tabs.
 </blockquote>
 ```
 
-# Division
-## Division Title
+# Heading
+## Heading Title
 ```gr
 >>> Chapter
 
@@ -189,7 +193,7 @@ Quote is done by indenting with tabs.
 </div>
 ```
 
-## Division Subtitle
+## Heading Subtitle
 If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
 ```gr
@@ -217,7 +221,7 @@ If the subsection modifier is placed in the next line of any title. It will be p
 </section>
 ```
 
-## Division Link
+## Heading Link
 ```gr
 >>> Laminal Flow
 
@@ -733,7 +737,7 @@ He said his first word today.</p>
 <p><a href="Another Document.gr">see this document</a></p>
 ```
 
-### With Specified Division Title
+### With Specified Heading Title
 ```
 [Another Document.gr>Legal Section]
 ```
@@ -742,7 +746,7 @@ He said his first word today.</p>
 <p><a href="Another%20Document.gr#Legal-Section">Another Document Legal Section</a></p>
 ```
 
-### With Specified Division Title and Label
+### With Specified Heading Title and Label
 ```
 [Another Document.gr>Legal Section](see this section)
 ```

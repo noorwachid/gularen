@@ -1,5 +1,6 @@
->>> Style
+>>> Emphasis
 
+>> Bold
 --- gr
 *Anything inside two asterisks will be rendered as bold.*
 ---
@@ -7,6 +8,7 @@
 <p><b>Anything inside two asterisks will be rendered as bold.</b></p>
 ---
 
+>> Italic
 --- gr
 /Anything inside two underscores will be rendered as italic./
 ---
@@ -14,13 +16,15 @@
 <p><i>Anything inside two underscores will be rendered as italic.</i></p>
 ---
 
+>> Underline
 --- gr
-_Anything inside two underscores will be rendered as underlined._
+_Anything inside two underscores will be rendered as underline._
 ---
 --- html
-<p><u>Anything inside two underscores will be rendered as underlined.</u></p>
+<p><u>Anything inside two underscores will be rendered as underline.</u></p>
 ---
 
+>> Mixed
 --- gr
 Hello /*darkness* my old/ friend
 ---
