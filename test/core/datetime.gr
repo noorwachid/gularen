@@ -1,10 +1,10 @@
 ---- gr
-<10:00>
-<10:00:12>
-<2018-06-12>
-<2018-06-12 10:00>
-<2018-06-12 10:00:12>
++10:00
++10:00:12
++2018-06-12
++2018-06-12 10:00
++2018-06-12 10:00:12
 ----
 ---
-{"kind":"document","children":[{"kind":"paragraph","range":[0,0,4,20],"children":[{"kind":"dateTime","time":"10:00","range":[0,0,0,6]},{"kind":"space","range":[0,7,0,7]},{"kind":"dateTime","time":"10:00:12","range":[1,0,1,9]},{"kind":"space","range":[1,10,1,10]},{"kind":"dateTime","date":"2018-06-12","range":[2,0,2,11]},{"kind":"space","range":[2,12,2,12]},{"kind":"dateTime","date":"2018-06-12","time":"10:00","range":[3,0,3,17]},{"kind":"space","range":[3,18,3,18]},{"kind":"dateTime","date":"2018-06-12","time":"10:00:12","range":[4,0,4,20]}]}]}
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,4,19],"children":[{"kind":"dateTime","time":"10:00","range":[0,0,0,5]},{"kind":"space","range":[0,6,0,6]},{"kind":"dateTime","time":"10:00:12","range":[1,0,1,8]},{"kind":"space","range":[1,9,1,9]},{"kind":"dateTime","date":"2018-06-12","range":[2,0,2,10]},{"kind":"space","range":[2,11,2,11]},{"kind":"dateTime","date":"2018-06-12","time":"10:00","range":[3,0,3,16]},{"kind":"space","range":[3,17,3,17]},{"kind":"dateTime","date":"2018-06-12","time":"10:00:12","range":[4,0,4,19]}]}]}
 ---

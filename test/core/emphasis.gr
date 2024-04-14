@@ -1,0 +1,6 @@
+----
+*bold* /italic/ _underline_
+----
+---
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,26],"children":[{"kind":"emphasis","type":"bold","range":[0,0,0,5],"children":[{"kind":"text","content":"bold","range":[0,1,0,4]}]},{"kind":"text","content":" ","range":[0,6,0,6]},{"kind":"emphasis","type":"italic","range":[0,7,0,14],"children":[{"kind":"text","content":"italic","range":[0,8,0,13]}]},{"kind":"text","content":" ","range":[0,15,0,15]},{"kind":"emphasis","type":"underline","range":[0,16,0,26],"children":[{"kind":"text","content":"underline","range":[0,17,0,25]}]}]}]}
+---

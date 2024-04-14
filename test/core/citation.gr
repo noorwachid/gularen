@@ -1,11 +1,11 @@
 ----
-^[bird-is-real]
+^[Bird Is Real]
 
-^[bird-is-real]:
-	title: Bird is Real
-	author: Government Agent
-	year: 2024
+~~ & Bird Is Real
+~~ title  = Bird is Real
+~~ author = Government Agent
+~~ year   = 2024
 ----
 ---
-{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,14],"children":[{"kind":"inText","id":"bird-is-real","range":[0,0,0,14]}]},{"kind":"reference","id":"bird-is-real","range":[2,0,5,10],"children":[{"kind":"referenceInfo","key":"title","range":[3,1,3,19],"children":[{"kind":"text","content":"Bird is Real","range":[3,8,3,19]}]},{"kind":"referenceInfo","key":"author","range":[4,1,4,24],"children":[{"kind":"text","content":"Government Agent","range":[4,9,4,24]}]},{"kind":"referenceInfo","key":"year","range":[5,1,5,10],"children":[{"kind":"text","content":"2024","range":[5,7,5,10]}]}]}]}
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,14],"children":[{"kind":"footnote","desc":"Bird Is Real","range":[0,0,0,14]}]},{"kind":"reference","id":"Bird Is Real","infos":{"title":"Bird is Real","author":"Government Agent","year":"2024"},"range":[2,0,2,28]}]}
 ---

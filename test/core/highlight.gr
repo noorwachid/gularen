@@ -1,6 +1,6 @@
 ---- gr
-=highlighted=
+==highlighted==
 ----
 ---
-{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,12],"children":[{"kind":"highlight","range":[0,0,0,12],"children":[{"kind":"text","content":"highlighted","range":[0,1,0,11]}]}]}]}
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,13],"children":[{"kind":"highlight","range":[0,0,0,13],"children":[{"kind":"text","content":"highlighted","range":[0,2,0,12]}]}]}]}
 ---

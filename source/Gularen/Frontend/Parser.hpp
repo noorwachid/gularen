@@ -70,7 +70,7 @@ private:
 		// for (size_t i = 0; i < _lexer.size(); i += 1) {
 		// 	std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
 		// 	std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
-		// 	_lexer[i].print();
+		// 	std::cout << TokenKindHelper::toStringView(_lexer[i].kind) << " " << _lexer[i].content << "\n";
 		// }
 		// return nullptr;
 

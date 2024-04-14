@@ -1,0 +1,14 @@
+---- gr
+[file]
+[file>heading]
+[>heading]
+[https://www.org]
+
+[file](label)
+[file>heading](label)
+[>heading](label)
+[https://www.org](label)
+----
+---
+{"kind":"document","children":[{"kind":"paragraph","range":[0,0,3,16],"children":[{"kind":"link","resource":"file","range":[0,0,0,5]},{"kind":"space","range":[0,6,0,6]},{"kind":"link","resource":"file","headings":["heading"],"range":[1,0,1,13]},{"kind":"space","range":[1,14,1,14]},{"kind":"link","headings":["heading"],"range":[2,0,2,9]},{"kind":"space","range":[2,10,2,10]},{"kind":"link","resource":"https:\/\/www.org","range":[3,0,3,16]}]},{"kind":"paragraph","range":[5,0,8,23],"children":[{"kind":"link","resource":"file","label":"label","range":[5,0,5,12]},{"kind":"space","range":[5,13,5,13]},{"kind":"link","resource":"file","headings":["heading"],"label":"label","range":[6,0,6,20]},{"kind":"space","range":[6,21,6,21]},{"kind":"link","headings":["heading"],"label":"label","range":[7,0,7,16]},{"kind":"space","range":[7,17,7,17]},{"kind":"link","resource":"https:\/\/www.org","label":"label","range":[8,0,8,23]}]}]}
+---
