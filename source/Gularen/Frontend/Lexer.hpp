@@ -418,7 +418,7 @@ private:
 				}
 
 				case '+': {
-					if (_get(1) == '=') {
+					if (_isBound(1) && _get(1) == '=') {
 						_append(TokenKind::addClose, _contentIndex, 2);
 						_advance(2);
 						break;
@@ -838,6 +838,7 @@ private:
 				case '[':
 				case ':':
 				case '-':
+				case '+':
 				case '"':
 				case '\'':
 				case '\\':

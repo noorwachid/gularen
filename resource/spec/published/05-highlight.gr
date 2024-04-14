@@ -1,24 +1,7 @@
 >>> Highlight
->> Highlight
 --- gr
 ==Anything inside two equal will be rendered as highlighted==
 ---
 --- html
 <p><mark>Anything inside two equal will be rendered as highlighted</mark></p>
----
-
->> Added
---- gr
-=+Anything inside two equal will be rendered as highlighted+=
----
---- html
-<p><ins>Anything inside two equal will be rendered as highlighted</ins></p>
----
-
->> Removed
---- gr
-=-Anything inside two equal will be rendered as highlighted-=
----
---- html
-<p><del>Anything inside two equal will be rendered as highlighted</del></p>
 ---

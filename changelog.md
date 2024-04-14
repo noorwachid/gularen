@@ -2,8 +2,8 @@
 
 ### Version 1.7.0
 New features:
-- Added highlight, `=+added text+=`
-- Removed highlight, `=-removed text-=`
+- Added change, `=+added text+=`
+- Removed change, `=-removed text-=`
 - Document-break, `<<<`
 
 Breaking changes:

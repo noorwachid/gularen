@@ -13,6 +13,7 @@ enum class NodeKind {
 
 	emphasis,
 	highlight,
+	change,
 
 	paragraph,
 	space,
@@ -145,6 +146,18 @@ struct Emphasis : Node {
 
 struct Highlight : Node {
 	Highlight(Range range): Node(range, NodeKind::highlight) {
+	}
+};
+
+struct Change : Node {
+	enum class Type {
+		added,
+		removed,
+	};
+
+	Type type;
+
+	Change(Range range, Type type): Node(range, NodeKind::change), type(type) {
 	}
 };
 

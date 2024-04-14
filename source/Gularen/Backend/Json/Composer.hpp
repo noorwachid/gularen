@@ -119,6 +119,19 @@ private:
 				_content.append("\"kind\":\"highlight\"");
 				break;
 			}
+			case NodeKind::change: {
+				_content.append("\"kind\":\"change\",\"type\":\"");
+				switch (static_cast<const Change*>(node)->type) {
+					case Change::Type::added:
+						_content.append("added");
+						break;
+					case Change::Type::removed:
+						_content.append("removed");
+						break;
+				}
+				_content.append("\"");
+				break;
+			}
 			case NodeKind::lineBreak: {
 				_content.append("\"kind\":\"lineBreak\"");
 				break;

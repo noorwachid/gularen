@@ -153,7 +153,7 @@ private:
 		return _lexer[_tokenIndex - 1];
 	}
 
-	Node* _parseStyle(Emphasis::Type type) {
+	Node* _parseEmphasis(Emphasis::Type type) {
 		const Token& token = _eat();
 		Emphasis* style = new Emphasis(token.range, type);
 
@@ -196,13 +196,38 @@ private:
 
 		if (_isBound(0) && _get(0).kind != token.kind) {
 			delete highlight;
-			return _expect("equal");
+			return _expect("equalequal");
 		}
 
 		_updateEndRange(highlight->range, _get(0).range);
 		_advance(1);
 
 		return highlight;
+	}
+
+	Node* _parseChange(Change::Type type, TokenKind closingKind) {
+		Change* change = new Change(_eat().range, type);
+
+		while (_isBound(0) && _get(0).kind != closingKind) {
+			Node* child = _parseInline();
+
+			if (child == nullptr) {
+				delete change;
+				return nullptr;
+			}
+
+			change->children.push_back(child);
+		}
+
+		if (_isBound(0) && _get(0).kind != closingKind) {
+			delete change;
+			return _expect("closing change");
+		}
+
+		_updateEndRange(change->range, _get(0).range);
+		_advance(1);
+
+		return change;
 	}
 
 	Node* _parseComment() {
@@ -227,19 +252,27 @@ private:
 				break;
 
 			case TokenKind::asterisk: 
-				node = _parseStyle(Emphasis::Type::bold);
+				node = _parseEmphasis(Emphasis::Type::bold);
 				break;
 
 			case TokenKind::slash: 
-				node = _parseStyle(Emphasis::Type::italic);
+				node = _parseEmphasis(Emphasis::Type::italic);
 				break;
 
 			case TokenKind::underscore: 
-				node = _parseStyle(Emphasis::Type::underline);
+				node = _parseEmphasis(Emphasis::Type::underline);
 				break;
 
 			case TokenKind::highlight: 
 				node = _parseHighlight();
+				break;
+
+			case TokenKind::addOpen: 
+				node = _parseChange(Change::Type::added, TokenKind::addClose);
+				break;
+
+			case TokenKind::removeOpen: 
+				node = _parseChange(Change::Type::removed, TokenKind::removeClose);
 				break;
 
 			case TokenKind::lineBreak: 
@@ -1376,6 +1409,8 @@ private:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
 			case TokenKind::highlight:
+			case TokenKind::addOpen:
+			case TokenKind::removeOpen:
 
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
@@ -1421,6 +1456,8 @@ private:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
 			case TokenKind::highlight:
+			case TokenKind::addOpen:
+			case TokenKind::removeOpen:
 
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
