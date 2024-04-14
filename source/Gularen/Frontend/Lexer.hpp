@@ -86,8 +86,6 @@ enum class TokenKind {
 
 	admon,
 	dateTime,
-	date,
-	time,
 	emoji,
 
 	accountTag,
@@ -175,8 +173,6 @@ struct TokenKindHelper {
 
 			case TokenKind::emoji: return "emoji";
 			case TokenKind::dateTime: return "dateTime";
-			case TokenKind::date: return "date";
-			case TokenKind::time: return "time";
 			case TokenKind::admon: return "admon";
 
 			case TokenKind::accountTag: return "accountTag";
@@ -424,7 +420,27 @@ private:
 						break;
 					}
 
-					// TODO: date-time parsing
+					if (_get(1) >= '0' && _get(1) <= '9') {
+						_advance(1);
+						size_t oldContentIndex = _contentIndex;
+
+						// check for date or time
+						while (_isBound(0) && ((_get(0) >= '0' && _get(0) <= '9') || _get(0) == '-' || _get(0) == ':')) {
+							_advance(1);
+						}
+
+						if (_isBound(1) && _get(0) == ' ' && (_get(1) >= '0' && _get(1) <= '9')) {
+							_advance(1);
+							// check for time
+							while (_isBound(0) && ((_get(0) >= '0' && _get(0) <= '9') || _get(0) == ':')) {
+								_advance(1);
+							}
+						}
+
+						_append(TokenKind::dateTime, oldContentIndex, _contentIndex - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column - 1 });
+						break;
+					}
+
 					_consumeText();
 					break;
 				}
@@ -845,7 +861,6 @@ private:
 				case '[':
 				case ':':
 				case '-':
-				case '+':
 				case '"':
 				case '\'':
 				case '\\':
@@ -862,6 +877,8 @@ private:
 
 				case '!':
 				case '?':
+				case '^':
+				case '&':
 					previousAlphanumeric = false;
 					if (_isBound(1) && _get(1) == '[') {
 						goto end;
@@ -870,10 +887,9 @@ private:
 					_advance(1);
 					break;
 
-				case '^':
-				case '&':
+				case '+':
 					previousAlphanumeric = false;
-					if (_isBound(1) && _get(1) == '[') {
+					if (_isBound(1) && ((_get(1) >= '0' && _get(1) <= '9') || _get(1) == '=')) {
 						goto end;
 					}
 
