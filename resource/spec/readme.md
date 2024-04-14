@@ -701,7 +701,7 @@ He said his first word today.</p>
 <p><a href="http://google.com">Google</a></p>
 ```
 
-## Section Link
+## Heading Link
 ```gr
 [>Laminal Flow]
 ```
