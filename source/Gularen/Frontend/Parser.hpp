@@ -238,7 +238,7 @@ private:
 				node = _parseStyle(Emphasis::Type::underline);
 				break;
 
-			case TokenKind::equal: 
+			case TokenKind::highlight: 
 				node = _parseHighlight();
 				break;
 
@@ -1380,7 +1380,7 @@ private:
 			case TokenKind::slash:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
-			case TokenKind::equal:
+			case TokenKind::highlight:
 
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
@@ -1425,7 +1425,7 @@ private:
 			case TokenKind::asterisk:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
-			case TokenKind::equal:
+			case TokenKind::highlight:
 
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:

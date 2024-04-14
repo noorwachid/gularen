@@ -22,7 +22,11 @@ enum class TokenKind {
 	underscore,
 	backtick,
 
-	equal,
+	highlight,
+	addOpen,
+	addClose,
+	removeOpen,
+	removeClose,
 
 	colon,
 	coloncolon,
@@ -80,6 +84,8 @@ enum class TokenKind {
 
 	admon,
 	dateTime,
+	date,
+	time,
 	emoji,
 
 	accountTag,
@@ -104,7 +110,11 @@ struct TokenKindHelper {
 			case TokenKind::underscore: return "underscore";
 			case TokenKind::backtick: return "backtick";
 
-			case TokenKind::equal: return "equal";
+			case TokenKind::highlight: return "highlight";
+			case TokenKind::addOpen: return "addOpen";
+			case TokenKind::addClose: return "addClose";
+			case TokenKind::removeOpen: return "removeOpen";
+			case TokenKind::removeClose: return "removeClose";
 
 			case TokenKind::colon: return "colon";
 			case TokenKind::coloncolon: return "coloncolon";
@@ -161,6 +171,8 @@ struct TokenKindHelper {
 
 			case TokenKind::emoji: return "emoji";
 			case TokenKind::dateTime: return "dateTime";
+			case TokenKind::date: return "date";
+			case TokenKind::time: return "time";
 			case TokenKind::admon: return "admon";
 
 			case TokenKind::accountTag: return "accountTag";
@@ -356,8 +368,25 @@ private:
 					break;
 
 				case '=': 
-					_append(TokenKind::equal); 
-					_advance(1);
+					if (_isBound(1)) {
+						if (_get(1) == '=') {
+							_append(TokenKind::highlight); 
+							_advance(2);
+							break;
+						}
+						if (_get(1) == '+') {
+							_append(TokenKind::addOpen); 
+							_advance(2);
+							break;
+						}
+						if (_get(1) == '-') {
+							_append(TokenKind::removeOpen); 
+							_advance(2);
+							break;
+						}
+					}
+
+					_consumeText();
 					break;
 
 				case '<': {
@@ -376,32 +405,38 @@ private:
 					_append(TokenKind::lineBreak, _contentIndex, 1);
 					_advance(1);
 					break;
+				}
 
-					// date time checks
-					// if (_get(0) >= '0' && _get(0) <= '9') {
-					// 	while (_isBound(0) && ((_get(0) >= '0' && _get(0) <= '9') || _get(0) == ':' || _get(0) == ' ' || _get(0) == '-')) {
-					// 		_advance(1);
-					// 	}
-					//
-					// 	if (_isBound(0) && _get(0) == '>') {
-					// 		_append(TokenKind::dateTime, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column });
-					// 		_advance(1);
-					// 		break;
-					// 	}
-					// }
+				case '+': {
+					if (_get(1) == '=') {
+						_append(TokenKind::addClose, _contentIndex, 2);
+						_advance(2);
+						break;
+					}
+
+					// TODO: date-time parsing
+					_consumeText();
+					break;
 				}
 
 				case '-':
-					if (_isBound(1) && _get(1) == '-') {
-						if (_isBound(2) && _get(2) == '-') {
-							_append(TokenKind::emDash, _contentIndex, 3);
-							_advance(3);
+					if (_isBound(1)) {
+						if (_get(1) == '-') {
+							if (_isBound(2) && _get(2) == '-') {
+								_append(TokenKind::emDash, _contentIndex, 3);
+								_advance(3);
+								break;
+							}
+
+							_append(TokenKind::enDash, _contentIndex, 2);
+							_advance(2);
 							break;
 						}
-
-						_append(TokenKind::enDash, _contentIndex, 2);
-						_advance(2);
-						break;
+						if (_get(1) == '=') {
+							_append(TokenKind::removeClose, _contentIndex, 2);
+							_advance(2);
+							break;
+						}
 					}
 
 					_append(TokenKind::hyphen, _contentIndex, 1);
@@ -685,10 +720,17 @@ private:
 			)) {
 				_advance(1);
 			}
+			
+			size_t keyEndIndex = _contentIndex;
 
-			if (_isBound(0) && _get(0) == ':') {
-				_append(TokenKind::annotationKey, keyIndex, _contentIndex - keyIndex);
+			while (_isBound(0) && _get(0) == ' ') {
 				_advance(1);
+			}
+
+			if (_isBound(0) && _get(0) == '=') {
+				_append(TokenKind::annotationKey, keyIndex, keyEndIndex - keyIndex);
+				_advance(1);
+
 				while (_isBound(0) && _get(0) == ' ') {
 					_advance(1);
 				}
