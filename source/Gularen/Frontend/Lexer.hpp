@@ -726,6 +726,8 @@ private:
 			size_t keyIndex = _contentIndex;
 
 			if (_get(0) == '&') {
+				_advance(1);
+
 				while (_isBound(0) && _get(0) == ' ') {
 					_advance(1);
 				}
@@ -737,7 +739,12 @@ private:
 				}
 
 				_append(TokenKind::referenceKey, keyIndex, _contentIndex - keyIndex);
-				_advance(1);
+
+				if (_isBound(0) && _get(0) == '\n') {
+					_advanceLine(1);
+					_advance(1);
+				}
+				return;
 			}
 
 			while (_isBound(0) && (

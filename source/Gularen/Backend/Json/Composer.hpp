@@ -347,13 +347,23 @@ private:
 				_content.append("\"kind\":\"reference\",\"id\":\"");
 				_escape(reference->id);
 				_content.append("\"");
-				break;
+
+			if (reference->infos.size() != 0) {
+				_content.append(",\"infos\":{");
+
+				for (size_t i = 0; i < reference->infos.size(); i += 1) {
+					if (i != 0) {
+						_content.append(",");
+					}
+					_content.append("\"");
+					_escape(reference->infos[i].key);
+					_content.append("\":\"");
+					_escape(reference->infos[i].value);
+					_content.append("\"");
+				}
+
+				_content.append("}");
 			}
-			case NodeKind::referenceInfo: {
-				auto reference = static_cast<const ReferenceInfo*>(node);
-				_content.append("\"kind\":\"referenceInfo\",\"key\":\"");
-				_escape(reference->key);
-				_content.append("\"");
 				break;
 			}
 			default: {

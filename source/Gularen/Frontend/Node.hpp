@@ -63,7 +63,7 @@ enum class NodeKind {
 	hashTag,
 };
 
-struct Annotation {
+struct Pair {
 	std::string_view key;
 	std::string_view value;
 };
@@ -72,7 +72,7 @@ struct Node {
 	Range range;
 	NodeKind kind;
 	std::vector<Node*> children;
-	std::vector<Annotation> annotations;
+	std::vector<Pair> annotations;
 
 	Node(Range range, NodeKind kind): range(range), kind(kind)  {
 	}
@@ -337,15 +337,10 @@ struct InText : Node {
 	}
 };
 
-struct ReferenceInfo : Node {
-	std::string_view key;
-
-	ReferenceInfo(Range range, std::string_view key): Node(range, NodeKind::referenceInfo), key(key) {
-	}
-};
-
 struct Reference : Node {
 	std::string_view id;
+
+	std::vector<Pair> infos;
 
 	Reference(Range range): Node(range, NodeKind::reference) {
 	}

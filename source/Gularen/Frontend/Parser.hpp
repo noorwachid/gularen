@@ -1220,60 +1220,12 @@ private:
 
 	Node* _parseReference() {
 		Reference* ref = new Reference(_get(0).range);
-		ref->id = _get(2).content;
+		ref->id = _get(0).content;
 
-		_advance(6);
+		_advance(1);
+		_parseAnnotation();
 
-		if (_isBound(0) && _get(0).kind == TokenKind::indentOpen) {
-			_advance(1);
-
-			while (_isBound(0)) {
-				// std::cout << "GotToken %.*s\n", 
-				// 	tostd::string_view(_get(0).kind).size(),
-				// 	tostd::string_view(_get(0).kind).data()
-				// );
-				//
-				if (_get(0).kind == TokenKind::indentClose) {
-					_advance(1);
-					break;
-				}
-
-				if (!(_isBound(1) && _get(0).kind == TokenKind::text && _get(1).kind == TokenKind::colon)) {
-					break;
-				}
-				ReferenceInfo* info = new ReferenceInfo(_get(0).range, _get(0).content);
-				_advance(2);
-
-				while (_isBound(0) && (_get(0).kind != TokenKind::newline || _get(0).kind != TokenKind::newlinePlus)) {
-					Node* node = _parseInline();
-					if (node == nullptr) {
-						break;
-					}
-					info->children.push_back(node);
-				}
-
-				if (info && !info->children.empty()) {
-					_updateEndRange(info->range, info->children.back()->range);
-				}
-
-				ref->children.push_back(info);
-
-				if (_isBound(0)) {
-					if (_get(0).kind == TokenKind::newline) {
-						_advance(1);
-					}
-
-					if (_get(0).kind == TokenKind::newlinePlus) {
-						_advance(1);
-						break;
-					}
-				}
-			}
-		}
-
-		if (ref && !ref->children.empty()) {
-			_updateEndRange(ref->range, ref->children.back()->range);
-		}
+		ref->infos = std::move(_annotations);
 
 		return ref;
 	}
@@ -1389,7 +1341,7 @@ private:
 
 	void _parseAnnotation() {
 		while (_isBound(0) && _get(0).kind == TokenKind::annotationKey) {
-			Annotation annotation;
+			Pair annotation;
 			annotation.key = _eat().content;
 			if (_isBound(0) && _get(0).kind == TokenKind::annotationValue) {
 				annotation.value = _eat().content;
@@ -1415,6 +1367,7 @@ private:
 			case TokenKind::squareOpen:
 			case TokenKind::exclamation:
 			case TokenKind::caret:
+			case TokenKind::ampersand:
 			case TokenKind::emoji:
 			case TokenKind::dateTime:
 
@@ -1477,26 +1430,16 @@ private:
 
 			case TokenKind::accountTag:
 			case TokenKind::hashTag:
+			case TokenKind::caret:
+			case TokenKind::ampersand:
 
 			case TokenKind::colon:
 				node = _parseParagraph();
 				break;
 
-			case TokenKind::caret: {
-				if (_isBound(5) && 
-					_get(1).kind == TokenKind::squareOpen &&
-					_get(2).kind == TokenKind::raw &&
-					_get(3).kind == TokenKind::squareClose &&
-					_get(4).kind == TokenKind::colon &&
-					_get(5).kind == TokenKind::newline
-					) {
-					node = _parseReference();
-					break;
-				}
-
-				node = _parseParagraph();
+			case TokenKind::referenceKey:
+				node = _parseReference();
 				break;
-			}
 
 			case TokenKind::head1:
 			case TokenKind::head2:
@@ -1575,7 +1518,7 @@ private:
 
 	bool _stopped;
 
-	std::vector<Annotation> _annotations;
+	std::vector<Pair> _annotations;
 };
 
 }

@@ -105,9 +105,8 @@ private:
 			const Reference* ref = static_cast<const Reference*>(node);
 			auto& refTable = _references[ref->id];
 
-			for (size_t i = 0; i < ref->children.size(); i += 1) {
-				const ReferenceInfo* info = static_cast<const ReferenceInfo*>(ref->children[i]);
-				refTable[info->key] = info;
+			for (size_t i = 0; i < ref->infos.size(); i += 1) {
+				refTable[ref->infos[i].key] = ref->infos[i].value;
 			}
 
 			return;
@@ -472,7 +471,7 @@ private:
 			case NodeKind::inText: {
 				const InText* inText = static_cast<const InText*>(node);
 				content.append("<a class=\"in-text\" href=\"#Reference-");
-				_escapeAttribute(inText->id, content);
+				_escapeID(inText->id, content);
 				content.append("\">");
 				_inText(inText->id, content);
 				content.append("</a>");
@@ -484,7 +483,7 @@ private:
 				content.append("<div class=\"reference");
 				_composeInnerAnnotations(node->annotations);
 				content.append("\" id=\"Reference-");
-				_escapeAttribute(ref->id, content);
+				_escapeID(ref->id, content);
 				content.append("\">");
 				_reference(ref->id, content);
 				content.append("</div>\n");
@@ -672,7 +671,7 @@ private:
 		}
 	}
 
-	void _composeAnnotations(const std::vector<Annotation>& annotations) {
+	void _composeAnnotations(const std::vector<Pair>& annotations) {
 		if (!annotations.empty()) {
 			_content.append(" class=\"");
 			for (size_t i = 0; i < annotations.size(); i += 1) {
@@ -687,7 +686,7 @@ private:
 		}
 	}
 
-	void _composeInnerAnnotations(const std::vector<Annotation>& annotations) {
+	void _composeInnerAnnotations(const std::vector<Pair>& annotations) {
 		for (size_t i = 0; i < annotations.size(); i += 1) {
 			_content.append(" ");
 			_escapeClass(annotations[i].key, _content);
@@ -816,18 +815,12 @@ private:
 
 		content.append("(");
 		if (table.count("author")) {
-			const ReferenceInfo* author = table["author"];
-			std::string authorContent;
-			_compose(author, authorContent);
-			std::vector<std::string_view> nameParts = _splitName(std::string_view(authorContent.data(), authorContent.size()));
+			std::vector<std::string_view> nameParts = _splitName(table["author"]);
 			std::string_view lastName = nameParts.back();
 			content.append(lastName.data(), lastName.size());
 		}
 		if (table.count("authors")) {
-			const ReferenceInfo* authors = table["authors"];
-			std::string authorsContent;
-			_compose(authors, authorsContent);
-			std::vector<std::string_view> names = _splitByComma(std::string_view(authorsContent.data(), authorsContent.size()));
+			std::vector<std::string_view> names = _splitByComma(table["authors"]);
 			if (names.size() == 2) {
 				std::vector<std::string_view> nameParts0 = _splitName(names[0]);
 				std::string_view lastName0 = nameParts0.back();
@@ -845,9 +838,8 @@ private:
 			}
 		}
 		if (table.count("year")) {
-			const ReferenceInfo* year = table["year"];
 			content.append(", ");
-			_compose(year, content);
+			content.append(table["year"]);
 		}
 		content.append(")");
 	}
@@ -863,18 +855,12 @@ private:
 		auto table = _references[id];
 
 		if (table.count("author")) {
-			const ReferenceInfo* author = table["author"];
-			std::string authorContent;
-			_compose(author, authorContent);
-			std::vector<std::string_view> nameParts = _splitName(std::string_view(authorContent.data(), authorContent.size()));
+			std::vector<std::string_view> nameParts = _splitName(table["author"]);
 			_composeLastNameInitials(nameParts, content);
 			content.append(",");
 		}
 		if (table.count("authors")) {
-			const ReferenceInfo* authors = table["authors"];
-			std::string authorsContent;
-			_compose(authors, authorsContent);
-			std::vector<std::string_view> names = _splitByComma(std::string_view(authorsContent.data(), authorsContent.size()));
+			std::vector<std::string_view> names = _splitByComma(table["authors"]);
 			if (names.size() > 1) {
 				for (size_t i = 0; i < names.size() - 1; i += 1) {
 					if (i != 0) {
@@ -890,21 +876,18 @@ private:
 			_composeLastNameInitials(nameParts, content);
 		}
 		if (table.count("year")) {
-			const ReferenceInfo* year = table["year"];
 			content.append(" (");
-			_compose(year, content);
+			content.append(table["year"]);
 			content.append(").");
 		}
 		if (table.count("title")) {
-			const ReferenceInfo* title = table["title"];
 			content.append(" <i>");
-			_compose(title, content);
+			content.append(table["title"]);
 			content.append("</i>.");
 		}
 		if (table.count("publisher")) {
-			const ReferenceInfo* pubisher = table["publisher"];
 			content.append(" ");
-			_compose(pubisher, content);
+			content.append(table["publisher"]);
 			content.append(".");
 		}
 	}
@@ -995,7 +978,7 @@ private:
 	std::vector<const Footnote*> _footnotes;
 
 	// referenceID -> infoKey -> infoValue
-	std::unordered_map<std::string_view, std::unordered_map<std::string_view, const ReferenceInfo*>> _references;
+	std::unordered_map<std::string_view, std::unordered_map<std::string_view, std::string_view>> _references;
 
 	Heading::Type _previousHeadingType;
 	Heading::Type _currentHeadingType;

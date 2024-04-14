@@ -14,7 +14,7 @@ public:
 		_document = document;
 
 		for (size_t j = 0; j < _document->annotations.size(); j += 1) {
-			const Annotation& annotation = _document->annotations[j];
+			const Pair& annotation = _document->annotations[j];
 			_documentAnnotations[annotation.key] = annotation.value;
 		}
 	}
