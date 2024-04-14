@@ -259,17 +259,12 @@ private:
 				break;
 
 			case TokenKind::caret: {
-				if (_isBound(1)) {
-					if (_get(1).kind == TokenKind::parenOpen) {
-						node = _parseFootnote();
-						break;
-					}
-					if (_get(1).kind == TokenKind::squareOpen) {
-						node = _parseInText();
-						break;
-					}
-				}
-				node = nullptr;
+				node = _parseFootnote();
+				break;
+			}
+
+			case TokenKind::ampersand: {
+				node = _parseInText();
 				break;
 			}
 
@@ -1174,7 +1169,7 @@ private:
 		const Token& token = _eat();
 		Footnote* ref = nullptr;
 
-		if (_isBound(0) && _get(0).kind == TokenKind::parenOpen) {
+		if (_isBound(0) && _get(0).kind == TokenKind::squareOpen) {
 			_advance(1);
 		}
 
@@ -1182,7 +1177,7 @@ private:
 			ref = new Footnote(token.range, _eat().content);
 		}
 
-		if (_isBound(0) && _get(0).kind == TokenKind::parenClose) {
+		if (_isBound(0) && _get(0).kind == TokenKind::squareClose) {
 			_updateEndRange(ref->range, _get(0).range);
 			_advance(1);
 		}
