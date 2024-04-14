@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Gularen/Frontend/Lexer.hpp"
 #include "Gularen/Frontend/Node.hpp"
 #include <fstream>
 
@@ -14,6 +15,7 @@ public:
 		_document = nullptr;
 		_fileInclusion = true;
 		_error = false;
+		_stopped = false;
 	}
 
 	~Parser() {
@@ -97,7 +99,7 @@ private:
 
 			Node* node = _parseBlock();
 			if (node == nullptr) {
-				if (_error == true) {
+				if (_error || _stopped) {
 					return _document;
 				}
 				_advance(1);
@@ -129,7 +131,7 @@ private:
 			return nullptr;
 		}
 
-		std::string_view kind = toStringView(_get(0).kind);
+		std::string_view kind = TokenKindHelper::toStringView(_get(0).kind);
 		std::cout << "[ParsingError] unxpected token " << kind << ", expect " << message << "\n";
 		return nullptr;
 	}
@@ -1478,6 +1480,10 @@ private:
 				node = _parsePageBreak();
 				break;
 
+			case TokenKind::documentBreak:
+				_stopped = true;
+				return nullptr;
+
 			case TokenKind::dinkus:
 				node = _parseDinkus();
 				break;
@@ -1534,6 +1540,8 @@ private:
 	bool _fileInclusion;
 
 	bool _error;
+
+	bool _stopped;
 
 	std::vector<Annotation> _annotations;
 };

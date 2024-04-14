@@ -118,6 +118,7 @@ struct TokenKindHelper {
 
 			case TokenKind::lineBreak: return "lineBreak";
 			case TokenKind::pageBreak: return "pageBreak";
+			case TokenKind::documentBreak: return "documentBreak";
 			case TokenKind::dinkus: return "dinkus";
 
 			case TokenKind::bullet: return "bullet";
@@ -179,35 +180,6 @@ struct Token {
 	Range range;
 	TokenKind kind;
 	std::string_view content;
-
-	void print() const {
-		std::cout << TokenKindHelper::toStringView(kind);
-
-		if (content.size() != 0) {
-			std::cout << " = ";
-			for (size_t i = 0; i < content.size(); i += 1) {
-				if (content[i] < ' ') {
-					switch (content[i]) {
-						case '\t':
-							std::cout << "\\t";
-							break;
-
-						case '\n':
-							std::cout << "\\n";
-							break;
-
-						default:
-							std::cout << "\\x" << static_cast<int>(content[i]);
-							break;
-					}
-					continue;
-				}
-				std::cout << content[i];
-			}
-		}
-
-		printf("\n");
-	}
 };
 
 class Lexer {
