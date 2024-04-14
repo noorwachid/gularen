@@ -854,7 +854,6 @@ private:
 				case '/':
 				case '_':
 				case '`':
-				case '=':
 				case '~':
 				case '<':
 				case '|':
@@ -890,6 +889,15 @@ private:
 				case '+':
 					previousAlphanumeric = false;
 					if (_isBound(1) && ((_get(1) >= '0' && _get(1) <= '9') || _get(1) == '=')) {
+						goto end;
+					}
+
+					_advance(1);
+					break;
+
+				case '=':
+					previousAlphanumeric = false;
+					if (_isBound(1) && (_get(1) == '=' || _get(1) == '+' || _get(1) == '-')) {
 						goto end;
 					}
 
