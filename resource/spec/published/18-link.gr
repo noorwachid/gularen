@@ -1,4 +1,4 @@
->>> Linker
+>>> Link
 
 >> Net Link
 --- gr
@@ -49,7 +49,7 @@
 ---
 
 > With Specified Heading Title
----
+--- gr
 [Another Document.gr>Legal Section]
 ---
 --- html
@@ -57,7 +57,7 @@
 ---
 
 > With Specified Heading Title and Label
----
+--- gr
 [Another Document.gr>Legal Section](see this section)
 ---
 --- html

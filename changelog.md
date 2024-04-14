@@ -1,5 +1,25 @@
 # Changelog
 
+### Version 1.7.0
+New features:
+- Added highlight, `=+added text+=`
+- Removed highlight, `=-removed text-=`
+- Document-break, `<<<`
+
+Breaking changes:
+- Annotation, from `~~ key: value` to `~~ key = value`
+- Footnote, from `^(description)` to `^[description]`
+- Citation
+  - In-text, from `^[12 Rules]` to `&[12 Rules]`
+  - Reference, from `^[12 Rules]:` to `~~ & 12 Rules`
+- Highlight, from `=highlighted=` to `==highlighted==`
+- Admonition, from `<Note>` to `//Note//`
+- Date, from`<2024-01-12>` to `+2024-01-12`
+- Date-time, from`<2024-01-12 10:00>` to `+2024-01-12 10:00`
+- Time, from`<10:00>` to `+10:00`
+- Line-break syntax: from `<<` into `<`.
+- Page-break syntax: from `<<<` into `<<`.
+
 ### Version 1.6.0
 Breaking changes:
 - Rename node from `Division` to `Heading`

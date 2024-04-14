@@ -9,17 +9,17 @@
 > Subsection
 ---
 --- html
-<div class="chapter">
+<section class="chapter">
 	<h1 id="Chapter">Chapter</h1>
 
-	<div class="section">
+	<section class="section">
 		<h2 id="Section">Section</h2>
 
-		<div class="subsection">
+		<section class="subsection">
 			<h3 id="Subsection">Subsection</h3>
-		</div>
-	</div>
-</div>
+		</section>
+	</section>
+</section>
 ---
 
 >> Heading Subtitle

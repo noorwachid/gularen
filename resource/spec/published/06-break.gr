@@ -10,7 +10,7 @@
 
 >> Line-Break
 --- gr
-This will create<<line-break.
+This will create<line-break.
 ---
 --- html
 <p>This will create<br>line-break.</p>
@@ -18,8 +18,19 @@ This will create<<line-break.
 
 >> Page-Break
 --- gr
-<<<
+<<
 ---
 --- html
 <div class="page-break"></div>
+---
+
+>> Document-Break
+--- gr
+hello there
+<<<
+draft work
+not finished
+---
+--- html
+<p>hello there</p>
 ---

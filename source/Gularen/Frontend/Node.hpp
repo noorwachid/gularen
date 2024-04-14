@@ -265,7 +265,7 @@ struct CodeBlock : Code {
 
 struct Link : Node {
 	std::string_view resource;
-	std::vector<std::string_view> divisions;
+	std::vector<std::string_view> headings;
 	std::string_view label;
 
 	Link(Range range): Node(range, NodeKind::link) {
@@ -290,14 +290,14 @@ struct Link : Node {
 			while (index < resource.size()) {
 				if (resource[index] == '>') {
 					std::string_view division = resource.substr(startIndex + 1, index - startIndex - 1);
-					divisions.push_back(division);
+					headings.push_back(division);
 					startIndex = index;
 				}
 				index += 1;
 			}
 
 			std::string_view division = resource.substr(startIndex + 1, index - startIndex - 1);
-			divisions.push_back(division);
+			headings.push_back(division);
 		}
 	}
 };

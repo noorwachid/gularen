@@ -18,6 +18,7 @@ enum class TokenKind {
 
 	asterisk,
 	slash,
+	slashslash,
 	underscore,
 	backtick,
 
@@ -35,6 +36,7 @@ enum class TokenKind {
 
 	lineBreak,
 	pageBreak,
+	documentBreak,
 
 	dinkus,
 
@@ -84,84 +86,87 @@ enum class TokenKind {
 	hashTag,
 };
 
-std::string_view toStringView(TokenKind kind) {
-	switch (kind) {
-		case TokenKind::comment: return "comment";
-		case TokenKind::annotationKey: return "annotationKey";
-		case TokenKind::annotationValue: return "annotationValue";
+struct TokenKindHelper {
+	static std::string_view toStringView(TokenKind kind) {
+		switch (kind) {
+			case TokenKind::comment: return "comment";
+			case TokenKind::annotationKey: return "annotationKey";
+			case TokenKind::annotationValue: return "annotationValue";
 
-		case TokenKind::text: return "text";
+			case TokenKind::text: return "text";
 
-		case TokenKind::newline: return "newline";
-		case TokenKind::newlinePlus: return "newline+";
+			case TokenKind::newline: return "newline";
+			case TokenKind::newlinePlus: return "newline+";
 
-		case TokenKind::asterisk: return "asterisk";
-		case TokenKind::slash: return "slash";
-		case TokenKind::underscore: return "underscore";
-		case TokenKind::backtick: return "backtick";
+			case TokenKind::asterisk: return "asterisk";
+			case TokenKind::slash: return "slash";
+			case TokenKind::slashslash: return "slashslash";
+			case TokenKind::underscore: return "underscore";
+			case TokenKind::backtick: return "backtick";
 
-		case TokenKind::equal: return "equal";
+			case TokenKind::equal: return "equal";
 
-		case TokenKind::colon: return "colon";
-		case TokenKind::coloncolon: return "coloncolon";
+			case TokenKind::colon: return "colon";
+			case TokenKind::coloncolon: return "coloncolon";
 
-		case TokenKind::head3: return "head3";
-		case TokenKind::head2: return "head2";
-		case TokenKind::head1: return "head1";
+			case TokenKind::head3: return "head3";
+			case TokenKind::head2: return "head2";
+			case TokenKind::head1: return "head1";
 
-		case TokenKind::indentOpen: return "indentOpen";
-		case TokenKind::indentClose: return "indentClose";
+			case TokenKind::indentOpen: return "indentOpen";
+			case TokenKind::indentClose: return "indentClose";
 
-		case TokenKind::lineBreak: return "lineBreak";
-		case TokenKind::pageBreak: return "pageBreak";
-		case TokenKind::dinkus: return "dinkus";
+			case TokenKind::lineBreak: return "lineBreak";
+			case TokenKind::pageBreak: return "pageBreak";
+			case TokenKind::dinkus: return "dinkus";
 
-		case TokenKind::bullet: return "bullet";
-		case TokenKind::index: return "index";
-		case TokenKind::checkbox: return "checkbox";
+			case TokenKind::bullet: return "bullet";
+			case TokenKind::index: return "index";
+			case TokenKind::checkbox: return "checkbox";
 
-		case TokenKind::pipe: return "pipe";
-		case TokenKind::tee: return "tee";
-		case TokenKind::teeLeft: return "teeLeft";
-		case TokenKind::teeRight: return "teeRight";
-		case TokenKind::teeCenter: return "teeCenter";
+			case TokenKind::pipe: return "pipe";
+			case TokenKind::tee: return "tee";
+			case TokenKind::teeLeft: return "teeLeft";
+			case TokenKind::teeRight: return "teeRight";
+			case TokenKind::teeCenter: return "teeCenter";
 
-		case TokenKind::raw: return "raw";
+			case TokenKind::raw: return "raw";
 
-		case TokenKind::fenceOpen: return "fenceOpen";
-		case TokenKind::fenceClose: return "fenceClose";
+			case TokenKind::fenceOpen: return "fenceOpen";
+			case TokenKind::fenceClose: return "fenceClose";
 
-		case TokenKind::parenOpen: return "parenOpen";
-		case TokenKind::parenClose: return "parenClose";
+			case TokenKind::parenOpen: return "parenOpen";
+			case TokenKind::parenClose: return "parenClose";
 
-		case TokenKind::squareOpen: return "squareOpen";
-		case TokenKind::squareClose: return "squareClose";
+			case TokenKind::squareOpen: return "squareOpen";
+			case TokenKind::squareClose: return "squareClose";
 
-		case TokenKind::angleOpen: return "angleOpen";
-		case TokenKind::angleClose: return "angleClose";
+			case TokenKind::angleOpen: return "angleOpen";
+			case TokenKind::angleClose: return "angleClose";
 
-		case TokenKind::exclamation: return "exclamation";
-		case TokenKind::question: return "question";
-		case TokenKind::caret: return "caret";
+			case TokenKind::exclamation: return "exclamation";
+			case TokenKind::question: return "question";
+			case TokenKind::caret: return "caret";
 
-		case TokenKind::hyphen: return "hyphen";
-		case TokenKind::enDash: return "enDash";
-		case TokenKind::emDash: return "emDash";
+			case TokenKind::hyphen: return "hyphen";
+			case TokenKind::enDash: return "enDash";
+			case TokenKind::emDash: return "emDash";
 
-		case TokenKind::quoteOpen: return "quoteOpen";
-		case TokenKind::quoteClose: return "quoteClose";
+			case TokenKind::quoteOpen: return "quoteOpen";
+			case TokenKind::quoteClose: return "quoteClose";
 
-		case TokenKind::squoteOpen: return "squoteOpen";
-		case TokenKind::squoteClose: return "squoteClose";
+			case TokenKind::squoteOpen: return "squoteOpen";
+			case TokenKind::squoteClose: return "squoteClose";
 
-		case TokenKind::emoji: return "emoji";
-		case TokenKind::dateTime: return "dateTime";
-		case TokenKind::admon: return "admon";
+			case TokenKind::emoji: return "emoji";
+			case TokenKind::dateTime: return "dateTime";
+			case TokenKind::admon: return "admon";
 
-		case TokenKind::accountTag: return "accountTag";
-		case TokenKind::hashTag: return "hashTag";
+			case TokenKind::accountTag: return "accountTag";
+			case TokenKind::hashTag: return "hashTag";
+		}
 	}
-}
+};
 
 struct Range {
 	size_t startLine;
@@ -176,7 +181,7 @@ struct Token {
 	std::string_view content;
 
 	void print() const {
-		std::cout << toStringView(kind);
+		std::cout << TokenKindHelper::toStringView(kind);
 
 		if (content.size() != 0) {
 			std::cout << " = ";
@@ -386,34 +391,32 @@ private:
 				case '<': {
 					if (_isBound(1) && _get(1) == '<') {
 						if (_isBound(2) && _get(2) == '<') {
-							_append(TokenKind::pageBreak, _contentIndex, 3);
+							_append(TokenKind::documentBreak, _contentIndex, 3);
 							_advance(3);
 							break;
 						}
 
-						_append(TokenKind::lineBreak, _contentIndex, 2);
+						_append(TokenKind::pageBreak, _contentIndex, 2);
 						_advance(2);
 						break;
 					}
 
-					size_t oldContentIndex = _contentIndex;
-
+					_append(TokenKind::lineBreak, _contentIndex, 1);
 					_advance(1);
-
-					if (_get(0) >= '0' && _get(0) <= '9') {
-						while (_isBound(0) && ((_get(0) >= '0' && _get(0) <= '9') || _get(0) == ':' || _get(0) == ' ' || _get(0) == '-')) {
-							_advance(1);
-						}
-
-						if (_isBound(0) && _get(0) == '>') {
-							_append(TokenKind::dateTime, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column });
-							_advance(1);
-							break;
-						}
-					}
-
-					_append(TokenKind::text, oldContentIndex, _contentIndex - oldContentIndex);
 					break;
+
+					// date time checks
+					// if (_get(0) >= '0' && _get(0) <= '9') {
+					// 	while (_isBound(0) && ((_get(0) >= '0' && _get(0) <= '9') || _get(0) == ':' || _get(0) == ' ' || _get(0) == '-')) {
+					// 		_advance(1);
+					// 	}
+					//
+					// 	if (_isBound(0) && _get(0) == '>') {
+					// 		_append(TokenKind::dateTime, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column });
+					// 		_advance(1);
+					// 		break;
+					// 	}
+					// }
 				}
 
 				case '-':

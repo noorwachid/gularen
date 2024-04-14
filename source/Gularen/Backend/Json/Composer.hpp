@@ -270,14 +270,14 @@ private:
 					_escape(link->resource);
 					_content.append("\"");
 				}
-				if (link->divisions.size() != 0) {
-					_content.append(",\"divisions\":[");
-					for (size_t i = 0; i < link->divisions.size(); i += 1) {
+				if (link->headings.size() != 0) {
+					_content.append(",\"headings\":[");
+					for (size_t i = 0; i < link->headings.size(); i += 1) {
 						if (i != 0) {
 							_content.append(",");
 						}
 						_content.append("\"");
-						_escape(link->divisions[i]);
+						_escape(link->headings[i]);
 						_content.append("\"");
 					}
 					_content.append("]");

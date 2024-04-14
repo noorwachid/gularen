@@ -34,9 +34,9 @@ private:
 	void _composeToc(const Node* node) {
 		switch (node->kind) {
 			case NodeKind::heading: {
-				auto division = static_cast<const Heading*>(node);
+				auto heading = static_cast<const Heading*>(node);
 
-				switch (division->type) {
+				switch (heading->type) {
 					case Heading::Type::chapter:
 						_toc.append("<ul class=\"section\">\n");
 						break;
@@ -154,21 +154,21 @@ private:
 			}
 
 			case NodeKind::heading: {
-				_previousDivisionType = _currentDivisionType;
+				_previousHeadingType = _currentHeadingType;
 
-				const Heading* division = static_cast<const Heading*>(node);
+				const Heading* heading = static_cast<const Heading*>(node);
 
-				_currentDivisionType = division->type;
+				_currentHeadingType = heading->type;
 
-				switch (division->type) {
+				switch (heading->type) {
 					case Heading::Type::chapter:
-						content.append("<div class=\"chapter\">\n");
+						content.append("<section class=\"chapter\">\n");
 						break;
 					case Heading::Type::section:
-						content.append("<div class=\"section\">\n");
+						content.append("<section class=\"section\">\n");
 						break;
 					case Heading::Type::subsection:
-						content.append("<div class=\"subsection\">\n");
+						content.append("<section class=\"subsection\">\n");
 						break;
 				}
 				return;
@@ -177,7 +177,7 @@ private:
 			case NodeKind::title: {
 				const Title* title = static_cast<const Title*>(node);
 
-				switch (_currentDivisionType) {
+				switch (_currentHeadingType) {
 					case Heading::Type::chapter:
 						content.append("<h1 id=\"");
 						_escapeID(title, content);
@@ -382,13 +382,13 @@ private:
 				content.append("<a href=\"");
 				_escapeAttribute(link->resource, content);
 
-				if (link->divisions.size() != 0) {
+				if (link->headings.size() != 0) {
 					content.append("#");
-					for (size_t i = 0; i < link->divisions.size(); i += 1) {
+					for (size_t i = 0; i < link->headings.size(); i += 1) {
 						if (i != 0) {
 							content.append("-");
 						}
-						_escapeID(link->divisions[i], content);
+						_escapeID(link->headings[i], content);
 					}
 				}
 
@@ -397,8 +397,8 @@ private:
 				if (link->label.size() == 0) {
 					_escape(link->resource, content);
 
-					if (link->divisions.size() != 0) {
-						for (std::string_view section : link->divisions) {
+					if (link->headings.size() != 0) {
+						for (std::string_view section : link->headings) {
 							content.append(" ");
 							_escape(section, content);
 						}
@@ -580,18 +580,13 @@ private:
 
 			case NodeKind::heading: {
 				_composeFootnote();
+				content.append("</section>\n"); return;
 
-				switch (_currentDivisionType) {
-					case Heading::Type::chapter: content.append("</div>\n"); return;
-					case Heading::Type::section: content.append("</div>\n"); return;
-					case Heading::Type::subsection: content.append("</div>\n"); return;
-				}
-
-				_currentDivisionType = _previousDivisionType;
+				_currentHeadingType = _previousHeadingType;
 			}
 
 			case NodeKind::title: {
-				switch (_currentDivisionType) {
+				switch (_currentHeadingType) {
 					case Heading::Type::chapter: content.append("</h1>\n"); return;
 					case Heading::Type::section: content.append("</h2>\n"); return;
 					case Heading::Type::subsection: content.append("</h3>\n"); return;
@@ -1002,8 +997,8 @@ private:
 	// referenceID -> infoKey -> infoValue
 	std::unordered_map<std::string_view, std::unordered_map<std::string_view, const ReferenceInfo*>> _references;
 
-	Heading::Type _previousDivisionType;
-	Heading::Type _currentDivisionType;
+	Heading::Type _previousHeadingType;
+	Heading::Type _currentHeadingType;
 };
 
 }
