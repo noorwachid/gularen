@@ -1,7 +1,8 @@
-> Heading
+~~ title      = My Amazing Presentation
+~~ author     = Noor Wachid
+~~ created-at = 2024-03-08
+~ document annotation
 
-Now you see me
-
-~~ annotation = card
-
-hello
+~~ text-alignment = right
+hola diablos
+~ entity annotation

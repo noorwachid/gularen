@@ -90,7 +90,6 @@ private:
 				}
 
 				_advance(1);
-				return nullptr;
 			}
 		}
 
