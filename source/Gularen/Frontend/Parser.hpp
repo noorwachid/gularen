@@ -80,6 +80,20 @@ private:
 			_advance(1);
 		}
 
+		// check for document annotation
+		if (_get(0).kind == TokenKind::annotationKey) {
+			_parseAnnotation();
+
+			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+				if (!_annotations.empty() && _firstNode) {
+					_document->annotations = std::move(_annotations);
+				}
+
+				_advance(1);
+				return nullptr;
+			}
+		}
+
 		while (_isBound(0)) {
 			Node* node = _parseAnnotatedBlock();
 			if (node == nullptr) {
@@ -1378,15 +1392,6 @@ private:
 	Node* _parseAnnotatedBlock() {
 		if (_get(0).kind == TokenKind::annotationKey) {
 			_parseAnnotation();
-		}
-
-		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-			if (!_annotations.empty() && _firstNode) {
-				_document->annotations = std::move(_annotations);
-			}
-
-			_advance(1);
-			return nullptr;
 		}
 
 		Node* node = _parseBlock();
