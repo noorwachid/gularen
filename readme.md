@@ -5,7 +5,7 @@ A sweet-spot in markup languages
 <img width="1419" alt="Screenshot 2024-03-23 at 17 40 08" src="https://github.com/noorwachid/gularen/assets/42460975/7244d02d-e3b5-4295-9368-655829647411">
 
 ## Live Demo
-[Try on web browser](https://noorwach.id/gularen-editor/)
+[Try on web browser](https://noorwach.id/gularen-web/)
 
 ## Installation
 - [To HTML, GFM, and JSON](cli/readme.md)

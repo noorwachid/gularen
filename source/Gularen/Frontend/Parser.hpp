@@ -1398,6 +1398,10 @@ private:
 			}
 		}
 
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_advance(1);
+		}
+
 		return node;
 	}
 
