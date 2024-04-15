@@ -5,6 +5,22 @@
 
 using namespace Gularen;
 
+void render(std::string_view path, std::string_view content) {
+	if (path.empty()) {
+		std::cout << content;
+		return;
+	}
+
+	std::ofstream file(path);
+
+	if (!file.is_open()) {
+		std::cout << "cannot create file " << path << "\n";
+		return;
+	}
+
+	file.write(content.data(), content.size());
+}
+
 int main(int argc, char** argv) {
 	if (argv == 0) {
 		std::cout << "invalid process\n";
@@ -108,26 +124,26 @@ int main(int argc, char** argv) {
 				Html::TemplateManager templateManager;
 				templateManager.setDocument(document);
 				templateManager.setTemplateFile(templatePath);
-				std::cout << templateManager.render();
+				render(outputPath, templateManager.render());
 				return 0;
 			}
 
 			Html::Composer composer;
-			std::cout << composer.compose(document);
+			render(outputPath, composer.compose(document));
 
 			return 0;
 		}
 
 		if (target == "gfm") {
 			Gfm::Composer composer;
-			std::cout << composer.compose(document);
+			render(outputPath, composer.compose(document));
 
 			return 0;
 		}
 
 		if (target == "json") {
 			Json::Composer composer;
-			std::cout << composer.compose(document);
+			render(outputPath, composer.compose(document));
 
 			return 0;
 		}
