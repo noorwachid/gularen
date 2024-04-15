@@ -152,6 +152,13 @@ private:
 				return;
 			}
 
+			case NodeKind::change: {
+				switch (static_cast<const Change*>(node)->type) {
+					case Change::Type::added: content.append("<ins>"); return;
+					case Change::Type::removed: content.append("<del>"); return;
+				}
+			}
+
 			case NodeKind::heading: {
 				_previousHeadingType = _currentHeadingType;
 
@@ -575,6 +582,13 @@ private:
 			case NodeKind::highlight: {
 				content.append("</mark>");
 				return;
+			}
+
+			case NodeKind::change: {
+				switch (static_cast<const Change*>(node)->type) {
+					case Change::Type::added: content.append("</ins>"); return;
+					case Change::Type::removed: content.append("</del>"); return;
+				}
 			}
 
 			case NodeKind::heading: {
