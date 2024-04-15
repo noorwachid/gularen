@@ -74,43 +74,24 @@ private:
 		// }
 		// return nullptr;
 
-		bool firstAnnotation = true;
+		_firstNode = true;
+
+		while (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			_advance(1);
+		}
 
 		while (_isBound(0)) {
-			if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
-				if (!_annotations.empty()) {
-					if (firstAnnotation) {
-						firstAnnotation = false;
-						_document->annotations = std::move(_annotations);
-					} else {
-						Node* node = new Paragraph(_get(0).range);
-						node->annotations = std::move(_annotations);
-						_document->children.push_back(node);
-					}
-				}
-
-				_advance(1);
-			}
-
-			if (_get(0).kind == TokenKind::annotationKey) {
-				_parseAnnotation();
-				continue;
-			}
-
-			Node* node = _parseBlock();
+			Node* node = _parseAnnotatedBlock();
 			if (node == nullptr) {
 				if (_error || _stopped) {
 					return _document;
 				}
+
 				_advance(1);
 				continue;
 			}
 
 			_document->children.push_back(node);
-
-			if (_annotations.size() != 0) {
-				node->annotations = std::move(_annotations);
-			}
 		}
 
 		if (_document && !_document->children.empty()) {
@@ -509,7 +490,7 @@ private:
 				default: break;
 			}
 
-			Node* node = _parseBlock();
+			Node* node = _parseAnnotatedBlock();
 
 			if (node == nullptr) {
 				delete heading;
@@ -606,7 +587,7 @@ private:
 		Quote* indent = new Quote(token.range);
 
 		while (_isBound(0) && _get(0).kind != TokenKind::indentClose) {
-			Node* node = _parseBlock();
+			Node* node = _parseAnnotatedBlock();
 
 			if (node == nullptr) {
 				delete indent;
@@ -669,7 +650,7 @@ private:
 						_advance(2);
 
 						while (_isBound(0)) {
-							Node* subnode = _parseBlock();
+							Node* subnode = _parseAnnotatedBlock();
 							if (subnode == nullptr) {
 								if (_get(0).kind == TokenKind::indentClose) {
 									_advance(1);
@@ -810,7 +791,7 @@ private:
 										_advance(2);
 
 										while (_isBound(0)) {
-											Node* subnode = _parseBlock();
+											Node* subnode = _parseAnnotatedBlock();
 											if (subnode == nullptr) {
 												if (_get(0).kind == TokenKind::indentClose) {
 													_advance(1);
@@ -1297,7 +1278,7 @@ private:
 						_advance(2);
 
 						while (_isBound(0)) {
-							Node* subnode = _parseBlock();
+							Node* subnode = _parseAnnotatedBlock();
 							if (subnode == nullptr) {
 								if (_get(0).kind == TokenKind::indentClose) {
 									_advance(1);
@@ -1392,6 +1373,32 @@ private:
 			default: 
 				return false;
 		}
+	}
+
+	Node* _parseAnnotatedBlock() {
+		if (_get(0).kind == TokenKind::annotationKey) {
+			_parseAnnotation();
+		}
+
+		if (_isBound(0) && (_get(0).kind == TokenKind::newline || _get(0).kind == TokenKind::newlinePlus)) {
+			if (!_annotations.empty() && _firstNode) {
+				_document->annotations = std::move(_annotations);
+			}
+
+			_advance(1);
+			return nullptr;
+		}
+
+		Node* node = _parseBlock();
+
+		if (node != nullptr) {
+			_firstNode = false;
+			if (_annotations.size() != 0) {
+				node->annotations = std::move(_annotations);
+			}
+		}
+
+		return node;
 	}
 
 	Node* _parseBlock() {
@@ -1517,6 +1524,8 @@ private:
 	bool _error;
 
 	bool _stopped;
+
+	bool _firstNode;
 
 	std::vector<Pair> _annotations;
 };
