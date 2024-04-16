@@ -1,7 +1,8 @@
 #include "Gularen/Frontend/Parser.hpp"
 #include "Gularen/Backend/Html/TemplateManager.hpp"
-#include "Gularen/Backend/Gfm/Composer.hpp"
+#include "Gularen/Backend/Markdown/Composer.hpp"
 #include "Gularen/Backend/Json/Composer.hpp"
+#include "Gularen/Backend/Composer.hpp"
 
 using namespace Gularen;
 
@@ -43,9 +44,10 @@ int main(int argc, char** argv) {
 		std::cout << program << " to target input-path.gr\n";
 		std::cout << "  convert specified input path to specified target\n";
 		std::cout << "  target can be one of:\n";
-		std::cout << "    - html\n";
-		std::cout << "    - gfm (github flavored markdown)\n";
 		std::cout << "    - json\n";
+		std::cout << "    - html\n";
+		std::cout << "    - markdown\n";
+		std::cout << "    - gularen\n";
 		return 0;
 	}
 
@@ -109,6 +111,13 @@ int main(int argc, char** argv) {
 			return 1;
 		}
 
+		if (target == "gr" || target == "gularen") {
+			Composer composer;
+			render(outputPath, composer.compose(document));
+
+			return 0;
+		}
+
 		if (target == "html") {
 			if (templatePath.size() != 0) {
 				if (!std::filesystem::exists(templatePath)) {
@@ -134,8 +143,8 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 
-		if (target == "gfm") {
-			Gfm::Composer composer;
+		if (target == "md" || target == "markdown") {
+			Markdown::Composer composer;
 			render(outputPath, composer.compose(document));
 
 			return 0;

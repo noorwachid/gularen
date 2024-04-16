@@ -3,7 +3,7 @@
 #include "Gularen/Frontend/Parser.hpp"
 
 namespace Gularen {
-namespace Gfm {
+namespace Markdown {
 
 class Composer {
 public:

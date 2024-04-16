@@ -27,15 +27,17 @@ public:
 		_document = new Document();
 		_document->path = path;
 
-		for (size_t i = path.size(); i > 0; i -= 1) {
-			if (path[i - 1] == '/') {
-				_documentPath = std::string(path.data(), i - 1);
-				break;
+		if (_workspaceFolder.empty()) {
+			for (size_t i = path.size(); i > 0; i -= 1) {
+				if (path[i - 1] == '/') {
+					_workspaceFolder = std::string(path.data(), i - 1);
+					break;
+				}
 			}
-		}
 
-		if (_documentPath.size() == 0) {
-			_documentPath = ".";
+			if (_workspaceFolder.size() == 0) {
+				_workspaceFolder = ".";
+			}
 		}
 
 		std::ifstream file(path);
@@ -56,6 +58,10 @@ public:
 		_document = new Document();
 
 		return _parse(content);
+	}
+
+	void setWorkspaceFolder(std::string_view path) {
+		_workspaceFolder = path;
 	}
 
 	void setFileInclusion(bool state) {
@@ -1147,7 +1153,7 @@ private:
 
 		if (_isBound(0) && _get(0).kind == TokenKind::raw) {
 			std::string_view filePath = _eat().content;
-			std::string path = _documentPath + std::string("/");
+			std::string path = _workspaceFolder + std::string("/");
 			path.append(filePath);
 
 			if (_fileInclusion) {
@@ -1529,7 +1535,7 @@ private:
 
 	Document* _document;
 
-	std::string _documentPath;
+	std::string _workspaceFolder;
 
 	bool _fileInclusion;
 

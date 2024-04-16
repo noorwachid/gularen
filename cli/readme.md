@@ -49,12 +49,21 @@ In the template file you can add special comments for substitution.
 - `<!--[toc]-->`: the document table of contents
 - `<!--[[annotation-key]]-->`: document annotation value of `~~ key: value`
 
-### To GFM (Github Flavored Markdown)
+### To Markdown
 ```sh
-gularen to gfm document.gr
+gularen to markdown document.gr
+# or
+gularen to md document.gr
 ```
 
 ### To JSON
 ```sh
 gularen to json document.gr
+```
+
+### To Gularen
+```sh
+gularen to gularen document.gr
+# or
+gularen to gr document.gr
 ```
