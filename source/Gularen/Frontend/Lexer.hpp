@@ -690,7 +690,7 @@ private:
 	}
 
 	void _consumeIndent() {
-		size_t beginIndex = _contentIndex;
+		// size_t beginIndex = _contentIndex;
 		size_t indentLevel = 0;
 		while (_isBound(0) && _get(0) == '\t') {
 			indentLevel += 1;

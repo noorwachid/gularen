@@ -4,9 +4,6 @@
 #include "Gularen/Frontend/Node.hpp"
 #include <fstream>
 
-// TODO: allow double newline on blockquote 
-// TODO: escaping with \
-
 namespace Gularen {
 
 class Parser {
@@ -365,7 +362,7 @@ private:
 
 		Node* view = nullptr;
 		size_t viewIndex = 0;
-		size_t commentCounts = 0;
+		// size_t commentCounts = 0;
 		size_t viewCounts = 0;
 		size_t otherCounts = 0;
 
@@ -414,7 +411,7 @@ private:
 
 			switch (node->kind) {
 				case NodeKind::comment:
-					commentCounts += 1;
+					// commentCounts += 1;
 					break;
 				case NodeKind::view:
 					viewCounts += 1;
@@ -776,7 +773,7 @@ private:
 		List* list = new List(_get(0).range, NodeKind::definitionList);
 
 		while (_isBound(0) && _isParagraph()) {
-			size_t previousTokenIndex = _tokenIndex;
+			// size_t previousTokenIndex = _tokenIndex;
 			bool itemOccupied = false;
 			bool itemColoncolon = false;
 

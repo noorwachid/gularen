@@ -9,7 +9,7 @@ case $OS in
 		;;
 
 	'Darwin') 
-		clang++ -o build/gularen -std=c++17 -I source cli/main.cpp
+		clang++ -o build/gularen -Wall -std=c++17 -I source cli/main.cpp
 		;;
 
 	*) 
