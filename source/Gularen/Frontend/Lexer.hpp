@@ -10,7 +10,6 @@ enum class TokenKind {
 	comment,
 	annotationKey,
 	annotationValue,
-	referenceKey,
 
 	text,
 
@@ -30,7 +29,7 @@ enum class TokenKind {
 	removeClose,
 
 	colon,
-	coloncolon,
+	equal,
 
 	head3,
 	head2,
@@ -84,7 +83,11 @@ enum class TokenKind {
 	squoteOpen,
 	squoteClose,
 
-	admon,
+	admonition,
+	admonitionLabel,
+	reference,
+	referenceID,
+
 	dateTime,
 	emoji,
 
@@ -98,7 +101,6 @@ struct TokenKindHelper {
 			case TokenKind::comment: return "comment";
 			case TokenKind::annotationKey: return "annotationKey";
 			case TokenKind::annotationValue: return "annotationValue";
-			case TokenKind::referenceKey: return "referenceKey";
 
 			case TokenKind::text: return "text";
 
@@ -118,7 +120,7 @@ struct TokenKindHelper {
 			case TokenKind::removeClose: return "removeClose";
 
 			case TokenKind::colon: return "colon";
-			case TokenKind::coloncolon: return "coloncolon";
+			case TokenKind::equal: return "equal";
 
 			case TokenKind::head3: return "head3";
 			case TokenKind::head2: return "head2";
@@ -173,7 +175,10 @@ struct TokenKindHelper {
 
 			case TokenKind::emoji: return "emoji";
 			case TokenKind::dateTime: return "dateTime";
-			case TokenKind::admon: return "admon";
+			case TokenKind::admonition: return "admonition";
+			case TokenKind::admonitionLabel: return "admonitionLabel";
+			case TokenKind::reference: return "reference";
+			case TokenKind::referenceID: return "referenceID";
 
 			case TokenKind::accountTag: return "accountTag";
 			case TokenKind::hashTag: return "hashTag";
@@ -278,12 +283,6 @@ private:
 							_advance(1);
 						}
 
-						if (_get(0) == '/' && _isBound(1) && _get(1) == '/') {
-							_append(TokenKind::admon, oldContentIndex + 1, _contentIndex - 1 - oldContentIndex, Range { _oldLine, _oldColumn, _line, _column });
-							_advance(2);
-							break;
-						}
-
 						_contentIndex = oldContentIndex;
 					}
 
@@ -299,6 +298,56 @@ private:
 
 					if (_isBound(2) && _get(1) == '-' && _get(2) == '-') {
 						_consumeCodeBlock();
+						break;
+					}
+
+					_parseInline();
+					break;
+
+				case '+':
+					if (_isBound(1) && _get(1) == ' ') {
+						_append(TokenKind::admonition, _contentIndex, 1);
+						_advance(2);
+
+						size_t startIndex = _contentIndex;
+						_saveRangeStart();
+
+						while (_isBound(0)) {
+							if (_get(0) == ':') {
+								_append(TokenKind::admonitionLabel, startIndex, _contentIndex - startIndex);
+								_advance(1);
+								break;
+							}
+
+							if (_get(0) == '\n') {
+								_append(TokenKind::admonitionLabel, startIndex, _contentIndex - startIndex);
+								break;
+							}
+
+							_advance(1);
+						}
+						break;
+					}
+
+					_parseInline();
+					break;
+
+				case '&':
+					if (_isBound(1) && _get(1) == ' ') {
+						_append(TokenKind::reference, _contentIndex, 1);
+						_advance(2);
+
+						size_t startIndex = _contentIndex;
+						_saveRangeStart();
+
+						while (_isBound(0)) {
+							if (_get(0) == '\n') {
+								_append(TokenKind::referenceID, startIndex, _contentIndex - startIndex);
+								break;
+							}
+
+							_advance(1);
+						}
 						break;
 					}
 
@@ -392,7 +441,8 @@ private:
 						}
 					}
 
-					_consumeText();
+					_append(TokenKind::equal); 
+					_advance(1);
 					break;
 
 				case '<': {
@@ -515,12 +565,6 @@ private:
 					break;
 
 				case ':': {
-					if (_isBound(1) && _get(1) == ':') {
-						_append(TokenKind::coloncolon, _contentIndex, 2);
-						_advance(2);
-						break;
-					}
-
 					if (_isBound(1) && _get(1) == ' ') {
 						_append(TokenKind::colon, _contentIndex, 2);
 						_advance(2);
@@ -741,28 +785,6 @@ private:
 			_advance(3);
 			size_t keyIndex = _contentIndex;
 
-			if (_get(0) == '&') {
-				_advance(1);
-
-				while (_isBound(0) && _get(0) == ' ') {
-					_advance(1);
-				}
-
-				size_t keyIndex = _contentIndex;
-
-				while (_isBound(0) && _get(0) != '\n') {
-					_advance(1);
-				}
-
-				_append(TokenKind::referenceKey, keyIndex, _contentIndex - keyIndex);
-
-				if (_isBound(0) && _get(0) == '\n') {
-					_advanceLine(1);
-					_advance(1);
-				}
-				return;
-			}
-
 			while (_isBound(0) && (
 				(_get(0) >= 'a' && _get(0) <= 'z') ||
 				(_get(0) >= 'A' && _get(0) <= 'Z') ||
@@ -859,6 +881,7 @@ private:
 				case '|':
 				case '[':
 				case ':':
+				case '=':
 				case '-':
 				case '"':
 				case '\'':
@@ -889,15 +912,6 @@ private:
 				case '+':
 					previousAlphanumeric = false;
 					if (_isBound(1) && ((_get(1) >= '0' && _get(1) <= '9') || _get(1) == '=')) {
-						goto end;
-					}
-
-					_advance(1);
-					break;
-
-				case '=':
-					previousAlphanumeric = false;
-					if (_isBound(1) && (_get(1) == '=' || _get(1) == '+' || _get(1) == '-')) {
 						goto end;
 					}
 

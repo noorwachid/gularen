@@ -239,8 +239,8 @@ private:
 				_content.append("\"kind\":\"cell\"");
 				break;
 			}
-			case NodeKind::admon: {
-				auto admon = static_cast<const Admon*>(node);
+			case NodeKind::admonition: {
+				auto admon = static_cast<const Admonition*>(node);
 				_content.append("\"kind\":\"admon\",\"label\":\"");
 				_escape(admon->label);
 				_content.append("\"");
@@ -347,23 +347,13 @@ private:
 				_content.append("\"kind\":\"reference\",\"id\":\"");
 				_escape(reference->id);
 				_content.append("\"");
-
-			if (reference->infos.size() != 0) {
-				_content.append(",\"infos\":{");
-
-				for (size_t i = 0; i < reference->infos.size(); i += 1) {
-					if (i != 0) {
-						_content.append(",");
-					}
-					_content.append("\"");
-					_escape(reference->infos[i].key);
-					_content.append("\":\"");
-					_escape(reference->infos[i].value);
-					_content.append("\"");
-				}
-
-				_content.append("}");
+				break;
 			}
+			case NodeKind::referenceInfo: {
+				auto info = static_cast<const ReferenceInfo*>(node);
+				_content.append("\"kind\":\"referenceInfo\",\"key\":\"");
+				_escape(info->key);
+				_content.append("\"");
 				break;
 			}
 			default: {

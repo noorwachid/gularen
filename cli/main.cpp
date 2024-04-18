@@ -2,7 +2,6 @@
 #include "Gularen/Backend/Html/TemplateManager.hpp"
 #include "Gularen/Backend/Markdown/Composer.hpp"
 #include "Gularen/Backend/Json/Composer.hpp"
-#include "Gularen/Backend/Composer.hpp"
 
 using namespace Gularen;
 
@@ -109,13 +108,6 @@ int main(int argc, char** argv) {
 			std::cout << "failed to parse \"" << inputPath << "\"\n";
 
 			return 1;
-		}
-
-		if (target == "gr" || target == "gularen") {
-			Composer composer;
-			render(outputPath, composer.compose(document));
-
-			return 0;
 		}
 
 		if (target == "html") {

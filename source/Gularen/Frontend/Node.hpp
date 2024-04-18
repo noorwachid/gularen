@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Gularen/Frontend/Helper.hpp"
 #include "Gularen/Frontend/Lexer.hpp"
 
 namespace Gularen {
@@ -57,7 +58,7 @@ enum class NodeKind {
 
 	emoji,
 	dateTime,
-	admon,
+	admonition,
 
 	accountTag,
 	hashTag,
@@ -337,10 +338,16 @@ struct InText : Node {
 	}
 };
 
+struct ReferenceInfo : Node {
+	std::string_view key;
+	
+	ReferenceInfo(Range range, std::string_view key): Node(range, NodeKind::referenceInfo) {
+		this->key = Helper::trim(key);
+	}
+};
+
 struct Reference : Node {
 	std::string_view id;
-
-	std::vector<Pair> infos;
 
 	Reference(Range range): Node(range, NodeKind::reference) {
 	}
@@ -404,10 +411,10 @@ struct Punct : Node {
 	}
 };
 
-struct Admon : Node {
+struct Admonition : Node {
 	std::string_view label;
 
-	Admon(Range range, std::string_view label): Node(range, NodeKind::admon), label(label) {
+	Admonition(Range range): Node(range, NodeKind::admonition) {
 	}
 };
 

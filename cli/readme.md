@@ -60,10 +60,3 @@ gularen to md document.gr
 ```sh
 gularen to json document.gr
 ```
-
-### To Gularen
-```sh
-gularen to gularen document.gr
-# or
-gularen to gr document.gr
-```

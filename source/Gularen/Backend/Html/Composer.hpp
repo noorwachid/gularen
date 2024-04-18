@@ -105,8 +105,9 @@ private:
 			const Reference* ref = static_cast<const Reference*>(node);
 			auto& refTable = _references[ref->id];
 
-			for (size_t i = 0; i < ref->infos.size(); i += 1) {
-				refTable[ref->infos[i].key] = ref->infos[i].value;
+			for (size_t i = 0; i < ref->children.size(); i += 1) {
+				const ReferenceInfo* info = static_cast<const ReferenceInfo*>(ref->children[i]);
+				refTable[info->key] = info;
 			}
 
 			return;
@@ -497,9 +498,9 @@ private:
 				return;
 			}
 
-			case NodeKind::admon: {
-				const Admon* ref = static_cast<const Admon*>(node);
-				content.append("<div class=\"admon ");
+			case NodeKind::admonition: {
+				const Admonition* ref = static_cast<const Admonition*>(node);
+				content.append("<div class=\"admonition ");
 				_escapeClass(ref->label, content);
 				_composeInnerAnnotations(node->annotations);
 				content.append("\">\n");
@@ -676,7 +677,7 @@ private:
 				return;
 			}
 
-			case NodeKind::admon: {
+			case NodeKind::admonition: {
 				content.append("\n</div>\n</div>\n\n");
 				return;
 			}
@@ -829,12 +830,18 @@ private:
 
 		content.append("(");
 		if (table.count("author")) {
-			std::vector<std::string_view> nameParts = _splitName(table["author"]);
+			std::string author;
+			_compose(table["author"], author);
+
+			std::vector<std::string_view> nameParts = _splitName(author);
 			std::string_view lastName = nameParts.back();
 			content.append(lastName.data(), lastName.size());
 		}
 		if (table.count("authors")) {
-			std::vector<std::string_view> names = _splitByComma(table["authors"]);
+			std::string authors;
+			_compose(table["authors"], authors);
+
+			std::vector<std::string_view> names = _splitByComma(authors);
 			if (names.size() == 2) {
 				std::vector<std::string_view> nameParts0 = _splitName(names[0]);
 				std::string_view lastName0 = nameParts0.back();
@@ -852,8 +859,11 @@ private:
 			}
 		}
 		if (table.count("year")) {
+			std::string year;
+			_compose(table["year"], year);
+
 			content.append(", ");
-			content.append(table["year"]);
+			content.append(Helper::trim(year));
 		}
 		content.append(")");
 	}
@@ -869,12 +879,18 @@ private:
 		auto table = _references[id];
 
 		if (table.count("author")) {
-			std::vector<std::string_view> nameParts = _splitName(table["author"]);
+			std::string author;
+			_compose(table["author"], author);
+
+			std::vector<std::string_view> nameParts = _splitName(author);
 			_composeLastNameInitials(nameParts, content);
 			content.append(",");
 		}
 		if (table.count("authors")) {
-			std::vector<std::string_view> names = _splitByComma(table["authors"]);
+			std::string authors;
+			_compose(table["authors"], authors);
+
+			std::vector<std::string_view> names = _splitByComma(authors);
 			if (names.size() > 1) {
 				for (size_t i = 0; i < names.size() - 1; i += 1) {
 					if (i != 0) {
@@ -890,18 +906,27 @@ private:
 			_composeLastNameInitials(nameParts, content);
 		}
 		if (table.count("year")) {
+			std::string year;
+			_compose(table["year"], year);
+
 			content.append(" (");
-			content.append(table["year"]);
+			content.append(Helper::trim(year));
 			content.append(").");
 		}
 		if (table.count("title")) {
+			std::string title;
+			_compose(table["title"], title);
+
 			content.append(" <i>");
-			content.append(table["title"]);
+			content.append(Helper::trim(title));
 			content.append("</i>.");
 		}
 		if (table.count("publisher")) {
+			std::string publisher;
+			_compose(table["publisher"], publisher);
+
 			content.append(" ");
-			content.append(table["publisher"]);
+			content.append(Helper::trim(publisher));
 			content.append(".");
 		}
 	}
@@ -954,6 +979,8 @@ private:
 	std::vector<std::string_view> _splitName(std::string_view name) {
 		std::vector<std::string_view> parts;
 
+		name = Helper::trim(name);
+
 		size_t begin = 0;
 		size_t i = 0;
 		while (i < name.size()) {
@@ -992,7 +1019,7 @@ private:
 	std::vector<const Footnote*> _footnotes;
 
 	// referenceID -> infoKey -> infoValue
-	std::unordered_map<std::string_view, std::unordered_map<std::string_view, std::string_view>> _references;
+	std::unordered_map<std::string_view, std::unordered_map<std::string_view, const ReferenceInfo*>> _references;
 
 	Heading::Type _previousHeadingType;
 	Heading::Type _currentHeadingType;

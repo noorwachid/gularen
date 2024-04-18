@@ -1,11 +1,11 @@
 >>> Definition List
 --- gr
-AP :: Appliances
-AU :: Automotive
-GA :: Garden shop
-HB :: Health and beauty
-HO :: Home decor
-SP :: Sporting goods
+AP = Appliances
+AU = Automotive
+GA = Garden shop
+HB = Health and beauty
+HO = Home decor
+SP = Sporting goods
 ---
 --- html
 <dl>
@@ -19,7 +19,7 @@ SP :: Sporting goods
 ---
 
 --- gr
-CD Player Unit ::
+CD Player Unit =
 	With auto-search, auto-off, power door,
 	and a two-year warranty.
 ---
