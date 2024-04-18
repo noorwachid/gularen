@@ -70,6 +70,7 @@ private:
 		_lexer.parse(content);
 		_tokenIndex = 0;
 
+		// TOKENS //
 		// for (size_t i = 0; i < _lexer.size(); i += 1) {
 		// 	std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
 		// 	std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
@@ -480,14 +481,12 @@ private:
 				break;
 
 			default: 
-				delete heading;
-				return nullptr;
+				return heading;
 		}
 
 		Node* title = _parseTitle();
 		if (title == nullptr) {
-			delete heading;
-			return nullptr;
+			return heading;
 		}
 
 		heading->children.push_back(title);
@@ -509,7 +508,6 @@ private:
 			Node* node = _parseAnnotatedBlock();
 
 			if (node == nullptr) {
-				delete heading;
 				return nullptr;
 			}
 
@@ -1249,6 +1247,12 @@ private:
 			_advance(1);
 
 			while (_isBound(0)) {
+				if (_get(0).kind == TokenKind::indentClose) {
+					_updateEndRange(ref->range, _get(0).range);
+					_advance(1);
+					goto end;
+				}
+
 				Node* node = _parseInline();
 				if (node == nullptr) {
 					if (_isBound(0)) {
@@ -1257,12 +1261,6 @@ private:
 							_advance(1);
 							break;
 						}
-
-						if (_get(0).kind == TokenKind::indentClose) {
-							_updateEndRange(ref->range, _get(0).range);
-							_advance(1);
-							goto end;
-						}
 					}
 					break;
 				}
@@ -1270,6 +1268,11 @@ private:
 			}
 
 			ref->children.push_back(info);
+
+			if (_isBound(0) && _get(0).kind == TokenKind::indentClose) {
+				_updateEndRange(info->range, _get(0).range);
+				_advance(1);
+			}
 		}
 
 		end:
