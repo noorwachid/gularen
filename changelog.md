@@ -1,5 +1,11 @@
 # Changelog
 
+### Version 1.8.0
+Breaking changes:
+- Admonition, from `//Note//` to `+ Note`
+- Reference, from `~~ & Book Title` to `& Book Title`
+- Definition List, from `Term :: Description` to `Term = Description`
+
 ### Version 1.7.0
 New features:
 - Added change, `=+added text+=`

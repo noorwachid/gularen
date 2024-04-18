@@ -388,12 +388,12 @@ For subsection conflict you can add another `>` after section.
 
 # Definition List
 ```gr
-AP :: Appliances
-AU :: Automotive
-GA :: Garden shop
-HB :: Health and beauty
-HO :: Home decor
-SP :: Sporting goods
+AP = Appliances
+AU = Automotive
+GA = Garden shop
+HB = Health and beauty
+HO = Home decor
+SP = Sporting goods
 ```
 
 ```html
@@ -408,7 +408,7 @@ SP :: Sporting goods
 ```
 
 ```gr
-CD Player Unit ::
+CD Player Unit =
 	With auto-search, auto-off, power door,
 	and a two-year warranty.
 ```
@@ -590,50 +590,52 @@ Footer only works if the header is defined.
 ```
 
 # Admonition
+## Single Line
 ```gr
-//Note// A note
-//Hint// A hint
-//Important// Important stuff
-//Warning// Warning stuff
-//See also// The Amazing Spiderman 2
-//Tip// A tip
++ Note: A note
++ Hint: A hint
++ Important: Important stuff
++ Warning: Warning stuff
++ See also: The Amazing Spiderman 2
++ Tip: A tip
 ```
 
 ```html
-<div class="admon note">
+<div class="admonition note">
 	<div class="label">Note</div>
 	<div class="content">A note</div>
 </div>
-<div class="admon hint">
+<div class="admonition hint">
 	<div class="label">Hint</div>
 	<div class="content">a Hint</div>
 </div>
-<div class="admon important">
+<div class="admonition important">
 	<div class="label">Important</div>
 	<div class="content">Important stuff</div>
 </div>
-<div class="admon warning">
+<div class="admonition warning">
 	<div class="label">Warning</div>
 	<div class="content">Warning sfuff</div>
 </div>
-<div class="admon see-also">
+<div class="admonition see-also">
 	<div class="label">See also</div>
 	<div class="content">The Amazing Spiderman 2</div>
 </div>
-<div class="admon tip">
+<div class="admonition tip">
 	<div class="label">Tip</div>
 	<div class="content">A tip</div>
 </div>
 ```
 
+## Multi Line
 ```gr
-//Note//
++ Note
 	Long note.
 	Very long note.
 ```
 
 ```html
-<div class="admon">
+<div class="admonition note">
 	<div class="label">Note</div>
 	<div class="content">
 		<p>Long note.
@@ -830,29 +832,29 @@ Only local files are allowed to be included.
 
 ## References
 ```gr
-~~ & 12 Rules
-~~ title     = 12 Rules of Life
-~~ author    = Jordan Bernt Peterson
-~~ year      =  2018
-~~ publisher = Random House Canada
+& 12 Rules
+	title     = 12 Rules of Life
+	author    = Jordan Bernt Peterson
+	year      =  2018
+	publisher = Random House Canada
 
-~~ & Lateral Thinking
-~~ title     = Lateral Thinking: Creativity Step by Step
-~~ author    = Edward de Bono
-~~ year      = 1970
-~~ publisher = Harper & Row
+& Lateral Thinking
+	title     = Lateral Thinking: Creativity Step by Step
+	author    = Edward de Bono
+	year      = 1970
+	publisher = Harper & Row
 
-~~ & Good Omens
-~~ title     = Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch
-~~ authors   = Terry Pratchett, Neil Gaiman
-~~ year      = 1990
-~~ publisher = Gollancz 
+& Good Omens
+	title     = Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch
+	authors   = Terry Pratchett, Neil Gaiman
+	year      = 1990
+	publisher = Gollancz 
 
-~~ & My Lady Jane
-~~ title     = My Lady Jane
-~~ authors   = Cynthia Hand, Brodi Ashton, Jodi Meadows
-~~ year      = 2016
-~~ publisher = HarperCollins
+& My Lady Jane
+	title     = My Lady Jane
+	authors   = Cynthia Hand, Brodi Ashton, Jodi Meadows
+	year      = 2016
+	publisher = HarperCollins
 ```
 
 ```html
