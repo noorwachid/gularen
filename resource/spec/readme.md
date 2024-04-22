@@ -923,9 +923,9 @@ I look forward to see you soon :smile:!
 ```
 
 ```html
-<p>I look forward to see you soon <span class="emoji">smile</span>!</p>
+<p>I look forward to see you soon 😄!</p>
 
-<p><span class="emoji">coffee</span>
+<p>☕</p>
 ```
 
 ## Expression
@@ -1022,8 +1022,8 @@ fire: 🔥,
 hankey: 💩,
 poop: 💩,
 shit: 💩,
-thumbsup: 👍,
-thumbsdown: 👎,
+thumbs‐up: 👍,
+thumbs‐down: 👎,
 ok‐hand: 👌,
 punch: 👊,
 facepunch: 👊,

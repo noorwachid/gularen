@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Gularen/Frontend/Parser.hpp"
+#include "Gularen/Frontend/Node.hpp"
+#include "Gularen/Backend/EmojiConverter.hpp"
 #include <unordered_map>
 
 namespace Gularen {
@@ -530,9 +531,7 @@ private:
 
 			case NodeKind::emoji: {
 				const Emoji* emoji = static_cast<const Emoji*>(node);
-				content.append("<span class=\"emoji\">");
-				_escape(emoji->code, content);
-				content.append("</span>");
+				_content.append(_emojiConverter.convert(emoji->code));
 				return;
 			}
 
@@ -1023,6 +1022,8 @@ private:
 
 	Heading::Type _previousHeadingType;
 	Heading::Type _currentHeadingType;
+
+	EmojiConverter _emojiConverter;
 };
 
 }
