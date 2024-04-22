@@ -592,12 +592,12 @@ Footer only works if the header is defined.
 # Admonition
 ## Single Line
 ```gr
-+ Note: A note
-+ Hint: A hint
-+ Important: Important stuff
-+ Warning: Warning stuff
-+ See also: The Amazing Spiderman 2
-+ Tip: A tip
+(!) Note: A note
+(!) Hint: A hint
+(!) Important: Important stuff
+(!) Warning: Warning stuff
+(!) See also: The Amazing Spiderman 2
+(!) Tip: A tip
 ```
 
 ```html
@@ -629,7 +629,7 @@ Footer only works if the header is defined.
 
 ## Multi Line
 ```gr
-+ Note
+(!) Note
 	Long note.
 	Very long note.
 ```
@@ -832,25 +832,25 @@ Only local files are allowed to be included.
 
 ## References
 ```gr
-& 12 Rules
+(&) 12 Rules
 	title     = 12 Rules of Life
 	author    = Jordan Bernt Peterson
 	year      =  2018
 	publisher = Random House Canada
 
-& Lateral Thinking
+(&) Lateral Thinking
 	title     = Lateral Thinking: Creativity Step by Step
 	author    = Edward de Bono
 	year      = 1970
 	publisher = Harper & Row
 
-& Good Omens
+(&) Good Omens
 	title     = Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch
 	authors   = Terry Pratchett, Neil Gaiman
 	year      = 1990
 	publisher = Gollancz 
 
-& My Lady Jane
+(&) My Lady Jane
 	title     = My Lady Jane
 	authors   = Cynthia Hand, Brodi Ashton, Jodi Meadows
 	year      = 2016

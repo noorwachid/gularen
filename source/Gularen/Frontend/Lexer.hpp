@@ -304,51 +304,48 @@ private:
 					_parseInline();
 					break;
 
-				case '+':
-					if (_isBound(1) && _get(1) == ' ') {
-						_append(TokenKind::admonition, _contentIndex, 1);
-						_advance(2);
+				case '(':
+					if (_isBound(3) && _get(3) == ' ' && _get(2) == ')') {
+						if (_get(1) == '!') {
+							_append(TokenKind::admonition, _contentIndex, 3);
+							_advance(4);
 
-						size_t startIndex = _contentIndex;
-						_saveRangeStart();
+							size_t startIndex = _contentIndex;
+							_saveRangeStart();
 
-						while (_isBound(0)) {
-							if (_get(0) == ':') {
-								_append(TokenKind::admonitionLabel, startIndex, _contentIndex - startIndex);
+							while (_isBound(0)) {
+								if (_get(0) == ':') {
+									_append(TokenKind::admonitionLabel, startIndex, _contentIndex - startIndex);
+									_advance(1);
+									break;
+								}
+
+								if (_get(0) == '\n') {
+									_append(TokenKind::admonitionLabel, startIndex, _contentIndex - startIndex);
+									break;
+								}
+
 								_advance(1);
-								break;
 							}
-
-							if (_get(0) == '\n') {
-								_append(TokenKind::admonitionLabel, startIndex, _contentIndex - startIndex);
-								break;
-							}
-
-							_advance(1);
+							break;
 						}
-						break;
-					}
 
-					_parseInline();
-					break;
+						if (_get(1) == '&') {
+							_append(TokenKind::reference, _contentIndex, 3);
+							_advance(4);
 
-				case '&':
-					if (_isBound(1) && _get(1) == ' ') {
-						_append(TokenKind::reference, _contentIndex, 1);
-						_advance(2);
+							size_t startIndex = _contentIndex;
+							_saveRangeStart();
 
-						size_t startIndex = _contentIndex;
-						_saveRangeStart();
+							while (_isBound(0)) {
+								if (_get(0) == '\n') {
+									_append(TokenKind::referenceID, startIndex, _contentIndex - startIndex);
+									break;
+								}
 
-						while (_isBound(0)) {
-							if (_get(0) == '\n') {
-								_append(TokenKind::referenceID, startIndex, _contentIndex - startIndex);
-								break;
+								_advance(1);
 							}
-
-							_advance(1);
 						}
-						break;
 					}
 
 					_parseInline();

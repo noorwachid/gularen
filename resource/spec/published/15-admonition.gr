@@ -1,12 +1,12 @@
 >>> Admonition
 >> Single Line
 --- gr
-+ Note: A note
-+ Hint: A hint
-+ Important: Important stuff
-+ Warning: Warning stuff
-+ See also: The Amazing Spiderman 2
-+ Tip: A tip
+(!) Note: A note
+(!) Hint: A hint
+(!) Important: Important stuff
+(!) Warning: Warning stuff
+(!) See also: The Amazing Spiderman 2
+(!) Tip: A tip
 ---
 --- html
 <div class="admonition note">
@@ -37,7 +37,7 @@
 
 >> Multi Line
 --- gr
-+ Note
+(!) Note
 	Long note.
 	Very long note.
 ---
