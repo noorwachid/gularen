@@ -71,11 +71,11 @@ private:
 		_tokenIndex = 0;
 
 		// TOKENS //
-		// for (size_t i = 0; i < _lexer.size(); i += 1) {
-		// 	std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
-		// 	std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
-		// 	std::cout << TokenKindHelper::toStringView(_lexer[i].kind) << " " << _lexer[i].content << "\n";
-		// }
+		for (size_t i = 0; i < _lexer.size(); i += 1) {
+			std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
+			std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
+			std::cout << TokenKindHelper::toStringView(_lexer[i].kind) << " " << _lexer[i].content << "\n";
+		}
 		// return nullptr;
 
 		_firstNode = true;
@@ -181,7 +181,7 @@ private:
 		const Token& token = _eat();
 		Highlight* highlight = new Highlight(token.range);
 
-		while (_isBound(0) && _get(0).kind != token.kind) {
+		while (_isBound(0) && _get(0).kind != TokenKind::highlightClose) {
 			Node* child = _parseInline();
 
 			if (child == nullptr) {
@@ -192,9 +192,9 @@ private:
 			highlight->children.push_back(child);
 		}
 
-		if (_isBound(0) && _get(0).kind != token.kind) {
+		if (_isBound(0) && _get(0).kind != TokenKind::highlightClose) {
 			delete highlight;
-			return _expect("equalequal");
+			return _expect("closing highlight");
 		}
 
 		_updateEndRange(highlight->range, _get(0).range);
@@ -261,7 +261,7 @@ private:
 				node = _parseEmphasis(Emphasis::Type::underline);
 				break;
 
-			case TokenKind::highlight: 
+			case TokenKind::highlightOpen: 
 				node = _parseHighlight();
 				break;
 
@@ -1416,7 +1416,7 @@ private:
 			case TokenKind::slash:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
-			case TokenKind::highlight:
+			case TokenKind::highlightOpen:
 			case TokenKind::addOpen:
 			case TokenKind::removeOpen:
 
@@ -1489,7 +1489,7 @@ private:
 			case TokenKind::asterisk:
 			case TokenKind::underscore:
 			case TokenKind::backtick:
-			case TokenKind::highlight:
+			case TokenKind::highlightOpen:
 			case TokenKind::addOpen:
 			case TokenKind::removeOpen:
 

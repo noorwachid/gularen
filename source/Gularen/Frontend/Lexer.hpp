@@ -22,7 +22,8 @@ enum class TokenKind {
 	underscore,
 	backtick,
 
-	highlight,
+	highlightOpen,
+	highlightClose,
 	addOpen,
 	addClose,
 	removeOpen,
@@ -113,7 +114,8 @@ struct TokenKindHelper {
 			case TokenKind::underscore: return "underscore";
 			case TokenKind::backtick: return "backtick";
 
-			case TokenKind::highlight: return "highlight";
+			case TokenKind::highlightOpen: return "highlightOpen";
+			case TokenKind::highlightClose: return "highlightClose";
 			case TokenKind::addOpen: return "addOpen";
 			case TokenKind::addClose: return "addClose";
 			case TokenKind::removeOpen: return "removeOpen";
@@ -420,22 +422,10 @@ private:
 					break;
 
 				case '=': 
-					if (_isBound(1)) {
-						if (_get(1) == '=') {
-							_append(TokenKind::highlight); 
-							_advance(2);
-							break;
-						}
-						if (_get(1) == '+') {
-							_append(TokenKind::addOpen); 
-							_advance(2);
-							break;
-						}
-						if (_get(1) == '-') {
-							_append(TokenKind::removeOpen); 
-							_advance(2);
-							break;
-						}
+					if (_get(1) == ')') {
+						_append(TokenKind::highlightClose, _contentIndex, 2);
+						_advance(2);
+						break;
 					}
 
 					_append(TokenKind::equal); 
@@ -461,7 +451,7 @@ private:
 				}
 
 				case '+': {
-					if (_isBound(1) && _get(1) == '=') {
+					if (_isBound(1) && _get(1) == ')') {
 						_append(TokenKind::addClose, _contentIndex, 2);
 						_advance(2);
 						break;
@@ -505,7 +495,7 @@ private:
 							_advance(2);
 							break;
 						}
-						if (_get(1) == '=') {
+						if (_get(1) == ')') {
 							_append(TokenKind::removeClose, _contentIndex, 2);
 							_advance(2);
 							break;
@@ -525,6 +515,28 @@ private:
 
 					_consumeLink();
 					break;
+
+				case '(': {
+					if (_isBound(1)) {
+						if (_get(1) == '=') {
+							_append(TokenKind::highlightOpen, _contentIndex, 2); 
+							_advance(2);
+							break;
+						}
+						if (_get(1) == '+') {
+							_append(TokenKind::addOpen, _contentIndex, 2); 
+							_advance(2);
+							break;
+						}
+						if (_get(1) == '-') {
+							_append(TokenKind::removeOpen, _contentIndex, 2); 
+							_advance(2);
+							break;
+						}
+					}
+					_consumeText();
+					break;
+				}
 
 				case '!':
 					if (_isBound(1) && _get(1) == '[') {
@@ -908,7 +920,16 @@ private:
 
 				case '+':
 					previousAlphanumeric = false;
-					if (_isBound(1) && ((_get(1) >= '0' && _get(1) <= '9') || _get(1) == '=')) {
+					if (_isBound(1) && ((_get(1) >= '0' && _get(1) <= '9') || _get(1) == ')')) {
+						goto end;
+					}
+
+					_advance(1);
+					break;
+
+				case '(':
+					previousAlphanumeric = false;
+					if (_isBound(1) && (_get(1) == '=' || _get(1) == '+' || _get(1) == '-')) {
 						goto end;
 					}
 

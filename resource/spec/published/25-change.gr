@@ -2,17 +2,17 @@
 
 >> Added
 --- gr
-=+Anything inside two equal will be rendered as highlighted+=
+(+Anything inside will be rendered as highlighted+)
 ---
 --- html
-<p><ins>Anything inside two equal will be rendered as highlighted</ins></p>
+<p><ins>Anything inside will be rendered as highlighted</ins></p>
 ---
 
 >> Removed
 --- gr
-=-Anything inside two equal will be rendered as highlighted-=
+(-Anything inside will be rendered as highlighted-)
 ---
 --- html
-<p><del>Anything inside two equal will be rendered as highlighted</del></p>
+<p><del>Anything inside will be rendered as highlighted</del></p>
 ---
 

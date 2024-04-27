@@ -1,9 +1,16 @@
 # Changelog
 
+### Version 1.10.0
+Breaking changes:
+- Highlight, from `==highlight==` to `(=highlight=)`
+- Changes
+    - Added, from `=+added+=` to `(+added+)`
+    - Removed, from `=-added-=` to `(-added-)`
+
 ### Version 1.9.0
 Breaking changes:
 - Admonition, from `+ Note` to `(!) Note`
-- Reference, from `& 12 Rules` to `(?) 12 Rules`
+- Reference, from `& 12 Rules` to `(&) 12 Rules`
 
 ### Version 1.8.0
 Breaking changes:
