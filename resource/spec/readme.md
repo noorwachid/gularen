@@ -205,33 +205,8 @@ Quote is done by indenting with tabs.
 </section>
 ```
 
-## Heading Subtitle
-If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
-```gr
->>> Chapter
-> Chapter Subtitle
 
->> Section
-> Section Subtitle
-
-> Subsection
-> Subsection Subtitle
-```
-
-```html
-<section class="chapter">
-	<h1 id="Chapter">Chapter <small>Chapter Subtitle</small></h1>
-
-	<section class="section">
-		<h2 id="Section">Section <small>Section Subtitle</small></h2>
-
-		<section class="subsection">
-			<h3 id="Subsection">Subsection <small>Subsection Subtitle</small><h3>
-		</section>
-	</section>
-</section>
-```
 
 ## Heading Link
 ```gr

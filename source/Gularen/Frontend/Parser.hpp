@@ -530,6 +530,7 @@ private:
 		while (_isBound(0)) {
 			Node* node = _parseInline();
 			if (node == nullptr) {
+				// TODO: check for colon for subtitle
 				if (_get(0).kind == TokenKind::newlinePlus) {
 					_advance(1);
 					break;
@@ -537,17 +538,6 @@ private:
 
 				if (_get(0).kind == TokenKind::newline) {
 					_advance(1);
-
-					if (_isBound(0) && _get(0).kind == TokenKind::head1)  {
-						Node* subtitle = _parseSubtitle();
-						if (subtitle == nullptr) {
-							delete title;
-							return nullptr;
-						}
-
-						title->children.push_back(subtitle);
-					}
-
 					break;
 				}
 

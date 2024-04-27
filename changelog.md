@@ -2,6 +2,19 @@
 
 ### Version 1.10.0
 Breaking changes:
+- Removing subtitle
+  ~~~
+  >>> Chapter Title
+  > Chapter Subtitle
+  ~~~
+  Now will be parsed as subsection:
+  ~~~
+  >>> Chapter Title
+  > Subsection Title
+  ~~~
+
+### Version 1.10.0
+Breaking changes:
 - Highlight, from `==highlight==` to `(=highlight=)`
 - Changes
     - Added, from `=+added+=` to `(+added+)`
