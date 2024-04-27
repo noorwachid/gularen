@@ -63,11 +63,11 @@ Single new line won't make new paragraph.</p>
 
 ## Italic
 ```gr
-/Anything inside two underscores will be rendered as italic./
+/Anything inside two slashes will be rendered as italic./
 ```
 
 ```html
-<p><i>Anything inside two underscores will be rendered as italic.</i></p>
+<p><i>Anything inside two slashes will be rendered as italic.</i></p>
 ```
 
 ## Underline
