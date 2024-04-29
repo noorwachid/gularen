@@ -519,13 +519,13 @@ private:
 			case NodeKind::punct: {
 				const Punct* punct = static_cast<const Punct*>(node);
 				switch (punct->type) {
-					case Punct::Type::hypen: content.append("&#8208;"); return;
-					case Punct::Type::enDash: content.append("&#8211;"); return;
-					case Punct::Type::emDash: content.append("&#8212;"); return;
-					case Punct::Type::quoteOpen: content.append("&#8223;"); return;
-					case Punct::Type::quoteClose: content.append("&#8221;"); return;
-					case Punct::Type::squoteOpen: content.append("&#8216;"); return;
-					case Punct::Type::squoteClose: content.append("&#8217;"); return;
+					case Punct::Type::hypen: content.append("&hyphen;"); return;
+					case Punct::Type::enDash: content.append("&ndash;"); return;
+					case Punct::Type::emDash: content.append("&mdash;"); return;
+					case Punct::Type::quoteOpen: content.append("&ldquo;"); return;
+					case Punct::Type::quoteClose: content.append("&rdquo;"); return;
+					case Punct::Type::squoteOpen: content.append("&lsquo;"); return;
+					case Punct::Type::squoteClose: content.append("&rsquo;"); return;
 				}
 			}
 
