@@ -3,14 +3,16 @@
 >> Flat-Table
 for table with complex layout and block cell
 --- gr
-|--- # table indicated with pipe followed by triple dashes or more
-|| A # first cell in row indicated with double pipe
+|---
+| A
 | B
 | C
-|| D
+|-
+| D
 | E
 | F
-|| G
+|-
+| G
 | H
 | I
 |---
@@ -49,13 +51,15 @@ Some result
 
 > Merged Columns
 --- gr
-|---
-|| A
+|--- 3x3
+| A
 | B
 | C
-||2: D
+|-
+|B| D ~ column counted with A,B,C...
 | F
-|| G
+|-
+| G
 | H
 | I
 |---
@@ -82,13 +86,15 @@ Some result
 > Merged Rows
 --- gr
 |---
-|| A
+| A
 | B
 | C
-||:2 D
+|-
+|2| D
 | E
 | F
-|| H
+|-
+| H
 | I
 |---
 ---
@@ -114,12 +120,14 @@ Some result
 > Merged Rows and Columns
 --- gr
 |---
-|| A
+| A
 | B
 | C
-||2:2 D
+|-
+|2B| D
 | F
-|| I
+|-
+| I
 |---
 ---
 --- html
