@@ -1,11 +1,64 @@
 >>> Table
->> Merged Cells
+
+>> Flat-Table
+for table with complex layout and block cell
+--- gr
+|--- # table indicated with pipe followed by triple dashes or more
+|| A # first cell in row indicated with double pipe
+| B
+| C
+|| D
+| E
+| F
+|| G
+| H
+| I
+|---
+---
+--- html
+<table>
+	<tr>
+		<td>A</td>
+		<td>B</td>
+		<td>C</td>
+	</tr>
+	<tr>
+		<td>D</td>
+		<td>E</td>
+		<td>F</td>
+	</tr>
+	<tr>
+		<td>G</td>
+		<td>H</td>
+		<td>I</td>
+	</tr>
+</table>
+---
+
+--- gr
+|---
+---
+Some Code
+---
+|
+---
+Some result
+---
+|---
+---
 
 > Merged Columns
 --- gr
-| A | B | C |
-|2>  D  | F |
-| G | H | I |
+|---
+|| A
+| B
+| C
+||2: D
+| F
+|| G
+| H
+| I
+|---
 ---
 --- html
 <table>
@@ -28,9 +81,16 @@
 
 > Merged Rows
 --- gr
-| A   | B | C |
-|2< D | E | F |
-|     | H | I |
+|---
+|| A
+| B
+| C
+||:2 D
+| E
+| F
+|| H
+| I
+|---
 ---
 --- html
 <table>
@@ -53,9 +113,14 @@
 
 > Merged Rows and Columns
 --- gr
-| A  | B  | C |
-|2>2<  D  | F |
-|         | I |
+|---
+|| A
+| B
+| C
+||2:2 D
+| F
+|| I
+|---
 ---
 --- html
 <table>

@@ -8,8 +8,8 @@ Quote is done by indenting with tabs.
 ---
 --- html
 <blockquote>
-	<p>&#8223;You have power over your mind&#8212;not outside events. Realize this, and you will find strength.&#8221;
-	&#8211;Markus Aurelius</p>
+	<p>&ldquo;You have power over your mind&rsquo;not outside events. Realize this, and you will find strength.&rdquo;
+	&ndash;Markus Aurelius</p>
 </blockquote>
 ---
 
@@ -22,8 +22,8 @@ Quote is done by indenting with tabs.
 --- html
 <blockquote>
 	<blockquote>
-		<p>&#8223;You have power over your mind&#8212;not outside events. Realize this, and you will find strength.&#8221;
-		&#8211;Markus Aurelius</p>
+		<p>&ldquo;You have power over your mind&rsquo;not outside events. Realize this, and you will find strength.&rdquo;
+		&ndash;Markus Aurelius</p>
 	</blockquote>
 	<p>Say what now?</p>
 </blockquote>
