@@ -528,6 +528,34 @@ private:
 		Title* title = new Title(token.range);
 
 		while (_isBound(0)) {
+			if (_get(0).kind == TokenKind::colon) {
+				Subtitle* subtitle = new Subtitle(_get(0).range);
+				title->children.push_back(subtitle);
+				_advance(1);
+
+				while (_isBound(0)) {
+					Node* node = _parseInline();
+					if (node == nullptr) {
+						// TODO: check for colon for subtitle
+						if (_get(0).kind == TokenKind::newlinePlus) {
+							_advance(1);
+							break;
+						}
+
+						if (_get(0).kind == TokenKind::newline) {
+							_advance(1);
+							break;
+						}
+
+						return _expect("newline or block");
+					}
+
+					subtitle->children.push_back(node);
+				}
+
+				return title;
+			}
+
 			Node* node = _parseInline();
 			if (node == nullptr) {
 				// TODO: check for colon for subtitle

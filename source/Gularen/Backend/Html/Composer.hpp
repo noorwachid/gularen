@@ -208,7 +208,7 @@ private:
 			}
 
 			case NodeKind::subtitle: {
-				content.append("<small>");
+				content.append(" <small>");
 				return;
 			}
 
