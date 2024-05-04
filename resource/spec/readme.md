@@ -88,13 +88,36 @@ Hello /*darkness* my old/ friend
 <p>Hello <i><b>darkness</b> my old</i> friend</p>
 ```
 
-# Highlight
+# Punctuation
+## Quotation
+Any single or double apostrophe will be converted into the correct left and right quotes.
+
 ```gr
-(=Anything inside will be rendered as highlighted=)
+"Don't you dare!" He said calmly.
 ```
 
 ```html
-<p><mark>Anything inside will be rendered as highlighted</mark></p>
+<p>&ldquo;Don&rsquo;t you dare!&rdquo; He said calmly.</p>
+```
+
+## Hyphen, En Dash, Em Dash
+Two hyphen will make en dash.
+Three hyphen will make em dash.
+
+```gr
+A closed-door meetings
+
+I’ll schedule you from 4:30--5:00
+
+Wait! I forgot to tell you---
+```
+
+```html
+<p>A closed&hyphen;door meetings</p>
+
+<p>I’ll schedule you from 4:30&ndash;5:00</p>
+
+<p>Wait! I forgot to tell you&mdash;</p>
 ```
 
 # Breaking
@@ -205,8 +228,30 @@ Quote is done by indenting with tabs.
 </section>
 ```
 
+## Heading Subtitle
+If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
+```gr
+>>> Chapter: Chapter Subtitle
 
+>> Section: Section Subtitle
+
+> Subsection: Subsection Subtitle
+```
+
+```html
+<section class="chapter">
+	<h1 id="Chapter">Chapter <small>Chapter Subtitle</small></h1>
+
+	<section class="section">
+		<h2 id="Section">Section <small>Section Subtitle</small></h2>
+
+		<section class="subsection">
+			<h3 id="Subsection">Subsection <small>Subsection Subtitle</small><h3>
+		</section>
+	</section>
+</section>
+```
 
 ## Heading Link
 ```gr
@@ -856,38 +901,6 @@ and here's a another one.<sup><a href="Footnote-2">2</a></sup></p>
 	<p><sup>1</sup> This is the first footnote.</p>
 	<p><sup>2</sup> Very important part</p>
 </div>
-```
-
-# Punctuation
-## Quotation
-Any single or double apostrophe will be converted into the correct left and right quotes.
-
-```gr
-"Don't you dare!" He said calmly.
-```
-
-```html
-<p>&ldquo;Don&rsquo;t you dare!&rdquo; He said calmly.</p>
-```
-
-## Hyphen, En Dash, Em Dash
-Two hyphen will make en dash.
-Three hyphen will make em dash.
-
-```gr
-A closed-door meetings
-
-I’ll schedule you from 4:30--5:00
-
-Wait! I forgot to tell you---
-```
-
-```html
-<p>A closed&hyphen;door meetings</p>
-
-<p>I’ll schedule you from 4:30&ndash;5:00</p>
-
-<p>Wait! I forgot to tell you&mdash;</p>
 ```
 
 # Emoji
@@ -1559,6 +1572,15 @@ moyai: 🗿,
 circus‐tent: 🎪,
 performing‐arts: 🎭,
 round‐pushpin: 📍,
+
+# Highlight
+```gr
+(=Anything inside will be rendered as highlighted=)
+```
+
+```html
+<p><mark>Anything inside will be rendered as highlighted</mark></p>
+```
 
 # Change
 ## Added
