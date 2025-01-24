@@ -423,6 +423,20 @@ private:
 					break;
 
 				case '=': 
+					if (_get(1) == '=') {
+						_saveRangeStart();
+						Token token;
+						token.range.startLine = _oldLine;
+						token.range.startColumn = _oldColumn;
+						token.range.endLine = _oldLine;
+						token.range.endColumn = _oldLine + 2;
+						token.kind = TokenKind::text;
+						token.content = _content.substr(_contentIndex, 2);
+						_tokens.push_back(static_cast<Token&&>(token));
+						_advance(2);
+						break;
+					}
+
 					if (_get(1) == ')') {
 						_append(TokenKind::highlightClose, _contentIndex, 2);
 						_advance(2);

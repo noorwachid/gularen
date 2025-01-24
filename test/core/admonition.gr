@@ -1,10 +1,10 @@
 ----
-//Note// Note
+(!) Note: Note
 
-//Note//
+(!) Note:
 	Multiline
 	Note
 ----
 ---
-{"kind":"document","children":[{"kind":"admon","label":"Note","range":[0,0,0,12],"children":[{"kind":"text","content":" Note","range":[0,8,0,12]}]},{"kind":"admon","label":"Note","range":[2,0,4,4],"children":[{"kind":"space","range":[2,8,2,8]},{"kind":"paragraph","range":[3,1,4,4],"children":[{"kind":"text","content":"Multiline","range":[3,1,3,9]},{"kind":"space","range":[3,10,3,10]},{"kind":"text","content":"Note","range":[4,1,4,4]}]}]}]}
+{"kind":"document","children":[{"kind":"admon","label":"Note","range":[0,0,0,13],"children":[{"kind":"text","content":" Note","range":[0,9,0,13]}]},{"kind":"admon","label":"Note","range":[2,0,4,4],"children":[{"kind":"space","range":[2,9,2,9]},{"kind":"paragraph","range":[3,1,4,4],"children":[{"kind":"text","content":"Multiline","range":[3,1,3,9]},{"kind":"space","range":[3,10,3,10]},{"kind":"text","content":"Note","range":[4,1,4,4]}]}]}]}
 ---

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Gularen/Frontend/Node.hpp"
+#include <cstdint>
 
 namespace Gularen {
 namespace Json {

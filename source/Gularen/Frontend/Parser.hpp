@@ -73,7 +73,7 @@ private:
 		_lexer.parse(content);
 		_tokenIndex = 0;
 
-		// TOKENS //
+		// // TOKENS //
 		// for (size_t i = 0; i < _lexer.size(); i += 1) {
 		// 	std::cout << (_lexer[i].range.startLine + 1) << "," << (_lexer[i].range.startColumn + 1) << "-";
 		// 	std::cout << (_lexer[i].range.endLine + 1) << "," << (_lexer[i].range.endColumn + 1) << " ";
@@ -858,6 +858,8 @@ private:
 					}
 					break;
 				}
+
+				revalidateNode:
 
 				term->children.push_back(node);
 				itemOccupied = true;
