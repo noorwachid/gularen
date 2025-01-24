@@ -2,6 +2,7 @@
 #include "Gularen/Backend/Html/TemplateManager.hpp"
 #include "Gularen/Backend/Markdown/Composer.hpp"
 #include "Gularen/Backend/Json/Composer.hpp"
+#include <iostream>
 
 using namespace Gularen;
 
@@ -11,7 +12,8 @@ void render(std::string_view path, std::string_view content) {
 		return;
 	}
 
-	std::ofstream file(path);
+	std::ofstream file;
+	file.open(std::string(path));
 
 	if (!file.is_open()) {
 		std::cout << "cannot create file " << path << "\n";
@@ -46,7 +48,6 @@ int main(int argc, char** argv) {
 		std::cout << "    - json\n";
 		std::cout << "    - html\n";
 		std::cout << "    - markdown\n";
-		std::cout << "    - gularen\n";
 		return 0;
 	}
 

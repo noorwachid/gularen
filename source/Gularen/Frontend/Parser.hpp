@@ -2,7 +2,9 @@
 
 #include "Gularen/Frontend/Lexer.hpp"
 #include "Gularen/Frontend/Node.hpp"
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 
 namespace Gularen {
 
@@ -37,7 +39,8 @@ public:
 			}
 		}
 
-		std::ifstream file(path);
+		std::ifstream file;
+		file.open(std::string(path));
 
 		if (!file.is_open()) {
 			delete _document;

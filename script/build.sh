@@ -5,7 +5,7 @@ fi
 OS="`uname`"
 case $OS in
 	'Linux')
-		gcc++ -o build/gularen -std=c++17 -I source cli/main.cpp
+		g++ -o build/gularen -std=c++17 -I source cli/main.cpp
 		;;
 
 	'Darwin') 

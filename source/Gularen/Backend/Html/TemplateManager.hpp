@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Gularen/Backend/Html/Composer.hpp"
+#include <fstream>
+#include <filesystem>
 
 namespace Gularen {
 namespace Html {
@@ -20,7 +22,8 @@ public:
 	}
 
 	void setTemplateFile(const std::string_view path) {
-		std::ifstream file(path);
+		std::ifstream file;
+		file.open(std::string(path));
 		_templateContent.assign(std::filesystem::file_size(path), '\0');
 		file.read(_templateContent.data(), _templateContent.size());
 	}

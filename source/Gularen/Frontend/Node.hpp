@@ -2,6 +2,7 @@
 
 #include "Gularen/Frontend/Helper.hpp"
 #include "Gularen/Frontend/Lexer.hpp"
+#include <string>
 
 namespace Gularen {
 

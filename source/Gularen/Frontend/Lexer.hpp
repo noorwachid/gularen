@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include <string_view>
 
@@ -184,6 +183,8 @@ struct TokenKindHelper {
 
 			case TokenKind::accountTag: return "accountTag";
 			case TokenKind::hashTag: return "hashTag";
+
+			default: return "";
 		}
 	}
 };

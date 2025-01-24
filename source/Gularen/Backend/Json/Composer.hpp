@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Gularen/Frontend/Parser.hpp"
+#include "Gularen/Frontend/Node.hpp"
 
 namespace Gularen {
 namespace Json {
