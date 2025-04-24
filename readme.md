@@ -15,7 +15,6 @@ A sweet-spot in markup languages
 [Read specification](resource/spec/readme.md)
 
 ## Editor Support
-- [VS Code](https://marketplace.visualstudio.com/items?itemName=nwachid.gularen)
 - [Neovim](https://github.com/noorwachid/nvim-gularen)
 - [Tree Sitter](https://github.com/noorwachid/tree-sitter-gularen)
 
