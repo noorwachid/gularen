@@ -1,6 +1,0 @@
----- gr
-\*escaped
-----
----
-{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,8],"children":[{"kind":"text","content":"*","range":[0,0,0,1]},{"kind":"text","content":"escaped","range":[0,2,0,8]}]}]}
----

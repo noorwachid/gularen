@@ -1,6 +1,0 @@
----- gr
-coffee: :coffee:
-----
----
-{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,15],"children":[{"kind":"text","content":"coffee","range":[0,0,0,5]},{"kind":"text","content":": ","range":[0,6,0,7]},{"kind":"emoji","code":"coffee","range":[0,8,0,15]}]}]}
----

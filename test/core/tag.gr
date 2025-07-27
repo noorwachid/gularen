@@ -1,6 +1,0 @@
----- gr
-@mention #topic
-----
----
-{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,15],"children":[{"kind":"accountTag","resource":"mention","range":[0,8,0,8]},{"kind":"text","content":" ","range":[0,8,0,8]},{"kind":"hashTag","resource":"topic","range":[0,15,0,15]}]}]}
----

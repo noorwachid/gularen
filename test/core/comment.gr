@@ -1,6 +1,0 @@
-----
-Now you see me, ~ now you don't.
-----
----
-{"kind":"document","children":[{"kind":"paragraph","range":[0,0,0,31],"children":[{"kind":"text","content":"Now you see me, ","range":[0,0,0,15]},{"kind":"comment","content":" now you don't.","range":[0,16,0,31]}]}]}
----

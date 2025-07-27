@@ -1,7 +1,0 @@
----- gr
-[ ] unchecked
-[x] checked
-----
----
-{"kind":"document","children":[{"kind":"checkList","range":[0,0,1,10],"children":[{"kind":"checkItem","checked":false,"range":[0,0,0,12],"children":[{"kind":"text","content":"unchecked","range":[0,4,0,12]}]},{"kind":"checkItem","checked":true,"range":[1,0,1,10],"children":[{"kind":"text","content":"checked","range":[1,4,1,10]}]}]}]}
----

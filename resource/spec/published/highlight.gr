@@ -1,7 +1,0 @@
->>> Highlight
---- gr
-(=Anything inside will be rendered as highlighted=)
----
---- html
-<p><mark>Anything inside will be rendered as highlighted</mark></p>
----
