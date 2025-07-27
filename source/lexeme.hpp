@@ -9,6 +9,9 @@ enum TokenKind {
 	TokenKind_newlinePlus,
 	TokenKind_asterisk,
 	TokenKind_underscore,
+	TokenKind_hashtag,
+	TokenKind_heading,
+	TokenKind_break,
 };
 
 struct Position {
