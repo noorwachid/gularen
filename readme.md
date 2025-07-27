@@ -9,7 +9,6 @@ A sweet-spot in markup languages
 
 ## Installation
 - [To HTML, GFM, and JSON](cli/readme.md)
-- [To PDF](https://github.com/noorwachid/gularen-pdf)
 
 ## Specification
 [Read specification](resource/spec/readme.md)
