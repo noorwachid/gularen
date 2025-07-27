@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 2.0.1
+[See resource](resource/readme.md)
+
 ### Version 1.10.0
 Breaking changes:
 - Removing subtitle
