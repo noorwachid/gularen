@@ -2,8 +2,8 @@
 Anything after backslash is will be rendered as is
 
 ``` gr
-\*escaped
+\*escaped \\escaped
 ```
 ``` html
-<p>*escaped</p>
+<p>*escaped \escaped</p>
 ```

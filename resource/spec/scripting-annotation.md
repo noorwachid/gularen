@@ -3,7 +3,7 @@
 First annotation at the begining of document belongs to `Document` node.
 
 ``` regex
-!# [a-zA-Z-0-9-]+\s*=\s*.*
+!* [a-zA-Z-0-9-]+\s*=\s*.*
 ```
 ``` gr
 !* title        = Book Title
