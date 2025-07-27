@@ -1,4 +1,5 @@
 #include "print.hpp"
+#include "parse.hpp"
 #include <stdio.h>
 
 void printString(String const& value) {
@@ -53,3 +54,85 @@ void printArrayToken(Array<Token> const& tokens) {
 	}
 }
 
+struct Printer {
+	int depth;
+	bool firstItem;
+
+	void indent() {
+		if (firstItem) {
+			firstItem = false;
+			for (int i = 0; i < (depth - 1); i++) {
+				printf("  ");
+			}
+			printf("- ");
+			return;
+		}
+		for (int i = 0; i < depth; i++) {
+			printf("  ");
+		}
+	}
+
+	void metadata(Node* node) {
+		indent();
+		printf("kind: %d\n", node->kind);
+
+		indent();
+		printf("range: ");
+		printRange(node->range);
+		printf("\n");
+	}
+
+	void keyString(char const* key, String const& value) {
+		indent();
+		printf("%s: ", key);
+		printString(value);
+		printf("\n");
+	}
+
+	void keyArray(char const* key, Array<Node*> nodes) {
+		indent();
+		printf("%s:\n", key);
+		for (int i = 0; i < nodes.size(); i++) {
+			int oldDepth = depth;
+			depth += 2;
+			firstItem = true;
+			table(nodes[i]);
+			depth = oldDepth;
+		}
+	}
+
+	void table(Node* node) {
+		if (node == nullptr) {
+			return;
+		}
+
+		metadata(node);
+
+		switch (node->kind) {
+			case NodeKind_text: {
+				TextNode* text = static_cast<TextNode*>(node);
+				keyString("content", text->content);
+				break;
+			}
+			case NodeKind_document: {
+				DocumentNode* document = static_cast<DocumentNode*>(node);
+				keyArray("children", document->children);
+				break;
+			}
+			case NodeKind_paragraph:
+			case NodeKind_strongEmphasis:
+			case NodeKind_weakEmphasis: {
+				HierarchyNode* h = static_cast<HierarchyNode*>(node);
+				keyArray("children", h->children);
+				break;
+			}
+			default:
+				return;
+		}
+	}
+};
+
+void printNode(Node* node) {
+	Printer printer = {};
+	printer.table(node);
+}
