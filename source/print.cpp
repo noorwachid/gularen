@@ -74,7 +74,22 @@ struct Printer {
 
 	void metadata(Node* node) {
 		indent();
-		printf("kind: %d\n", node->kind);
+		printf("kind: ");
+		switch (node->kind) {
+			case NodeKind_document: printf("document"); break;
+			case NodeKind_paragraph: printf("paragraph"); break;
+			case NodeKind_heading: printf("heading"); break;
+
+			case NodeKind_text: printf("text"); break;
+			case NodeKind_strong: printf("strong"); break;
+			case NodeKind_emphasis: printf("emphasis"); break;
+			case NodeKind_hashtag: printf("hashtag"); break;
+			case NodeKind_link: printf("link"); break;
+			case NodeKind_view: printf("view"); break;
+			case NodeKind_citation: printf("citation"); break;
+			case NodeKind_footnote: printf("footnote"); break;
+		}
+		printf("\n");
 
 		indent();
 		printf("range: ");
@@ -120,8 +135,8 @@ struct Printer {
 				break;
 			}
 			case NodeKind_paragraph:
-			case NodeKind_strongEmphasis:
-			case NodeKind_weakEmphasis: {
+			case NodeKind_strong:
+			case NodeKind_emphasis: {
 				HierarchyNode* h = static_cast<HierarchyNode*>(node);
 				keyArray("children", h->children);
 				break;

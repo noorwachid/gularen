@@ -2,11 +2,11 @@
 
 ## Table Data Only
 
-``` gr
+```gr
 | 1 | 2 |
 | 3 | 4 |
 ```
-``` html
+```html
 <table>
 	<tr>
 		<td>1</td>
@@ -21,13 +21,13 @@
 
 ## Table With Header
 
-``` gr
+```gr
 | ID | Name   |
 |----|--------|
 |  1 | Name 1 |
 |  2 | Name 2 |
 ```
-``` html
+```html
 <table>
 	<tr>
 		<th>ID</th>
@@ -46,13 +46,13 @@
 
 ## Table With Header And Alignment
 
-``` gr
+```gr
 | Left | Center | Right |
 |:-----|:------:|------:|
 | 1    |  Ada   |    19 |
 | 2    | Fowler |    23 |
 ```
-``` html
+```html
 <table>
 	<tr>
 		<th class="text-left">Left</th>
@@ -75,7 +75,7 @@
 ## Table With Header And Footer
 Footer only works if the header is defined.
 
-``` gr
+```gr
 | ID | Name   |
 |----|--------|
 |  1 | Name 1 |
@@ -83,7 +83,7 @@ Footer only works if the header is defined.
 |----|--------|
 | ID | Name   |
 ```
-``` html
+```html
 <table>
 	<tr>
 		<th>ID</th>

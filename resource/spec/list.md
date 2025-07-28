@@ -2,12 +2,12 @@
 
 ## Bullet List
 
-``` gr
+```gr
 - Fast
 - Furious
 - Fit
 ```
-``` html
+```html
 <ul>
 	<li>Fast</li>
 	<li>Furious</li>
@@ -17,12 +17,12 @@
 
 ## Numbered List
 
-``` gr
+```gr
 1. One
 2. Two 
 3. Three
 ```
-``` html
+```html
 <ol>
 	<li>One</li>
 	<li>Two</li>
@@ -32,7 +32,7 @@
 
 ## Nested List
 
-``` gr
+```gr
 - One 
 - Two 
 	- Two sub 1
@@ -41,7 +41,7 @@
 		- Two sub 2 section B
 	- Two sub 3
 ```
-``` html
+```html
 <ul>
 	<li>One</li>
 	<li>Two
@@ -60,13 +60,13 @@
 ```
 
 ## List With Description
-``` gr
+```gr
 - First 
 - Second 
 - Third 
 	+1 level indentation after current list will create the body of the list.
 ```
-``` html
+```html
 <ul>
 	<li>First</li>
 	<li>Second</li>

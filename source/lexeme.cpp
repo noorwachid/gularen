@@ -245,7 +245,7 @@ struct Lexer {
 			_point.position.line++;
 			_point.position.column = 0;
 		}
-		_append(count > 1 ? TokenKind_newlinePlus : TokenKind_newline, point, point);
+		_append(count > 1 ? TokenKind_newlines : TokenKind_newline, point, point);
 	}
 
 	void _append(TokenKind kind, Point start, Point end) {

@@ -2,12 +2,12 @@
 ```regex
 :[a-z-]+:
 ```
-``` gr
+```gr
 I look forward to see you soon :smile:!
 
 :coffee:
 ```
-``` html
+```html
 <p>I look forward to see you soon 😄!</p>
 
 <p>☕</p>

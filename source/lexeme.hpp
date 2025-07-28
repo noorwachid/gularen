@@ -6,7 +6,7 @@
 enum TokenKind {
 	TokenKind_text,
 	TokenKind_newline,
-	TokenKind_newlinePlus,
+	TokenKind_newlines,
 	TokenKind_asterisk,
 	TokenKind_underscore,
 	TokenKind_hashtag,

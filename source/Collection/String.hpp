@@ -2,6 +2,7 @@
 
 #include "Byte.hpp"
 #include "Hash.hpp"
+#include <stdio.h>
 
 class String {
 public:
@@ -33,6 +34,7 @@ public:
 		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * _size);
 		header->count = 1;
 		_heap.items = (Byte*)(header + 1);
+		_heap.capacity = _size;
 		for (int i = 0; i < _size; i++) {
 			_heap.items[i] = literal[i];
 		}
@@ -53,6 +55,7 @@ public:
 		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * size);
 		header->count = 1;
 		s._heap.items = (Byte*)(header + 1);
+		s._heap.capacity = size;
 		s._size = size;
 		return s;
 	}
@@ -97,8 +100,9 @@ public:
 
 		String s;
 		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * size);
-		header->count = 1;
+		header->count = 5;
 		s._heap.items = (Byte*)(header + 1);
+		s._heap.capacity = size;
 		s._size = size;
 		Byte const* oitems = items();
 		for (int i = 0; i < size; i++) {
@@ -212,6 +216,7 @@ private:
 
 		Header* header = ((Header*) _heap.items) - 1;
 		header->count--;
+
 		if (header->count == 0) {
 			operator delete(header);
 			_size = 0;

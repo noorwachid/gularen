@@ -8,8 +8,8 @@ enum NodeKind {
 	NodeKind_heading,
 
 	NodeKind_text,
-	NodeKind_strongEmphasis,
-	NodeKind_weakEmphasis,
+	NodeKind_strong,
+	NodeKind_emphasis,
 	NodeKind_hashtag,
 	NodeKind_link,
 	NodeKind_view,

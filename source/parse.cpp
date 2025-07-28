@@ -1,5 +1,6 @@
 #include "parse.hpp"
 #include "lexeme.hpp"
+#include <stdio.h>
 
 struct Point {
 	int index;
@@ -51,14 +52,20 @@ struct Parser {
 			switch (_get().kind) {
 				case TokenKind_text:
 				case TokenKind_asterisk:
-				case TokenKind_underscore:
-				case TokenKind_newline: {
+				case TokenKind_underscore: {
 					Node* node = _parseLine();
 					if (node == nullptr) {
 						goto end;
 					}
 					paragraph->children.append(node);
+					break;
 				}
+				case TokenKind_newline: 
+					_advance();
+					break;
+				case TokenKind_newlines:
+					_advance();
+					goto end;
 				default:
 					goto end;
 			}
@@ -71,24 +78,32 @@ struct Parser {
 	Node* _parseLine() {
 		switch (_get().kind) {
 			case TokenKind_asterisk:
-				return _parseEmphasis(NodeKind_strongEmphasis);
+				return _parseSurrounding(NodeKind_strong);
 			case TokenKind_underscore:
-				return _parseEmphasis(NodeKind_strongEmphasis);
-			default: {
+				return _parseSurrounding(NodeKind_emphasis);
+			case TokenKind_text: {
 				TextNode* text = new TextNode();
 				text->kind = NodeKind_text;
 				text->range = _get().range;
 				text->content = _get().content;
+				_advance();
 				return text;
 			}
+			default:
+				return nullptr;
 		}
 	}
 
-	Node* _parseEmphasis(NodeKind kind) {
+	Node* _parseSurrounding(NodeKind kind) {
 		Token token = _get();
 		HierarchyNode* emphasis = new HierarchyNode();
 		emphasis->kind = kind;
+		_advance();
 		while (_has()) {
+			if (_get().kind == token.kind) {
+				_advance();
+				goto end;
+			}
 			Node* node = _parseLine();
 			if (node == nullptr) {
 				goto end;

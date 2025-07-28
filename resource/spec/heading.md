@@ -8,7 +8,7 @@
 
 > Subsection
 ```
-``` html
+```html
 <section class="chapter">
 	<h1 id="Chapter">Chapter</h1>
 

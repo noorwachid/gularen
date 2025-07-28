@@ -3,10 +3,10 @@
 ## Quotation
 Any single or double apostrophe will be converted into the correct left and right quotes.
 
-``` gr
+```gr
 "Don't you dare!" He said calmly.
 ```
-``` html
+```html
 <p>&ldquo;Don&rsquo;t you dare!&rdquo; He said calmly.</p>
 ```
 
@@ -14,14 +14,14 @@ Any single or double apostrophe will be converted into the correct left and righ
 Two hyphen will make en dash.
 Three hyphen will make em dash.
 
-``` gr
+```gr
 A closed-door meetings
 
 I’ll schedule you from 4:30--5:00
 
 Wait! I forgot to tell you---
 ```
-``` html
+```html
 <p>A closed&hyphen;door meetings</p>
 
 <p>I’ll schedule you from 4:30&ndash;5:00</p>

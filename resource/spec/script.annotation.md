@@ -2,10 +2,10 @@
 ## Document Metadata
 First annotation at the begining of document belongs to `Document` node.
 
-``` regex
+```regex
 % [a-zA-Z-0-9-]:\s.*
 ```
-``` gr
+```gr
 % title: Book Title
 % author: Author Name
 % created-at: 2021-01-10
@@ -14,11 +14,11 @@ First annotation at the begining of document belongs to `Document` node.
 ```
 
 ## Entity Annotation
-``` gr
+```gr
 % text-alignment: center
 A paragraph annotation
 ```
-``` html
+```html
 <p class="text-alignment--center">A paragraph annotation</p>
 ```
 

@@ -1,65 +1,65 @@
 # Link
 
 ## Net Link
-``` gr
+```gr
 [http://google.com]
 ```
-``` html
+```html
 <p><a href="http://google.com">http://google.com</a></p>
 ```
 
 ### With Label
-``` gr
+```gr
 [http://google.com](Google)
 ```
-``` html
+```html
 <p><a href="http://google.com">Google</a></p>
 ```
 
 ## Heading Link
-``` gr
+```gr
 [>Laminal Flow]
 ```
-``` html
+```html
 <p><a href="#Laminar-Flow">Laminar Flow</a></p>
 ```
 
 ### With Label
-``` gr
+```gr
 [>Laminal Flow](see this segment)
 ```
-``` html
+```html
 <p><a href="#Laminar-Flow">see this segment</a></p>
 ```
 
 ## Local Link
-``` gr
+```gr
 [Another Document.gr]
 ```
-``` html
+```html
 <p><a href="Another Document.gr">Another Document</a></p>
 ```
 
 ### With Label
-``` gr
+```gr
 [Another Document.gr](see this document)
 ```
-``` html
+```html
 <p><a href="Another Document.gr">see this document</a></p>
 ```
 
 ### With Specified Heading Title
-``` gr
+```gr
 [Another Document.gr>Legal Section]
 ```
-``` html
+```html
 <p><a href="Another%20Document.gr#Legal-Section">Another Document Legal Section</a></p>
 ```
 
 ### With Specified Heading Title and Label
-``` gr
+```gr
 [Another Document.gr>Legal Section](see this section)
 ```
-``` html
+```html
 <p><a href="Another%20Document.gr#Legal-Section">see this section</a></p>
 ```

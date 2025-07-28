@@ -1,5 +1,0 @@
-CompileFlags:
-  Add: 
-  - "-I/home/noor/dev/project/personal/gularen/source"
-  - "-std=c++17"
-

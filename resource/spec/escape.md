@@ -1,9 +1,9 @@
 # Escape
 Anything after backslash is will be rendered as is
 
-``` gr
+```gr
 \*escaped \\escaped
 ```
-``` html
+```html
 <p>*escaped \escaped</p>
 ```
