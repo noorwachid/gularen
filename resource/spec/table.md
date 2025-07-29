@@ -48,7 +48,7 @@
 
 ```gularen
 | Left | Center | Right |
-|:-----|:------:|------:|
+|+-----|+------+|------+|
 | 1    |  Ada   |    19 |
 | 2    | Fowler |    23 |
 ```
@@ -68,38 +68,6 @@
 		<td class="text-right">2</td>
 		<td class="text-right">Fowler</td>
 		<td class="text-right">23</td>
-	</tr>
-</table>
-```
-
-## Table With Header And Footer
-Footer only works if the header is defined.
-
-```gularen
-| ID | Name   |
-|----|--------|
-|  1 | Name 1 |
-|  2 | Name 2 |
-|----|--------|
-| ID | Name   |
-```
-```html
-<table>
-	<tr>
-		<th>ID</th>
-		<th>Name</th>
-	</tr>
-	<tr>
-		<td>1</td>
-		<td>Name 1</td>
-	</tr>
-	<tr>
-		<td>2</td>
-		<td>Name 2</td>
-	</tr>
-	<tr>
-		<th>ID</th>
-		<th>Name</th>
 	</tr>
 </table>
 ```
