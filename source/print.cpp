@@ -55,6 +55,9 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_underscore: printf("underscore"); break;
 			case TokenKind_heading: printf("heading"); break;
 			case TokenKind_subheading: printf("subheading"); break;
+			case TokenKind_bullet: printf("bullet"); break;
+			case TokenKind_numberpoint: printf("numberpoint"); break;
+			case TokenKind_checkbox: printf("checkbox"); break;
 			case TokenKind_break: printf("break"); break;
 			case TokenKind_hashtag: printf("hashtag"); break;
 			case TokenKind_emoji: printf("emoji"); break;
@@ -98,6 +101,12 @@ struct Printer {
 			case NodeKind_title: printf("title"); break;
 			case NodeKind_subtitle: printf("subtitle"); break;
 			case NodeKind_paragraph: printf("paragraph"); break;
+			case NodeKind_list: printf("list"); break;
+			case NodeKind_item: printf("item"); break;
+			case NodeKind_numberedlist: printf("numberedlist"); break;
+			case NodeKind_numbereditem: printf("numbereditem"); break;
+			case NodeKind_checklist: printf("checklist"); break;
+			case NodeKind_checkitem: printf("checkitem"); break;
 			case NodeKind_quote: printf("quote"); break;
 
 			case NodeKind_text: printf("text"); break;
@@ -156,6 +165,13 @@ struct Printer {
 				keyArray("children", document->children);
 				break;
 			}
+			case NodeKind_checkitem: {
+				CheckItemNode* item = static_cast<CheckItemNode*>(node);
+				indent();
+				printf("isChecked: %s\n", item->isChecked ? "true" : "false");
+				keyArray("children", item->children);
+				break;
+			}
 			case NodeKind_chapter:
 			case NodeKind_section:
 			case NodeKind_subsection:
@@ -163,6 +179,11 @@ struct Printer {
 			case NodeKind_subtitle:
 			case NodeKind_quote:
 			case NodeKind_paragraph:
+			case NodeKind_list:
+			case NodeKind_item:
+			case NodeKind_numberedlist:
+			case NodeKind_numbereditem:
+			case NodeKind_checklist:
 			case NodeKind_strong:
 			case NodeKind_emphasis: {
 				HierarchyNode* h = static_cast<HierarchyNode*>(node);

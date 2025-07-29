@@ -1,6 +1,6 @@
 #include "parse.hpp"
 #include "lexeme.hpp"
-#include <cstdio>
+#include <stdio.h>
 
 struct Point {
 	int index;
@@ -32,10 +32,16 @@ struct Parser {
 
 	Node* _parseBlock() {
 		switch (_get().kind) {
-			case TokenKind_heading:
-				return _parseHeading();
 			case TokenKind_indent:
 				return _parseQuote();
+			case TokenKind_heading:
+				return _parseHeading();
+			case TokenKind_bullet:
+				return _parseList(TokenKind_bullet, NodeKind_list, NodeKind_item);
+			case TokenKind_numberpoint:
+				return _parseList(TokenKind_numberpoint, NodeKind_numberedlist, NodeKind_numbereditem);
+			case TokenKind_checkbox:
+				return _parseList(TokenKind_checkbox, NodeKind_checklist, NodeKind_checkitem);
 			case TokenKind_text:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
@@ -45,6 +51,28 @@ struct Parser {
 				_advance();
 				return nullptr;
 		}
+	}
+
+	Node* _parseQuote() {
+		Point point = _point;
+		HierarchyNode* quote = new HierarchyNode();
+		quote->kind = NodeKind_quote;
+		_advance();
+
+		while (_has()) {
+			if (_get().kind == TokenKind_outdent) {
+				_advance();
+				goto end;
+			}
+			Node* node = _parseBlock();
+			if (node == nullptr) {
+				goto end;
+			}
+			quote->children.append(node);
+		}
+		end:
+		_range(quote);
+		return quote;
 	}
 
 	Node* _parseHeading() {
@@ -117,26 +145,54 @@ struct Parser {
 		return section;
 	}
 
-	Node* _parseQuote() {
-		Point point = _point;
-		HierarchyNode* quote = new HierarchyNode();
-		quote->kind = NodeKind_quote;
-		_advance();
+	Node* _parseList(TokenKind pointKind, NodeKind listKind, NodeKind itemKind) {
+		HierarchyNode* list = new HierarchyNode();
+		list->kind = listKind;
 
 		while (_has()) {
-			if (_get().kind == TokenKind_outdent) {
-				_advance();
+			if (_get().kind != pointKind) {
 				goto end;
 			}
-			Node* node = _parseBlock();
-			if (node == nullptr) {
-				goto end;
+			HierarchyNode* item = nullptr;
+			if (pointKind == TokenKind_checkbox) {
+				CheckItemNode* checkitem = new CheckItemNode();
+				checkitem->isChecked = _get().content[1] == 'x';
+				item = checkitem;
+			} else {
+				item = new HierarchyNode();
 			}
-			quote->children.append(node);
+			item->kind = itemKind;
+			_advance();
+			while (_has()) {
+				if (_get().kind == TokenKind_newline ||
+					_get().kind == TokenKind_newlines) {
+					_advance();
+					if (_has() && _get().kind == TokenKind_indent) {
+						_advance();
+						while (_has()) {
+							if (_get().kind == TokenKind_outdent) {
+								_advance();
+								goto endItem;
+							}
+							Node* node = _parseBlock();
+							item->children.append(node);
+						}
+					}
+					goto endItem;
+				}
+				Node* node = _parseLine();
+				if (node == nullptr) {
+					goto endItem;
+				}
+				item->children.append(node);
+			}
+			endItem:
+			_range(item);
+			list->children.append(item);
 		}
 		end:
-		_range(quote);
-		return quote;
+		_range(list);
+		return list;
 	}
 
 	Node* _parseParagraph() {

@@ -54,6 +54,18 @@ struct Lexer {
 			case '>':
 				_lexemeHeading();
 				break;
+			case '-':
+				_lexemeBullet();
+				break;
+			case '0': case '1': case '2': case '3':
+			case '4': case '5': case '6': case '7':
+			case '8': case '9': 
+				_lexemeNumberPoint();
+				break;
+			case '[':
+				_lexemeCheckbox();
+				break;
+
 			case 'a': case 'b': case 'c': case 'd':
 			case 'e': case 'f': case 'g': case 'h':
 			case 'i': case 'j': case 'k': case 'l':
@@ -68,11 +80,10 @@ struct Lexer {
 			case 'Q': case 'R': case 'S': case 'T':
 			case 'U': case 'V': case 'W': case 'X':
 			case 'Y': case 'Z': case '.': case ',':
-			case '0': case '1': case '2': case '3':
-			case '4': case '5': case '6': case '7':
-			case '8': case '9': case ':':
-			case '*': case '_': case '#':
-			case '\n':
+			case ':': case '*': case '_': case '#':
+			case '"':
+			case '\'':
+			case '\n': 
 				_lexemeLine();
 				break;
 			default:
@@ -124,6 +135,63 @@ struct Lexer {
 		}
 		_append(TokenKind_heading, point, _point);
 		_advance();
+		_lexemeLine();
+	}
+
+	void _lexemeBullet() {
+		Point point = _point;
+		_advance();
+		if (_is(' ')) {
+			_advance();
+			_append(TokenKind_bullet, point, _point);
+			_lexemeLine();
+			return;
+		}
+		_appendText(point, _point);
+	}
+
+	void _lexemeNumberPoint() {
+		Point point = _point;
+		_advance();
+		while (_has()) {
+			switch (_get()) {
+				case '0': case '1': case '2': case '3':
+				case '4': case '5': case '6': case '7':
+				case '8': case '9':
+					continue;
+				default:
+					goto pointCheck;
+			}
+		}
+		pointCheck:
+		if (_is('.')) {
+			_advance();
+			if (_is(' ')) {
+				_advance();
+				_append(TokenKind_numberpoint, point, _point);
+				_lexemeLine();
+				return;
+			}
+		}
+		_appendText(point, _point);
+	}
+
+	void _lexemeCheckbox() {
+		Point point = _point;
+		_advance();
+		if (_has() && (_get() == ' ' || _get() == 'x')) {
+			_advance();
+			if (_is(']')) {
+				_advance();
+				if (_is(' ')) {
+					_advance();
+					_append(TokenKind_checkbox, point, _point);
+					_lexemeLine();
+					return;
+				}
+			}
+		}
+		_appendText(point, _point);
 	}
 
 	void _lexemeLine() {
@@ -146,6 +214,8 @@ struct Lexer {
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
 				case '8': case '9':
+				case '"':
+				case '\'':
 					_lexemeText();
 					break;
 
@@ -271,6 +341,8 @@ struct Lexer {
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
 				case '8': case '9':
+				case '"':
+				case '\'':
 					_advance();
 					break;
 				default:

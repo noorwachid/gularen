@@ -20,6 +20,9 @@ namespace Disk {
 			if (path.size() > 255) {
 				free(cPath);
 			}
+			if (file == nullptr) {
+				return "";
+			}
 			fseek(file, 0, SEEK_END);
 			int size = ftell(file);
 			fseek(file, 0, SEEK_SET);

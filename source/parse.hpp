@@ -21,6 +21,15 @@ enum NodeKind {
 	NodeKind_view,
 	NodeKind_citation,
 	NodeKind_footnote,
+
+	NodeKind_list,
+	NodeKind_item,
+
+	NodeKind_numberedlist,
+	NodeKind_numbereditem,
+
+	NodeKind_checklist,
+	NodeKind_checkitem,
 };
 
 struct Node {
@@ -38,11 +47,15 @@ struct TextNode: Node {
 struct HierarchyNode: Node {
 	Array<Node*> children;
 
-	~HierarchyNode() {
+	virtual ~HierarchyNode() {
 		for (int i = 0; i < children.size(); i++) {
 			delete children[i];
 		}
 	}
+};
+
+struct CheckItemNode: HierarchyNode {
+	bool isChecked;
 };
 
 struct DocumentNode: HierarchyNode {
