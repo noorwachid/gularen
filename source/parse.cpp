@@ -1,6 +1,6 @@
 #include "parse.hpp"
 #include "lexeme.hpp"
-#include <stdio.h>
+#include <cstdio>
 
 struct Point {
 	int index;
@@ -32,16 +32,88 @@ struct Parser {
 
 	Node* _parseBlock() {
 		switch (_get().kind) {
+			case TokenKind_heading:
+				return _parseHeading();
+			case TokenKind_indent:
+				return _parseQuote();
 			case TokenKind_text:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
 				return _parseParagraph();
-			case TokenKind_indent:
-				return _parseQuote();
 			default:
 				_advance();
 				return nullptr;
 		}
+	}
+
+	Node* _parseHeading() {
+		Token token = _get();
+		Point point = _point;
+		HierarchyNode* section = new HierarchyNode();
+		_advance();
+		switch (token.content.size()) {
+			case 3:
+				section->kind = NodeKind_chapter;
+				break;
+			case 2:
+				section->kind = NodeKind_section;
+				break;
+			case 1:
+				section->kind = NodeKind_subsection;
+				break;
+		}
+		HierarchyNode* title = new HierarchyNode();
+		title->kind = NodeKind_title;
+		while (_has()) {
+			if (_get().kind == TokenKind_newline ||
+				_get().kind == TokenKind_newlines) {
+				_advance();
+				goto body;
+			}
+			if (_get().kind == TokenKind_subheading) {
+				_advance();
+				HierarchyNode* subtitle = new HierarchyNode();
+				subtitle->kind = NodeKind_subtitle;
+				while (_has()) {
+					if (_get().kind == TokenKind_newline ||
+						_get().kind == TokenKind_newlines) {
+						_advance();
+						goto endSubtitle;
+					}
+					Node* node = _parseLine();
+					if (node == nullptr) {
+						goto endSubtitle;
+					}
+					subtitle->children.append(node);
+				}
+				endSubtitle:
+				_range(subtitle);
+				title->children.append(subtitle);
+				goto body;
+			}
+			Node* node = _parseLine();
+			if (node == nullptr) {
+				goto body;
+			}
+			title->children.append(node);
+		}
+		body:
+		_range(title);
+		section->children.append(title);
+		while (_has()) {
+			if (_get().kind == TokenKind_heading &&
+				_get().content.size() >= token.content.size()) {
+				goto end;
+			}
+			Node* node = _parseBlock();
+			if (node == nullptr) {
+				goto end;
+			}
+			section->children.append(node);
+		}
+		end:
+		_range(section);
+		return section;
 	}
 
 	Node* _parseQuote() {

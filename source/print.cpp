@@ -53,9 +53,11 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_outdent: printf("outdent"); break;
 			case TokenKind_asterisk: printf("asterisk"); break;
 			case TokenKind_underscore: printf("underscore"); break;
-			case TokenKind_hashtag: printf("hashtag"); break;
 			case TokenKind_heading: printf("heading"); break;
+			case TokenKind_subheading: printf("subheading"); break;
 			case TokenKind_break: printf("break"); break;
+			case TokenKind_hashtag: printf("hashtag"); break;
+			case TokenKind_emoji: printf("emoji"); break;
 		}
 		printf("\n");
 		printf("  range: ");
@@ -90,8 +92,12 @@ struct Printer {
 		printf("kind: ");
 		switch (node->kind) {
 			case NodeKind_document: printf("document"); break;
+			case NodeKind_chapter: printf("chapter"); break;
+			case NodeKind_section: printf("section"); break;
+			case NodeKind_subsection: printf("subsection"); break;
+			case NodeKind_title: printf("title"); break;
+			case NodeKind_subtitle: printf("subtitle"); break;
 			case NodeKind_paragraph: printf("paragraph"); break;
-			case NodeKind_heading: printf("heading"); break;
 			case NodeKind_quote: printf("quote"); break;
 
 			case NodeKind_text: printf("text"); break;
@@ -148,8 +154,13 @@ struct Printer {
 				keyArray("children", document->children);
 				break;
 			}
-			case NodeKind_paragraph:
+			case NodeKind_chapter:
+			case NodeKind_section:
+			case NodeKind_subsection:
+			case NodeKind_title:
+			case NodeKind_subtitle:
 			case NodeKind_quote:
+			case NodeKind_paragraph:
 			case NodeKind_strong:
 			case NodeKind_emphasis: {
 				HierarchyNode* h = static_cast<HierarchyNode*>(node);

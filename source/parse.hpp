@@ -4,9 +4,13 @@
 
 enum NodeKind {
 	NodeKind_document,
-	NodeKind_paragraph,
-	NodeKind_heading,
+	NodeKind_chapter,
+	NodeKind_section,
+	NodeKind_subsection,
 	NodeKind_quote,
+	NodeKind_title,
+	NodeKind_subtitle,
+	NodeKind_paragraph,
 
 	NodeKind_text,
 	NodeKind_strong,

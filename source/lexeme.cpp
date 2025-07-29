@@ -11,6 +11,7 @@ struct Lexer {
 	String _source;
 	Array<Token> _tokens;
 	int _indent;
+	bool _isHeadingLine;
 
 	Lexer(String const& source) {
 		_source = source;
@@ -19,6 +20,7 @@ struct Lexer {
 		_point.position.line = 0;
 		_point.position.column = 0;
 		_indent = 0;
+		_isHeadingLine = true;
 	}
 
 	Array<Token> lexeme() {
@@ -82,6 +84,7 @@ struct Lexer {
 	}
 
 	void _lexemeHeading() {
+		_isHeadingLine = true;
 		Point point = _point;
 		int count = 0;
 		while (_has()) {
@@ -99,6 +102,7 @@ struct Lexer {
 			return _appendText(point, _point);
 		}
 		_append(TokenKind_heading, point, _point);
+		_advance();
 	}
 
 	void _lexemeLine() {
@@ -122,6 +126,10 @@ struct Lexer {
 				case '4': case '5': case '6': case '7':
 				case '8': case '9':
 					_lexemeText();
+					break;
+
+				case ':':
+					_lexemeEmoji();
 					break;
 
 				case '*':
@@ -255,6 +263,41 @@ struct Lexer {
 		_append(TokenKind_text, startPoint, endPoint);
 	}
 
+	void _lexemeEmoji() {
+		Point startPoint = _point;
+		_advance();
+
+		if (_isHeadingLine && _is(' ')) {
+			_append(TokenKind_subheading, startPoint, _point);
+			_advance();
+			return;
+		}
+
+		while (_has()) {
+			switch (_get()) {
+				case 'a': case 'b': case 'c': case 'd':
+				case 'e': case 'f': case 'g': case 'h':
+				case 'i': case 'j': case 'k': case 'l':
+				case 'm': case 'n': case 'o': case 'p':
+				case 'q': case 'r': case 's': case 't':
+				case 'u': case 'v': case 'w': case 'x':
+				case 'y': case 'z': case '-':
+					_advance();
+					break;
+				case ':':
+					_advance();
+					goto end;
+				default:
+					goto end;
+			}
+		}
+
+		end:
+		Point endPoint = _point;
+		endPoint.position.column -= 1;
+		_append(TokenKind_emoji, startPoint, endPoint);
+	}
+
 	void _appendShadow(TokenKind kind, Point point) {
 		Token token;
 		token.kind = kind;
@@ -282,6 +325,7 @@ struct Lexer {
 			_point.position.line++;
 			_point.position.column = 0;
 		}
+		_isHeadingLine = false;
 		_appendShadow(count > 1 ? TokenKind_newlines : TokenKind_newline, point);
 	}
 

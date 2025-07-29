@@ -11,9 +11,11 @@ enum TokenKind {
 	TokenKind_outdent,
 	TokenKind_asterisk,
 	TokenKind_underscore,
-	TokenKind_hashtag,
 	TokenKind_heading,
+	TokenKind_subheading,
 	TokenKind_break,
+	TokenKind_hashtag,
+	TokenKind_emoji,
 };
 
 struct Position {
