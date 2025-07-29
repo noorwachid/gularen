@@ -1,12 +1,12 @@
 # Admonition
 ## Single Line
 ```gularen
-!NOTE A note
-!HINT A hint
-!IMPORTANT Important stuff
-!WARNING Warning stuff
-!SEE The Amazing Spiderman 2
-!TIP A tip
+[NOTE] A note
+[HINT] A hint
+[IMPORTANT] Important stuff
+[WARNING] Warning stuff
+[SEE] The Amazing Spiderman 2
+[TIP] A tip
 ```
 ```html
 <div class="admonition note">
@@ -37,9 +37,9 @@
 
 ## Multi Line
 ```gularen
-!NOTE
-	Long note.
-	Very long note.
+[NOTE]
+Long note.
+Very long note.
 ```
 ```html
 <div class="admonition note">
