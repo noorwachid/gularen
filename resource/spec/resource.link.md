@@ -16,6 +16,15 @@
 <p><a href="http://google.com">Google</a></p>
 ```
 
+## Quoted Source Link
+Prefix `\` to escape `"` and `\` e.g. `\"` or `\\`
+```gularen
+["http://somewebsite.com/product?sort[price]=cheapest&sort[timeline]=latest"](Cheapest product)
+```
+```html
+<a href="http://somewebsite.com/product?sort[price]=cheapest&sort[timeline]=latest">Cheapest product</a>
+```
+
 ## Heading Link
 ```gularen
 [>Laminal Flow]

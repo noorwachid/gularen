@@ -87,7 +87,7 @@ public:
 		return _size <= _smallStringSize ? _stack.items[index] : _heap.items[index];
 	}
 
-	String slice(int index, int size) {
+	String slice(int index, int size) const {
 		if (size <= _smallStringSize) {
 			String s;
 			s._size = size;

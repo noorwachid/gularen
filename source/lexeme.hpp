@@ -4,30 +4,56 @@
 #include "Collection/Array.hpp"
 
 enum TokenKind {
-	TokenKind_text,
-	TokenKind_newline,
-	TokenKind_newlines,
-	TokenKind_indent,
-	TokenKind_outdent,
-	TokenKind_asterisk,
-	TokenKind_underscore,
-	TokenKind_heading,
-	TokenKind_subheading,
-	TokenKind_bullet,
-	TokenKind_numberpoint,
-	TokenKind_checkbox,
-	TokenKind_break,
-	TokenKind_hashtag,
-	TokenKind_emoji,
-	TokenKind_linebreak,
-	TokenKind_thematicbreak,
-	TokenKind_hyphen,
-	TokenKind_endash,
-	TokenKind_emdash,
-	TokenKind_rightquote,
-	TokenKind_leftquote,
-	TokenKind_singlerightquote,
-	TokenKind_singleleftquote,
+	TokenKind_text, // abc
+	TokenKind_newline, // \n
+	TokenKind_newlines, // \n\n
+	TokenKind_indent, // |->
+	TokenKind_outdent, // <-|
+	TokenKind_asterisk, // *
+	TokenKind_underscore, // _
+	TokenKind_heading, // >>> or >> or >
+	TokenKind_subheading, // :
+	TokenKind_bullet, // - 
+	TokenKind_numberpoint, // 1. 
+	TokenKind_checkbox, // [ ] or [x] 
+	TokenKind_hashtag, // #xxx
+	TokenKind_emoji, // :xxx:
+	TokenKind_linebreak, // <
+	TokenKind_thematicbreak, // ---
+	TokenKind_hyphen, // -
+	TokenKind_endash, // --
+	TokenKind_emdash, // ---
+	TokenKind_rightquote, // "
+	TokenKind_leftquote, // "
+	TokenKind_singlerightquote, // '
+	TokenKind_singleleftquote, // '
+
+	TokenKind_openref, // [ or ![ or ^[
+	TokenKind_ref, // xxx
+	TokenKind_quotedref, // "xxx"
+	TokenKind_closeref, // ]
+	TokenKind_footnote, // ^
+	TokenKind_openlabel, // (
+	TokenKind_closelabel, // )
+
+	TokenKind_backticks, // ```
+	TokenKind_sources, // goto 1
+	TokenKind_backtick, // `
+	TokenKind_source, // goto 1
+
+	TokenKind_pipe, // |
+	TokenKind_bar, // --- or +-- or +-+ or --+
+
+	// [NOTE] or [HINT] or [IMPORTANT] or [WARNING] or [SEE] or [TIP]
+	TokenKind_admon, 
+	TokenKind_citation, // ^ xxx
+	TokenKind_citationkey, // key: 
+	TokenKind_citationvalue, // value
+
+	TokenKind_command, // % command
+	TokenKind_argument, // include xxx
+	TokenKind_annotationkey, // key:
+	TokenKind_annotationvalue, // value
 };
 
 struct Position {

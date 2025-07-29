@@ -52,18 +52,13 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_newlines: printf("newlines"); break;
 			case TokenKind_indent: printf("indent"); break;
 			case TokenKind_outdent: printf("outdent"); break;
-			case TokenKind_asterisk: printf("asterisk"); break;
-			case TokenKind_underscore: printf("underscore"); break;
 			case TokenKind_heading: printf("heading"); break;
 			case TokenKind_subheading: printf("subheading"); break;
 			case TokenKind_bullet: printf("bullet"); break;
 			case TokenKind_numberpoint: printf("numberpoint"); break;
 			case TokenKind_checkbox: printf("checkbox"); break;
-			case TokenKind_break: printf("break"); break;
-			case TokenKind_hashtag: printf("hashtag"); break;
-			case TokenKind_emoji: printf("emoji"); break;
-			case TokenKind_linebreak: printf("linebreak"); break;
 			case TokenKind_thematicbreak: printf("thematicbreak"); break;
+
 			case TokenKind_hyphen: printf("hyphen"); break;
 			case TokenKind_endash: printf("endash"); break;
 			case TokenKind_emdash: printf("emdash"); break;
@@ -71,6 +66,38 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_leftquote: printf("leftquote"); break;
 			case TokenKind_singlerightquote: printf("singlerightquote"); break;
 			case TokenKind_singleleftquote: printf("singleleftquote"); break;
+
+			case TokenKind_linebreak: printf("linebreak"); break;
+			case TokenKind_asterisk: printf("asterisk"); break;
+			case TokenKind_underscore: printf("underscore"); break;
+			case TokenKind_hashtag: printf("hashtag"); break;
+			case TokenKind_emoji: printf("emoji"); break;
+
+			case TokenKind_openref: printf("openref"); break;
+			case TokenKind_ref: printf("ref"); break;
+			case TokenKind_quotedref: printf("quotedref"); break;
+			case TokenKind_closeref: printf("closeref"); break;
+			case TokenKind_footnote: printf("footnote"); break;
+			case TokenKind_openlabel: printf("openlabel"); break;
+			case TokenKind_closelabel: printf("closelabel"); break;
+
+			case TokenKind_backticks: printf("backticks"); break;
+			case TokenKind_sources: printf("sources"); break;
+			case TokenKind_backtick: printf("backtick"); break;
+			case TokenKind_source: printf("source"); break;
+
+			case TokenKind_pipe: printf("pipe"); break;
+			case TokenKind_bar: printf("bar"); break;
+
+			case TokenKind_admon: printf("admon"); break;
+			case TokenKind_citation: printf("citation"); break;
+			case TokenKind_citationkey: printf("citationkey"); break;
+			case TokenKind_citationvalue: printf("citationvalue"); break;
+
+			case TokenKind_command: printf("command"); break;
+			case TokenKind_argument: printf("argument"); break;
+			case TokenKind_annotationkey: printf("annotationkey"); break;
+			case TokenKind_annotationvalue: printf("annotationvalue"); break;
 		}
 		printf("\n");
 		printf("  range: ");
@@ -133,6 +160,7 @@ struct Printer {
 			case NodeKind_emphasis: printf("emphasis"); break;
 			case NodeKind_linebreak: printf("linebreak"); break;
 			case NodeKind_hashtag: printf("hashtag"); break;
+
 			case NodeKind_link: printf("link"); break;
 			case NodeKind_view: printf("view"); break;
 			case NodeKind_citation: printf("citation"); break;
@@ -208,6 +236,15 @@ struct Printer {
 			case NodeKind_emphasis: {
 				HierarchyNode* h = static_cast<HierarchyNode*>(node);
 				keyArray("children", h->children);
+				break;
+			}
+			case NodeKind_link:
+			case NodeKind_view:
+			case NodeKind_citation:
+			case NodeKind_footnote: {
+				ResourceNode* r = static_cast<ResourceNode*>(node);
+				keyString("source", r->source);
+				keyArray("children", r->children);
 				break;
 			}
 			default:

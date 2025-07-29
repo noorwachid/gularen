@@ -17,6 +17,7 @@ enum NodeKind {
 	NodeKind_emphasis,
 	NodeKind_hashtag,
 	NodeKind_emoji,
+
 	NodeKind_link,
 	NodeKind_view,
 	NodeKind_citation,
@@ -65,15 +66,16 @@ struct HierarchyNode: Node {
 	}
 };
 
-struct CheckItemNode: HierarchyNode {
-	bool isChecked;
-};
-
 struct DocumentNode: HierarchyNode {
+	String path;
 };
 
 struct ResourceNode: HierarchyNode {
 	String source;
+};
+
+struct CheckItemNode: HierarchyNode {
+	bool isChecked;
 };
 
 Node* parse(String const& source);

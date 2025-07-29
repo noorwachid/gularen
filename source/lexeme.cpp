@@ -11,6 +11,7 @@ struct Lexer {
 	Array<Token> _tokens;
 	int _indent;
 	bool _isHeadingLine;
+	int _parenthesis;
 
 	Lexer(String const& source) {
 		_source = source;
@@ -20,6 +21,7 @@ struct Lexer {
 		_point.position.column = 0;
 		_indent = 0;
 		_isHeadingLine = false;
+		_parenthesis = 0;
 	}
 
 	Array<Token> lexeme() {
@@ -82,6 +84,7 @@ struct Lexer {
 			case ':': case '*': case '_': case '#':
 			case '<':
 			case '"':
+			case '(': case ')': case '!': case '^':
 			case '\'':
 			case '\\':
 			case '\n': 
@@ -209,7 +212,8 @@ struct Lexer {
 				}
 			}
 		}
-		_appendText(point, _point);
+		_point = point;
+		_lexemeLine();
 	}
 
 	void _lexemeLine() {
@@ -232,7 +236,28 @@ struct Lexer {
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
 				case '8': case '9':
+				case '>':
 					_lexemeText();
+					break;
+				case '(': 
+					if (_parenthesis > 0) {
+						_parenthesis++;
+						_advance();
+					} else {
+						Point p = _point;
+						_advance();
+						_appendSlice(TokenKind_text, p, _point.index - p.index);
+					}
+					break;
+				case ')':
+					if (_parenthesis > 0) {
+						_parenthesis--;
+						return;
+					} else {
+						Point p = _point;
+						_advance();
+						_appendSlice(TokenKind_text, p, _point.index - p.index);
+					}
 					break;
 				case ':':
 					_lexemeEmoji();
@@ -252,6 +277,41 @@ struct Lexer {
 				case '-':
 					_lexemeHyphen();
 					break;
+				case '!': {
+					Point p = _point;
+					_advance();
+					if (_is('[')) {
+						_advance();
+						_lexemeResource(p);
+						break;
+					}
+					_appendSlice(TokenKind_text, p, _point.index - p.index);
+					break;
+				}
+				case '^': {
+					Point p = _point;
+					_advance();
+					if (_is('[')) {
+						_advance();
+						_lexemeResource(p, false);
+						break;
+					}
+					if (_is('(')) {
+						_appendSlice(TokenKind_footnote, p, _point.index - p.index);
+						p = _point;
+						_advance();
+						_lexemeLabel(p);
+						break;
+					}
+					_appendSlice(TokenKind_text, p, _point.index - p.index);
+					break;
+				}
+				case '[': {
+					Point p = _point;
+					_advance();
+					_lexemeResource(p);
+					break;
+				}
 				case '"':
 					_lexemeQuote(
 						_tokens.size() != 0 && _tokens[_tokens.size() - 1].kind == TokenKind_singleleftquote,
@@ -325,6 +385,72 @@ struct Lexer {
 		}
 		_appendSlice(TokenKind_hyphen, point, _point.index - point.index);
 		return;
+	}
+
+	void _lexemeResource(Point point, bool isLabeled = true) {
+		_appendSlice(TokenKind_openref, point, _point.index - point.index);
+
+		// parse quoted 
+		if (_is('"')) {
+			point = _point;
+			_advance();
+			while (_has()) {
+				switch (_get()) {
+					case '"':
+						_advance();
+						goto endQuote;
+					case '\\':
+						_advance();
+						_advance();
+						break;
+					default:
+						_advance();
+						break;
+				}
+			}
+			endQuote:
+			_appendSlice(TokenKind_quotedref, point, _point.index - point.index);
+		} else {
+			point = _point;
+			while (_has()) {
+				if (_get() == ']') {
+					break;
+				}
+				_advance();
+			}
+			_appendSlice(TokenKind_ref, point, _point.index - point.index);
+		}
+		if (_is(']')) {
+			point = _point;
+			_advance();
+			_appendSlice(TokenKind_closeref, point, _point.index - point.index);
+
+			if (isLabeled && _is('(')) {
+				point = _point;
+				_advance();
+				_lexemeLabel(point);
+			}
+		}
+	}
+
+	void _lexemeLabel(Point point) {
+		_appendSlice(TokenKind_openlabel, point, _point.index - point.index);
+		_parenthesis = 1;
+		while (_has()) {
+			if (_get() == ')') {
+				if (_parenthesis == 0) {
+					point = _point;
+					_advance();
+					_appendSlice(TokenKind_closelabel, point, _point.index - point.index);
+					break;
+				} else {
+					point = _point;
+					_advance();
+					_appendSlice(TokenKind_text, point, _point.index - point.index);
+				}
+			}
+			_lexemeLine();
+		}
 	}
 
 	void _lexemeQuote(bool isNestedCombination /* ‘“ or “‘ */, TokenKind leftKind, TokenKind rightKind) {
@@ -406,6 +532,7 @@ struct Lexer {
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
 				case '8': case '9':
+				case '>':
 					_advance();
 					break;
 				default:

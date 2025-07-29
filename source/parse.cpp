@@ -55,6 +55,8 @@ struct Parser {
 			case TokenKind_rightquote:
 			case TokenKind_singleleftquote:
 			case TokenKind_singlerightquote:
+			case TokenKind_openref:
+			case TokenKind_footnote:
 				return _parseParagraph();
 			default:
 				_advance();
@@ -231,7 +233,9 @@ struct Parser {
 				case TokenKind_leftquote:
 				case TokenKind_rightquote:
 				case TokenKind_singleleftquote:
-				case TokenKind_singlerightquote: {
+				case TokenKind_singlerightquote:
+				case TokenKind_openref:
+				case TokenKind_footnote: {
 					Node* node = _parseLine();
 					if (node == nullptr) {
 						goto end;
@@ -297,6 +301,73 @@ struct Parser {
 				return _create(NodeKind_singleleftquote);
 			case TokenKind_singlerightquote:
 				return _create(NodeKind_singlerightquote);
+			case TokenKind_openref: {
+				ResourceNode* resource = new ResourceNode();
+				switch (_get().content[0]) {
+					case '[':
+						resource->kind = NodeKind_link;
+						break;
+					case '!':
+						resource->kind = NodeKind_view;
+						break;
+					case '^':
+						resource->kind = NodeKind_citation;
+						break;
+				}
+				resource->range = _get().range;
+				_advance();
+				if (_is(TokenKind_ref)) {
+					resource->source = _get().content;
+					_advance();
+				}
+				if (_is(TokenKind_quotedref)) {
+					resource->source = _parseQuotedString(_get().content);
+					_advance();
+				}
+				if (_is(TokenKind_closeref)) {
+					_advance();
+				}
+				if (_is(TokenKind_openlabel)) {
+					_advance();
+					while (_has()) {
+						if (_get().kind == TokenKind_closelabel) {
+							resource->range.end = _get().range.end;
+							_advance();
+							break;
+						}
+						Node* node = _parseLine();
+						if (node == nullptr) {
+							break;
+						}
+						resource->children.append(node);
+					}
+					_range(resource);
+				}
+				return resource;
+			}
+			case TokenKind_footnote: {
+				HierarchyNode* footnote = new HierarchyNode();
+				footnote->kind = NodeKind_footnote;
+				footnote->range = _get().range;
+				_advance();
+				if (_is(TokenKind_openlabel)) {
+					_advance();
+					while (_has()) {
+						if (_get().kind == TokenKind_closelabel) {
+							footnote->range.end = _get().range.end;
+							_advance();
+							break;
+						}
+						Node* node = _parseLine();
+						if (node == nullptr) {
+							break;
+						}
+						footnote->children.append(node);
+					}
+					_range(footnote);
+				}
+				return footnote;
+			}
 			default:
 				return nullptr;
 		}
@@ -353,6 +424,22 @@ struct Parser {
 	}
 	void _advance() {
 		_point.index++;
+	}
+	String _parseQuotedString(String const& quoted) {
+		String native;
+		int size = quoted.size() - 1;
+		for (int i = 1; i < size; i++) {
+			switch (quoted[i]) {
+				case '\\':
+					native.append(quoted.slice(i + 1, 1));
+					i++;
+					break;
+				default:
+					native.append(quoted.slice(i, 1));
+					break;
+			}
+		}
+		return native;
 	}
 
 	void _range(HierarchyNode* node) {

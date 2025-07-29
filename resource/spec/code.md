@@ -16,7 +16,7 @@ plain text or do fancy syntax detection here
 
 ### Labeled Block
 ````gularen
-```cpp
+``` cpp
 #include <iostream>
 
 int main() 
