@@ -1,4 +1,5 @@
 #include "print.hpp"
+#include "lexeme.hpp"
 #include "parse.hpp"
 #include <stdio.h>
 
@@ -61,6 +62,8 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_break: printf("break"); break;
 			case TokenKind_hashtag: printf("hashtag"); break;
 			case TokenKind_emoji: printf("emoji"); break;
+			case TokenKind_linebreak: printf("linebreak"); break;
+			case TokenKind_thematicbreak: printf("thematicbreak"); break;
 		}
 		printf("\n");
 		printf("  range: ");
@@ -108,11 +111,13 @@ struct Printer {
 			case NodeKind_checklist: printf("checklist"); break;
 			case NodeKind_checkitem: printf("checkitem"); break;
 			case NodeKind_quote: printf("quote"); break;
+			case NodeKind_thematicbreak: printf("thematicbreak"); break;
 
 			case NodeKind_text: printf("text"); break;
 			case NodeKind_emoji: printf("emoji"); break;
 			case NodeKind_strong: printf("strong"); break;
 			case NodeKind_emphasis: printf("emphasis"); break;
+			case NodeKind_linebreak: printf("linebreak"); break;
 			case NodeKind_hashtag: printf("hashtag"); break;
 			case NodeKind_link: printf("link"); break;
 			case NodeKind_view: printf("view"); break;
@@ -155,8 +160,9 @@ struct Printer {
 
 		switch (node->kind) {
 			case NodeKind_text:
-			case NodeKind_emoji: {
-				TextNode* text = static_cast<TextNode*>(node);
+			case NodeKind_emoji:
+			case NodeKind_thematicbreak: {
+				ContentNode* text = static_cast<ContentNode*>(node);
 				keyString("content", text->content);
 				break;
 			}

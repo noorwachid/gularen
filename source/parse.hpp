@@ -30,6 +30,9 @@ enum NodeKind {
 
 	NodeKind_checklist,
 	NodeKind_checkitem,
+
+	NodeKind_thematicbreak,
+	NodeKind_linebreak,
 };
 
 struct Node {
@@ -40,7 +43,7 @@ struct Node {
 	}
 };
 
-struct TextNode: Node {
+struct ContentNode: Node {
 	String content;
 };
 

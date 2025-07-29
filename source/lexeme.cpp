@@ -1,5 +1,4 @@
 #include "lexeme.hpp"
-#include <any>
 
 struct Point {
 	int index;
@@ -82,6 +81,8 @@ struct Lexer {
 			case 'Y': case 'Z': case '.': case ',':
 			case ':': case '*': case '_': case '#':
 			case '"':
+			case '<':
+			case '\\':
 			case '\'':
 			case '\n': 
 				_lexemeLine();
@@ -146,6 +147,22 @@ struct Lexer {
 			_append(TokenKind_bullet, point, _point);
 			_lexemeLine();
 			return;
+		}
+		if (_is('-')) {
+			_advance();
+			if (_is('-')) {
+				_advance();
+				while (_has()) {
+					if (_get() != '-') {
+						break;
+					}
+					_advance();
+				}
+				if (_is('\n')) {
+					_append(TokenKind_thematicbreak, point, _point);
+					return;
+				}
+			}
 		}
 		_appendText(point, _point);
 	}
@@ -218,27 +235,27 @@ struct Lexer {
 				case '\'':
 					_lexemeText();
 					break;
-
 				case ':':
 					_lexemeEmoji();
 					break;
-
 				case '*':
 					_lexemeMonograph(TokenKind_asterisk);
 					break;
-
 				case '_':
 					_lexemeMonograph(TokenKind_underscore);
 					break;
-
-				case '\n':
-					_lexemeNewline();
-					return;
-
+				case '<':
+					_lexemeMonograph(TokenKind_linebreak);
+					break;
 				case '#':
 					_lexemeHash();
 					break;
-
+				case '\\':
+					_lexemeEscape();
+					break;
+				case '\n':
+					_lexemeNewline();
+					return;
 				default:
 					return;
 			}
@@ -412,6 +429,20 @@ struct Lexer {
 		token.range.end = _point.position;
 		_tokens.append(token);
 		_advance();
+	}
+
+	void _lexemeEscape() {
+		Point point = _point;
+		_advance();
+		if (_has()) {
+			Token token;
+			token.kind = TokenKind_text;
+			token.content = _source.slice(point.index + 1, 1);
+			token.range.start = point.position;
+			token.range.end = _point.position;
+			_advance();
+			_tokens.append(token);
+		}
 	}
 
 	void _lexemeNewline() {

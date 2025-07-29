@@ -42,10 +42,13 @@ struct Parser {
 				return _parseList(TokenKind_numberpoint, NodeKind_numberedlist, NodeKind_numbereditem);
 			case TokenKind_checkbox:
 				return _parseList(TokenKind_checkbox, NodeKind_checklist, NodeKind_checkitem);
+			case TokenKind_thematicbreak:
+				return _parseThematicBreak();
 			case TokenKind_text:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
 			case TokenKind_emoji:
+			case TokenKind_linebreak:
 				return _parseParagraph();
 			default:
 				_advance();
@@ -156,7 +159,7 @@ struct Parser {
 			HierarchyNode* item = nullptr;
 			if (pointKind == TokenKind_checkbox) {
 				CheckItemNode* checkitem = new CheckItemNode();
-				checkitem->isChecked = _get().content[1] == 'x';
+				checkitem->isChecked = _get().content[3] == 'x';
 				item = checkitem;
 			} else {
 				item = new HierarchyNode();
@@ -195,6 +198,15 @@ struct Parser {
 		return list;
 	}
 
+	Node* _parseThematicBreak() {
+		ContentNode* thematicbreak = new ContentNode();
+		thematicbreak->kind = NodeKind_thematicbreak;
+		thematicbreak->range = _get().range;
+		thematicbreak->content = _get().content;
+		_advance();
+		return thematicbreak;
+	}
+
 	Node* _parseParagraph() {
 		Point point = _point;
 		HierarchyNode* paragraph = new HierarchyNode();
@@ -205,7 +217,8 @@ struct Parser {
 				case TokenKind_text:
 				case TokenKind_asterisk:
 				case TokenKind_underscore:
-				case TokenKind_emoji: {
+				case TokenKind_emoji:
+				case TokenKind_linebreak: {
 					Node* node = _parseLine();
 					if (node == nullptr) {
 						goto end;
@@ -231,7 +244,7 @@ struct Parser {
 	Node* _parseLine() {
 		switch (_get().kind) {
 			case TokenKind_text: {
-				TextNode* text = new TextNode();
+				ContentNode* text = new ContentNode();
 				text->kind = NodeKind_text;
 				text->range = _get().range;
 				text->content = _get().content;
@@ -244,6 +257,8 @@ struct Parser {
 				return _parseSurrounding(NodeKind_emphasis);
 			case TokenKind_emoji:
 				return _parseEmoji();
+			case TokenKind_linebreak:
+				return _parseLineBreak();
 			default:
 				return nullptr;
 		}
@@ -272,12 +287,21 @@ struct Parser {
 
 	Node* _parseEmoji() {
 		Token token = _get();
-		TextNode* emoji = new TextNode();
+		ContentNode* emoji = new ContentNode();
 		emoji->kind = NodeKind_emoji;
 		emoji->content = token.content.slice(1, token.content.size() - 2);
 		emoji->range = token.range;
 		_advance();
 		return emoji;
+	}
+
+	Node* _parseLineBreak() {
+		Token token = _get();
+		Node* linebreak = new Node();
+		linebreak->kind = NodeKind_linebreak;
+		linebreak->range = token.range;
+		_advance();
+		return linebreak;
 	}
 
 	bool _has() {

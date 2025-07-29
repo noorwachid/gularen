@@ -19,6 +19,8 @@ enum TokenKind {
 	TokenKind_break,
 	TokenKind_hashtag,
 	TokenKind_emoji,
+	TokenKind_linebreak,
+	TokenKind_thematicbreak,
 };
 
 struct Position {
