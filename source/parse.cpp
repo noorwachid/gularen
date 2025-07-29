@@ -1,6 +1,5 @@
 #include "parse.hpp"
 #include "lexeme.hpp"
-#include <stdio.h>
 
 struct Point {
 	int index;
@@ -49,6 +48,13 @@ struct Parser {
 			case TokenKind_underscore:
 			case TokenKind_emoji:
 			case TokenKind_linebreak:
+			case TokenKind_hyphen:
+			case TokenKind_endash:
+			case TokenKind_emdash:
+			case TokenKind_leftquote:
+			case TokenKind_rightquote:
+			case TokenKind_singleleftquote:
+			case TokenKind_singlerightquote:
 				return _parseParagraph();
 			default:
 				_advance();
@@ -218,7 +224,14 @@ struct Parser {
 				case TokenKind_asterisk:
 				case TokenKind_underscore:
 				case TokenKind_emoji:
-				case TokenKind_linebreak: {
+				case TokenKind_linebreak:
+				case TokenKind_hyphen:
+				case TokenKind_endash:
+				case TokenKind_emdash:
+				case TokenKind_leftquote:
+				case TokenKind_rightquote:
+				case TokenKind_singleleftquote:
+				case TokenKind_singlerightquote: {
 					Node* node = _parseLine();
 					if (node == nullptr) {
 						goto end;
@@ -241,16 +254,27 @@ struct Parser {
 		return paragraph;
 	}
 
+	Node* _createContent(NodeKind kind) {
+		ContentNode* text = new ContentNode();
+		text->kind = kind;
+		text->range = _get().range;
+		text->content = _get().content;
+		_advance();
+		return text;
+	}
+
+	Node* _create(NodeKind kind) {
+		Node* text = new Node();
+		text->kind = kind;
+		text->range = _get().range;
+		_advance();
+		return text;
+	}
+
 	Node* _parseLine() {
 		switch (_get().kind) {
-			case TokenKind_text: {
-				ContentNode* text = new ContentNode();
-				text->kind = NodeKind_text;
-				text->range = _get().range;
-				text->content = _get().content;
-				_advance();
-				return text;
-			}
+			case TokenKind_text:
+				return _createContent(NodeKind_text);
 			case TokenKind_asterisk:
 				return _parseSurrounding(NodeKind_strong);
 			case TokenKind_underscore:
@@ -259,6 +283,20 @@ struct Parser {
 				return _parseEmoji();
 			case TokenKind_linebreak:
 				return _parseLineBreak();
+			case TokenKind_hyphen:
+				return _create(NodeKind_hyphen);
+			case TokenKind_endash:
+				return _create(NodeKind_endash);
+			case TokenKind_emdash:
+				return _create(NodeKind_emdash);
+			case TokenKind_leftquote:
+				return _create(NodeKind_leftquote);
+			case TokenKind_rightquote:
+				return _create(NodeKind_rightquote);
+			case TokenKind_singleleftquote:
+				return _create(NodeKind_singleleftquote);
+			case TokenKind_singlerightquote:
+				return _create(NodeKind_singlerightquote);
 			default:
 				return nullptr;
 		}

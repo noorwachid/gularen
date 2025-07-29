@@ -21,6 +21,13 @@ enum TokenKind {
 	TokenKind_emoji,
 	TokenKind_linebreak,
 	TokenKind_thematicbreak,
+	TokenKind_hyphen,
+	TokenKind_endash,
+	TokenKind_emdash,
+	TokenKind_rightquote,
+	TokenKind_leftquote,
+	TokenKind_singlerightquote,
+	TokenKind_singleleftquote,
 };
 
 struct Position {

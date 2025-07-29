@@ -33,6 +33,14 @@ enum NodeKind {
 
 	NodeKind_thematicbreak,
 	NodeKind_linebreak,
+
+	NodeKind_hyphen,
+	NodeKind_endash,
+	NodeKind_emdash,
+	NodeKind_rightquote,
+	NodeKind_leftquote,
+	NodeKind_singlerightquote,
+	NodeKind_singleleftquote,
 };
 
 struct Node {

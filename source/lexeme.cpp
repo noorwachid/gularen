@@ -80,10 +80,10 @@ struct Lexer {
 			case 'U': case 'V': case 'W': case 'X':
 			case 'Y': case 'Z': case '.': case ',':
 			case ':': case '*': case '_': case '#':
-			case '"':
 			case '<':
-			case '\\':
+			case '"':
 			case '\'':
+			case '\\':
 			case '\n': 
 				_lexemeLine();
 				break;
@@ -143,8 +143,8 @@ struct Lexer {
 		Point point = _point;
 		_advance();
 		if (_is(' ')) {
-			_advance();
 			_append(TokenKind_bullet, point, _point);
+			_advance();
 			_lexemeLine();
 			return;
 		}
@@ -159,12 +159,13 @@ struct Lexer {
 					_advance();
 				}
 				if (_is('\n')) {
-					_append(TokenKind_thematicbreak, point, _point);
+					_appendSlice(TokenKind_thematicbreak, point, _point.index - point.index);
 					return;
 				}
 			}
 		}
-		_appendText(point, _point);
+		_point = point;
+		_lexemeHyphen();
 	}
 
 	void _lexemeNumberPoint() {
@@ -184,8 +185,8 @@ struct Lexer {
 		if (_is('.')) {
 			_advance();
 			if (_is(' ')) {
-				_advance();
 				_append(TokenKind_numberpoint, point, _point);
+				_advance();
 				_lexemeLine();
 				return;
 			}
@@ -201,8 +202,8 @@ struct Lexer {
 			if (_is(']')) {
 				_advance();
 				if (_is(' ')) {
-					_advance();
 					_append(TokenKind_checkbox, point, _point);
+					_advance();
 					_lexemeLine();
 					return;
 				}
@@ -231,8 +232,6 @@ struct Lexer {
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
 				case '8': case '9':
-				case '"':
-				case '\'':
 					_lexemeText();
 					break;
 				case ':':
@@ -249,6 +248,23 @@ struct Lexer {
 					break;
 				case '#':
 					_lexemeHash();
+					break;
+				case '-':
+					_lexemeHyphen();
+					break;
+				case '"':
+					_lexemeQuote(
+						_tokens.size() != 0 && _tokens[_tokens.size() - 1].kind == TokenKind_singleleftquote,
+						TokenKind_leftquote,
+						TokenKind_rightquote
+					);
+					break;
+				case '\'':
+					_lexemeQuote(
+						_tokens.size() != 0 && _tokens[_tokens.size() - 1].kind == TokenKind_leftquote,
+						TokenKind_singleleftquote,
+						TokenKind_singlerightquote
+					);
 					break;
 				case '\\':
 					_lexemeEscape();
@@ -292,6 +308,38 @@ struct Lexer {
 			}
 		}
 		_appendText(point, _point);
+	}
+
+	void _lexemeHyphen() {
+		Point point = _point;
+		_advance();
+		if (_is('-')) {
+			_advance();
+			if (_is('-')) {
+				_advance();
+				_appendSlice(TokenKind_emdash, point, _point.index - point.index);
+				return;
+			}
+			_appendSlice(TokenKind_endash, point, _point.index - point.index);
+			return;
+		}
+		_appendSlice(TokenKind_hyphen, point, _point.index - point.index);
+		return;
+	}
+
+	void _lexemeQuote(bool isNestedCombination /* ‘“ or “‘ */, TokenKind leftKind, TokenKind rightKind) {
+		Point point = _point;
+		if (_point.index == 0 || 
+			_source[_point.index - 1] == ' ' ||
+			_source[_point.index - 1] == '\t' ||
+			_source[_point.index - 1] == '\n' ||
+			isNestedCombination) {
+			_advance();
+			_appendSlice(leftKind, point, _point.index - point.index);
+			return;
+		}
+		_advance();
+		_appendSlice(rightKind, point, _point.index - point.index);
 	}
 
 	void _lexemeComment() {
@@ -358,8 +406,6 @@ struct Lexer {
 				case '0': case '1': case '2': case '3':
 				case '4': case '5': case '6': case '7':
 				case '8': case '9':
-				case '"':
-				case '\'':
 					_advance();
 					break;
 				default:
@@ -456,6 +502,16 @@ struct Lexer {
 		}
 		_isHeadingLine = false;
 		_appendShadow(count > 1 ? TokenKind_newlines : TokenKind_newline, point);
+	}
+
+	void _appendSlice(TokenKind kind, Point start, int size) {
+		Token token;
+		token.kind = kind;
+		token.content = _source.slice(start.index, size);
+		token.range.start = start.position;
+		token.range.end = start.position;
+		token.range.end.column += size - 1;
+		_tokens.append(token);
 	}
 
 	void _append(TokenKind kind, Point start, Point end) {

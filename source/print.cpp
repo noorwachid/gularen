@@ -64,6 +64,13 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_emoji: printf("emoji"); break;
 			case TokenKind_linebreak: printf("linebreak"); break;
 			case TokenKind_thematicbreak: printf("thematicbreak"); break;
+			case TokenKind_hyphen: printf("hyphen"); break;
+			case TokenKind_endash: printf("endash"); break;
+			case TokenKind_emdash: printf("emdash"); break;
+			case TokenKind_rightquote: printf("rightquote"); break;
+			case TokenKind_leftquote: printf("leftquote"); break;
+			case TokenKind_singlerightquote: printf("singlerightquote"); break;
+			case TokenKind_singleleftquote: printf("singleleftquote"); break;
 		}
 		printf("\n");
 		printf("  range: ");
@@ -112,6 +119,13 @@ struct Printer {
 			case NodeKind_checkitem: printf("checkitem"); break;
 			case NodeKind_quote: printf("quote"); break;
 			case NodeKind_thematicbreak: printf("thematicbreak"); break;
+			case NodeKind_hyphen: printf("hyphen"); break;
+			case NodeKind_endash: printf("endash"); break;
+			case NodeKind_emdash: printf("emdash"); break;
+			case NodeKind_rightquote: printf("rightquote"); break;
+			case NodeKind_leftquote: printf("leftquote"); break;
+			case NodeKind_singlerightquote: printf("singlerightquote"); break;
+			case NodeKind_singleleftquote: printf("singleleftquote"); break;
 
 			case NodeKind_text: printf("text"); break;
 			case NodeKind_emoji: printf("emoji"); break;
