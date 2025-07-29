@@ -39,6 +39,7 @@ struct Parser {
 			case TokenKind_text:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
+			case TokenKind_emoji:
 				return _parseParagraph();
 			default:
 				_advance();
@@ -147,7 +148,8 @@ struct Parser {
 			switch (_get().kind) {
 				case TokenKind_text:
 				case TokenKind_asterisk:
-				case TokenKind_underscore: {
+				case TokenKind_underscore:
+				case TokenKind_emoji: {
 					Node* node = _parseLine();
 					if (node == nullptr) {
 						goto end;
@@ -172,10 +174,6 @@ struct Parser {
 
 	Node* _parseLine() {
 		switch (_get().kind) {
-			case TokenKind_asterisk:
-				return _parseSurrounding(NodeKind_strong);
-			case TokenKind_underscore:
-				return _parseSurrounding(NodeKind_emphasis);
 			case TokenKind_text: {
 				TextNode* text = new TextNode();
 				text->kind = NodeKind_text;
@@ -184,6 +182,12 @@ struct Parser {
 				_advance();
 				return text;
 			}
+			case TokenKind_asterisk:
+				return _parseSurrounding(NodeKind_strong);
+			case TokenKind_underscore:
+				return _parseSurrounding(NodeKind_emphasis);
+			case TokenKind_emoji:
+				return _parseEmoji();
 			default:
 				return nullptr;
 		}
@@ -208,6 +212,16 @@ struct Parser {
 		end:
 		_range(emphasis);
 		return emphasis;
+	}
+
+	Node* _parseEmoji() {
+		Token token = _get();
+		TextNode* emoji = new TextNode();
+		emoji->kind = NodeKind_emoji;
+		emoji->content = token.content.slice(1, token.content.size() - 2);
+		emoji->range = token.range;
+		_advance();
+		return emoji;
 	}
 
 	bool _has() {

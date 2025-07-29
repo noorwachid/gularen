@@ -20,7 +20,7 @@ struct Lexer {
 		_point.position.line = 0;
 		_point.position.column = 0;
 		_indent = 0;
-		_isHeadingLine = true;
+		_isHeadingLine = false;
 	}
 
 	Array<Token> lexeme() {
@@ -54,8 +54,29 @@ struct Lexer {
 			case '>':
 				_lexemeHeading();
 				break;
-			default:
+			case 'a': case 'b': case 'c': case 'd':
+			case 'e': case 'f': case 'g': case 'h':
+			case 'i': case 'j': case 'k': case 'l':
+			case 'm': case 'n': case 'o': case 'p':
+			case 'q': case 'r': case 's': case 't':
+			case 'u': case 'v': case 'w': case 'x':
+			case 'y': case 'z': case ' ':
+			case 'A': case 'B': case 'C': case 'D':
+			case 'E': case 'F': case 'G': case 'H':
+			case 'I': case 'J': case 'K': case 'L':
+			case 'M': case 'N': case 'O': case 'P':
+			case 'Q': case 'R': case 'S': case 'T':
+			case 'U': case 'V': case 'W': case 'X':
+			case 'Y': case 'Z': case '.': case ',':
+			case '0': case '1': case '2': case '3':
+			case '4': case '5': case '6': case '7':
+			case '8': case '9': case ':':
+			case '*': case '_': case '#':
+			case '\n':
 				_lexemeLine();
+				break;
+			default:
+				_advance();
 				break;
 		}
 	}
@@ -267,9 +288,14 @@ struct Lexer {
 		Point startPoint = _point;
 		_advance();
 
-		if (_isHeadingLine && _is(' ')) {
-			_append(TokenKind_subheading, startPoint, _point);
+		if (_is(' ')) {
+			if (_isHeadingLine) {
+				_append(TokenKind_subheading, startPoint, _point);
+				_advance();
+				return;
+			}
 			_advance();
+			_appendText(startPoint, _point);
 			return;
 		}
 

@@ -16,6 +16,7 @@ enum NodeKind {
 	NodeKind_strong,
 	NodeKind_emphasis,
 	NodeKind_hashtag,
+	NodeKind_emoji,
 	NodeKind_link,
 	NodeKind_view,
 	NodeKind_citation,

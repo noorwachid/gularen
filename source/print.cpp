@@ -101,6 +101,7 @@ struct Printer {
 			case NodeKind_quote: printf("quote"); break;
 
 			case NodeKind_text: printf("text"); break;
+			case NodeKind_emoji: printf("emoji"); break;
 			case NodeKind_strong: printf("strong"); break;
 			case NodeKind_emphasis: printf("emphasis"); break;
 			case NodeKind_hashtag: printf("hashtag"); break;
@@ -124,7 +125,7 @@ struct Printer {
 		printf("\n");
 	}
 
-	void keyArray(char const* key, Array<Node*> nodes) {
+	void keyArray(char const* key, Array<Node*> const& nodes) {
 		indent();
 		printf("%s:\n", key);
 		for (int i = 0; i < nodes.size(); i++) {
@@ -144,7 +145,8 @@ struct Printer {
 		metadata(node);
 
 		switch (node->kind) {
-			case NodeKind_text: {
+			case NodeKind_text:
+			case NodeKind_emoji: {
 				TextNode* text = static_cast<TextNode*>(node);
 				keyString("content", text->content);
 				break;

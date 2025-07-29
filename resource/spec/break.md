@@ -8,17 +8,9 @@ This will create<line-break.
 <p>This will create<br>line-break.</p>
 ```
 
-## Page-Break
-```gularen
-<<
-```
-```html
-<div class="page-break"></div>
-```
-
 ## Thematic-Break
 ```gularen
-<<<
+---
 ```
 ```html
 <hr>
