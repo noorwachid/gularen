@@ -2,7 +2,7 @@
 ```regex
 #[A-Za-z0-9_]+
 ```
-```gr
+```gularen
 #someTopic
 ```
 ```html

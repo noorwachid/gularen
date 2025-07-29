@@ -5,7 +5,7 @@ First annotation at the begining of document belongs to `Document` node.
 ```regex
 % [a-zA-Z-0-9-]:\s.*
 ```
-```gr
+```gularen
 % title: Book Title
 % author: Author Name
 % created-at: 2021-01-10
@@ -14,7 +14,7 @@ First annotation at the begining of document belongs to `Document` node.
 ```
 
 ## Entity Annotation
-```gr
+```gularen
 % text-alignment: center
 A paragraph annotation
 ```
@@ -23,7 +23,7 @@ A paragraph annotation
 ```
 
 ## Table-Span Annotation
-```gr
+```gularen
 | A | B | C |
 % row-span: 2 2
 | D | E | F |

@@ -6,21 +6,21 @@ Like tsv can be presented as table or code block or a link to the resource.
 If the `View` is the only child of a `Paragraph` the view is promoted to block (The `Paragraph` node is removed)
 
 ## URL
-```gr
+```gularen
 ![https://www.youtube.com/watch?v=dQw4w9WgXcQ]
 ```
 
 ## Assets
 
 ### Image
-```gr
+```gularen
 ![cat.png]
 ```
 ```html
 <img src="cat.png">
 ```
 
-```gr
+```gularen
 ![cat.png](A cat)
 ```
 ```html
@@ -31,6 +31,6 @@ If the `View` is the only child of a `Paragraph` the view is promoted to block (
 ```
 
 > Others
-```gr
+```gularen
 ![mydata.tsv]
 ```

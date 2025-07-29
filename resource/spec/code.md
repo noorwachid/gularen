@@ -5,7 +5,7 @@ Anything between three or more dashes will be considered as code.
 And make sure to have same dashes count between opening and ending.
 
 ### Anonymous Block
-````gr
+````gularen
 ```
 plain text or do fancy syntax detection here
 ```
@@ -15,7 +15,7 @@ plain text or do fancy syntax detection here
 ```
 
 ### Labeled Block
-````gr
+````gularen
 ```cpp
 #include <iostream>
 
@@ -41,7 +41,7 @@ int main()
 ## Inline Code
 
 ### Anonymous Inline
-```gr
+```gularen
 Why do we use `console.log('here')` instead of the majestic breakpoint?
 ```
 ````html
@@ -49,7 +49,7 @@ Why do we use `console.log('here')` instead of the majestic breakpoint?
 ```
 
 ### Labeled Inline
-```gr
+```gularen
 Let's say `latex``\pi = 3` then the building is likely collapsed.
 ```
 ```html

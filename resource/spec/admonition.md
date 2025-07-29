@@ -1,6 +1,6 @@
 # Admonition
 ## Single Line
-```gr
+```gularen
 !NOTE A note
 !HINT A hint
 !IMPORTANT Important stuff
@@ -36,7 +36,7 @@
 ```
 
 ## Multi Line
-```gr
+```gularen
 !NOTE
 	Long note.
 	Very long note.

@@ -6,6 +6,7 @@ enum NodeKind {
 	NodeKind_document,
 	NodeKind_paragraph,
 	NodeKind_heading,
+	NodeKind_quote,
 
 	NodeKind_text,
 	NodeKind_strong,

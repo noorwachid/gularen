@@ -1,6 +1,6 @@
 # Citation
 ## In-Text
-```gr
+```gularen
 ^[12 Rules] ^[Lateral Thinking] ^[Good Omens] ^[My Lady Jane]
 ```
 ```html
@@ -11,7 +11,7 @@
 ```
 
 >> References
-```gr
+```gularen
 ^^ 12 Rules
 	title     = 12 Rules of Life
 	author    = Jordan Bernt Peterson

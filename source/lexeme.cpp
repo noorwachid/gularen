@@ -1,4 +1,5 @@
 #include "lexeme.hpp"
+#include <any>
 
 struct Point {
 	int index;
@@ -9,6 +10,7 @@ struct Lexer {
 	Point _point;
 	String _source;
 	Array<Token> _tokens;
+	int _indent;
 
 	Lexer(String const& source) {
 		_source = source;
@@ -16,6 +18,7 @@ struct Lexer {
 		_point.index = 0;
 		_point.position.line = 0;
 		_point.position.column = 0;
+		_indent = 0;
 	}
 
 	Array<Token> lexeme() {
@@ -43,6 +46,8 @@ struct Lexer {
 	}
 
 	void _lexemeBlock() {
+		_lexemeIndent();
+
 		switch (_get()) {
 			case '>':
 				_lexemeHeading();
@@ -51,6 +56,29 @@ struct Lexer {
 				_lexemeLine();
 				break;
 		}
+	}
+
+	void _lexemeIndent() {
+		Point point = _point;
+		int count = 0;
+		while (_has()) {
+			if (_get() == '\t') {
+				count++;
+				_advance();
+				continue;
+			}
+			break;
+		}
+		if (count > _indent) {
+			for (int i = 0; i < count - _indent; i++) {
+				_appendShadow(TokenKind_indent, point);
+			}
+		} else if (count < _indent) {
+			for (int i = 0; i < _indent - count; i++) {
+				_appendShadow(TokenKind_outdent, point);
+			}
+		}
+		_indent = count;
 	}
 
 	void _lexemeHeading() {
@@ -74,46 +102,47 @@ struct Lexer {
 	}
 
 	void _lexemeLine() {
-		switch (_get()) {
-			case 'a': case 'b': case 'c': case 'd':
-			case 'e': case 'f': case 'g': case 'h':
-			case 'i': case 'j': case 'k': case 'l':
-			case 'm': case 'n': case 'o': case 'p':
-			case 'q': case 'r': case 's': case 't':
-			case 'u': case 'v': case 'w': case 'x':
-			case 'y': case 'z': case ' ':
-			case 'A': case 'B': case 'C': case 'D':
-			case 'E': case 'F': case 'G': case 'H':
-			case 'I': case 'J': case 'K': case 'L':
-			case 'M': case 'N': case 'O': case 'P':
-			case 'Q': case 'R': case 'S': case 'T':
-			case 'U': case 'V': case 'W': case 'X':
-			case 'Y': case 'Z': case '.': case ',':
-			case '0': case '1': case '2': case '3':
-			case '4': case '5': case '6': case '7':
-			case '8': case '9':
-				_lexemeText();
-				break;
+		while (_has()) {
+			switch (_get()) {
+				case 'a': case 'b': case 'c': case 'd':
+				case 'e': case 'f': case 'g': case 'h':
+				case 'i': case 'j': case 'k': case 'l':
+				case 'm': case 'n': case 'o': case 'p':
+				case 'q': case 'r': case 's': case 't':
+				case 'u': case 'v': case 'w': case 'x':
+				case 'y': case 'z': case ' ':
+				case 'A': case 'B': case 'C': case 'D':
+				case 'E': case 'F': case 'G': case 'H':
+				case 'I': case 'J': case 'K': case 'L':
+				case 'M': case 'N': case 'O': case 'P':
+				case 'Q': case 'R': case 'S': case 'T':
+				case 'U': case 'V': case 'W': case 'X':
+				case 'Y': case 'Z': case '.': case ',':
+				case '0': case '1': case '2': case '3':
+				case '4': case '5': case '6': case '7':
+				case '8': case '9':
+					_lexemeText();
+					break;
 
-			case '*':
-				_lexemeMonograph(TokenKind_asterisk);
-				break;
+				case '*':
+					_lexemeMonograph(TokenKind_asterisk);
+					break;
 
-			case '_':
-				_lexemeMonograph(TokenKind_underscore);
-				break;
+				case '_':
+					_lexemeMonograph(TokenKind_underscore);
+					break;
 
-			case '\n':
-				_lexemeNewline();
-				break;
+				case '\n':
+					_lexemeNewline();
+					return;
 
-			case '#':
-				_lexemeHash();
-				break;
+				case '#':
+					_lexemeHash();
+					break;
 
-			default:
-				_advance();
-				break;
+				default:
+					return;
+			}
 		}
 	}
 
@@ -226,6 +255,14 @@ struct Lexer {
 		_append(TokenKind_text, startPoint, endPoint);
 	}
 
+	void _appendShadow(TokenKind kind, Point point) {
+		Token token;
+		token.kind = kind;
+		token.range.start = point.position;
+		token.range.end = point.position;
+		_tokens.append(token);
+	}
+
 	void _lexemeMonograph(TokenKind kind) {
 		Token token;
 		token.kind = kind;
@@ -245,7 +282,7 @@ struct Lexer {
 			_point.position.line++;
 			_point.position.column = 0;
 		}
-		_append(count > 1 ? TokenKind_newlines : TokenKind_newline, point, point);
+		_appendShadow(count > 1 ? TokenKind_newlines : TokenKind_newline, point);
 	}
 
 	void _append(TokenKind kind, Point start, Point end) {

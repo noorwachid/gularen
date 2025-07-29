@@ -2,7 +2,7 @@
 
 ## Bullet List
 
-```gr
+```gularen
 - Fast
 - Furious
 - Fit
@@ -17,7 +17,7 @@
 
 ## Numbered List
 
-```gr
+```gularen
 1. One
 2. Two 
 3. Three
@@ -30,9 +30,27 @@
 </ol>
 ```
 
-## Nested List
+## Check List
+```gularen
+[ ] To-do one 
+[ ] To-do two
+[x] Done three
+[x] Done four
+```
+```html
+<ul class="check-list">
+	<li><input type="checkbox"> To-do one</li>
+	<li><input type="checkbox"> To-do two</li>
+	<li><input type="checkbox" checked> Done three</li>
+	<li><input type="checkbox" checked> Done four</li>
+</ul>
+```
 
-```gr
+## Extra
+
+### Nested List
+
+```gularen
 - One 
 - Two 
 	- Two sub 1
@@ -59,8 +77,8 @@
 </ul>
 ```
 
-## List With Description
-```gr
+### Description List
+```gularen
 - First 
 - Second 
 - Third 
@@ -75,3 +93,4 @@
 	</li>
 </ul>
 ```
+

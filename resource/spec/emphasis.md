@@ -1,7 +1,7 @@
 # Emphasis
 
 ## Strong
-```gr
+```gularen
 *Anything inside two asterisks.*
 ```
 ```html
@@ -9,7 +9,7 @@
 ```
 
 ## Weak
-```gr
+```gularen
 _Anything inside two underscores._
 ```
 ```html

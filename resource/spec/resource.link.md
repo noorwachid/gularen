@@ -1,7 +1,7 @@
 # Link
 
 ## Net Link
-```gr
+```gularen
 [http://google.com]
 ```
 ```html
@@ -9,7 +9,7 @@
 ```
 
 ### With Label
-```gr
+```gularen
 [http://google.com](Google)
 ```
 ```html
@@ -17,7 +17,7 @@
 ```
 
 ## Heading Link
-```gr
+```gularen
 [>Laminal Flow]
 ```
 ```html
@@ -25,7 +25,7 @@
 ```
 
 ### With Label
-```gr
+```gularen
 [>Laminal Flow](see this segment)
 ```
 ```html
@@ -33,7 +33,7 @@
 ```
 
 ## Local Link
-```gr
+```gularen
 [Another Document.gr]
 ```
 ```html
@@ -41,7 +41,7 @@
 ```
 
 ### With Label
-```gr
+```gularen
 [Another Document.gr](see this document)
 ```
 ```html
@@ -49,7 +49,7 @@
 ```
 
 ### With Specified Heading Title
-```gr
+```gularen
 [Another Document.gr>Legal Section]
 ```
 ```html
@@ -57,7 +57,7 @@
 ```
 
 ### With Specified Heading Title and Label
-```gr
+```gularen
 [Another Document.gr>Legal Section](see this section)
 ```
 ```html

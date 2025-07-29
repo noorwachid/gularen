@@ -3,7 +3,7 @@
 ## Quotation
 Any single or double apostrophe will be converted into the correct left and right quotes.
 
-```gr
+```gularen
 "Don't you dare!" He said calmly.
 ```
 ```html
@@ -14,7 +14,7 @@ Any single or double apostrophe will be converted into the correct left and righ
 Two hyphen will make en dash.
 Three hyphen will make em dash.
 
-```gr
+```gularen
 A closed-door meetings
 
 I’ll schedule you from 4:30--5:00

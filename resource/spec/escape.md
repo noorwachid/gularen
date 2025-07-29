@@ -1,7 +1,7 @@
 # Escape
 Anything after backslash is will be rendered as is
 
-```gr
+```gularen
 \*escaped \\escaped
 ```
 ```html

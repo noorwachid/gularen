@@ -1,7 +1,7 @@
 # Heading
 
 ## Heading Title
-```gr
+```gularen
 >>> Chapter
 
 >> Section
@@ -25,7 +25,7 @@
 ## Heading Subtitle
 If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
-```gr
+```gularen
 >>> Chapter: Chapter Subtitle
 
 >> Section: Section Subtitle
@@ -48,7 +48,7 @@ If the subsection modifier is placed in the next line of any title. It will be p
 
 ## Heading Link
 
-```gr
+```gularen
 >>> Laminal Flow
 
 See [>Laminal Flow]
@@ -72,7 +72,7 @@ only prefixing with chapter if has section conflict.
 
 For section conflict you can add another `>` after section.
 
-```gr
+```gularen
 >>> Chapter 1
 >> Exercises
 
@@ -95,7 +95,7 @@ For section conflict you can add another `>` after section.
 
 For subsection conflict you can add another `>` after section.
 
-```gr
+```gularen
 [>Chapter>Section>Subsection]
 ```
 ```html

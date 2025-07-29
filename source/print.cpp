@@ -44,7 +44,20 @@ void printRange(Range range) {
 void printArrayToken(Array<Token> const& tokens) {
 	for (int i = 0; i < tokens.size(); i++) {
 		Token const& token = tokens[i];
-		printf("- kind: %d\n", token.kind);
+		printf("- kind: ");
+		switch (token.kind) {
+			case TokenKind_text: printf("text"); break;
+			case TokenKind_newline: printf("newline"); break;
+			case TokenKind_newlines: printf("newlines"); break;
+			case TokenKind_indent: printf("indent"); break;
+			case TokenKind_outdent: printf("outdent"); break;
+			case TokenKind_asterisk: printf("asterisk"); break;
+			case TokenKind_underscore: printf("underscore"); break;
+			case TokenKind_hashtag: printf("hashtag"); break;
+			case TokenKind_heading: printf("heading"); break;
+			case TokenKind_break: printf("break"); break;
+		}
+		printf("\n");
 		printf("  range: ");
 		printRange(token.range);
 		printf("\n");
@@ -79,6 +92,7 @@ struct Printer {
 			case NodeKind_document: printf("document"); break;
 			case NodeKind_paragraph: printf("paragraph"); break;
 			case NodeKind_heading: printf("heading"); break;
+			case NodeKind_quote: printf("quote"); break;
 
 			case NodeKind_text: printf("text"); break;
 			case NodeKind_strong: printf("strong"); break;
@@ -135,6 +149,7 @@ struct Printer {
 				break;
 			}
 			case NodeKind_paragraph:
+			case NodeKind_quote:
 			case NodeKind_strong:
 			case NodeKind_emphasis: {
 				HierarchyNode* h = static_cast<HierarchyNode*>(node);

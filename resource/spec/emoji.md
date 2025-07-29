@@ -2,7 +2,7 @@
 ```regex
 :[a-z-]+:
 ```
-```gr
+```gularen
 I look forward to see you soon :smile:!
 
 :coffee:

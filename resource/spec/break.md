@@ -1,7 +1,7 @@
 # Breaking
 
 ## Line-Break
-```gr
+```gularen
 This will create<line-break.
 ```
 ```html
@@ -9,7 +9,7 @@ This will create<line-break.
 ```
 
 ## Page-Break
-```gr
+```gularen
 <<
 ```
 ```html
@@ -17,7 +17,7 @@ This will create<line-break.
 ```
 
 ## Thematic-Break
-```gr
+```gularen
 <<<
 ```
 ```html

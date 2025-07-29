@@ -2,7 +2,7 @@
 
 ## Table Data Only
 
-```gr
+```gularen
 | 1 | 2 |
 | 3 | 4 |
 ```
@@ -21,7 +21,7 @@
 
 ## Table With Header
 
-```gr
+```gularen
 | ID | Name   |
 |----|--------|
 |  1 | Name 1 |
@@ -46,7 +46,7 @@
 
 ## Table With Header And Alignment
 
-```gr
+```gularen
 | Left | Center | Right |
 |:-----|:------:|------:|
 | 1    |  Ada   |    19 |
@@ -75,7 +75,7 @@
 ## Table With Header And Footer
 Footer only works if the header is defined.
 
-```gr
+```gularen
 | ID | Name   |
 |----|--------|
 |  1 | Name 1 |

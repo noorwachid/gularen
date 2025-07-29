@@ -3,7 +3,7 @@ Footnote description automatically injected in the correct page.
 
 In html footnote should be included before page break or section.
 
-```gr 
+```gularen 
 Here's a simple footnote,^(This is the first footnote.) and here's a another one.^(Very important part)
 ```
 ```html

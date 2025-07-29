@@ -35,12 +35,35 @@ struct Parser {
 			case TokenKind_text:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
-			case TokenKind_newline:
 				return _parseParagraph();
+			case TokenKind_indent:
+				return _parseQuote();
 			default:
 				_advance();
 				return nullptr;
 		}
+	}
+
+	Node* _parseQuote() {
+		Point point = _point;
+		HierarchyNode* quote = new HierarchyNode();
+		quote->kind = NodeKind_quote;
+		_advance();
+
+		while (_has()) {
+			if (_get().kind == TokenKind_outdent) {
+				_advance();
+				goto end;
+			}
+			Node* node = _parseBlock();
+			if (node == nullptr) {
+				goto end;
+			}
+			quote->children.append(node);
+		}
+		end:
+		_range(quote);
+		return quote;
 	}
 
 	Node* _parseParagraph() {

@@ -1,6 +1,6 @@
 # Paragraph
 
-```gr
+```gularen
 Any text without special modifier will be rendered as paragraph.
 Single new line won't make new paragraph.
 
