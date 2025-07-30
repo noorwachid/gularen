@@ -42,6 +42,9 @@ enum NodeKind {
 	NodeKind_leftquote,
 	NodeKind_singlerightquote,
 	NodeKind_singleleftquote,
+
+	NodeKind_fencedcode,
+	NodeKind_code,
 };
 
 struct Node {
@@ -76,6 +79,11 @@ struct ResourceNode: HierarchyNode {
 
 struct CheckItemNode: HierarchyNode {
 	bool isChecked;
+};
+
+struct CodeNode: Node {
+	String lang;
+	String content;
 };
 
 Node* parse(String const& source);

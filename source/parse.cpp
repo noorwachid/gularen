@@ -43,6 +43,8 @@ struct Parser {
 				return _parseList(TokenKind_checkbox, NodeKind_checklist, NodeKind_checkitem);
 			case TokenKind_thematicbreak:
 				return _parseThematicBreak();
+			case TokenKind_openfence:
+				return _parseCode();
 			case TokenKind_text:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
@@ -213,6 +215,27 @@ struct Parser {
 		thematicbreak->content = _get().content;
 		_advance();
 		return thematicbreak;
+	}
+
+	Node* _parseCode() {
+		Point p = _point;
+		CodeNode* code = new CodeNode();
+		code->kind = NodeKind_fencedcode;
+		_advance();
+		if (_is(TokenKind_lang)) {
+			code->lang = _get().content;
+			_advance();
+		}
+		if (_is(TokenKind_sources)) {
+			code->content = _get().content;
+			// TODO: parse source indentation
+			_advance();
+		}
+		if (_is(TokenKind_closefence)) {
+			code->range.end = _get().range.end;
+			_advance();
+		}
+		return code;
 	}
 
 	Node* _parseParagraph() {
@@ -431,11 +454,11 @@ struct Parser {
 		for (int i = 1; i < size; i++) {
 			switch (quoted[i]) {
 				case '\\':
-					native.append(quoted.slice(i + 1, 1));
+					native.append(1, quoted.items() + i + 1);
 					i++;
 					break;
 				default:
-					native.append(quoted.slice(i, 1));
+					native.append(1, quoted.items() + i);
 					break;
 			}
 		}

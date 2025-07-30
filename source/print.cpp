@@ -81,7 +81,9 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_openlabel: printf("openlabel"); break;
 			case TokenKind_closelabel: printf("closelabel"); break;
 
-			case TokenKind_backticks: printf("backticks"); break;
+			case TokenKind_openfence: printf("openfence"); break;
+			case TokenKind_closefence: printf("closefence"); break;
+			case TokenKind_lang: printf("lang"); break;
 			case TokenKind_sources: printf("sources"); break;
 			case TokenKind_backtick: printf("backtick"); break;
 			case TokenKind_source: printf("source"); break;
@@ -165,6 +167,9 @@ struct Printer {
 			case NodeKind_view: printf("view"); break;
 			case NodeKind_citation: printf("citation"); break;
 			case NodeKind_footnote: printf("footnote"); break;
+
+			case NodeKind_fencedcode: printf("fencedcode"); break;
+			case NodeKind_code: printf("code"); break;
 		}
 		printf("\n");
 
@@ -246,6 +251,12 @@ struct Printer {
 				keyString("source", r->source);
 				keyArray("children", r->children);
 				break;
+			}
+			case NodeKind_fencedcode:
+			case NodeKind_code: {
+				CodeNode* c = static_cast<CodeNode*>(node);
+				keyString("lang", c->lang);
+				keyString("content", c->content);
 			}
 			default:
 				return;

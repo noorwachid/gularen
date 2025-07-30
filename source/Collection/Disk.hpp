@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../String.hpp"
+#include "String.hpp"
 
 namespace Disk {
 	namespace File {

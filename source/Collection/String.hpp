@@ -2,7 +2,6 @@
 
 #include "Byte.hpp"
 #include "Hash.hpp"
-#include <stdio.h>
 
 class String {
 public:
@@ -20,24 +19,11 @@ public:
 		while (*it) {
 			it++;
 		}
-		_size = it - literal;
-		if (_size == 0) {
-			return;
-		}
-		if (_size <= _smallStringSize) {
-			for (int i = 0; i < _size; i++) {
-				_stack.items[i] = literal[i];
-			}
-			return;
-		}
+		_initialize(it - literal, (Byte const*) literal);
+	}
 
-		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * _size);
-		header->count = 1;
-		_heap.items = (Byte*)(header + 1);
-		_heap.capacity = _size;
-		for (int i = 0; i < _size; i++) {
-			_heap.items[i] = literal[i];
-		}
+	String(int size, Byte const* items) {
+		_initialize(size, items);
 	}
 
 	String(String const& other) {
@@ -112,24 +98,27 @@ public:
 	}
 
 	void append(String const& other) {
+		append(other.size(), other.items());
+	}
+
+	void append(int size, Byte const* items) {
 		// fit in stack
-		if (_size + other._size <= _smallStringSize) {
-			for (int i = 0; i < other._size; i++) {
-				_stack.items[_size + i] = other._stack.items[i];
+		if (_size + size <= _smallStringSize) {
+			for (int i = 0; i < size; i++) {
+				_stack.items[_size + i] = items[i];
 			}
-			_size += other._size;
+			_size += _size;
 			return;
 		}
 
-		_checkMigration(other);
+		_checkMigration(size);
 		_checkOwnership();
-		_checkCapacity(other);
+		_checkCapacity(size);
 
-		Byte const* otherItems = other.items();
-		for (int i = 0; i < other._size; i++) {
-			_heap.items[_size + i] = otherItems[i];
+		for (int i = 0; i < size; i++) {
+			_heap.items[_size + i] = items[i];
 		}
-		_size += other._size;
+		_size += size;
 	}
 
 	~String() {
@@ -145,9 +134,29 @@ public:
 	}
 
 private:
-	void _checkMigration(String const& other) {
+	void _initialize(int size, Byte const* items) {
+		_size = size;
+		if (_size == 0) {
+			return;
+		}
 		if (_size <= _smallStringSize) {
-			int capacity = _size + other._size;
+			for (int i = 0; i < _size; i++) {
+				_stack.items[i] = items[i];
+			}
+			return;
+		}
+
+		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * _size);
+		header->count = 1;
+		_heap.items = (Byte*)(header + 1);
+		_heap.capacity = _size;
+		for (int i = 0; i < _size; i++) {
+			_heap.items[i] = items[i];
+		}
+	}
+	void _checkMigration(int size) {
+		if (_size <= _smallStringSize) {
+			int capacity = _size + size;
 			Byte* items = _create(capacity);
 			for (int i = 0; i < _size; i++) {
 				items[i] = _stack.items[i];
@@ -171,10 +180,10 @@ private:
 		}
 	}
 
-	void _checkCapacity(String const& other) {
-		if (_size + other._size > _heap.capacity) {
+	void _checkCapacity(int size) {
+		if (_size + size > _heap.capacity) {
 			int size = _size;
-			int minCapacity = _size + other._size;
+			int minCapacity = _size + size;
 			int doubledCapacity = _heap.capacity * 2;
 			int capacity = minCapacity > doubledCapacity ? minCapacity : doubledCapacity;
 

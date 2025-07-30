@@ -1,4 +1,4 @@
-#include "Collection/IO/Disk.hpp"
+#include "Collection/Disk.hpp"
 #include "lexeme.hpp"
 #include "parse.hpp"
 #include "print.hpp"

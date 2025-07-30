@@ -36,16 +36,17 @@ enum TokenKind {
 	TokenKind_openlabel, // (
 	TokenKind_closelabel, // )
 
-	TokenKind_backticks, // ```
-	TokenKind_sources, // goto 1
+	TokenKind_openfence, // ```
+	TokenKind_closefence, // ```
+	TokenKind_sources, // goto 1 (multiline)
 	TokenKind_backtick, // `
 	TokenKind_source, // goto 1
+	TokenKind_lang, // cpp
 
 	TokenKind_pipe, // |
 	TokenKind_bar, // --- or +-- or +-+ or --+
 
-	// [NOTE] or [HINT] or [IMPORTANT] or [WARNING] or [SEE] or [TIP]
-	TokenKind_admon, 
+	TokenKind_admon, // [NOTE] [HINT] [IMPORTANT] [WARNING] [SEE] [TIP]
 	TokenKind_citation, // ^ xxx
 	TokenKind_citationkey, // key: 
 	TokenKind_citationvalue, // value

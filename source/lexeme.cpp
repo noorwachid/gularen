@@ -66,6 +66,9 @@ struct Lexer {
 			case '[':
 				_lexemeCheckbox();
 				break;
+			case '`':
+				_lexemeCode();
+				break;
 
 			case 'a': case 'b': case 'c': case 'd':
 			case 'e': case 'f': case 'g': case 'h':
@@ -214,6 +217,104 @@ struct Lexer {
 		}
 		_point = point;
 		_lexemeLine();
+	}
+
+	void _lexemeCode() {
+		Point p = _point;
+		int count = 0;
+		while (_has()) {
+			if (_get() == '`') {
+				_advance();
+				count++;
+				continue;
+			}
+			break;
+		}
+		if (count >= 3) {
+			if (_is(' ')) {
+				_advance();
+				_appendSlice(TokenKind_openfence, p, _point.index - p.index);
+				Point langPoint = _point;
+				while (_has()) {
+					switch (_get()) {
+						case 'a': case 'b': case 'c': case 'd':
+						case 'e': case 'f': case 'g': case 'h':
+						case 'i': case 'j': case 'k': case 'l':
+						case 'm': case 'n': case 'o': case 'p':
+						case 'q': case 'r': case 's': case 't':
+						case 'u': case 'v': case 'w': case 'x':
+						case 'y': case 'z': case '-':
+						case '0': case '1': case '2': case '3':
+						case '4': case '5': case '6': case '7':
+						case '8': case '9':
+							_advance();
+							break;
+						case '\n':
+							_advance();
+							_lexemeSources(p.position.column, count);
+							return;
+						default:
+							goto fallback;
+					}
+				}
+				endLanguage:
+				_appendSlice(TokenKind_lang, langPoint, _point.index - langPoint.index);
+			} else if (_is('\n')) {
+				_advance();
+				_appendSlice(TokenKind_openfence, p, _point.index - p.index);
+				_lexemeSources(p.position.column, count);
+				return;
+			}
+		}
+
+		fallback:
+		_appendText(p, _point);
+		return;
+	}
+
+	void _lexemeSources(int column, int startCount) {
+		Point sourcePoint = _point;
+		while (_has()) {
+			int depth = 0;
+			if (_get() == '\t') {
+				while (_has()) {
+					if (_get() == '\t') {
+						depth++;
+						_advance();
+						continue;
+					}
+					break;
+				}
+			}
+			if (depth == column && _is('`')) {
+				Point fencePoint = _point;
+				int endCount = 0;
+				while (_has()) {
+					if (_get() == '`') {
+						endCount++;
+						_advance();
+						continue;
+					}
+					break;
+				}
+				if (_is('\n')) {
+					_advance();
+					if (startCount == endCount) {
+						_appendSlice(TokenKind_sources, sourcePoint, fencePoint.index - sourcePoint.index);
+						_appendSlice(TokenKind_closefence, fencePoint, _point.index - fencePoint.index);
+						return;
+					}
+					continue;
+				}
+			}
+			while (_has()) {
+				if (_get() == '\n') {
+					_advance();
+					break;
+				}
+				_advance();
+			}
+		}
 	}
 
 	void _lexemeLine() {
