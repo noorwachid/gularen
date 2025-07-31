@@ -158,6 +158,7 @@ struct Parser {
 	Node* _parseList(TokenKind pointKind, NodeKind listKind, NodeKind itemKind) {
 		HierarchyNode* list = new HierarchyNode();
 		list->kind = listKind;
+		list->range = _get().range;
 
 		while (_has()) {
 			if (_get().kind != pointKind) {
@@ -172,6 +173,7 @@ struct Parser {
 				item = new HierarchyNode();
 			}
 			item->kind = itemKind;
+			item->range = _get().range;
 			_advance();
 			while (_has()) {
 				if (_get().kind == TokenKind_newline ||
@@ -197,11 +199,15 @@ struct Parser {
 				item->children.append(node);
 			}
 			endItem:
-			_range(item);
+			if (item->children.size() != 0) {
+				item->range.end = item->children[item->children.size() - 1]->range.end;
+			}
 			list->children.append(item);
 		}
 		end:
-		_range(list);
+		if (list->children.size() != 0) {
+			list->range.end = list->children[list->children.size() - 1]->range.end;
+		}
 		return list;
 	}
 
