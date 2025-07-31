@@ -47,6 +47,10 @@ enum NodeKind {
 	NodeKind_code,
 
 	NodeKind_admon,
+
+	NodeKind_table,
+	NodeKind_row,
+	NodeKind_cell,
 };
 
 struct Node {
@@ -90,6 +94,17 @@ struct AdmonNode: HierarchyNode {
 struct CodeNode: Node {
 	String lang;
 	String content;
+};
+
+enum Alignment {
+	Alignment_left,
+	Alignment_center,
+	Alignment_right,
+};
+
+struct TableNode: HierarchyNode {
+	Array<Alignment> alignments;
+	bool isHeadered = false;
 };
 
 Node* parse(String const& source);

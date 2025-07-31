@@ -173,6 +173,9 @@ struct Printer {
 			case NodeKind_code: printf("code"); break;
 
 			case NodeKind_admon: printf("admon"); break;
+			case NodeKind_table: printf("table"); break;
+			case NodeKind_row: printf("row"); break;
+			case NodeKind_cell: printf("cell"); break;
 		}
 		printf("\n");
 
@@ -180,6 +183,11 @@ struct Printer {
 		printf("range: ");
 		printRange(node->range);
 		printf("\n");
+	}
+
+	void keyBool(char const* key, bool value) {
+		indent();
+		printf("%s: %s\n", key, value ? "true" : "false");
 	}
 
 	void keyString(char const* key, String const& value) {
@@ -241,7 +249,9 @@ struct Printer {
 			case NodeKind_numbereditem:
 			case NodeKind_checklist:
 			case NodeKind_strong:
-			case NodeKind_emphasis: {
+			case NodeKind_emphasis:
+			case NodeKind_row:
+			case NodeKind_cell: {
 				HierarchyNode* h = static_cast<HierarchyNode*>(node);
 				keyArray("children", h->children);
 				break;
@@ -265,6 +275,24 @@ struct Printer {
 				AdmonNode* a = static_cast<AdmonNode*>(node);
 				keyString("type", a->type);
 				keyArray("children", a->children);
+			}
+			case NodeKind_table: {
+				TableNode* t = static_cast<TableNode*>(node);
+				keyBool("isHeadered", t->isHeadered);
+				indent();
+				printf("alignments: ");
+				for (int i = 0; i < t->alignments.size(); i++) {
+					if (i != 0) {
+						printf(", ");
+					}
+					switch (t->alignments[i]) {
+						case Alignment_left: printf("left"); break;
+						case Alignment_center: printf("center"); break;
+						case Alignment_right: printf("right"); break;
+					}
+				}
+				printf("\n");
+				keyArray("children", t->children);
 			}
 			default:
 				return;

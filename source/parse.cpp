@@ -1,5 +1,7 @@
 #include "parse.hpp"
 #include "lexeme.hpp"
+#include "print.hpp"
+#include <stdio.h>
 
 struct Point {
 	int index;
@@ -45,6 +47,8 @@ struct Parser {
 				return _parseCode();
 			case TokenKind_admon:
 				return _parseAdmon();
+			case TokenKind_pipe:
+				return _parseTable();
 			case TokenKind_text:
 			case TokenKind_escape:
 			case TokenKind_asterisk:
@@ -263,7 +267,8 @@ struct Parser {
 			return admon;
 		}
 		while (_has()) {
-			if (_get().kind == TokenKind_newline) {
+			if (_get().kind == TokenKind_newline ||
+				_get().kind == TokenKind_newlines) {
 				break;
 			}
 			Node* node = _parseLine();
@@ -277,6 +282,99 @@ struct Parser {
 			admon->range.end = admon->children[admon->children.size() - 1]->range.end;
 		}
 		return admon;
+	}
+
+	Node* _parseTable() {
+		TableNode* table = new TableNode();
+		table->kind = NodeKind_table;
+		table->range = _get().range;
+
+		while (_has()) {
+			parseRow:
+			if (_get().kind == TokenKind_pipe) {
+				if (_index + 1 < _tokens.size() && _tokens[_index + 1].kind == TokenKind_bar) {
+					while (_has()) {
+						if (_get().kind == TokenKind_pipe) {
+							table->range.end = _get().range.end;
+							_advance();
+
+							if (_has() && (_get().kind == TokenKind_newline || _get().kind == TokenKind_newlines)) {
+								_advance();
+								goto parseRow;
+							}
+
+							if (_is(TokenKind_bar)) {
+								table->isHeadered = true;
+								Alignment alignment = Alignment_left;
+								Byte first = _get().content[0];
+								Byte last = _get().content[_get().content.size() - 1];
+								if (first == ':' && last == ':') {
+									alignment = Alignment_center;
+								} else if (last == ':') {
+									alignment = Alignment_right;
+								}
+								table->range.end = _get().range.end;
+								table->alignments.append(alignment);
+								_advance();
+							}
+						}
+					}
+				}
+
+				HierarchyNode* row = new HierarchyNode();
+				row->kind = NodeKind_row;
+				row->range = _get().range;
+				table->children.append(row);
+
+				while (_has()) {
+					parseCell:
+					if (_get().kind == TokenKind_pipe) {
+						Range range = _get().range;
+						_advance();
+						if (_has()) {
+							if (_get().kind == TokenKind_newline) {
+								row->range.end = _get().range.end;
+								_advance();
+								goto parseRow;
+							}
+							if (_get().kind == TokenKind_newlines) {
+								row->range.end = _get().range.end;
+								_advance();
+								goto end;
+							}
+						}
+
+						HierarchyNode* cell = new HierarchyNode();
+						cell->kind = NodeKind_cell;
+						cell->range = range;
+						row->children.append(cell);
+
+						while (_has()) {
+							if (_get().kind == TokenKind_pipe || 
+								_get().kind == TokenKind_newline ||
+								_get().kind == TokenKind_newlines) {
+								goto parseCell;
+							}
+
+							Node* node = _parseLine();
+							if (node == nullptr) {
+								goto parseCell;
+							}
+							cell->children.append(node);
+							cell->range.end = node->range.end;
+							row->range.end = node->range.end;
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+		end:
+		if (table->children.size() != 0) {
+			table->range.end = table->children[table->children.size() - 1]->range.end;
+		}
+		return table;
 	}
 
 	String _parseCodeSource(Position position, String const& content) {

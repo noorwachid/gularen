@@ -12,6 +12,7 @@ struct Lexer {
 	Array<Token> _tokens;
 	int _indent;
 	bool _isHeadingLine;
+	bool _isTableLine;
 	int _parenthesis;
 
 	Lexer(String const& source) {
@@ -22,6 +23,7 @@ struct Lexer {
 		_point.position.column = 0;
 		_indent = 0;
 		_isHeadingLine = false;
+		_isTableLine = false;
 		_parenthesis = 0;
 	}
 
@@ -69,6 +71,9 @@ struct Lexer {
 				break;
 			case '`':
 				_lexemeCode();
+				break;
+			case '|':
+				_lexemeTable();
 				break;
 
 			case 'a': case 'b': case 'c': case 'd':
@@ -331,6 +336,42 @@ struct Lexer {
 		}
 	}
 
+	void _lexemeTable() {
+		_isTableLine = true;
+
+		while (_has()) {
+			if (_get() == '|') {
+				_lexemeMonograph(TokenKind_pipe);
+				Point point = _point;
+
+				if (_point.index + 2 < _source.size() &&
+					(_source[_point.index + 0] == '-' || _source[_point.index + 0] == ':') &&
+					(_source[_point.index + 1] == '-') && 
+					(_source[_point.index + 2] == '-' || _source[_point.index + 2] == ':')) {
+					_advance();
+
+					while (_has()) {
+						if (_get() == '-') {
+							_advance();
+							continue;
+						}
+						break;
+					}
+					if (_is(':')) {
+						_advance();
+					}
+					if (_point.index < _source.size() && _source[_point.index] == '|') {
+						_appendInclusive(TokenKind_bar, point, _point);
+						continue;
+					}
+					_appendInclusive(TokenKind_text, point, _point);
+					return;
+				}
+			}
+			break;
+		}
+	}
+
 	void _lexemeLine() {
 		while (_has()) {
 			switch (_get()) {
@@ -385,6 +426,13 @@ struct Lexer {
 					break;
 				case '<':
 					_lexemeMonograph(TokenKind_linebreak);
+					break;
+				case '|':
+					if (_isTableLine) {
+						_lexemeMonograph(TokenKind_pipe);
+						break;
+					}
+					_lexemeMonograph(TokenKind_text);
 					break;
 				case '`':
 					_lexemeLineCode();
@@ -804,6 +852,7 @@ struct Lexer {
 			_point.position.column = 0;
 		}
 		_isHeadingLine = false;
+		_isTableLine = false;
 		_append(count > 1 ? TokenKind_newlines : TokenKind_newline, startPoint, endPoint);
 	}
 
