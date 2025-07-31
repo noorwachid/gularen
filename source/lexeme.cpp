@@ -231,6 +231,11 @@ struct Lexer {
 			}
 			break;
 		}
+		if (count == 1) {
+			_point = p;
+			_lexemeLineCode();
+			return;
+		}
 		if (count >= 3) {
 			if (_is(' ')) {
 				_advance();
@@ -381,6 +386,9 @@ struct Lexer {
 				case '<':
 					_lexemeMonograph(TokenKind_linebreak);
 					break;
+				case '`':
+					_lexemeLineCode();
+					break;
 				case '#':
 					_lexemeHash();
 					break;
@@ -446,6 +454,51 @@ struct Lexer {
 					return;
 			}
 		}
+	}
+
+	void _lexemeLineCode() {
+		Point p = _point;
+		_lexemeMonograph(TokenKind_backtick);
+		Point sourcePoint = _point;
+		if (_has()) {
+			bool isValidLang = true;
+			while (_has()) {
+				if (_get() == '`') {
+					Point checkPoint = _point;
+					_advance();
+					if (_is('`') && isValidLang) {
+						_appendInclusive(TokenKind_lang, sourcePoint, checkPoint);
+						_point = checkPoint;
+						break;
+					}
+					_appendInclusive(TokenKind_source, sourcePoint, checkPoint);
+					_point = checkPoint;
+					break;
+				}
+				switch (_get()) {
+					case 'a': case 'b': case 'c': case 'd':
+					case 'e': case 'f': case 'g': case 'h':
+					case 'i': case 'j': case 'k': case 'l':
+					case 'm': case 'n': case 'o': case 'p':
+					case 'q': case 'r': case 's': case 't':
+					case 'u': case 'v': case 'w': case 'x':
+					case 'y': case 'z': case '-':
+					case '0': case '1': case '2': case '3':
+					case '4': case '5': case '6': case '7':
+					case '8': case '9':
+						break;
+					default:
+						isValidLang = false;
+						break;
+				}
+				_advance();
+			}
+			if (_is('`')) {
+				_lexemeMonograph(TokenKind_backtick);
+				return;
+			}
+		}
+		_appendInclusive(TokenKind_text, p, _point);
 	}
 
 	void _lexemeHash() {

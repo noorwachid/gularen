@@ -47,6 +47,7 @@ struct Parser {
 			case TokenKind_escape:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
+			case TokenKind_backtick:
 			case TokenKind_emoji:
 			case TokenKind_linebreak:
 			case TokenKind_hyphen:
@@ -286,6 +287,7 @@ struct Parser {
 				case TokenKind_escape:
 				case TokenKind_asterisk:
 				case TokenKind_underscore:
+				case TokenKind_backtick:
 				case TokenKind_emoji:
 				case TokenKind_linebreak:
 				case TokenKind_hyphen:
@@ -346,6 +348,8 @@ struct Parser {
 				return _parseSurrounding(NodeKind_strong);
 			case TokenKind_underscore:
 				return _parseSurrounding(NodeKind_emphasis);
+			case TokenKind_backtick:
+				return _parseLineCode();
 			case TokenKind_emoji:
 				return _parseEmoji();
 			case TokenKind_linebreak:
@@ -465,6 +469,51 @@ struct Parser {
 		}
 		end:
 		return emphasis;
+	}
+
+	Node* _parseLineCode() {
+		CodeNode* code = new CodeNode();
+		code->kind = NodeKind_code;
+		code->range = _get().range;
+		_advance();
+		if (_is(TokenKind_lang)) {
+			String lang = _get().content;
+			code->content = lang;
+			code->range.end = _get().range.end;
+			_advance();
+			if (_is(TokenKind_backtick)) {
+				code->range.end = _get().range.end;
+				Range firstRange = _get().range;
+				_advance();
+				if (_is(TokenKind_backtick)) {
+					Range secondRange = _get().range;
+					code->range.end = _get().range.end;
+					_advance();
+					if (_is(TokenKind_source)) {
+						String content = _get().content;
+						code->range.end = _get().range.end;
+						_advance();
+						if (_is(TokenKind_backtick)) {
+							code->lang = lang;
+							code->content = content;
+							code->range.end = _get().range.end;
+							_advance();
+						}
+					}
+				}
+			}
+		}
+		if (_is(TokenKind_source)) {
+			String content = _get().content;
+			code->range.end = _get().range.end;
+			_advance();
+			if (_is(TokenKind_backtick)) {
+				code->content = content;
+				code->range.end = _get().range.end;
+				_advance();
+			}
+		}
+		return code;
 	}
 
 	Node* _parseEmoji() {
