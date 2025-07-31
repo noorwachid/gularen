@@ -407,7 +407,7 @@ struct Lexer {
 						break;
 					}
 					if (_is('(')) {
-						_append(TokenKind_footnote, p, _point);
+						_appendInclusive(TokenKind_footnote, p, _point);
 						p = _point;
 						_advance();
 						_lexemeLabel(p);
@@ -498,7 +498,7 @@ struct Lexer {
 	}
 
 	void _lexemeResource(Point point, bool isLabeled = true) {
-		_append(TokenKind_openref, point, _point);
+		_appendInclusive(TokenKind_openref, point, _point);
 
 		// parse quoted 
 		if (_is('"')) {
@@ -519,7 +519,7 @@ struct Lexer {
 				}
 			}
 			endQuote:
-			_append(TokenKind_quotedref, point, _point);
+			_appendInclusive(TokenKind_quotedref, point, _point);
 		} else {
 			point = _point;
 			while (_has()) {
@@ -528,12 +528,12 @@ struct Lexer {
 				}
 				_advance();
 			}
-			_append(TokenKind_ref, point, _point);
+			_appendInclusive(TokenKind_ref, point, _point);
 		}
 		if (_is(']')) {
 			point = _point;
 			_advance();
-			_append(TokenKind_closeref, point, _point);
+			_appendInclusive(TokenKind_closeref, point, _point);
 
 			if (isLabeled && _is('(')) {
 				point = _point;
@@ -544,19 +544,19 @@ struct Lexer {
 	}
 
 	void _lexemeLabel(Point point) {
-		_append(TokenKind_openlabel, point, _point);
+		_appendInclusive(TokenKind_openlabel, point, _point);
 		_parenthesis = 1;
 		while (_has()) {
 			if (_get() == ')') {
 				if (_parenthesis == 0) {
 					point = _point;
 					_advance();
-					_append(TokenKind_closelabel, point, _point);
+					_appendInclusive(TokenKind_closelabel, point, _point);
 					break;
 				} else {
 					point = _point;
 					_advance();
-					_append(TokenKind_text, point, _point);
+					_appendInclusive(TokenKind_text, point, _point);
 				}
 			}
 			_lexemeLine();

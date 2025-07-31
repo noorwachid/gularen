@@ -382,6 +382,7 @@ struct Parser {
 					_advance();
 				}
 				if (_is(TokenKind_closeref)) {
+					resource->range.end = _get().range.end;
 					_advance();
 				}
 				if (_is(TokenKind_openlabel)) {
@@ -398,7 +399,6 @@ struct Parser {
 						}
 						resource->children.append(node);
 					}
-					_range(resource);
 				}
 				return resource;
 			}
@@ -421,7 +421,6 @@ struct Parser {
 						}
 						footnote->children.append(node);
 					}
-					_range(footnote);
 				}
 				return footnote;
 			}
