@@ -1,4 +1,5 @@
 #include "lexeme.hpp"
+#include <stdio.h>
 
 struct Point {
 	int index;
@@ -135,10 +136,10 @@ struct Lexer {
 			break;
 		}
 		if (count > 3) {
-			return _appendText(point, _point);
+			return _appendInclusive(TokenKind_text, point, _point);
 		}
 		if (!_is(' ')) {
-			return _appendText(point, _point);
+			return _appendInclusive(TokenKind_text, point, _point);
 		}
 		_append(TokenKind_heading, point, _point);
 		_advance();
@@ -165,7 +166,7 @@ struct Lexer {
 					_advance();
 				}
 				if (_is('\n')) {
-					_appendSlice(TokenKind_thematicbreak, point, _point.index - point.index);
+					_append(TokenKind_thematicbreak, point, _point);
 					return;
 				}
 			}
@@ -197,7 +198,7 @@ struct Lexer {
 				return;
 			}
 		}
-		_appendText(point, _point);
+		_appendInclusive(TokenKind_text, point, _point);
 	}
 
 	void _lexemeCheckbox() {
@@ -233,7 +234,6 @@ struct Lexer {
 		if (count >= 3) {
 			if (_is(' ')) {
 				_advance();
-				_appendSlice(TokenKind_openfence, p, _point.index - p.index);
 				Point langPoint = _point;
 				while (_has()) {
 					switch (_get()) {
@@ -250,30 +250,33 @@ struct Lexer {
 							_advance();
 							break;
 						case '\n':
-							_advance();
-							_lexemeSources(p.position.column, count);
-							return;
+							goto endLanguage;
 						default:
 							goto fallback;
 					}
 				}
 				endLanguage:
-				_appendSlice(TokenKind_lang, langPoint, _point.index - langPoint.index);
+				_appendInclusive(TokenKind_openfence, p, langPoint);
+				_appendInclusive(TokenKind_lang, langPoint, _point);
+				_lexemeNewline();
+				_lexemeSources(p.position.column, count);
+				return;
 			} else if (_is('\n')) {
-				_advance();
-				_appendSlice(TokenKind_openfence, p, _point.index - p.index);
+				_appendInclusive(TokenKind_openfence, p, _point);
+				_lexemeNewline();
 				_lexemeSources(p.position.column, count);
 				return;
 			}
 		}
 
 		fallback:
-		_appendText(p, _point);
+		_appendInclusive(TokenKind_text, p, _point);
 		return;
 	}
 
 	void _lexemeSources(int column, int startCount) {
-		Point sourcePoint = _point;
+		Point startSourcePoint = _point;
+		Point endSourcePoint = _point;
 		while (_has()) {
 			int depth = 0;
 			if (_get() == '\t') {
@@ -298,18 +301,24 @@ struct Lexer {
 					break;
 				}
 				if (_is('\n')) {
-					_advance();
 					if (startCount == endCount) {
-						_appendSlice(TokenKind_sources, sourcePoint, fencePoint.index - sourcePoint.index);
-						_appendSlice(TokenKind_closefence, fencePoint, _point.index - fencePoint.index);
+						_appendInclusive(TokenKind_sources, startSourcePoint, endSourcePoint);
+						_appendInclusive(TokenKind_closefence, fencePoint, _point);
 						return;
 					}
+					endSourcePoint = _point;
+					_point.position.line++;
+					_point.position.column = 0;
+					_point.index++;
 					continue;
 				}
 			}
 			while (_has()) {
 				if (_get() == '\n') {
-					_advance();
+					endSourcePoint = _point;
+					_point.position.line++;
+					_point.position.column = 0;
+					_point.index++;
 					break;
 				}
 				_advance();
@@ -347,7 +356,7 @@ struct Lexer {
 					} else {
 						Point p = _point;
 						_advance();
-						_appendSlice(TokenKind_text, p, _point.index - p.index);
+						_append(TokenKind_text, p, _point);
 					}
 					break;
 				case ')':
@@ -357,7 +366,7 @@ struct Lexer {
 					} else {
 						Point p = _point;
 						_advance();
-						_appendSlice(TokenKind_text, p, _point.index - p.index);
+						_append(TokenKind_text, p, _point);
 					}
 					break;
 				case ':':
@@ -386,7 +395,7 @@ struct Lexer {
 						_lexemeResource(p);
 						break;
 					}
-					_appendSlice(TokenKind_text, p, _point.index - p.index);
+					_append(TokenKind_text, p, _point);
 					break;
 				}
 				case '^': {
@@ -398,13 +407,13 @@ struct Lexer {
 						break;
 					}
 					if (_is('(')) {
-						_appendSlice(TokenKind_footnote, p, _point.index - p.index);
+						_append(TokenKind_footnote, p, _point);
 						p = _point;
 						_advance();
 						_lexemeLabel(p);
 						break;
 					}
-					_appendSlice(TokenKind_text, p, _point.index - p.index);
+					_append(TokenKind_text, p, _point);
 					break;
 				}
 				case '[': {
@@ -465,10 +474,10 @@ struct Lexer {
 					return _lexemeHashtag(point);
 
 				default:
-					return _appendText(point, _point);
+					return _appendInclusive(TokenKind_text, point, _point);
 			}
 		}
-		_appendText(point, _point);
+		_appendInclusive(TokenKind_text, point, _point);
 	}
 
 	void _lexemeHyphen() {
@@ -478,18 +487,18 @@ struct Lexer {
 			_advance();
 			if (_is('-')) {
 				_advance();
-				_appendSlice(TokenKind_emdash, point, _point.index - point.index);
+				_append(TokenKind_emdash, point, _point);
 				return;
 			}
-			_appendSlice(TokenKind_endash, point, _point.index - point.index);
+			_append(TokenKind_endash, point, _point);
 			return;
 		}
-		_appendSlice(TokenKind_hyphen, point, _point.index - point.index);
+		_append(TokenKind_hyphen, point, _point);
 		return;
 	}
 
 	void _lexemeResource(Point point, bool isLabeled = true) {
-		_appendSlice(TokenKind_openref, point, _point.index - point.index);
+		_append(TokenKind_openref, point, _point);
 
 		// parse quoted 
 		if (_is('"')) {
@@ -510,7 +519,7 @@ struct Lexer {
 				}
 			}
 			endQuote:
-			_appendSlice(TokenKind_quotedref, point, _point.index - point.index);
+			_append(TokenKind_quotedref, point, _point);
 		} else {
 			point = _point;
 			while (_has()) {
@@ -519,12 +528,12 @@ struct Lexer {
 				}
 				_advance();
 			}
-			_appendSlice(TokenKind_ref, point, _point.index - point.index);
+			_append(TokenKind_ref, point, _point);
 		}
 		if (_is(']')) {
 			point = _point;
 			_advance();
-			_appendSlice(TokenKind_closeref, point, _point.index - point.index);
+			_append(TokenKind_closeref, point, _point);
 
 			if (isLabeled && _is('(')) {
 				point = _point;
@@ -535,19 +544,19 @@ struct Lexer {
 	}
 
 	void _lexemeLabel(Point point) {
-		_appendSlice(TokenKind_openlabel, point, _point.index - point.index);
+		_append(TokenKind_openlabel, point, _point);
 		_parenthesis = 1;
 		while (_has()) {
 			if (_get() == ')') {
 				if (_parenthesis == 0) {
 					point = _point;
 					_advance();
-					_appendSlice(TokenKind_closelabel, point, _point.index - point.index);
+					_append(TokenKind_closelabel, point, _point);
 					break;
 				} else {
 					point = _point;
 					_advance();
-					_appendSlice(TokenKind_text, point, _point.index - point.index);
+					_append(TokenKind_text, point, _point);
 				}
 			}
 			_lexemeLine();
@@ -562,11 +571,11 @@ struct Lexer {
 			_source[_point.index - 1] == '\n' ||
 			isNestedCombination) {
 			_advance();
-			_appendSlice(leftKind, point, _point.index - point.index);
+			_append(leftKind, point, _point);
 			return;
 		}
 		_advance();
-		_appendSlice(rightKind, point, _point.index - point.index);
+		_append(rightKind, point, _point);
 	}
 
 	void _lexemeComment() {
@@ -658,7 +667,7 @@ struct Lexer {
 				return;
 			}
 			_advance();
-			_appendText(startPoint, _point);
+			_appendInclusive(TokenKind_text, startPoint, _point);
 			return;
 		}
 
@@ -720,43 +729,36 @@ struct Lexer {
 	}
 
 	void _lexemeNewline() {
-		Point point = _point;
+		Point startPoint = _point;
+		Point endPoint = _point;
 		int count = 0;
 		while (_is('\n')) {
+			endPoint = _point;
 			count++;
 			_point.index++;
 			_point.position.line++;
 			_point.position.column = 0;
 		}
 		_isHeadingLine = false;
-		_appendShadow(count > 1 ? TokenKind_newlines : TokenKind_newline, point);
-	}
-
-	void _appendSlice(TokenKind kind, Point start, int size) {
-		Token token;
-		token.kind = kind;
-		token.content = _source.slice(start.index, size);
-		token.range.start = start.position;
-		token.range.end = start.position;
-		token.range.end.column += size - 1;
-		_tokens.append(token);
+		_append(count > 1 ? TokenKind_newlines : TokenKind_newline, startPoint, endPoint);
 	}
 
 	void _append(TokenKind kind, Point start, Point end) {
 		Token token;
 		token.kind = kind;
-		token.content = _source.slice(start.index, end.index - start.index);
+		token.content = _source.slice(start.index, end.index - start.index + 1);
 		token.range.start = start.position;
 		token.range.end = end.position;
 		_tokens.append(token);
 	}
 
-	void _appendText(Point start, Point end) {
+	void _appendInclusive(TokenKind kind, Point start, Point end) {
 		Token token;
-		token.kind = TokenKind_text;
+		token.kind = kind;
 		token.content = _source.slice(start.index, end.index - start.index);
 		token.range.start = start.position;
 		token.range.end = end.position;
+		token.range.end.column--;
 		_tokens.append(token);
 	}
 };

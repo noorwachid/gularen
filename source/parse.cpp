@@ -8,13 +8,11 @@ struct Point {
 
 struct Parser {
 	Array<Token> _tokens;
-	Point _point;
+	int _index;
 
 	Parser(String const& source) {
 		_tokens = lexeme(source);
-		_point.index = 0;
-		_point.range.start.line = 0;
-		_point.range.start.column = 0;
+		_index = 0;
 	}
 	Node* parse() {
 		DocumentNode* document = new DocumentNode();
@@ -67,7 +65,6 @@ struct Parser {
 	}
 
 	Node* _parseQuote() {
-		Point point = _point;
 		HierarchyNode* quote = new HierarchyNode();
 		quote->kind = NodeKind_quote;
 		_advance();
@@ -90,7 +87,6 @@ struct Parser {
 
 	Node* _parseHeading() {
 		Token token = _get();
-		Point point = _point;
 		HierarchyNode* section = new HierarchyNode();
 		_advance();
 		switch (token.content.size()) {
@@ -218,28 +214,62 @@ struct Parser {
 	}
 
 	Node* _parseCode() {
-		Point p = _point;
+		Token token = _get();
 		CodeNode* code = new CodeNode();
 		code->kind = NodeKind_fencedcode;
+		code->range = token.range;
 		_advance();
 		if (_is(TokenKind_lang)) {
 			code->lang = _get().content;
 			_advance();
 		}
-		if (_is(TokenKind_sources)) {
-			code->content = _get().content;
-			// TODO: parse source indentation
+		if (_is(TokenKind_newline)) {
 			_advance();
-		}
-		if (_is(TokenKind_closefence)) {
-			code->range.end = _get().range.end;
-			_advance();
+			if (_is(TokenKind_sources)) {
+				code->content = _parseCodeSource(token.range.start, _get().content);
+				_advance();
+			}
+			if (_is(TokenKind_closefence)) {
+				code->range.end = _get().range.end;
+				_advance();
+			}
 		}
 		return code;
 	}
 
+	String _parseCodeSource(Position position, String const& content) {
+		String parsedContent;
+		int index = 0;
+		while (index < content.size()) {
+			if (content[index] == '\t') {
+				int depth = 0;
+				while (index < content.size()) {
+					if (content[index] == '\t') {
+						depth++;
+						index++;
+						if (depth == position.column) {
+							goto consume;
+						}
+						continue;
+					}
+					break;
+				}
+			}
+			consume:
+			while (index < content.size()) {
+				if (content[index] == '\n') {
+					parsedContent.append(1, content.items() + index);
+					index++;
+					break;
+				}
+				parsedContent.append(1, content.items() + index);
+				index++;
+			}
+		}
+		return parsedContent;
+	}
+
 	Node* _parseParagraph() {
-		Point point = _point;
 		HierarchyNode* paragraph = new HierarchyNode();
 		paragraph->kind = NodeKind_paragraph;
 
@@ -437,16 +467,16 @@ struct Parser {
 	}
 
 	bool _has() {
-		return _point.index < _tokens.size();
+		return _index < _tokens.size();
 	}
 	bool _is(TokenKind kind) {
-		return _point.index < _tokens.size() && _tokens[_point.index].kind == kind;
+		return _index < _tokens.size() && _tokens[_index].kind == kind;
 	}
 	Token const& _get() {
-		return _tokens[_point.index];
+		return _tokens[_index];
 	}
 	void _advance() {
-		_point.index++;
+		_index++;
 	}
 	String _parseQuotedString(String const& quoted) {
 		String native;
