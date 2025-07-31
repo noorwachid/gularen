@@ -45,6 +45,8 @@ enum NodeKind {
 
 	NodeKind_fencedcode,
 	NodeKind_code,
+
+	NodeKind_admon,
 };
 
 struct Node {
@@ -79,6 +81,10 @@ struct ResourceNode: HierarchyNode {
 
 struct CheckItemNode: HierarchyNode {
 	bool isChecked;
+};
+
+struct AdmonNode: HierarchyNode {
+	String type;
 };
 
 struct CodeNode: Node {

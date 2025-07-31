@@ -171,6 +171,8 @@ struct Printer {
 
 			case NodeKind_fencedcode: printf("fencedcode"); break;
 			case NodeKind_code: printf("code"); break;
+
+			case NodeKind_admon: printf("admon"); break;
 		}
 		printf("\n");
 
@@ -258,6 +260,11 @@ struct Printer {
 				CodeNode* c = static_cast<CodeNode*>(node);
 				keyString("lang", c->lang);
 				keyString("content", c->content);
+			}
+			case NodeKind_admon: {
+				AdmonNode* a = static_cast<AdmonNode*>(node);
+				keyString("type", a->type);
+				keyArray("children", a->children);
 			}
 			default:
 				return;

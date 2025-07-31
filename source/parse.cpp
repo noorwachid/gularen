@@ -43,6 +43,8 @@ struct Parser {
 				return _parseThematicBreak();
 			case TokenKind_openfence:
 				return _parseCode();
+			case TokenKind_admon:
+				return _parseAdmon();
 			case TokenKind_text:
 			case TokenKind_escape:
 			case TokenKind_asterisk:
@@ -243,6 +245,38 @@ struct Parser {
 			}
 		}
 		return code;
+	}
+
+	Node* _parseAdmon() {
+		AdmonNode* admon = new AdmonNode();
+		admon->kind = NodeKind_admon;
+		admon->range = _get().range;
+
+		_advance();
+		if (_is(TokenKind_newline)) {
+			_advance();
+			Node* block = _parseBlock();
+			if (block != nullptr) {
+				admon->children.append(block);
+				admon->range.end = block->range.end;
+			}
+			return admon;
+		}
+		while (_has()) {
+			if (_get().kind == TokenKind_newline) {
+				break;
+			}
+			Node* node = _parseLine();
+			if (node != nullptr) {
+				admon->children.append(node);
+				continue;
+			}
+			break;
+		}
+		if (admon->children.size() != 0) {
+			admon->range.end = admon->children[admon->children.size() - 1]->range.end;
+		}
+		return admon;
 	}
 
 	String _parseCodeSource(Position position, String const& content) {

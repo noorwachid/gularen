@@ -551,11 +551,11 @@ struct Lexer {
 	}
 
 	void _lexemeResource(Point point, bool isLabeled = true) {
-		_appendInclusive(TokenKind_openref, point, _point);
+		Point endPoint = _point;
 
 		// parse quoted 
 		if (_is('"')) {
-			point = _point;
+			Point refPoint = _point;
 			_advance();
 			while (_has()) {
 				switch (_get()) {
@@ -572,16 +572,38 @@ struct Lexer {
 				}
 			}
 			endQuote:
-			_appendInclusive(TokenKind_quotedref, point, _point);
+			_appendInclusive(TokenKind_openref, point, endPoint);
+			_appendInclusive(TokenKind_quotedref, refPoint, _point);
 		} else {
-			point = _point;
+			Point refPoint = _point;
 			while (_has()) {
 				if (_get() == ']') {
 					break;
 				}
 				_advance();
 			}
-			_appendInclusive(TokenKind_ref, point, _point);
+
+			if (_point.index + 1 < _source.size() && 
+				_source[_point.index] == ']' &&
+				(_source[_point.index + 1] == ' ' || _source[_point.index + 1] == '\n')) {
+				String content = _source.slice(refPoint.index, _point.index - refPoint.index);
+				if (content == "NOTE" ||
+					content == "HINT" ||
+					content == "IMPORTANT" ||
+					content == "WARNING" ||
+					content == "SEE" ||
+					content == "TIP") {
+					_advance();
+					if (_is(' ')) {
+						_advance();
+					}
+					_appendInclusive(TokenKind_admon, point, _point);
+					return;
+				}
+			}
+
+			_appendInclusive(TokenKind_openref, point, endPoint);
+			_appendInclusive(TokenKind_ref, refPoint, _point);
 		}
 		if (_is(']')) {
 			point = _point;
