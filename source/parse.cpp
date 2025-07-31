@@ -44,6 +44,7 @@ struct Parser {
 			case TokenKind_openfence:
 				return _parseCode();
 			case TokenKind_text:
+			case TokenKind_escape:
 			case TokenKind_asterisk:
 			case TokenKind_underscore:
 			case TokenKind_emoji:
@@ -276,6 +277,7 @@ struct Parser {
 		while (_has()) {
 			switch (_get().kind) {
 				case TokenKind_text:
+				case TokenKind_escape:
 				case TokenKind_asterisk:
 				case TokenKind_underscore:
 				case TokenKind_emoji:
@@ -332,6 +334,8 @@ struct Parser {
 		switch (_get().kind) {
 			case TokenKind_text:
 				return _createContent(NodeKind_text);
+			case TokenKind_escape:
+				return _parseEscape();
 			case TokenKind_asterisk:
 				return _parseSurrounding(NodeKind_strong);
 			case TokenKind_underscore:
@@ -426,13 +430,25 @@ struct Parser {
 		}
 	}
 
+	Node* _parseEscape() {
+		Token token = _get();
+		ContentNode* content = new ContentNode();
+		content->kind = NodeKind_text;
+		content->range = token.range;
+		content->content = token.content.slice(1, token.content.size() - 1);
+		_advance();
+		return content;
+	}
+
 	Node* _parseSurrounding(NodeKind kind) {
 		Token token = _get();
 		HierarchyNode* emphasis = new HierarchyNode();
 		emphasis->kind = kind;
+		emphasis->range = token.range;
 		_advance();
 		while (_has()) {
 			if (_get().kind == token.kind) {
+				emphasis->range.end = _get().range.end;
 				_advance();
 				goto end;
 			}
@@ -443,7 +459,6 @@ struct Parser {
 			emphasis->children.append(node);
 		}
 		end:
-		_range(emphasis);
 		return emphasis;
 	}
 

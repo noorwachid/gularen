@@ -5,6 +5,7 @@
 
 enum TokenKind {
 	TokenKind_text, // abc
+	TokenKind_escape, // \*
 	TokenKind_newline, // \n
 	TokenKind_newlines, // \n\n
 	TokenKind_indent, // |->

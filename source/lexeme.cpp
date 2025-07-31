@@ -166,7 +166,7 @@ struct Lexer {
 					_advance();
 				}
 				if (_is('\n')) {
-					_append(TokenKind_thematicbreak, point, _point);
+					_appendInclusive(TokenKind_thematicbreak, point, _point);
 					return;
 				}
 			}
@@ -487,13 +487,13 @@ struct Lexer {
 			_advance();
 			if (_is('-')) {
 				_advance();
-				_append(TokenKind_emdash, point, _point);
+				_appendInclusive(TokenKind_emdash, point, _point);
 				return;
 			}
-			_append(TokenKind_endash, point, _point);
+			_appendInclusive(TokenKind_endash, point, _point);
 			return;
 		}
-		_append(TokenKind_hyphen, point, _point);
+		_appendInclusive(TokenKind_hyphen, point, _point);
 		return;
 	}
 
@@ -571,11 +571,11 @@ struct Lexer {
 			_source[_point.index - 1] == '\n' ||
 			isNestedCombination) {
 			_advance();
-			_append(leftKind, point, _point);
+			_appendInclusive(leftKind, point, _point);
 			return;
 		}
 		_advance();
-		_append(rightKind, point, _point);
+		_appendInclusive(rightKind, point, _point);
 	}
 
 	void _lexemeComment() {
@@ -616,9 +616,7 @@ struct Lexer {
 		}
 
 		end:
-		Point endPoint = _point;
-		endPoint.position.column -= 1;
-		_append(TokenKind_hashtag, point, endPoint);
+		_appendInclusive(TokenKind_hashtag, point, _point);
 	}
 
 	void _lexemeText() {
@@ -651,9 +649,7 @@ struct Lexer {
 		}
 
 		end:
-		Point endPoint = _point;
-		endPoint.position.column -= 1;
-		_append(TokenKind_text, startPoint, endPoint);
+		_appendInclusive(TokenKind_text, startPoint, _point);
 	}
 
 	void _lexemeEmoji() {
@@ -662,8 +658,8 @@ struct Lexer {
 
 		if (_is(' ')) {
 			if (_isHeadingLine) {
-				_append(TokenKind_subheading, startPoint, _point);
 				_advance();
+				_appendInclusive(TokenKind_subheading, startPoint, _point);
 				return;
 			}
 			_advance();
@@ -691,9 +687,7 @@ struct Lexer {
 		}
 
 		end:
-		Point endPoint = _point;
-		endPoint.position.column -= 1;
-		_append(TokenKind_emoji, startPoint, endPoint);
+		_appendInclusive(TokenKind_emoji, startPoint, _point);
 	}
 
 	void _appendShadow(TokenKind kind, Point point) {
@@ -718,13 +712,8 @@ struct Lexer {
 		Point point = _point;
 		_advance();
 		if (_has()) {
-			Token token;
-			token.kind = TokenKind_text;
-			token.content = _source.slice(point.index + 1, 1);
-			token.range.start = point.position;
-			token.range.end = _point.position;
 			_advance();
-			_tokens.append(token);
+			_appendInclusive(TokenKind_escape, point, _point);
 		}
 	}
 

@@ -48,6 +48,7 @@ void printArrayToken(Array<Token> const& tokens) {
 		printf("- kind: ");
 		switch (token.kind) {
 			case TokenKind_text: printf("text"); break;
+			case TokenKind_escape: printf("escape"); break;
 			case TokenKind_newline: printf("newline"); break;
 			case TokenKind_newlines: printf("newlines"); break;
 			case TokenKind_indent: printf("indent"); break;
