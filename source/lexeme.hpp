@@ -13,7 +13,7 @@ enum TokenKind {
 	TokenKind_asterisk, // *
 	TokenKind_underscore, // _
 	TokenKind_heading, // >>> or >> or >
-	TokenKind_subheading, // :
+	TokenKind_colon, // :
 	TokenKind_bullet, // - 
 	TokenKind_numberpoint, // 1. 
 	TokenKind_checkbox, // [ ] or [x] 
@@ -42,20 +42,18 @@ enum TokenKind {
 	TokenKind_sources, // goto 1 (multiline)
 	TokenKind_backtick, // `
 	TokenKind_source, // goto 1
-	TokenKind_lang, // cpp
+	TokenKind_id, // cpp [a-z0-9-]+
 
 	TokenKind_pipe, // |
 	TokenKind_bar, // --- or +-- or +-+ or --+
 
 	TokenKind_admon, // [NOTE] [HINT] [IMPORTANT] [WARNING] [SEE] [TIP]
 	TokenKind_citation, // ^ xxx
-	TokenKind_citationkey, // key: 
-	TokenKind_citationvalue, // value
 
-	TokenKind_command, // % command
-	TokenKind_argument, // include xxx
-	TokenKind_annotationkey, // key:
-	TokenKind_annotationvalue, // value
+	TokenKind_script, // % 
+	TokenKind_func, // include
+	TokenKind_argument, // xxx
+	TokenKind_value, // value
 };
 
 struct Position {

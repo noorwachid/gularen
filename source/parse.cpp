@@ -49,6 +49,8 @@ struct Parser {
 				return _parseAdmon();
 			case TokenKind_pipe:
 				return _parseTable();
+			case TokenKind_citation:
+				return _parseCitation();
 			case TokenKind_text:
 			case TokenKind_escape:
 			case TokenKind_asterisk:
@@ -116,7 +118,7 @@ struct Parser {
 				_advance();
 				goto body;
 			}
-			if (_get().kind == TokenKind_subheading) {
+			if (_get().kind == TokenKind_colon) {
 				_advance();
 				HierarchyNode* subtitle = new HierarchyNode();
 				subtitle->kind = NodeKind_subtitle;
@@ -233,7 +235,7 @@ struct Parser {
 		code->kind = NodeKind_fencedcode;
 		code->range = token.range;
 		_advance();
-		if (_is(TokenKind_lang)) {
+		if (_is(TokenKind_id)) {
 			code->lang = _get().content;
 			_advance();
 		}
@@ -375,6 +377,51 @@ struct Parser {
 			table->range.end = table->children[table->children.size() - 1]->range.end;
 		}
 		return table;
+	}
+
+	Node* _parseCitation() {
+		EntryNode* ref = new EntryNode();
+		ref->kind = NodeKind_citation;
+		ref->range = _get().range;
+		_advance();
+		if (_is(TokenKind_id)) {
+			ref->id = _get().content;
+			ref->range.end = _get().range.end;
+			_advance();
+			if (_is(TokenKind_newline)) {
+				_advance();
+				while (_has()) {
+					if (_get().kind == TokenKind_id) {
+						EntryNode* entry = new EntryNode();
+						entry->kind = NodeKind_entry;
+						entry->range = _get().range;
+						entry->id = _get().content;
+						ref->children.append(entry);
+						_advance();
+						while (_has()) {
+							if (_get().kind == TokenKind_newline) {
+								_advance();
+								break;
+							}
+							if (_get().kind == TokenKind_newlines) {
+								_advance();
+								break;
+							}
+							Node* node = _parseLine();
+							if (node == nullptr) {
+								break;
+							}
+							entry->children.append(node);
+							entry->range.end = node->range.end;
+							ref->range.end = node->range.end;
+						}
+						continue;
+					}
+					break;
+				}
+			}
+		}
+		return ref;
 	}
 
 	String _parseCodeSource(Position position, String const& content) {
@@ -608,7 +655,7 @@ struct Parser {
 		code->kind = NodeKind_code;
 		code->range = _get().range;
 		_advance();
-		if (_is(TokenKind_lang)) {
+		if (_is(TokenKind_id)) {
 			String lang = _get().content;
 			code->content = lang;
 			code->range.end = _get().range.end;

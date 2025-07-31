@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Collection/Table.hpp"
 #include "lexeme.hpp"
 
 enum NodeKind {
@@ -51,6 +52,9 @@ enum NodeKind {
 	NodeKind_table,
 	NodeKind_row,
 	NodeKind_cell,
+
+	NodeKind_citationref,
+	NodeKind_entry,
 };
 
 struct Node {
@@ -105,6 +109,10 @@ enum Alignment {
 struct TableNode: HierarchyNode {
 	Array<Alignment> alignments;
 	bool isHeadered = false;
+};
+
+struct EntryNode: HierarchyNode {
+	String id;
 };
 
 Node* parse(String const& source);

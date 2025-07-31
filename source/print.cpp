@@ -54,7 +54,7 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_indent: printf("indent"); break;
 			case TokenKind_outdent: printf("outdent"); break;
 			case TokenKind_heading: printf("heading"); break;
-			case TokenKind_subheading: printf("subheading"); break;
+			case TokenKind_colon: printf("colon"); break;
 			case TokenKind_bullet: printf("bullet"); break;
 			case TokenKind_numberpoint: printf("numberpoint"); break;
 			case TokenKind_checkbox: printf("checkbox"); break;
@@ -84,7 +84,7 @@ void printArrayToken(Array<Token> const& tokens) {
 
 			case TokenKind_openfence: printf("openfence"); break;
 			case TokenKind_closefence: printf("closefence"); break;
-			case TokenKind_lang: printf("lang"); break;
+			case TokenKind_id: printf("id"); break;
 			case TokenKind_sources: printf("sources"); break;
 			case TokenKind_backtick: printf("backtick"); break;
 			case TokenKind_source: printf("source"); break;
@@ -94,13 +94,11 @@ void printArrayToken(Array<Token> const& tokens) {
 
 			case TokenKind_admon: printf("admon"); break;
 			case TokenKind_citation: printf("citation"); break;
-			case TokenKind_citationkey: printf("citationkey"); break;
-			case TokenKind_citationvalue: printf("citationvalue"); break;
 
-			case TokenKind_command: printf("command"); break;
+			case TokenKind_script: printf("script"); break;
+			case TokenKind_func: printf("func"); break;
 			case TokenKind_argument: printf("argument"); break;
-			case TokenKind_annotationkey: printf("annotationkey"); break;
-			case TokenKind_annotationvalue: printf("annotationvalue"); break;
+			case TokenKind_value: printf("value"); break;
 		}
 		printf("\n");
 		printf("  range: ");
@@ -176,6 +174,9 @@ struct Printer {
 			case NodeKind_table: printf("table"); break;
 			case NodeKind_row: printf("row"); break;
 			case NodeKind_cell: printf("cell"); break;
+
+			case NodeKind_citationref: printf("citationref"); break;
+			case NodeKind_entry: printf("entry"); break;
 		}
 		printf("\n");
 
@@ -293,6 +294,12 @@ struct Printer {
 				}
 				printf("\n");
 				keyArray("children", t->children);
+			}
+			case NodeKind_citationref:
+			case NodeKind_entry: {
+				EntryNode* i = static_cast<EntryNode*>(node);
+				keyString("id", i->id);
+				keyArray("children", i->children);
 			}
 			default:
 				return;
