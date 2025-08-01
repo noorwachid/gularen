@@ -2,21 +2,21 @@
 
 ## Heading Title
 ```gularen
->>> Chapter
+>>> Section
 
->> Section
+>> Subsection
 
-> Subsection
+> Subsubsection
 ```
 ```html
-<section class="chapter">
-	<h1 id="Chapter">Chapter</h1>
+<section class="section">
+	<h1 id="Section">Section</h1>
 
-	<section class="section">
-		<h2 id="Section">Section</h2>
+	<section class="subsection">
+		<h2 id="Subsection">Subsection</h2>
 
-		<section class="subsection">
-			<h3 id="Subsection">Subsection</h3>
+		<section class="subsubsection">
+			<h3 id="Subsubsection">Subsubsection</h3>
 		</section>
 	</section>
 </section>
@@ -26,21 +26,21 @@
 If the subsection modifier is placed in the next line of any title. It will be parsed as subtitle.
 
 ```gularen
->>> Chapter: Chapter Subtitle
+>>> Section: Section Subtitle
 
->> Section: Section Subtitle
+>> Subsection: Subsection Subtitle
 
-> Subsection: Subsection Subtitle
+> Subsubsection: Subsubsection Subtitle
 ```
 ```html
-<section class="chapter">
-	<h1 id="Chapter">Chapter <small>Chapter Subtitle</small></h1>
+<section class="section">
+	<h1 id="Section">Section <small>Section Subtitle</small></h1>
 
-	<section class="section">
-		<h2 id="Section">Section <small>Section Subtitle</small></h2>
+	<section class="subsection">
+		<h2 id="Subsection">Subsection <small>Subsection Subtitle</small></h2>
 
-		<section class="subsection">
-			<h3 id="Subsection">Subsection <small>Subsection Subtitle</small><h3>
+		<section class="subsubsection">
+			<h3 id="Subsubsection">Subsubsection <small>Subsubsection Subtitle</small><h3>
 		</section>
 	</section>
 </section>
@@ -66,11 +66,11 @@ If on another file [Chapter 1.gr>Laminal Flow]
 ```
 
 ## Conflicting Section Link
-In textbook often each chapters have the same section name like "Exercises".
+In textbook often each chapters have the same subsection name like "Exercises".
 The backend has to address this issues. Either by always prefixing the section with chapter or
-only prefixing with chapter if has section conflict.
+only prefixing with chapter if has subsection conflict.
 
-For section conflict you can add another `>` after section.
+For subsection conflict you can add another `>` after section.
 
 ```gularen
 >>> Chapter 1
@@ -93,11 +93,11 @@ For section conflict you can add another `>` after section.
 <a href="#Chapter-2-Execises">Chapter 2 Exercises</a>
 ```
 
-For subsection conflict you can add another `>` after section.
+For subsubsection conflict you can add another `>` after subsection.
 
 ```gularen
-[>Chapter>Section>Subsection]
+[>Chapter>Subsection>Subsubsection]
 ```
 ```html
-<a href="#Chapter-Section-Subsection">Chapter Section Subsection</a>
+<a href="#Chapter-Subsection-Subsubsection">Chapter Subsection Subsubsection</a>
 ```

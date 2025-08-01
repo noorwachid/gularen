@@ -1,6 +1,6 @@
-# Annotation
+# Attribute
 ## Document Metadata
-First annotation at the begining of document belongs to `Document` node.
+First attribute at the begining of document belongs to `Document` node.
 
 ```regex
 % [a-zA-Z-0-9-]:\s.*
@@ -13,16 +13,16 @@ First annotation at the begining of document belongs to `Document` node.
 % category: Science-Fiction
 ```
 
-## Entity Annotation
+## Entity Atribute
 ```gularen
 % text-alignment: center
-A paragraph annotation
+A paragraph attribute
 ```
 ```html
-<p class="text-alignment--center">A paragraph annotation</p>
+<p class="text-alignment--center">A paragraph attribute</p>
 ```
 
-## Table-Span Annotation
+## Table-Span Attribute
 ```gularen
 | A | B | C |
 % row-span: 2 2

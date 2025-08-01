@@ -64,8 +64,7 @@ static Fp powers_ten[] = {
     { 12648080533535911531U, 1066 }
 };
 
-static Fp find_cachedpow10(int exp, int* k)
-{
+static Fp find_cachedpow10(int exp, int* k) {
     const double one_log_ten = 0.30102999566398114;
 
     int approx = -(exp + npowers) * one_log_ten;
@@ -387,8 +386,7 @@ static int filter_special(double fp, char* dest) {
     return 3;
 }
 
-int wkConvFromFloat(double d, char dest[24])
-{
+int convFromFloat(double d, char dest[24]) {
     char digits[18];
 
     int str_len = 0;
@@ -414,7 +412,7 @@ int wkConvFromFloat(double d, char dest[24])
     return str_len;
 }
 
-double wkConvToFloat(int byteSize, char const* bytes) {
+double convToFloat(int byteSize, char const* bytes) {
 	if (byteSize == 0) {
 		return 0;
 	}
@@ -470,14 +468,13 @@ double wkConvToFloat(int byteSize, char const* bytes) {
 	return negativeScale * (value + fraction);
 }
 
-
 double stringToFloat(String const& value) {
-	return wkConvToFloat(value.size(), (char const*) value.items());
+	return convToFloat(value.size(), (char const*) value.items());
 }
 
 String floatToString(double value) {
 	char bytes[24];
-	int size = wkConvFromFloat(value, bytes);
+	int size = convFromFloat(value, bytes);
 
 	String s = String::allocate(size);
 	Byte* b = (Byte*) s.items();

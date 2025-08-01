@@ -8,11 +8,10 @@ A sweet-spot in markup languages
 [Try on web browser](https://noorwach.id/gularen-web/)
 
 ## Installation
-- [To HTML, Markdown](cli/readme.md)
+- [HTML & Markdown generator](cli/readme.md)
 
 ## Editor Support
 - [Neovim](https://github.com/noorwachid/nvim-gularen)
-- [Tree Sitter](https://github.com/noorwachid/tree-sitter-gularen)
 
 ## Why Not Use Markdown?
 1. **Shorter**, create strong text with a single asterisk: `*bold*`.
