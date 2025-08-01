@@ -5,7 +5,7 @@ It's commonly known as table of contents page
 % outline
 ```
 ```html
-<div class="outlines">
+<div class="outline">
     <ul>
         <li>
             <b>Table of Contents</b>
