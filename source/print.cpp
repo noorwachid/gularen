@@ -98,7 +98,9 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_script: printf("script"); break;
 			case TokenKind_func: printf("func"); break;
 			case TokenKind_argument: printf("argument"); break;
+			case TokenKind_quotedargument: printf("quotedargument"); break;
 			case TokenKind_value: printf("value"); break;
+
 		}
 		printf("\n");
 		printf("  range: ");
@@ -184,6 +186,10 @@ struct Printer {
 		printf("range: ");
 		printRange(node->range);
 		printf("\n");
+
+		if (node->attribute.size() != 0) {
+			keyArray("attribute", node->attribute);
+		}
 	}
 
 	void keyBool(char const* key, bool value) {

@@ -60,6 +60,7 @@ enum NodeKind {
 struct Node {
 	NodeKind kind;
 	Range range;
+	Array<Node*> attribute;
 
 	virtual ~Node() {
 	}

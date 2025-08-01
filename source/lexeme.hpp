@@ -53,6 +53,7 @@ enum TokenKind {
 	TokenKind_script, // % 
 	TokenKind_func, // include
 	TokenKind_argument, // xxx
+	TokenKind_quotedargument, // "xxx"
 	TokenKind_value, // value
 };
 

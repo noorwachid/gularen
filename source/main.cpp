@@ -13,6 +13,7 @@ void compile(String const& path) {
 	printf("---\n");
 	Node* node = parse(content);
 	printNode(node);
+	delete node;
 }
 
 int main(int argc, char** argv) {

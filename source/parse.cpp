@@ -19,14 +19,66 @@ struct Parser {
 	Node* parse() {
 		DocumentNode* document = new DocumentNode();
 		document->kind = NodeKind_document;
+		document->range = _get().range;
+		document->attribute = _parseAttribute();
+
 		while (_has()) {
 			Node* node = _parseBlock();
 			if (node == nullptr) {
+				// TODO: delete attribute items
 				continue;
 			}
 			document->children.append(node);
 		}
+		if (document->children.size() != 0) {
+			document->range.end = document->children[document->children.size() - 1]->range.end;
+		}
 		return document;
+	}
+
+	Array<Node*> _parseAttribute() {
+		Array<Node*> attribute;
+		if (_index + 2 < _tokens.size() &&
+			_tokens[_index + 0].kind == TokenKind_script &&
+			_tokens[_index + 1].kind == TokenKind_id &&
+			_tokens[_index + 2].kind == TokenKind_colon) {
+			while (_has()) {
+				parseEntry:
+				if (_index + 2 < _tokens.size() &&
+					_tokens[_index + 0].kind == TokenKind_script &&
+					_tokens[_index + 1].kind == TokenKind_id &&
+					_tokens[_index + 2].kind == TokenKind_colon) {
+					EntryNode* entry = new EntryNode();
+					entry->kind = NodeKind_entry;
+					entry->range = _get().range;
+					_advance();
+					entry->id = _get().content;
+					attribute.append(entry);
+					_advance();
+					_advance();
+					while (_has()) {
+						if (_get().kind == TokenKind_newline) {
+							_advance();
+							goto parseEntry;
+						}
+						if (_get().kind == TokenKind_newlines) {
+							_advance();
+							goto end;
+						}
+						Node* node = _parseLine();
+						if (node == nullptr) {
+							break;
+						}
+						entry->children.append(node);
+						entry->range.end = node->range.end;
+					}
+					continue;
+				}
+				break;
+			}
+		}
+		end:
+		return attribute;
 	}
 
 	Node* _parseBlock() {
@@ -497,6 +549,12 @@ struct Parser {
 		}
 		end:
 		_range(paragraph);
+		if (paragraph->children.size() == 1 && paragraph->children[0]->kind == NodeKind_view) {
+			Node* node = paragraph->children[0];
+			paragraph->children.set(0, nullptr);
+			delete paragraph;
+			return node;
+		}
 		return paragraph;
 	}
 

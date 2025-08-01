@@ -4,7 +4,7 @@
 
 namespace Disk {
 	namespace File {
-		String read(String const& path) {
+		FILE* _open(String const& path, char const* mode) {
 			char cPathStack[256];
 			char* cPath;
 			if (path.size() > 255) {
@@ -16,10 +16,15 @@ namespace Disk {
 				cPath[i] = path[i];
 			}
 			cPath[path.size()] = 0;
-			FILE* file = fopen(cPath, "r");
+			FILE* file = fopen(cPath, mode);
 			if (path.size() > 255) {
 				free(cPath);
 			}
+			return file;
+		}
+
+		String read(String const& path) {
+			FILE* file = _open(path, "r");
 			if (file == nullptr) {
 				return "";
 			}
@@ -31,6 +36,15 @@ namespace Disk {
 			fread(items, sizeof(Byte), size, file);
 			fclose(file);
 			return content;
+		}
+
+		void write(String const& path, String const& content) {
+			FILE* file = _open(path, "w");
+			if (file == nullptr) {
+				return;
+			}
+			fwrite(content.items(), sizeof(Byte), content.size(), file);
+			fclose(file);
 		}
 	}
 }

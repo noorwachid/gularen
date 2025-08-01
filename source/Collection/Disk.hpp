@@ -5,5 +5,7 @@
 namespace Disk {
 	namespace File {
 		String read(String const& path);
+
+		void write(String const& path, String const& content);
 	}
 }

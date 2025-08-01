@@ -78,6 +78,9 @@ struct Lexer {
 			case '^':
 				_lexemeCitation();
 				break;
+			case '%':
+				_lexemeScript();
+				break;
 
 			case 'a': case 'b': case 'c': case 'd':
 			case 'e': case 'f': case 'g': case 'h':
@@ -428,6 +431,46 @@ struct Lexer {
 		if (_is('[')) {
 			_advance();
 			_lexemeResource(p);
+			return;
+		}
+		_appendInclusive(TokenKind_text, p, _point);
+	}
+
+	void _lexemeScript() {
+		Point p = _point;
+		_advance();
+		if (_is(' ')) {
+			_advance();
+			_appendInclusive(TokenKind_script, p, _point);
+			Point keyPoint = _point;
+			while (_has()) {
+				switch (_get()) {
+					case 'a': case 'b': case 'c': case 'd':
+					case 'e': case 'f': case 'g': case 'h':
+					case 'i': case 'j': case 'k': case 'l':
+					case 'm': case 'n': case 'o': case 'p':
+					case 'q': case 'r': case 's': case 't':
+					case 'u': case 'v': case 'w': case 'x':
+					case 'y': case 'z': case '-':
+						_advance();
+						break;
+					default:
+						goto end;
+				}
+			}
+			end:
+			_appendInclusive(TokenKind_id, keyPoint, _point);
+			if (_is(':')) {
+				Point colonPoint = _point;
+				_advance();
+				if (_is(' ')) {
+					_advance();
+					_appendInclusive(TokenKind_colon, colonPoint, _point);
+				}
+				_lexemeLine();
+				return;
+			}
+			_lexemeLine();
 			return;
 		}
 		_appendInclusive(TokenKind_text, p, _point);
