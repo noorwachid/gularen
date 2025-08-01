@@ -21,29 +21,3 @@ A paragraph attribute
 ```html
 <p class="text-alignment--center">A paragraph attribute</p>
 ```
-
-## Table-Span Attribute
-```gularen
-| A | B | C |
-% row-span: 2 2
-| D | E | F |
-% column-span: 0 2
-| G |
-```
-```html
-<table>
-    <tr>
-        <td>A</td>
-        <td>B</td>
-        <td>C</td>
-    </tr>
-    <tr>
-        <td>D</td>
-        <td>E</td>
-        <td rowspan="2">F</td>
-    </tr>
-    <tr>
-        <td colspan="2">G</td>
-    </tr>
-</table>
-```
