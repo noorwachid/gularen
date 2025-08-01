@@ -69,11 +69,11 @@ long wkConvToInt(int byteSize, char const* bytes) {
 	return negativeScale * value;
 }
 
-long stringToInt(String const& value) {
+long stringToLong(String const& value) {
 	return wkConvToInt(value.size(), (char const*) value.items());
 }
 
-String intToString(long value) {
+String longToString(long value) {
 	char bytes[20];
 	int size = wkConvFromInt(value, bytes);
 

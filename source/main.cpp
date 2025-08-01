@@ -5,15 +5,17 @@
 #include <stdio.h>
 
 void compile(String const& path) {
-	String content = Disk::File::read(path);
+	String content = readFile(path);
 	Array<Token> tokens = lexeme(content);
 	printf("%.*s\n", content.size(), content.items());
 	printf("---\n");
 	printArrayToken(tokens);
 	printf("---\n");
-	Node* node = parse(content);
-	printNode(node);
-	delete node;
+	Node* node = parseFile(path);
+	if (node != nullptr) {
+		printNode(node);
+		delete node;
+	}
 }
 
 int main(int argc, char** argv) {

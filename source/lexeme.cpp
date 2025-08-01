@@ -38,12 +38,20 @@ struct Lexer {
 		return _point.index < _source.size();
 	}
 
+	bool _hasNext(int offset) {
+		return _point.index + offset < _source.size();
+	}
+
 	bool _is(Byte byte) {
 		return _point.index < _source.size() && _source[_point.index] == byte;
 	}
 
 	Byte _get() {
 		return _source[_point.index];
+	}
+
+	Byte _getNext(int offset) {
+		return _source[_point.index + offset];
 	}
 
 	void _advance() {
@@ -350,10 +358,10 @@ struct Lexer {
 				_lexemeMonograph(TokenKind_pipe);
 				Point point = _point;
 
-				if (_point.index + 2 < _source.size() &&
-					(_source[_point.index + 0] == '-' || _source[_point.index + 0] == ':') &&
-					(_source[_point.index + 1] == '-') && 
-					(_source[_point.index + 2] == '-' || _source[_point.index + 2] == ':')) {
+				if (_hasNext(2) &&
+					(_getNext(0) == '-' || _getNext(0) == ':') &&
+					(_getNext(1) == '-') && 
+					(_getNext(2) == '-' || _getNext(2) == ':')) {
 					_advance();
 
 					while (_has()) {
@@ -396,7 +404,7 @@ struct Lexer {
 						Point keyPoint = _point;
 						// key
 						while (_has()) {
-							if (_get() == ':' && _point.index + 1 < _source.size() && _source[_point.index + 1] == ' ') {
+							if (_get() == ':' && _hasNext(1) && _getNext(1) == ' ') {
 								_appendInclusive(TokenKind_id, keyPoint, _point);
 								_advance();
 								_advance();
@@ -459,16 +467,51 @@ struct Lexer {
 				}
 			}
 			end:
-			_appendInclusive(TokenKind_id, keyPoint, _point);
-			if (_is(':')) {
+			if (_hasNext(1) && _getNext(0) == ':' && _getNext(1) == ' ') {
 				Point colonPoint = _point;
 				_advance();
 				if (_is(' ')) {
 					_advance();
+					_appendInclusive(TokenKind_id, keyPoint, colonPoint);
 					_appendInclusive(TokenKind_colon, colonPoint, _point);
 				}
 				_lexemeLine();
 				return;
+			}
+			if (_is(' ')) {
+				Point argPoint = _point;
+				_advance();
+				_appendInclusive(TokenKind_func, keyPoint, argPoint);
+				while (_has()) {
+					while (_is(' ')) {
+						_advance();
+					}
+					if (_get() == '"') {
+						Point quotePoint = _point;
+						_advance();
+						while (_has()) {
+							switch (_get()) {
+								case '"':
+									_advance();
+									goto endQuote;
+								case '\\':
+									_advance();
+									_advance();
+									break;
+								default:
+									_advance();
+									break;
+							}
+						}
+						endQuote:
+						_appendInclusive(TokenKind_argument, quotePoint, _point);
+						if (_is(',')) {
+							_advance();
+						}
+						continue;
+					}
+					break;
+				}
 			}
 			_lexemeLine();
 			return;
@@ -735,9 +778,7 @@ struct Lexer {
 				_advance();
 			}
 
-			if (_point.index + 1 < _source.size() && 
-				_source[_point.index] == ']' &&
-				(_source[_point.index + 1] == ' ' || _source[_point.index + 1] == '\n')) {
+			if (_hasNext(1) && _getNext(0) == ']' && (_getNext(1) == ' ' || _getNext(1) == '\n')) {
 				String content = _source.slice(refPoint.index, _point.index - refPoint.index);
 				if (content == "NOTE" ||
 					content == "HINT" ||

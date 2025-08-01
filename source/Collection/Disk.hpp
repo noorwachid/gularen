@@ -2,10 +2,6 @@
 
 #include "String.hpp"
 
-namespace Disk {
-	namespace File {
-		String read(String const& path);
+String readFile(String const& path);
 
-		void write(String const& path, String const& content);
-	}
-}
+void writeFile(String const& path, String const& content);

@@ -1,6 +1,7 @@
 #include "parse.hpp"
 #include "lexeme.hpp"
 #include "print.hpp"
+#include "Collection/Disk.hpp"
 #include <stdio.h>
 
 struct Point {
@@ -11,16 +12,21 @@ struct Point {
 struct Parser {
 	Array<Token> _tokens;
 	int _index;
+	String _directory;
 
-	Parser(String const& source) {
+	Parser(String const& source, String const& directory) {
+		_directory = directory;
 		_tokens = lexeme(source);
 		_index = 0;
 	}
-	Node* parse() {
+	DocumentNode* parseDocument() {
+		if (_tokens.size() == 0) {
+			return nullptr;
+		}
 		DocumentNode* document = new DocumentNode();
 		document->kind = NodeKind_document;
 		document->range = _get().range;
-		document->attribute = _parseAttribute();
+		document->metadata = _parseMetadata();
 
 		while (_has()) {
 			Node* node = _parseBlock();
@@ -36,24 +42,24 @@ struct Parser {
 		return document;
 	}
 
-	Array<Node*> _parseAttribute() {
-		Array<Node*> attribute;
-		if (_index + 2 < _tokens.size() &&
-			_tokens[_index + 0].kind == TokenKind_script &&
-			_tokens[_index + 1].kind == TokenKind_id &&
-			_tokens[_index + 2].kind == TokenKind_colon) {
+	Array<Node*> _parseMetadata() {
+		Array<Node*> metadata;
+		if (_hasNext(2) &&
+			_getNext(0).kind == TokenKind_script &&
+			_getNext(1).kind == TokenKind_id &&
+			_getNext(2).kind == TokenKind_colon) {
 			while (_has()) {
 				parseEntry:
-				if (_index + 2 < _tokens.size() &&
-					_tokens[_index + 0].kind == TokenKind_script &&
-					_tokens[_index + 1].kind == TokenKind_id &&
-					_tokens[_index + 2].kind == TokenKind_colon) {
+				if (_hasNext(2) &&
+					_getNext(0).kind == TokenKind_script &&
+					_getNext(1).kind == TokenKind_id &&
+					_getNext(2).kind == TokenKind_colon) {
 					EntryNode* entry = new EntryNode();
 					entry->kind = NodeKind_entry;
 					entry->range = _get().range;
 					_advance();
 					entry->id = _get().content;
-					attribute.append(entry);
+					metadata.append(entry);
 					_advance();
 					_advance();
 					while (_has()) {
@@ -78,7 +84,7 @@ struct Parser {
 			}
 		}
 		end:
-		return attribute;
+		return metadata;
 	}
 
 	Node* _parseBlock() {
@@ -103,6 +109,8 @@ struct Parser {
 				return _parseTable();
 			case TokenKind_citation:
 				return _parseCitation();
+			case TokenKind_script:
+				return _parseScript();
 			case TokenKind_text:
 			case TokenKind_escape:
 			case TokenKind_asterisk:
@@ -119,10 +127,8 @@ struct Parser {
 			case TokenKind_singlerightquote:
 			case TokenKind_openref:
 			case TokenKind_footnote:
-				return _parseParagraph();
 			default:
-				_advance();
-				return nullptr;
+				return _parseParagraph();
 		}
 	}
 
@@ -346,7 +352,7 @@ struct Parser {
 		while (_has()) {
 			parseRow:
 			if (_get().kind == TokenKind_pipe) {
-				if (_index + 1 < _tokens.size() && _tokens[_index + 1].kind == TokenKind_bar) {
+				if (_isNext(1, TokenKind_bar)) {
 					while (_has()) {
 						if (_get().kind == TokenKind_pipe) {
 							table->range.end = _get().range.end;
@@ -476,6 +482,22 @@ struct Parser {
 		return ref;
 	}
 
+	Node* _parseScript() {
+		Token token = _get();
+		if (_hasNext(2) && _getNext(1).content == "include" && _getNext(2).kind == TokenKind_argument) {
+			String path = _directory;
+			path.append(_parseQuotedString(_getNext(2).content));
+			_advanceNext(2);
+			String content = readFile(path);
+			DocumentNode* doc = parse(content);
+			if (doc != nullptr) {
+				doc->path = path;
+			}
+			return doc;
+		}
+		return _parseParagraph();
+	}
+
 	String _parseCodeSource(Position position, String const& content) {
 		String parsedContent;
 		int index = 0;
@@ -544,7 +566,8 @@ struct Parser {
 					_advance();
 					goto end;
 				default:
-					goto end;
+					paragraph->children.append(_createContent(NodeKind_text));
+					break;
 			}
 		}
 		end:
@@ -775,14 +798,26 @@ struct Parser {
 	bool _has() {
 		return _index < _tokens.size();
 	}
+	bool _hasNext(int offset) {
+		return _index + offset < _tokens.size();
+	}
 	bool _is(TokenKind kind) {
 		return _index < _tokens.size() && _tokens[_index].kind == kind;
+	}
+	bool _isNext(int offset, TokenKind kind) {
+		return _index + offset < _tokens.size() && _tokens[_index + offset].kind == kind;
 	}
 	Token const& _get() {
 		return _tokens[_index];
 	}
+	Token const& _getNext(int offset) {
+		return _tokens[_index + offset];
+	}
 	void _advance() {
 		_index++;
+	}
+	void _advanceNext(int offset) {
+		_index += offset + 1;
 	}
 	String _parseQuotedString(String const& quoted) {
 		String native;
@@ -811,8 +846,20 @@ struct Parser {
 	}
 };
 
-Node* parse(String const& source) {
-	Parser parser(source);
-	return parser.parse();
+DocumentNode* parseFile(String const& path) {
+	int size = 0;
+	for (int i = path.size() - 1; i >= 0; i--) {
+		if (path[i] == '/') {
+			size = i + 1;
+			break;
+		}
+	}
+	Parser parser(readFile(path), path.slice(0, size));
+	return parser.parseDocument();
+}
+
+DocumentNode* parse(String const& source) {
+	Parser parser(source, "");
+	return parser.parseDocument();
 }
 

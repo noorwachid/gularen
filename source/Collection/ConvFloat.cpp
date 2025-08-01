@@ -468,11 +468,11 @@ double convToFloat(int byteSize, char const* bytes) {
 	return negativeScale * (value + fraction);
 }
 
-double stringToFloat(String const& value) {
+double stringToDouble(String const& value) {
 	return convToFloat(value.size(), (char const*) value.items());
 }
 
-String floatToString(double value) {
+String doubleToString(double value) {
 	char bytes[24];
 	int size = convFromFloat(value, bytes);
 

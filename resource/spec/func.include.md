@@ -5,5 +5,4 @@ Only local files are allowed to be included.
 
 ```gularen
 % include "chapter-1.gr"
-% include "chapter-2.gr"
 ```

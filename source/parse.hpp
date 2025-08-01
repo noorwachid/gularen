@@ -55,12 +55,15 @@ enum NodeKind {
 
 	NodeKind_citationref,
 	NodeKind_entry,
+
+	NodeKind_include,
+	NodeKind_outline,
+	NodeKind_keyword,
 };
 
 struct Node {
 	NodeKind kind;
 	Range range;
-	Array<Node*> attribute;
 
 	virtual ~Node() {
 	}
@@ -82,6 +85,7 @@ struct HierarchyNode: Node {
 
 struct DocumentNode: HierarchyNode {
 	String path;
+	Array<Node*> metadata;
 };
 
 struct ResourceNode: HierarchyNode {
@@ -116,4 +120,10 @@ struct EntryNode: HierarchyNode {
 	String id;
 };
 
-Node* parse(String const& source);
+struct FuncNode: Node {
+	Array<String> arguments;
+};
+
+DocumentNode* parse(String const& source);
+
+DocumentNode* parseFile(String const& path);
