@@ -21,7 +21,7 @@ enum NodeKind {
 
 	NodeKind_link,
 	NodeKind_view,
-	NodeKind_citation,
+	NodeKind_cite,
 	NodeKind_footnote,
 
 	NodeKind_list,
@@ -53,12 +53,8 @@ enum NodeKind {
 	NodeKind_row,
 	NodeKind_cell,
 
-	NodeKind_citationref,
-	NodeKind_entry,
-
 	NodeKind_include,
-	NodeKind_outline,
-	NodeKind_keyword,
+	NodeKind_func,
 };
 
 struct Node {
@@ -85,7 +81,7 @@ struct HierarchyNode: Node {
 
 struct DocumentNode: HierarchyNode {
 	String path;
-	Array<Node*> metadata;
+	Table<String, String> metadata;
 };
 
 struct ResourceNode: HierarchyNode {
@@ -116,12 +112,9 @@ struct TableNode: HierarchyNode {
 	bool isHeadered = false;
 };
 
-struct EntryNode: HierarchyNode {
-	String id;
-};
-
 struct FuncNode: Node {
-	Array<String> arguments;
+	String symbol;
+	Table<String, String> arguments;
 };
 
 DocumentNode* parse(String const& source);

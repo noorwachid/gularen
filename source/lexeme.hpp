@@ -29,31 +29,30 @@ enum TokenKind {
 	TokenKind_singlerightquote, // '
 	TokenKind_singleleftquote, // '
 
-	TokenKind_openref, // [ or ![ or ^[
+	TokenKind_openbracket, // [ or ![ or ^[
 	TokenKind_ref, // xxx
-	TokenKind_quotedref, // "xxx"
-	TokenKind_closeref, // ]
+	TokenKind_string, // "xxx"
+	TokenKind_closebracket, // ]
 	TokenKind_footnote, // ^
-	TokenKind_openlabel, // (
-	TokenKind_closelabel, // )
+	TokenKind_openparen, // (
+	TokenKind_closeparen, // )
 
 	TokenKind_openfence, // ```
 	TokenKind_closefence, // ```
 	TokenKind_sources, // goto 1 (multiline)
 	TokenKind_backtick, // `
 	TokenKind_source, // goto 1
-	TokenKind_id, // cpp [a-z0-9-]+
+	TokenKind_symbol, // cpp [a-z0-9-]+
 
 	TokenKind_pipe, // |
 	TokenKind_bar, // --- or +-- or +-+ or --+
 
 	TokenKind_admon, // [NOTE] [HINT] [IMPORTANT] [WARNING] [SEE] [TIP]
-	TokenKind_citation, // ^ xxx
 
 	TokenKind_script, // % 
-	TokenKind_func, // include
-	TokenKind_argument, // "xxx"
-	TokenKind_value, // value
+	TokenKind_func, // include, outline, reference, figure
+	TokenKind_openbrace, // {
+	TokenKind_closebrace, // }
 };
 
 struct Position {

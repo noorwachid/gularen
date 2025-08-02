@@ -83,9 +83,6 @@ struct Lexer {
 			case '|':
 				_lexemeTable();
 				break;
-			case '^':
-				_lexemeCitation();
-				break;
 			case '%':
 				_lexemeScript();
 				break;
@@ -114,6 +111,7 @@ struct Lexer {
 				_lexemeLine();
 				break;
 			default:
+				_append(TokenKind_text, _point, _point);
 				_advance();
 				break;
 		}
@@ -281,7 +279,7 @@ struct Lexer {
 				}
 				endLanguage:
 				_appendInclusive(TokenKind_openfence, p, langPoint);
-				_appendInclusive(TokenKind_id, langPoint, _point);
+				_appendInclusive(TokenKind_symbol, langPoint, _point);
 				_lexemeNewline();
 				_lexemeSources(p.position.column, count);
 				return;
@@ -386,64 +384,6 @@ struct Lexer {
 		}
 	}
 
-	void _lexemeCitation() {
-		Point p = _point;
-		_advance();
-		if (_is(' ')) {
-			_advance();
-			_appendInclusive(TokenKind_citation, p, _point);
-			Point idPoint = _point;
-			while (_has()) {
-				if (_get() == '\n') {
-					_appendInclusive(TokenKind_id, idPoint, _point);
-					_lexemeNewline();
-
-					// key-value pairs
-					while (_has()) {
-						checkKeyValue:
-						Point keyPoint = _point;
-						// key
-						while (_has()) {
-							if (_get() == ':' && _hasNext(1) && _getNext(1) == ' ') {
-								_appendInclusive(TokenKind_id, keyPoint, _point);
-								_advance();
-								_advance();
-								// value
-								Point valuePoint = _point;
-								while (_has()) {
-									_lexemeLine();
-									if (_tokens.size() != 0 && _tokens[_tokens.size() - 1].kind == TokenKind_newlines) {
-										return;
-									}
-									goto checkKeyValue;
-								}
-							}
-							if (_get() == '\n') {
-								_lexemeNewline();
-								if (_tokens.size() != 0 && _tokens[_tokens.size() - 1].kind == TokenKind_newlines) {
-									return;
-								}
-								goto checkKeyValue;
-							}
-							_advance();
-						}
-						break;
-					}
-					return;
-				}
-				_advance();
-			}
-			_appendInclusive(TokenKind_text, p, _point);
-			return;
-		}
-		if (_is('[')) {
-			_advance();
-			_lexemeResource(p);
-			return;
-		}
-		_appendInclusive(TokenKind_text, p, _point);
-	}
-
 	void _lexemeScript() {
 		Point p = _point;
 		_advance();
@@ -472,10 +412,10 @@ struct Lexer {
 				_advance();
 				if (_is(' ')) {
 					_advance();
-					_appendInclusive(TokenKind_id, keyPoint, colonPoint);
+					_appendInclusive(TokenKind_symbol, keyPoint, colonPoint);
 					_appendInclusive(TokenKind_colon, colonPoint, _point);
 				}
-				_lexemeLine();
+				_lexemeString();
 				return;
 			}
 			if (_is(' ')) {
@@ -487,36 +427,90 @@ struct Lexer {
 						_advance();
 					}
 					if (_get() == '"') {
-						Point quotePoint = _point;
+						_lexemeString();
+						return;
+					}
+					if (_get() == '{') {
+						_append(TokenKind_openbrace, _point, _point);
 						_advance();
-						while (_has()) {
-							switch (_get()) {
-								case '"':
+						if (_is('\n')) {
+							_lexemeNewline();
+							while (_has()) {
+								if (_get() == '}') {
+									_append(TokenKind_closebrace, _point, _point);
 									_advance();
-									goto endQuote;
-								case '\\':
-									_advance();
-									_advance();
+									return;
+								}
+								while (_has()) {
+									if (_get() == '\t') {
+										_advance();
+										continue;
+									}
 									break;
-								default:
+								}
+								Point keyPoint = _point;
+								while (_has()) {
+									switch (_get()) {
+										case 'a': case 'b': case 'c': case 'd':
+										case 'e': case 'f': case 'g': case 'h':
+										case 'i': case 'j': case 'k': case 'l':
+										case 'm': case 'n': case 'o': case 'p':
+										case 'q': case 'r': case 's': case 't':
+										case 'u': case 'v': case 'w': case 'x':
+										case 'y': case 'z': case '-':
+											_advance();
+											break;
+										default:
+											goto endKey;
+									}
+								}
+								endKey:
+								_appendInclusive(TokenKind_symbol, keyPoint, _point);
+								if (_hasNext(2) && _get() == ':' && _getNext(1) == ' ' && _getNext(2) == '"') {
+									Point colonPoint = _point;
 									_advance();
-									break;
+									_advance();
+									_appendInclusive(TokenKind_colon, colonPoint, _point);
+									_lexemeString();
+									if (_is('\n')) {
+										_lexemeNewline();
+									}
+									continue;
+								}
+								break;
 							}
 						}
-						endQuote:
-						_appendInclusive(TokenKind_argument, quotePoint, _point);
-						if (_is(',')) {
-							_advance();
-						}
-						continue;
+						return;
 					}
-					break;
+					return;
 				}
+				return;
 			}
-			_lexemeLine();
+			_appendInclusive(TokenKind_func, keyPoint, _point);
 			return;
 		}
 		_appendInclusive(TokenKind_text, p, _point);
+	}
+
+	void _lexemeString() {
+		Point quotePoint = _point;
+		_advance();
+		while (_has()) {
+			switch (_get()) {
+				case '"':
+					_advance();
+					goto endQuote;
+				case '\\':
+					_advance();
+					_advance();
+					break;
+				default:
+					_advance();
+					break;
+			}
+		}
+		endQuote:
+		_appendInclusive(TokenKind_string, quotePoint, _point);
 	}
 
 	void _lexemeLine() {
@@ -662,7 +656,7 @@ struct Lexer {
 					Point checkPoint = _point;
 					_advance();
 					if (_is('`') && isValidLang) {
-						_appendInclusive(TokenKind_id, sourcePoint, checkPoint);
+						_appendInclusive(TokenKind_symbol, sourcePoint, checkPoint);
 						_point = checkPoint;
 						break;
 					}
@@ -767,8 +761,8 @@ struct Lexer {
 				}
 			}
 			endQuote:
-			_appendInclusive(TokenKind_openref, point, endPoint);
-			_appendInclusive(TokenKind_quotedref, refPoint, _point);
+			_appendInclusive(TokenKind_openbracket, point, endPoint);
+			_appendInclusive(TokenKind_string, refPoint, _point);
 		} else {
 			Point refPoint = _point;
 			while (_has()) {
@@ -795,13 +789,13 @@ struct Lexer {
 				}
 			}
 
-			_appendInclusive(TokenKind_openref, point, endPoint);
+			_appendInclusive(TokenKind_openbracket, point, endPoint);
 			_appendInclusive(TokenKind_ref, refPoint, _point);
 		}
 		if (_is(']')) {
 			point = _point;
 			_advance();
-			_appendInclusive(TokenKind_closeref, point, _point);
+			_appendInclusive(TokenKind_closebracket, point, _point);
 
 			if (isLabeled && _is('(')) {
 				point = _point;
@@ -812,14 +806,14 @@ struct Lexer {
 	}
 
 	void _lexemeLabel(Point point) {
-		_appendInclusive(TokenKind_openlabel, point, _point);
+		_appendInclusive(TokenKind_openparen, point, _point);
 		_parenthesis = 1;
 		while (_has()) {
 			if (_get() == ')') {
 				if (_parenthesis == 0) {
 					point = _point;
 					_advance();
-					_appendInclusive(TokenKind_closelabel, point, _point);
+					_appendInclusive(TokenKind_closeparen, point, _point);
 					break;
 				} else {
 					point = _point;

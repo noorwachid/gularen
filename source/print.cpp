@@ -73,18 +73,18 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_underscore: printf("underscore"); break;
 			case TokenKind_hashtag: printf("hashtag"); break;
 			case TokenKind_emoji: printf("emoji"); break;
+			case TokenKind_string: printf("string"); break;
 
-			case TokenKind_openref: printf("openref"); break;
+			case TokenKind_openbracket: printf("openbracket"); break;
 			case TokenKind_ref: printf("ref"); break;
-			case TokenKind_quotedref: printf("quotedref"); break;
-			case TokenKind_closeref: printf("closeref"); break;
+			case TokenKind_closebracket: printf("closebracket"); break;
 			case TokenKind_footnote: printf("footnote"); break;
-			case TokenKind_openlabel: printf("openlabel"); break;
-			case TokenKind_closelabel: printf("closelabel"); break;
+			case TokenKind_openparen: printf("openparen"); break;
+			case TokenKind_closeparen: printf("closeparen"); break;
 
 			case TokenKind_openfence: printf("openfence"); break;
 			case TokenKind_closefence: printf("closefence"); break;
-			case TokenKind_id: printf("id"); break;
+			case TokenKind_symbol: printf("symbol"); break;
 			case TokenKind_sources: printf("sources"); break;
 			case TokenKind_backtick: printf("backtick"); break;
 			case TokenKind_source: printf("source"); break;
@@ -93,12 +93,11 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_bar: printf("bar"); break;
 
 			case TokenKind_admon: printf("admon"); break;
-			case TokenKind_citation: printf("citation"); break;
 
 			case TokenKind_script: printf("script"); break;
 			case TokenKind_func: printf("func"); break;
-			case TokenKind_argument: printf("argument"); break;
-			case TokenKind_value: printf("value"); break;
+			case TokenKind_openbrace: printf("openbrace"); break;
+			case TokenKind_closebrace: printf("closebrace"); break;
 
 		}
 		printf("\n");
@@ -165,7 +164,7 @@ struct Printer {
 
 			case NodeKind_link: printf("link"); break;
 			case NodeKind_view: printf("view"); break;
-			case NodeKind_citation: printf("citation"); break;
+			case NodeKind_cite: printf("cite"); break;
 			case NodeKind_footnote: printf("footnote"); break;
 
 			case NodeKind_fencedcode: printf("fencedcode"); break;
@@ -176,8 +175,8 @@ struct Printer {
 			case NodeKind_row: printf("row"); break;
 			case NodeKind_cell: printf("cell"); break;
 
-			case NodeKind_citationref: printf("citationref"); break;
-			case NodeKind_entry: printf("entry"); break;
+			case NodeKind_include: printf("include"); break;
+			case NodeKind_func: printf("func"); break;
 		}
 		printf("\n");
 
@@ -220,6 +219,7 @@ struct Printer {
 
 		switch (node->kind) {
 			case NodeKind_text:
+			case NodeKind_hashtag:
 			case NodeKind_emoji:
 			case NodeKind_thematicbreak: {
 				ContentNode* text = static_cast<ContentNode*>(node);
@@ -230,7 +230,18 @@ struct Printer {
 				DocumentNode* document = static_cast<DocumentNode*>(node);
 				keyString("path", document->path);
 				if (document->metadata.size() != 0) {
-					keyArray("metadata", document->metadata);
+					indent();
+					printf("metadata:\n");
+					int oldDepth = depth;
+					depth++;
+					for (auto i = document->metadata.iterate(); i.hasNext(); i.next()) {
+						indent();
+						printf("%.*s: %.*s\n",
+							i.key().size(), i.key().items(),
+							i.value().size(), i.value().items()
+						);
+					}
+					depth = oldDepth;
 				}
 				keyArray("children", document->children);
 				break;
@@ -264,7 +275,7 @@ struct Printer {
 			}
 			case NodeKind_link:
 			case NodeKind_view:
-			case NodeKind_citation:
+			case NodeKind_cite:
 			case NodeKind_footnote: {
 				ResourceNode* r = static_cast<ResourceNode*>(node);
 				keyString("source", r->source);
@@ -276,11 +287,13 @@ struct Printer {
 				CodeNode* c = static_cast<CodeNode*>(node);
 				keyString("lang", c->lang);
 				keyString("content", c->content);
+				break;
 			}
 			case NodeKind_admon: {
 				AdmonNode* a = static_cast<AdmonNode*>(node);
 				keyString("type", a->type);
 				keyArray("children", a->children);
+				break;
 			}
 			case NodeKind_table: {
 				TableNode* t = static_cast<TableNode*>(node);
@@ -299,12 +312,26 @@ struct Printer {
 				}
 				printf("\n");
 				keyArray("children", t->children);
+				break;
 			}
-			case NodeKind_citationref:
-			case NodeKind_entry: {
-				EntryNode* i = static_cast<EntryNode*>(node);
-				keyString("id", i->id);
-				keyArray("children", i->children);
+			case NodeKind_func: {
+				FuncNode* func = static_cast<FuncNode*>(node);
+				keyString("symbol", func->symbol);
+				if (func->arguments.size() != 0) {
+					indent();
+					printf("arguments:\n");
+					int oldDepth = depth;
+					depth++;
+					for (auto i = func->arguments.iterate(); i.hasNext(); i.next()) {
+						indent();
+						printf("%.*s: %.*s\n",
+							i.key().size(), i.key().items(),
+							i.value().size(), i.value().items()
+						);
+					}
+					depth = oldDepth;
+				}
+				break;
 			}
 			default:
 				return;

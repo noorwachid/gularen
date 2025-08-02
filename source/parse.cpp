@@ -12,10 +12,19 @@ struct Point {
 struct Parser {
 	Array<Token> _tokens;
 	int _index;
+	String _path;
 	String _directory;
 
-	Parser(String const& source, String const& directory) {
-		_directory = directory;
+	Parser(String const& source, String const& path) {
+		int size = 0;
+		for (int i = path.size() - 1; i >= 0; i--) {
+			if (path[i] == '/') {
+				size = i + 1;
+				break;
+			}
+		}
+		_path = path;
+		_directory = path.slice(0, size);
 		_tokens = lexeme(source);
 		_index = 0;
 	}
@@ -26,7 +35,8 @@ struct Parser {
 		DocumentNode* document = new DocumentNode();
 		document->kind = NodeKind_document;
 		document->range = _get().range;
-		document->metadata = _parseMetadata();
+		document->path = _path;
+		_parseMetadata(document);
 
 		while (_has()) {
 			Node* node = _parseBlock();
@@ -42,49 +52,36 @@ struct Parser {
 		return document;
 	}
 
-	Array<Node*> _parseMetadata() {
-		Array<Node*> metadata;
-		if (_hasNext(2) &&
+	void _parseMetadata(DocumentNode* doc) {
+		if (_hasNext(3) &&
 			_getNext(0).kind == TokenKind_script &&
-			_getNext(1).kind == TokenKind_id &&
-			_getNext(2).kind == TokenKind_colon) {
+			_getNext(1).kind == TokenKind_symbol &&
+			_getNext(2).kind == TokenKind_colon &&
+			_getNext(3).kind == TokenKind_string) {
 			while (_has()) {
 				parseEntry:
-				if (_hasNext(2) &&
+				if (_hasNext(3) &&
 					_getNext(0).kind == TokenKind_script &&
-					_getNext(1).kind == TokenKind_id &&
-					_getNext(2).kind == TokenKind_colon) {
-					EntryNode* entry = new EntryNode();
-					entry->kind = NodeKind_entry;
-					entry->range = _get().range;
-					_advance();
-					entry->id = _get().content;
-					metadata.append(entry);
-					_advance();
-					_advance();
-					while (_has()) {
-						if (_get().kind == TokenKind_newline) {
-							_advance();
-							goto parseEntry;
-						}
-						if (_get().kind == TokenKind_newlines) {
-							_advance();
-							goto end;
-						}
-						Node* node = _parseLine();
-						if (node == nullptr) {
-							break;
-						}
-						entry->children.append(node);
-						entry->range.end = node->range.end;
+					_getNext(1).kind == TokenKind_symbol &&
+					_getNext(2).kind == TokenKind_colon &&
+					_getNext(3).kind == TokenKind_string) {
+					doc->metadata.set(_getNext(1).content, _getNext(3).content);
+					doc->range.end = _getNext(3).range.end;
+					_advanceNext(3);
+
+					if (_is(TokenKind_newline)) {
+						_advance();
+						goto parseEntry;
+					}
+					if (_is(TokenKind_newlines)) {
+						_advance();
+						return;
 					}
 					continue;
 				}
 				break;
 			}
 		}
-		end:
-		return metadata;
 	}
 
 	Node* _parseBlock() {
@@ -107,8 +104,6 @@ struct Parser {
 				return _parseAdmon();
 			case TokenKind_pipe:
 				return _parseTable();
-			case TokenKind_citation:
-				return _parseCitation();
 			case TokenKind_script:
 				return _parseScript();
 			case TokenKind_text:
@@ -125,7 +120,7 @@ struct Parser {
 			case TokenKind_rightquote:
 			case TokenKind_singleleftquote:
 			case TokenKind_singlerightquote:
-			case TokenKind_openref:
+			case TokenKind_openbracket:
 			case TokenKind_footnote:
 			default:
 				return _parseParagraph();
@@ -293,7 +288,7 @@ struct Parser {
 		code->kind = NodeKind_fencedcode;
 		code->range = token.range;
 		_advance();
-		if (_is(TokenKind_id)) {
+		if (_is(TokenKind_symbol)) {
 			code->lang = _get().content;
 			_advance();
 		}
@@ -437,63 +432,70 @@ struct Parser {
 		return table;
 	}
 
-	Node* _parseCitation() {
-		EntryNode* ref = new EntryNode();
-		ref->kind = NodeKind_citation;
-		ref->range = _get().range;
-		_advance();
-		if (_is(TokenKind_id)) {
-			ref->id = _get().content;
-			ref->range.end = _get().range.end;
-			_advance();
-			if (_is(TokenKind_newline)) {
-				_advance();
-				while (_has()) {
-					if (_get().kind == TokenKind_id) {
-						EntryNode* entry = new EntryNode();
-						entry->kind = NodeKind_entry;
-						entry->range = _get().range;
-						entry->id = _get().content;
-						ref->children.append(entry);
-						_advance();
-						while (_has()) {
-							if (_get().kind == TokenKind_newline) {
-								_advance();
-								break;
-							}
-							if (_get().kind == TokenKind_newlines) {
-								_advance();
-								break;
-							}
-							Node* node = _parseLine();
-							if (node == nullptr) {
-								break;
-							}
-							entry->children.append(node);
-							entry->range.end = node->range.end;
-							ref->range.end = node->range.end;
-						}
-						continue;
-					}
-					break;
-				}
-			}
-		}
-		return ref;
-	}
-
 	Node* _parseScript() {
 		Token token = _get();
-		if (_hasNext(2) && _getNext(1).content == "include" && _getNext(2).kind == TokenKind_argument) {
+		if (_hasNext(2) && 
+			_getNext(1).kind == TokenKind_func && _getNext(1).content == "include" && 
+			_getNext(2).kind == TokenKind_string) {
 			String path = _directory;
 			path.append(_parseQuotedString(_getNext(2).content));
 			_advanceNext(2);
-			String content = readFile(path);
-			DocumentNode* doc = parse(content);
-			if (doc != nullptr) {
-				doc->path = path;
-			}
+			DocumentNode* doc = parseFile(path);
 			return doc;
+		}
+		if (_hasNext(2) && 
+			_getNext(1).kind == TokenKind_func &&
+			(_getNext(2).kind == TokenKind_newline || _getNext(2).kind == TokenKind_newlines)) {
+			FuncNode* func = new FuncNode();
+			func->kind = NodeKind_func;
+			func->range = token.range;
+			func->range.end = _getNext(1).range.end;
+			func->symbol = _getNext(1).content;
+			_advanceNext(2);
+			return func;
+		}
+		if (_hasNext(3) && 
+			_getNext(1).kind == TokenKind_func &&
+			_getNext(2).kind == TokenKind_string &&
+			(_getNext(3).kind == TokenKind_newline || _getNext(3).kind == TokenKind_newlines)) {
+			FuncNode* func = new FuncNode();
+			func->kind = NodeKind_func;
+			func->range = token.range;
+			func->range.end = _getNext(1).range.end;
+			func->symbol = _getNext(1).content;
+			func->arguments.set("0", _getNext(2).content);
+			_advanceNext(3);
+			return func;
+		}
+		if (_hasNext(3) && 
+			_getNext(1).kind == TokenKind_func &&
+			_getNext(2).kind == TokenKind_openbrace && 
+			_getNext(3).kind == TokenKind_newline) {
+			FuncNode* func = new FuncNode();
+			func->kind = NodeKind_func;
+			func->range = token.range;
+			func->symbol = _getNext(1).content;
+			_advanceNext(3);
+			while (_has()) {
+				if (_get().kind == TokenKind_closebrace) {
+					func->range.end = _get().range.end;
+					_advance();
+					if (_is(TokenKind_newline) || _is(TokenKind_newlines)) {
+						_advance();
+					}
+					return func;
+				}
+				if (_hasNext(3) && 
+					_getNext(0).kind == TokenKind_symbol &&
+					_getNext(1).kind == TokenKind_colon &&
+					_getNext(2).kind == TokenKind_string &&
+					_getNext(3).kind == TokenKind_newline) {
+					func->arguments.set(_getNext(0).content, _getNext(2).content);
+					_advanceNext(3);
+					continue;
+				}
+				break;
+			}
 		}
 		return _parseParagraph();
 	}
@@ -550,8 +552,9 @@ struct Parser {
 				case TokenKind_rightquote:
 				case TokenKind_singleleftquote:
 				case TokenKind_singlerightquote:
-				case TokenKind_openref:
+				case TokenKind_openbracket:
 				case TokenKind_footnote: {
+				case TokenKind_hashtag:
 					Node* node = _parseLine();
 					if (node == nullptr) {
 						goto end;
@@ -628,7 +631,7 @@ struct Parser {
 				return _create(NodeKind_singleleftquote);
 			case TokenKind_singlerightquote:
 				return _create(NodeKind_singlerightquote);
-			case TokenKind_openref: {
+			case TokenKind_openbracket: {
 				ResourceNode* resource = new ResourceNode();
 				switch (_get().content[0]) {
 					case '[':
@@ -638,7 +641,7 @@ struct Parser {
 						resource->kind = NodeKind_view;
 						break;
 					case '^':
-						resource->kind = NodeKind_citation;
+						resource->kind = NodeKind_cite;
 						break;
 				}
 				resource->range = _get().range;
@@ -647,18 +650,18 @@ struct Parser {
 					resource->source = _get().content;
 					_advance();
 				}
-				if (_is(TokenKind_quotedref)) {
+				if (_is(TokenKind_string)) {
 					resource->source = _parseQuotedString(_get().content);
 					_advance();
 				}
-				if (_is(TokenKind_closeref)) {
+				if (_is(TokenKind_closebracket)) {
 					resource->range.end = _get().range.end;
 					_advance();
 				}
-				if (_is(TokenKind_openlabel)) {
+				if (_is(TokenKind_openparen)) {
 					_advance();
 					while (_has()) {
-						if (_get().kind == TokenKind_closelabel) {
+						if (_get().kind == TokenKind_closeparen) {
 							resource->range.end = _get().range.end;
 							_advance();
 							break;
@@ -677,10 +680,10 @@ struct Parser {
 				footnote->kind = NodeKind_footnote;
 				footnote->range = _get().range;
 				_advance();
-				if (_is(TokenKind_openlabel)) {
+				if (_is(TokenKind_openparen)) {
 					_advance();
 					while (_has()) {
-						if (_get().kind == TokenKind_closelabel) {
+						if (_get().kind == TokenKind_closeparen) {
 							footnote->range.end = _get().range.end;
 							_advance();
 							break;
@@ -693,6 +696,14 @@ struct Parser {
 					}
 				}
 				return footnote;
+			}
+			case TokenKind_hashtag: {
+				ContentNode* tag = new ContentNode();
+				tag->kind = NodeKind_hashtag;
+				tag->range = _get().range;
+				tag->content = _get().content.slice(1, _get().content.size() - 1);
+				_advance();
+				return tag;
 			}
 			default:
 				return nullptr;
@@ -736,7 +747,7 @@ struct Parser {
 		code->kind = NodeKind_code;
 		code->range = _get().range;
 		_advance();
-		if (_is(TokenKind_id)) {
+		if (_is(TokenKind_symbol)) {
 			String lang = _get().content;
 			code->content = lang;
 			code->range.end = _get().range.end;
@@ -847,14 +858,7 @@ struct Parser {
 };
 
 DocumentNode* parseFile(String const& path) {
-	int size = 0;
-	for (int i = path.size() - 1; i >= 0; i--) {
-		if (path[i] == '/') {
-			size = i + 1;
-			break;
-		}
-	}
-	Parser parser(readFile(path), path.slice(0, size));
+	Parser parser(readFile(path), path);
 	return parser.parseDocument();
 }
 
