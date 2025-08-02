@@ -461,7 +461,7 @@ struct Parser {
 			FuncNode* func = new FuncNode();
 			func->kind = NodeKind_func;
 			func->range = token.range;
-			func->range.end = _getNext(1).range.end;
+			func->range.end = _getNext(2).range.end;
 			func->symbol = _getNext(1).content;
 			func->arguments.set("0", _getNext(2).content);
 			_advanceNext(3);
@@ -491,6 +491,7 @@ struct Parser {
 					_getNext(2).kind == TokenKind_string &&
 					_getNext(3).kind == TokenKind_newline) {
 					func->arguments.set(_getNext(0).content, _getNext(2).content);
+					func->range.end = _getNext(3).range.end;
 					_advanceNext(3);
 					continue;
 				}
