@@ -1,7 +1,6 @@
-# Reference
+# Citation
 
-## Citation
-### Citation In-Text
+## Reference
 ```gularen
 ^[12 Rules] ^[Lateral Thinking] ^[Good Omens] ^[My Lady Jane]
 ```
@@ -14,7 +13,6 @@
 </p>
 ```
 
-### Citation Reference
 ```gularen
 % reference {
     id: 12 Rules
@@ -65,13 +63,12 @@ See ^[Polar Bear]
 </p>
 ```
 
-### Figure Reference
 ```gularen
 % figure {
     id: Polar Bear
-    image: ![Polar Bear.png]
+    image: Polar Bear.png
     description: Polar bear can see 5 minutes into the future
-}
+)
 ```
 ```html
 <figure id="Reference-Polar-Bear">

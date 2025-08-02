@@ -595,7 +595,7 @@ struct Lexer {
 					_advance();
 					if (_is('[')) {
 						_advance();
-						_lexemeResource(p);
+						_lexemeResource(p, false);
 						break;
 					}
 					_append(TokenKind_text, p, _point);
