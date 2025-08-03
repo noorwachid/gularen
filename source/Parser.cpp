@@ -1,8 +1,5 @@
-#include "parse.hpp"
-#include "lexeme.hpp"
-#include "print.hpp"
+#include "Parser.hpp"
 #include "Collection/Disk.hpp"
-#include <stdio.h>
 
 struct Point {
 	int index;
@@ -154,13 +151,13 @@ struct Parser {
 		_advance();
 		switch (token.content.size()) {
 			case 3:
-				section->kind = NodeKind_chapter;
-				break;
-			case 2:
 				section->kind = NodeKind_section;
 				break;
-			case 1:
+			case 2:
 				section->kind = NodeKind_subsection;
+				break;
+			case 1:
+				section->kind = NodeKind_subsubsection;
 				break;
 		}
 		HierarchyNode* title = new HierarchyNode();

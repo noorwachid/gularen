@@ -1,6 +1,4 @@
-#include "print.hpp"
-#include "lexeme.hpp"
-#include "parse.hpp"
+#include "Printer.hpp"
 #include <stdio.h>
 
 void printString(String const& value) {
@@ -133,9 +131,9 @@ struct Printer {
 		printf("kind: ");
 		switch (node->kind) {
 			case NodeKind_document: printf("document"); break;
-			case NodeKind_chapter: printf("chapter"); break;
 			case NodeKind_section: printf("section"); break;
 			case NodeKind_subsection: printf("subsection"); break;
+			case NodeKind_subsubsection: printf("subsubsection"); break;
 			case NodeKind_title: printf("title"); break;
 			case NodeKind_subtitle: printf("subtitle"); break;
 			case NodeKind_paragraph: printf("paragraph"); break;
@@ -253,9 +251,9 @@ struct Printer {
 				keyArray("children", item->children);
 				break;
 			}
-			case NodeKind_chapter:
 			case NodeKind_section:
 			case NodeKind_subsection:
+			case NodeKind_subsubsection:
 			case NodeKind_title:
 			case NodeKind_subtitle:
 			case NodeKind_quote:

@@ -1,5 +1,4 @@
-#include "lexeme.hpp"
-#include <stdio.h>
+#include "Lexer.hpp"
 
 struct Point {
 	int index;

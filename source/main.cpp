@@ -1,32 +1,83 @@
 #include "Collection/Disk.hpp"
-#include "lexeme.hpp"
-#include "parse.hpp"
-#include "print.hpp"
+#include "Parser.hpp"
+#include "HTMLGen.hpp"
 #include <stdio.h>
 
-void compile(String const& path) {
-	String content = readFile(path);
-	Array<Token> tokens = lexeme(content);
-	printf("%.*s\n", content.size(), content.items());
-	printf("---\n");
-	printArrayToken(tokens);
-	printf("---\n");
-	Node* node = parseFile(path);
+static constexpr char const* version = "2.0.1";
+
+void compile(String const& inPath, String const& outPath, bool isEmbedded) {
+	Node* node = parseFile(inPath);
 	if (node != nullptr) {
-		printNode(node);
+		String content = genHTML(node);
 		delete node;
+		if (outPath.size() == 0) {
+			printf("%.*s\n", content.size(), content.items());
+			return;
+		}
+		writeFile(outPath, content);
+		return;
 	}
 }
 
 int main(int argc, char** argv) {
-	String path;
+	String inPath;
+	String outPath;
+	bool isEmbedded = false;
+	bool showHelp = false;
+	bool showVersion = false;
+
 	for (int i = 1; i < argc; i++) {
-		path = argv[i];
+		String arg = argv[i];
+		if (arg == "-h" || arg == "--help") {
+			showHelp = true;
+			continue;
+		}
+		if (arg == "-v" || arg == "--version") {
+			showVersion = true;
+			continue;
+		}
+		if (arg == "-e" || arg == "--embedded") {
+			isEmbedded = true;
+			continue;
+		}
+		if (i + 1 < argc && (arg == "-o" || arg == "--output")) {
+			outPath = argv[i + 1];
+			i++;
+			continue;
+		}
+		inPath = argv[i];
 	}
-	if (path.size() == 0) {
-		return 1;
+
+	if (showHelp) {
+		printf("-h\n");
+		printf("--help\n");
+		printf("	display help page\n");
+
+		printf("-v\n");
+		printf("--version\n");
+		printf("	display version\n");
+
+		printf("-e\n");
+		printf("--embedded\n");
+		printf("	render without header\n");
+
+		printf("-o index.html\n");
+		printf("--output index.html\n");
+		printf("	render to file index.html\n");
+		return 0;
 	}
-	compile(path);
+
+	if (showVersion) {
+		printf("%s\n", version);
+		return 0;
+	}
+
+	if (inPath.size() == 0) {
+		printf("please provide the input path\n");
+		return 0;
+	}
+
+	compile(inPath, outPath, isEmbedded);
 
 	return 0;
 }

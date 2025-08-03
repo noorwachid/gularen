@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Collection/Table.hpp"
-#include "lexeme.hpp"
+#include "Lexer.hpp"
 
 enum NodeKind {
 	NodeKind_document,
-	NodeKind_chapter,
 	NodeKind_section,
 	NodeKind_subsection,
+	NodeKind_subsubsection,
 	NodeKind_quote,
 	NodeKind_title,
 	NodeKind_subtitle,

@@ -3,22 +3,23 @@
 #include <stdlib.h>
 
 FILE* _openFile(String const& path, char const* mode) {
-	char cPathStack[256];
-	char* cPath;
 	if (path.size() > 255) {
 		char* cPath = (char*) malloc(path.size() + 1);
-	} else {
-		cPath = cPathStack;
-	}
-	for (int i = 0; i < path.size(); i++) {
-		cPath[i] = path[i];
-	}
-	cPath[path.size()] = 0;
-	FILE* file = fopen(cPath, mode);
-	if (path.size() > 255) {
+		cPath[path.size()] = 0;
+		for (int i = 0; i < path.size(); i++) {
+			cPath[i] = path[i];
+		}
+		FILE* file = fopen(cPath, mode);
 		free(cPath);
+		return file;
 	}
-	return file;
+
+	char cPathStack[256];
+	cPathStack[path.size()] = 0;
+	for (int i = 0; i < path.size(); i++) {
+		cPathStack[i] = path[i];
+	}
+	return fopen(cPathStack, mode);
 }
 
 String readFile(String const& path) {

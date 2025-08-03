@@ -1,6 +1,6 @@
 #include "Collection/Array.hpp"
-#include "lexeme.hpp"
-#include "parse.hpp"
+#include "Lexer.hpp"
+#include "Parser.hpp"
 
 void printArrayToken(Array<Token> const& tokens);
 

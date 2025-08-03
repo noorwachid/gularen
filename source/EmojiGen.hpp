@@ -2,4 +2,4 @@
 
 #include "Collection/String.hpp"
 
-String generateEmoji(String const& code);
+String genEmoji(String const& code);

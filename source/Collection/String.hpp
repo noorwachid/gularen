@@ -2,6 +2,7 @@
 
 #include "Byte.hpp"
 #include "Hash.hpp"
+#include <stdio.h>
 
 class String {
 public:
@@ -141,6 +142,7 @@ private:
 		}
 		if (_size <= _smallStringSize) {
 			for (int i = 0; i < _size; i++) {
+				printf("_size: %d, i: %d\n", _size, i);
 				_stack.items[i] = items[i];
 			}
 			return;
