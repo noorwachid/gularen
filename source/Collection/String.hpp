@@ -2,7 +2,6 @@
 
 #include "Byte.hpp"
 #include "Hash.hpp"
-#include <stdio.h>
 
 class String {
 public:
@@ -140,9 +139,8 @@ private:
 		if (_size == 0) {
 			return;
 		}
-		if (_size <= _smallStringSize) {
-			for (int i = 0; i < _size; i++) {
-				printf("_size: %d, i: %d\n", _size, i);
+		if (size <= _smallStringSize) {
+			for (int i = 0; i < size; i++) {
 				_stack.items[i] = items[i];
 			}
 			return;
@@ -184,7 +182,7 @@ private:
 
 	void _checkCapacity(int size) {
 		if (_size + size > _heap.capacity) {
-			int size = _size;
+			int oldSize = _size;
 			int minCapacity = _size + size;
 			int doubledCapacity = _heap.capacity * 2;
 			int capacity = minCapacity > doubledCapacity ? minCapacity : doubledCapacity;
@@ -195,7 +193,7 @@ private:
 			}
 
 			_removeRef();
-			_size = size;
+			_size = oldSize;
 			_heap.capacity = capacity;
 			_heap.items = items;
 		}

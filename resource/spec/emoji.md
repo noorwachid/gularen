@@ -15,7 +15,7 @@ I look forward to see you soon :smile:!
 
 ## Expression
 smile: 😄,
-small-smile: 🙂,
+slightly-smile: 🙂,
 laughing: 😆,
 blush: 😊,
 smiley: 😃,

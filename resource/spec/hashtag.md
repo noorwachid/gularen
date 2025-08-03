@@ -6,5 +6,5 @@
 #someTopic
 ```
 ```html
-<a class="hash-tag" href="someTopic">#someTopic</a>
+<a class="hashtag" href="someTopic">#someTopic</a>
 ```

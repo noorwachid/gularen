@@ -36,6 +36,7 @@ enum NodeKind {
 	NodeKind_thematicbreak,
 	NodeKind_linebreak,
 
+	NodeKind_space,
 	NodeKind_hyphen,
 	NodeKind_endash,
 	NodeKind_emdash,

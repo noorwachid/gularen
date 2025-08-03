@@ -126,7 +126,7 @@ public:
 	}
 
 	Iterator iterate() {
-		return Iterator(_entries[_capacity]);
+		return Iterator(_capacity == 0 ? nullptr : _entries[_capacity]);
 	}
 
 	int size() const {

@@ -1,5 +1,6 @@
 #include "Collection/Disk.hpp"
 #include "Parser.hpp"
+#include "Printer.hpp"
 #include "HTMLGen.hpp"
 #include <stdio.h>
 
@@ -25,9 +26,14 @@ int main(int argc, char** argv) {
 	bool isEmbedded = false;
 	bool showHelp = false;
 	bool showVersion = false;
+	bool showDebugTree = false;
 
 	for (int i = 1; i < argc; i++) {
 		String arg = argv[i];
+		if (arg == "--debug-tree") {
+			showDebugTree = true;
+			continue;
+		}
 		if (arg == "-h" || arg == "--help") {
 			showHelp = true;
 			continue;
@@ -64,6 +70,11 @@ int main(int argc, char** argv) {
 		printf("-o index.html\n");
 		printf("--output index.html\n");
 		printf("	render to file index.html\n");
+		return 0;
+	}
+
+	if (showDebugTree) {
+		printNode(parseFile(inPath));
 		return 0;
 	}
 

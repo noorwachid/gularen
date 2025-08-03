@@ -150,13 +150,13 @@ struct Parser {
 		HierarchyNode* section = new HierarchyNode();
 		_advance();
 		switch (token.content.size()) {
-			case 3:
+			case 4:
 				section->kind = NodeKind_section;
 				break;
-			case 2:
+			case 3:
 				section->kind = NodeKind_subsection;
 				break;
-			case 1:
+			case 2:
 				section->kind = NodeKind_subsubsection;
 				break;
 		}
@@ -211,6 +211,7 @@ struct Parser {
 		}
 		end:
 		_range(section);
+
 		return section;
 	}
 
@@ -226,7 +227,7 @@ struct Parser {
 			HierarchyNode* item = nullptr;
 			if (pointKind == TokenKind_checkbox) {
 				CheckItemNode* checkitem = new CheckItemNode();
-				checkitem->isChecked = _get().content[3] == 'x';
+				checkitem->isChecked = _get().content[1] == 'x';
 				item = checkitem;
 			} else {
 				item = new HierarchyNode();
@@ -561,7 +562,7 @@ struct Parser {
 					break;
 				}
 				case TokenKind_newline: 
-					_advance();
+					paragraph->children.append(_create(NodeKind_space));
 					break;
 				case TokenKind_newlines:
 					_advance();

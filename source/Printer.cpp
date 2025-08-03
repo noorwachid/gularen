@@ -145,6 +145,8 @@ struct Printer {
 			case NodeKind_checkitem: printf("checkitem"); break;
 			case NodeKind_quote: printf("quote"); break;
 			case NodeKind_thematicbreak: printf("thematicbreak"); break;
+
+			case NodeKind_space: printf("space"); break;
 			case NodeKind_hyphen: printf("hyphen"); break;
 			case NodeKind_endash: printf("endash"); break;
 			case NodeKind_emdash: printf("emdash"); break;
