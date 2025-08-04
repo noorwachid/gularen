@@ -36,6 +36,10 @@ struct Parser {
 		_parseMetadata(document);
 
 		while (_has()) {
+			if (_get().kind == TokenKind_newline || _get().kind == TokenKind_newlines) {
+				_advance();
+				continue;
+			}
 			Node* node = _parseBlock();
 			if (node == nullptr) {
 				// TODO: delete attribute items
@@ -358,13 +362,15 @@ struct Parser {
 
 							if (_is(TokenKind_bar)) {
 								table->isHeadered = true;
-								Alignment alignment = Alignment_left;
+								Alignment alignment = Alignment_none;
 								Byte first = _get().content[0];
 								Byte last = _get().content[_get().content.size() - 1];
 								if (first == ':' && last == ':') {
 									alignment = Alignment_center;
 								} else if (last == ':') {
 									alignment = Alignment_right;
+								} else if (first == ':') {
+									alignment = Alignment_left;
 								}
 								table->range.end = _get().range.end;
 								table->alignments.append(alignment);
@@ -753,10 +759,8 @@ struct Parser {
 			_advance();
 			if (_is(TokenKind_backtick)) {
 				code->range.end = _get().range.end;
-				Range firstRange = _get().range;
 				_advance();
 				if (_is(TokenKind_backtick)) {
-					Range secondRange = _get().range;
 					code->range.end = _get().range.end;
 					_advance();
 					if (_is(TokenKind_source)) {

@@ -44,14 +44,32 @@ int main()
 ```gularen
 Why do we use `console.log('here')` instead of the majestic breakpoint?
 ```
-````html
+```html
 <p>Why do we use <code>console.log('here')</code> instead of the majestic breakpoint?</p>
 ```
 
 ### Labeled Inline
 ```gularen
-Let's say `latex``\pi = 3` then the building is likely collapsed.
+Type `python``print('hello world')` into the python console to print hello world.
 ```
 ```html
-<p>Let's say <code class="language-latex">\pi = 3</code> then the building is likely collapsed.</p>
+<p>Type <code class="language-python">print('hello world')</code> into the python console to print hello world.</p>
+```
+
+## View Hint
+Add `!` before language code to view the visual output
+```gularen
+Let's say `!latex``\pi = 3` then the building is likely collapsed.
+```
+```html
+<p>Let's say <span class="view language-latex">\pi = 3</span> then the building is likely collapsed.</p>
+```
+
+````gularen
+```!latex
+\sum_{x=1}^{5} x
+```
+````
+```html
+<div class="view language-latex">\sum_{x=1}^{5} x</div>
 ```

@@ -103,6 +103,7 @@ struct CodeNode: Node {
 };
 
 enum Alignment {
+	Alignment_none,
 	Alignment_left,
 	Alignment_center,
 	Alignment_right,

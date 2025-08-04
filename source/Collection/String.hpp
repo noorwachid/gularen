@@ -2,6 +2,8 @@
 
 #include "Byte.hpp"
 #include "Hash.hpp"
+#include <cstdio>
+#include <cstring>
 
 class String {
 public:
@@ -135,24 +137,26 @@ public:
 
 private:
 	void _initialize(int size, Byte const* items) {
-		_size = size;
-		if (_size == 0) {
+		if (size == 0) {
+			_size = 0;
 			return;
 		}
 		if (size <= _smallStringSize) {
 			for (int i = 0; i < size; i++) {
 				_stack.items[i] = items[i];
 			}
+			_size = size;
 			return;
 		}
 
-		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * _size);
+		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * size);
 		header->count = 1;
 		_heap.items = (Byte*)(header + 1);
-		_heap.capacity = _size;
-		for (int i = 0; i < _size; i++) {
+		_heap.capacity = size;
+		for (int i = 0; i < size; i++) {
 			_heap.items[i] = items[i];
 		}
+		_size = size;
 	}
 	void _checkMigration(int size) {
 		if (_size <= _smallStringSize) {
@@ -204,7 +208,7 @@ private:
 			return;
 		}
 		if (_size <= _smallStringSize) {
-			for (int i = 0; i < _smallStringSize; i++) {
+			for (int i = 0; i < _size; i++) {
 				_stack.items[i] = other._stack.items[i];
 			}
 			return;
@@ -249,11 +253,12 @@ private:
 		Byte* items;
 		int capacity;
 	};
-
-	static constexpr int _smallStringSize = sizeof(Heap);
-
 	struct Stack {
-		Byte items[_smallStringSize];
+		Byte items[sizeof(Heap)];
+	};
+
+	enum {
+		_smallStringSize = sizeof(Heap),
 	};
 
 	int _size;

@@ -103,7 +103,7 @@ struct Lexer {
 			case ':': case '*': case '_': case '#':
 			case '<':
 			case '"':
-			case '(': case ')': case '!':
+			case '(': case ')': case '!': case '^':
 			case '\'':
 			case '\\':
 			case '\n': 
@@ -256,6 +256,9 @@ struct Lexer {
 			if (_is(' ')) {
 				_advance();
 				Point langPoint = _point;
+				if (_is('!')) {
+					_advance();
+				}
 				while (_has()) {
 					switch (_get()) {
 						case 'a': case 'b': case 'c': case 'd':
@@ -648,6 +651,9 @@ struct Lexer {
 		Point p = _point;
 		_lexemeMonograph(TokenKind_backtick);
 		Point sourcePoint = _point;
+		if (_is('!')) {
+			_advance();
+		}
 		if (_has()) {
 			bool isValidLang = true;
 			while (_has()) {

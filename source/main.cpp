@@ -26,10 +26,15 @@ int main(int argc, char** argv) {
 	bool isEmbedded = false;
 	bool showHelp = false;
 	bool showVersion = false;
+	bool showDebugToken = false;
 	bool showDebugTree = false;
 
 	for (int i = 1; i < argc; i++) {
 		String arg = argv[i];
+		if (arg == "--debug-token") {
+			showDebugToken = true;
+			continue;
+		}
 		if (arg == "--debug-tree") {
 			showDebugTree = true;
 			continue;
@@ -70,6 +75,12 @@ int main(int argc, char** argv) {
 		printf("-o index.html\n");
 		printf("--output index.html\n");
 		printf("	render to file index.html\n");
+		return 0;
+	}
+
+	if (showDebugToken) {
+		String const& content = readFile(inPath);
+		printArrayToken(lexeme(content));
 		return 0;
 	}
 

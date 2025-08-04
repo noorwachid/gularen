@@ -80,8 +80,8 @@ private:
 	void _copy(int size, T* dest, T* source) {
 		Byte* destBytes = (Byte*) dest;
 		Byte* sourceBytes = (Byte*) source;
-
-		for (int i = 0; i < size * sizeof(T); i++) {
+		int byteSize = size * sizeof(T);
+		for (int i = 0; i < byteSize; i++) {
 			destBytes[i] = sourceBytes[i];
 		}
 	}
