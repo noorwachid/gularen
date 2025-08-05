@@ -2,8 +2,6 @@
 
 #include "Byte.hpp"
 #include "Hash.hpp"
-#include <cstdio>
-#include <cstring>
 
 class String {
 public:
@@ -17,11 +15,11 @@ public:
 	}
 
 	String(char const* literal) {
-		char const* it = literal;
-		while (*it) {
-			it++;
+		int size = 0;
+		while (literal[size] == '\0') {
+			size++;
 		}
-		_initialize(it - literal, (Byte const*) literal);
+		_initialize(size, (Byte const*) literal);
 	}
 
 	String(int size, Byte const* items) {
@@ -136,16 +134,22 @@ public:
 	}
 
 private:
+	void _copy(int size, Byte const* source, Byte* dest) {
+		for (int i = 0; i < size; i++) {
+			dest[i] = source[i];
+		}
+	}
+
 	void _initialize(int size, Byte const* items) {
 		if (size == 0) {
 			_size = 0;
+			_stack.items[0] = '\0';
 			return;
 		}
+
 		if (size <= _smallStringSize) {
-			for (int i = 0; i < size; i++) {
-				_stack.items[i] = items[i];
-			}
 			_size = size;
+			_copy(size, items, _stack.items);
 			return;
 		}
 

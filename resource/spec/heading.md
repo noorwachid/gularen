@@ -65,39 +65,3 @@ If on another file [Chapter 1.gr>Laminal Flow]
 </section>
 ```
 
-## Conflicting Section Link
-In textbook often each chapters have the same subsection name like "Exercises".
-The backend has to address this issues. Either by always prefixing the section with chapter or
-only prefixing with chapter if has subsection conflict.
-
-For subsection conflict you can add another `>` after section.
-
-```gularen
->>> Chapter 1
->> Exercises
-
->>> Chapter 2
->> Exercises
-
-[>Chapter 1>Exercises]
-[>Chapter 2>Exercises]
-```
-```html
-<h1 id="Chapter-1">Chapter 1</h1>
-<h2 id="Chapter-1-Execises">Exercises</h2>
-
-<h1 id="Chapter-2">Chapter 2</h1>
-<h2 id="Chapter-2-Execises">Exercises</h2>
-
-<a href="#Chapter-1-Execises">Chapter 1 Exercises</a>
-<a href="#Chapter-2-Execises">Chapter 2 Exercises</a>
-```
-
-For subsubsection conflict you can add another `>` after subsection.
-
-```gularen
-[>Chapter>Subsection>Subsubsection]
-```
-```html
-<a href="#Chapter-Subsection-Subsubsection">Chapter Subsection Subsubsection</a>
-```

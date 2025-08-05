@@ -1,4 +1,5 @@
 #include "HTMLGen.hpp"
+#include "CitationGen.hpp"
 #include "EmojiGen.hpp"
 #include "Parser.hpp"
 #include "Collection/Conv.hpp"
@@ -339,7 +340,18 @@ struct HTMLGen {
 				break;
 			}
 			case NodeKind_func: {
-				// FuncNode* func = static_cast<FuncNode*>(node);
+				FuncNode* func = static_cast<FuncNode*>(node);
+				if (func->symbol == "reference") {
+					_source.append("<div class=\"reference\" id=\"");
+					_source.append(_escapeId(func->arguments.has("id") ? func->arguments["id"] : ""));
+					_source.append("\">\n");
+					Array<Node*> nodes = genReference(func);
+					for (int i = 0; i < nodes.size(); i++) {
+						_gen(nodes[i]);
+						delete nodes[i];
+					}
+					_source.append("</div>\n");
+				}
 				break;
 			}
 		}
@@ -403,6 +415,36 @@ struct HTMLGen {
 			_source.append("</div>\n");
 			_footnotes = Array<ResourceNode*>();
 		}
+	}
+
+	String _escapeId(String const& value) {
+		String id;
+		for (int i = 0; i < value.size(); i++) {
+			switch (value[i]) {
+				case 'A': case 'B': case 'C': case 'D':
+				case 'E': case 'F': case 'G': case 'H':
+				case 'I': case 'J': case 'K': case 'L':
+				case 'M': case 'N': case 'O': case 'P':
+				case 'Q': case 'R': case 'S': case 'T':
+				case 'U': case 'V': case 'W': case 'X':
+				case 'Y': case 'Z':
+				case 'a': case 'b': case 'c': case 'd':
+				case 'e': case 'f': case 'g': case 'h':
+				case 'i': case 'j': case 'k': case 'l':
+				case 'm': case 'n': case 'o': case 'p':
+				case 'q': case 'r': case 's': case 't':
+				case 'u': case 'v': case 'w': case 'x':
+				case 'y': case 'z': case '-':
+				case '0': case '1': case '2': case '3':
+				case '4': case '5': case '6': case '7':
+				case '8': case '9':
+					id.append(1, value.items() + i);
+					break;
+				default:
+					break;
+			}
+		}
+		return id;
 	}
 };
 

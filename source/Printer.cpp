@@ -305,6 +305,7 @@ struct Printer {
 						printf(", ");
 					}
 					switch (t->alignments[i]) {
+						case Alignment_none: printf("none"); break;
 						case Alignment_left: printf("left"); break;
 						case Alignment_center: printf("center"); break;
 						case Alignment_right: printf("right"); break;

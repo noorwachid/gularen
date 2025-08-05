@@ -17,7 +17,7 @@
 % reference {
     id: "12 Rules"
     type: "Book"
-    book: "12 Rules of Life"
+    title: "12 Rules of Life"
     author: "Jordan Bernt Peterson"
     year: "2018"
     publisher: "Random House Canada"
@@ -26,7 +26,7 @@
 % reference {
     id: "Lateral Thinking"
     type: "book"
-    book: "Lateral Thinking: Creativity Step by Step"
+    title: "Lateral Thinking: Creativity Step by Step"
     author: "Edward de Bono"
     year: "1970"
     publisher: "Harper & Row"
@@ -35,7 +35,7 @@
 % reference {
     id: "Good Omens"
     type: "book"
-    book: "Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch"
+    title: "Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch"
     authors: "Terry Pratchett, Neil Gaiman"
     year: "1990"
     publisher "Gollancz"
@@ -44,7 +44,7 @@
 % reference {
     id: "My Lady Jane"
     type: "book"
-    book: "My Lady Jane"
+    title: "My Lady Jane"
     authors: "Cynthia Hand, Brodi Ashton, Jodi Meadows"
     year: "2016"
     publisher: "HarperCollins"

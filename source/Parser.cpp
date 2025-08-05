@@ -494,7 +494,7 @@ struct Parser {
 					_getNext(1).kind == TokenKind_colon &&
 					_getNext(2).kind == TokenKind_string &&
 					_getNext(3).kind == TokenKind_newline) {
-					func->arguments.set(_getNext(0).content, _getNext(2).content);
+					func->arguments.set(_getNext(0).content, _parseQuotedString(_getNext(2).content));
 					func->range.end = _getNext(3).range.end;
 					_advanceNext(3);
 					continue;
