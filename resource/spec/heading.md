@@ -46,22 +46,10 @@ If the subsection modifier is placed in the next line of any title. It will be p
 </section>
 ```
 
-## Heading Link
-
+## Mention
 ```gularen
->>> Laminal Flow
-
-See [>Laminal Flow]
-
-If on another file [Chapter 1.gr>Laminal Flow]
+See the ^[Section 1]
 ```
 ```html
-<section class="section">
-	<h1 id="Laminar-Flow">Laminar Flow</h1>
-
-	<p>See <a href="#Laminar-Flow">Laminal Flow</a></p>
-
-	<p>If on another file <a href="Chapter 1.gr#Laminal-Flow">Chapter 1.gr Laminal Flow</a></p>
-</section>
+<p>See the <a href="#Section-1"></a></p>
 ```
-
