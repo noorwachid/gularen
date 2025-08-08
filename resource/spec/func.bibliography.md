@@ -52,9 +52,9 @@
 }
 ```
 ```html
-<div class="reference" id="Biblography-12-Rules">Peterson, J.B., (2018). <i>12 Rules of Life</i>. Random House Canada.</div>
-<div class="reference" id="Biblography-Lateral-Thinking">de Bono, E., (1970). <i>Lateral Thinking: Creativity Step by Step</i>. Harper & Row.</div>
-<div class="reference" id="Biblography-Good-Omens">Pratchett, T. & Gaiman, N. (1990). <i>Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch</i>. Gollancz .</div>
-<div class="reference" id="Biblography-MyLady-Jane">Hand, C., Ashton, B. & Meadows, J. (2016). <i>My Lady Jane</i>. HarperCollins.</div>
+<div class="bibliography" id="Biblography-12-Rules">Peterson, J.B., (2018). <i>12 Rules of Life</i>. Random House Canada.</div>
+<div class="bibliography" id="Biblography-Lateral-Thinking">de Bono, E., (1970). <i>Lateral Thinking: Creativity Step by Step</i>. Harper & Row.</div>
+<div class="bibliography" id="Biblography-Good-Omens">Pratchett, T. & Gaiman, N. (1990). <i>Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch</i>. Gollancz .</div>
+<div class="bibliography" id="Biblography-MyLady-Jane">Hand, C., Ashton, B. & Meadows, J. (2016). <i>My Lady Jane</i>. HarperCollins.</div>
 ```
 

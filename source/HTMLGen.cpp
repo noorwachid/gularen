@@ -7,17 +7,19 @@
 struct HTMLGen {
 	String _source;
 	Node* _node;
-	Node* _activeSection;
+
+	Array<HierarchyNode*> _sectionStacks;
+	Array<String> _sectionTitleStacks;
+
 	TableNode* _activeTable;
 	int _activeTableRow = 0;
 	int _activeTableColumn = 0;
 	Array<ResourceNode*> _footnotes;
-	Table<String, FuncNode*> _references;
+	Table<String, FuncNode*> _bibliographies;
 	Array<HierarchyNode*> _sections;
 
 	HTMLGen(Node* node) {
 		_node = node;
-		_activeSection = nullptr;
 		_activeTable = nullptr;
 	}
 
@@ -85,9 +87,9 @@ struct HTMLGen {
 				break;
 			case NodeKind_func: {
 				FuncNode* func = static_cast<FuncNode*>(node);
-				if (func->symbol == "bibliography" || func->symbol == "figure") {
+				if (func->symbol == "bibliography") {
 					if (func->arguments.has("id")) {
-						_references.set(func->arguments["id"], func);
+						_bibliographies.set(func->arguments["id"], func);
 					}
 				}
 				break;
@@ -179,9 +181,8 @@ struct HTMLGen {
 			case NodeKind_subsection:
 			case NodeKind_subsubsection: {
 				HierarchyNode* hierarchyNode = static_cast<HierarchyNode*>(node);
-				Node* oldSection = _activeSection;
-				_activeSection = node;
-				switch (_activeSection->kind) {
+				_sectionStacks.append(hierarchyNode);
+				switch (hierarchyNode->kind) {
 					case NodeKind_section:
 						_source.append("<section class=\"section\">\n");
 						break;
@@ -197,20 +198,50 @@ struct HTMLGen {
 				_genArray(hierarchyNode->children);
 				_genFootnote();
 				_source.append("</section>\n");
-				_activeSection = oldSection;
+
+				if (_sectionStacks.size() != 0) {
+					_sectionStacks.remove(_sectionStacks.size() - 1);
+				}
+				if (_sectionTitleStacks.size() != 0) {
+					_sectionTitleStacks.remove(_sectionTitleStacks.size() - 1);
+				}
 				break;
 			}
 			case NodeKind_title:
-				if (_activeSection != nullptr) {
-					switch (_activeSection->kind) {
+				if (_sectionStacks.size() != 0) {
+					HierarchyNode* title = static_cast<HierarchyNode*>(node);
+					HierarchyNode* section = _sectionStacks[_sectionStacks.size() - 1];
+					switch (section->kind) {
 						case NodeKind_section:
-							_genHierarchy(node, "<h1>", "</h1>\n");
+							_source.append("<h1 id=\"");
 							break;
 						case NodeKind_subsection:
-							_genHierarchy(node, "<h2>", "</h2>\n");
+							_source.append("<h2 id=\"");
 							break;
 						case NodeKind_subsubsection:
-							_genHierarchy(node, "<h3>", "</h3>\n");
+							_source.append("<h3 id=\"");
+							break;
+						default:
+							break;
+					}
+					_sectionTitleStacks.append(_escapeHeadingText(title));
+					for (int i = 0; i < _sectionTitleStacks.size(); i++) {
+						if (i != 0) {
+							_source.append("-");
+						}
+						_source.append(_escapeId(_sectionTitleStacks[i]));
+					}
+					_source.append("\">");
+					_genArray(title->children);
+					switch (section->kind) {
+						case NodeKind_section:
+							_source.append("</h1>\n");
+							break;
+						case NodeKind_subsection:
+							_source.append("</h2>\n");
+							break;
+						case NodeKind_subsubsection:
+							_source.append("</h3>\n");
 							break;
 						default:
 							break;
@@ -326,9 +357,9 @@ struct HTMLGen {
 			}
 			case NodeKind_mention: {
 				ResourceNode* res = static_cast<ResourceNode*>(node);
-				if (_references.has(res->source)) {
-					Array<Node*> nodes = mention(res, _references[res->source]);
-					_source.append("<a href=\"Reference-");
+				if (_bibliographies.has(res->source)) {
+					Array<Node*> nodes = mention(res, _bibliographies[res->source]);
+					_source.append("<a href=\"Bibliography-");
 					_source.append(_escapeId(res->source));
 					_source.append("\">");
 					_genArray(nodes);
@@ -394,7 +425,7 @@ struct HTMLGen {
 			case NodeKind_func: {
 				FuncNode* func = static_cast<FuncNode*>(node);
 				if (func->symbol == "bibliography") {
-					_source.append("<div class=\"reference\" id=\"Reference-");
+					_source.append("<div class=\"bibliography\" id=\"Bibliography-");
 					_source.append(_escapeId(func->arguments.has("id") ? func->arguments["id"] : ""));
 					_source.append("\">\n");
 					Array<Node*> nodes = genReference(func);
@@ -489,11 +520,42 @@ struct HTMLGen {
 				case '8': case '9':
 					id.append(1, value.items() + i);
 					break;
+				case ' ':
+					id.append("-");
 				default:
 					break;
 			}
 		}
 		return id;
+	}
+
+	String _escapeHeadingText(Node* node) {
+		String collected;
+		_escapeHeadingTextPart(collected, node);
+		return collected;
+	}
+
+	void _escapeHeadingTextParts(String& collected, Array<Node*> const& nodes) {
+		for (int i = 0; i < nodes.size(); i++) {
+			_escapeHeadingTextPart(collected, nodes[i]);
+		}
+	}
+	void _escapeHeadingTextPart(String& collected, Node* node) {
+		if (node == nullptr) {
+			return;
+		}
+		switch (node->kind) {
+			case NodeKind_title:
+			case NodeKind_emphasis:
+			case NodeKind_strong:
+				_escapeHeadingTextParts(collected, static_cast<HierarchyNode*>(node)->children);
+				return;
+			case NodeKind_text:
+				collected.append(static_cast<ContentNode*>(node)->content);
+				return;
+			default:
+				return;
+		}
 	}
 };
 
