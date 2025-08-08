@@ -574,8 +574,7 @@ struct Parser {
 					_advance();
 					goto end;
 				default:
-					paragraph->children.append(_createContent(NodeKind_text));
-					break;
+					goto end;
 			}
 		}
 		end:
@@ -590,7 +589,7 @@ struct Parser {
 	}
 
 	Node* _createContent(NodeKind kind) {
-		ContentNode* text = new ContentNode();
+		ContentNode* text = new ContentNode({});
 		text->kind = kind;
 		text->range = _get().range;
 		text->content = _get().content;

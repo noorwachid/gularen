@@ -3,6 +3,7 @@
 #include "EmojiGen.hpp"
 #include "Parser.hpp"
 #include "Collection/Conv.hpp"
+#include <stdio.h>
 
 struct HTMLGen {
 	String _source;
@@ -15,8 +16,30 @@ struct HTMLGen {
 	int _activeTableRow = 0;
 	int _activeTableColumn = 0;
 	Array<ResourceNode*> _footnotes;
+
 	Table<String, FuncNode*> _bibliographies;
-	Array<HierarchyNode*> _sections;
+
+	struct Subsubsection {
+		String title;
+		String subtitle;
+	};
+
+	struct Subsection {
+		String title;
+		String subtitle;
+		Array<Subsubsection> subsubsections;
+	};
+
+	struct Section {
+		String title;
+		String subtitle;
+		Array<Subsection> subsections;
+	};
+
+	Array<Section> _sections;
+
+	int _sectionIndex = -1;
+	int _subsectionIndex = -1;
 
 	HTMLGen(Node* node) {
 		_node = node;
@@ -28,6 +51,10 @@ struct HTMLGen {
 			return _source;
 		}
 		_collect(_node);
+
+		_sectionIndex = -1;
+		_subsectionIndex = -1;
+
 		_gen(_node);
 		_genFootnote();
 		return _source;
@@ -70,9 +97,6 @@ struct HTMLGen {
 	void _collect(Node* node) {
 		switch (node->kind) {
 			case NodeKind_document:
-			case NodeKind_section:
-			case NodeKind_subsection:
-			case NodeKind_subsubsection:
 			case NodeKind_quote:
 			case NodeKind_list:
 			case NodeKind_item:
@@ -82,15 +106,49 @@ struct HTMLGen {
 			case NodeKind_checkitem:
 				_collectArray(static_cast<HierarchyNode*>(node)->children);
 				break;
-			case NodeKind_title:
-				_sections.append(static_cast<HierarchyNode*>(node));
+			case NodeKind_section: {
+				_sectionIndex++;
+				_subsectionIndex = -1;
+				HierarchyNode* h = static_cast<HierarchyNode*>(node);
+				Section section;
+				_collectTitleTextParts(section.title, h->children);
+				_collectSubtitleTextParts(section.subtitle, h->children);
+				_sections.append(section);
+				_collectArray(h->children);
 				break;
+			}
+			case NodeKind_subsection: {
+				_subsectionIndex++;
+				HierarchyNode* h = static_cast<HierarchyNode*>(node);
+				if (_sectionIndex > -1) {
+					Subsection subsection;
+					_collectTitleTextParts(subsection.title, h->children);
+					_collectSubtitleTextParts(subsection.subtitle, h->children);
+					const_cast<Section&>(_sections[_sectionIndex]).subsections.append(subsection);
+				}
+				_collectArray(h->children);
+				break;
+			}
+			case NodeKind_subsubsection: {
+				HierarchyNode* h = static_cast<HierarchyNode*>(node);
+				if (_subsectionIndex > -1) {
+					Subsubsection subsubsection;
+					_collectTitleTextParts(subsubsection.title, h->children);
+					_collectSubtitleTextParts(subsubsection.subtitle, h->children);
+					Section& section = const_cast<Section&>(_sections[_sectionIndex]);
+					Subsection& subsection = const_cast<Subsection&>(section.subsections[_subsectionIndex]);
+					subsection.subsubsections.append(subsubsection);
+				}
+				_collectArray(h->children);
+				break;
+			}
 			case NodeKind_func: {
 				FuncNode* func = static_cast<FuncNode*>(node);
 				if (func->symbol == "bibliography") {
 					if (func->arguments.has("id")) {
 						_bibliographies.set(func->arguments["id"], func);
 					}
+					break;
 				}
 				break;
 			}
@@ -184,9 +242,12 @@ struct HTMLGen {
 				_sectionStacks.append(hierarchyNode);
 				switch (hierarchyNode->kind) {
 					case NodeKind_section:
+						_sectionIndex++;
+						_subsectionIndex = -1;
 						_source.append("<section class=\"section\">\n");
 						break;
 					case NodeKind_subsection:
+						_subsectionIndex++;
 						_source.append("<section class=\"subsection\">\n");
 						break;
 					case NodeKind_subsubsection:
@@ -224,7 +285,9 @@ struct HTMLGen {
 						default:
 							break;
 					}
-					_sectionTitleStacks.append(_escapeHeadingText(title));
+					String titleText;
+					_collectTitleTextParts(titleText, title->children);
+					_sectionTitleStacks.append(titleText);
 					for (int i = 0; i < _sectionTitleStacks.size(); i++) {
 						if (i != 0) {
 							_source.append("-");
@@ -359,10 +422,82 @@ struct HTMLGen {
 				ResourceNode* res = static_cast<ResourceNode*>(node);
 				if (_bibliographies.has(res->source)) {
 					Array<Node*> nodes = mention(res, _bibliographies[res->source]);
-					_source.append("<a href=\"Bibliography-");
+					_source.append("<a href=\"#Bibliography-");
 					_source.append(_escapeId(res->source));
 					_source.append("\">");
 					_genArray(nodes);
+					_source.append("</a>");
+					break;
+				} else {
+					String id;
+					String title;
+					if (_sectionIndex > -1) {
+						// nearest family search: sibling subsubsection -> parent subsection
+						Section const& section = _sections[_sectionIndex];
+						if (_subsectionIndex > -1) {
+							Subsection subsection = section.subsections[_subsectionIndex];
+							Array<Subsubsection> subsubsections = subsection.subsubsections;
+							for (int i = 0; i < subsubsections.size(); i++) {
+								Subsubsection subsubsection = subsubsections[i];
+								if (subsubsection.title == res->source) {
+									id = _escapeId(section.title);
+									id.append("-");
+									id.append(_escapeId(subsection.title));
+									id.append("-");
+									id.append(_escapeId(subsubsection.title));
+									title = subsubsection.title;
+									goto linking;
+								}
+							}
+						}
+						for (int i = 0; i < section.subsections.size(); i++) {
+							Subsection subsection = section.subsections[i];
+							if (subsection.title == res->source) {
+								id = _escapeId(section.title);
+								id.append("-");
+								id.append(_escapeId(subsection.title));
+								title = subsection.title;
+								goto linking;
+							}
+						}
+					}
+
+					for (int i = 0; i < _sections.size(); i++) {
+						Section const& section = _sections[i];
+						if (section.title == res->source) {
+							id = _escapeId(section.title);
+							title = section.title;
+							goto linking;
+						}
+						for (int j = 0; j < section.subsections.size(); j++) {
+							Subsection const& subsection = section.subsections[j];
+							if (subsection.title == res->source) {
+								id = _escapeId(section.title);
+								id.append("-");
+								id.append(_escapeId(subsection.title));
+								title = section.title;
+								goto linking;
+							}
+							for (int k = 0; k < subsection.subsubsections.size(); k++) {
+								Subsubsection const& subsubsection = subsection.subsubsections[k];
+								if (subsubsection.title == res->source) {
+									id = _escapeId(section.title);
+									id.append("-");
+									id.append(_escapeId(subsection.title));
+									id.append("-");
+									id.append(_escapeId(subsubsection.title));
+									title = section.title;
+									goto linking;
+								}
+							}
+						}
+					}
+
+					linking:
+					_source.append("<a href=\"#");
+					_source.append(id);
+					_source.append("\">");
+					_source.append(title);
 					_source.append("</a>");
 					break;
 				}
@@ -424,6 +559,70 @@ struct HTMLGen {
 			}
 			case NodeKind_func: {
 				FuncNode* func = static_cast<FuncNode*>(node);
+				if (func->symbol == "outline") {
+					_source.append("<ul class=\"outline\">\n");
+					for (int i = 0; i < _sections.size(); i++) {
+						Section const& section = _sections[i];
+						String sectionId = _escapeId(section.title);
+						_source.append("<li class=\"section\">\n");
+						_source.append("<a href=\"#");
+						_source.append(sectionId);
+						_source.append("\">");
+						_source.append(section.title);
+						if (section.subtitle.size() != 0) {
+							_source.append(": ");
+							_source.append(section.subtitle);
+						}
+						_source.append("</a>\n");
+						if (section.subsections.size() != 0) {
+							_source.append("<ul>\n");
+							for (int j = 0; j < section.subsections.size(); j++) {
+								Subsection const& subsection = section.subsections[j];
+								String subsectionId = _escapeId(subsection.title);
+								_source.append("<li class=\"subsection\">\n");
+								_source.append("<a href=\"#");
+								_source.append(sectionId);
+								_source.append("-");
+								_source.append(subsectionId);
+								_source.append("\">");
+								_source.append(subsection.title);
+								if (subsection.subtitle.size() != 0) {
+									_source.append(": ");
+									_source.append(subsection.subtitle);
+								}
+								_source.append("</a>\n");
+								if (subsection.subsubsections.size() != 0) {
+									_source.append("<ul>\n");
+									for (int k = 0; k < subsection.subsubsections.size(); k++) {
+										Subsubsection const& subsubsection = subsection.subsubsections[k];
+										String subsubsectionId = _escapeId(subsubsection.title);
+										_source.append("<li class=\"subsubsection\">\n");
+										_source.append("<a href=\"#");
+										_source.append(sectionId);
+										_source.append("-");
+										_source.append(subsectionId);
+										_source.append("-");
+										_source.append(subsubsectionId);
+										_source.append("\">");
+										_source.append(subsubsection.title);
+										if (subsubsection.subtitle.size() != 0) {
+											_source.append(": ");
+											_source.append(subsubsection.subtitle);
+										}
+										_source.append("</a>\n");
+										_source.append("</li>\n");
+									}
+									_source.append("</ul>\n");
+								}
+								_source.append("</li>\n");
+							}
+							_source.append("</ul>\n");
+						}
+						_source.append("</li>\n");
+					}
+					_source.append("</ul>\n");
+					break;
+				}
 				if (func->symbol == "bibliography") {
 					_source.append("<div class=\"bibliography\" id=\"Bibliography-");
 					_source.append(_escapeId(func->arguments.has("id") ? func->arguments["id"] : ""));
@@ -431,6 +630,7 @@ struct HTMLGen {
 					Array<Node*> nodes = genReference(func);
 					_genArray(nodes);
 					_source.append("</div>\n");
+					break;
 				}
 				break;
 			}
@@ -529,18 +729,12 @@ struct HTMLGen {
 		return id;
 	}
 
-	String _escapeHeadingText(Node* node) {
-		String collected;
-		_escapeHeadingTextPart(collected, node);
-		return collected;
-	}
-
-	void _escapeHeadingTextParts(String& collected, Array<Node*> const& nodes) {
+	void _collectTitleTextParts(String& collected, Array<Node*> const& nodes) {
 		for (int i = 0; i < nodes.size(); i++) {
-			_escapeHeadingTextPart(collected, nodes[i]);
+			_escapeTitleTextPart(collected, nodes[i]);
 		}
 	}
-	void _escapeHeadingTextPart(String& collected, Node* node) {
+	void _escapeTitleTextPart(String& collected, Node* node) {
 		if (node == nullptr) {
 			return;
 		}
@@ -548,10 +742,39 @@ struct HTMLGen {
 			case NodeKind_title:
 			case NodeKind_emphasis:
 			case NodeKind_strong:
-				_escapeHeadingTextParts(collected, static_cast<HierarchyNode*>(node)->children);
+				_collectTitleTextParts(collected, static_cast<HierarchyNode*>(node)->children);
 				return;
 			case NodeKind_text:
 				collected.append(static_cast<ContentNode*>(node)->content);
+				return;
+			default:
+				return;
+		}
+	}
+	void _collectSubtitleTextParts(String& collected, Array<Node*> const& nodes, bool isCollecting = false) {
+		for (int i = 0; i < nodes.size(); i++) {
+			_escapeSubtitleTextPart(collected, nodes[i], isCollecting);
+		}
+	}
+	void _escapeSubtitleTextPart(String& collected, Node* node, bool isCollecting) {
+		if (node == nullptr) {
+			return;
+		}
+		switch (node->kind) {
+			case NodeKind_title:
+				_collectSubtitleTextParts(collected, static_cast<HierarchyNode*>(node)->children, isCollecting);
+				break;
+			case NodeKind_subtitle:
+				_collectSubtitleTextParts(collected, static_cast<HierarchyNode*>(node)->children, true);
+				break;
+			case NodeKind_emphasis:
+			case NodeKind_strong:
+				_collectSubtitleTextParts(collected, static_cast<HierarchyNode*>(node)->children, isCollecting);
+				return;
+			case NodeKind_text:
+				if (isCollecting) {
+					collected.append(static_cast<ContentNode*>(node)->content);
+				}
 				return;
 			default:
 				return;

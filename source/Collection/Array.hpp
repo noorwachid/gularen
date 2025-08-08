@@ -77,15 +77,6 @@ public:
 	}
 
 private:
-	void _copy(int size, T* dest, T* source) {
-		Byte* destBytes = (Byte*) dest;
-		Byte* sourceBytes = (Byte*) source;
-		int byteSize = size * sizeof(T);
-		for (int i = 0; i < byteSize; i++) {
-			destBytes[i] = sourceBytes[i];
-		}
-	}
-
 	void _checkOwnership() {
 		if (_items != nullptr && _header()->count > 1) {
 			int size = _size;
@@ -106,7 +97,9 @@ private:
 			T* items = _create(capacity);
 			if (_items != nullptr) {
 				int size = _size;
-				_copy(_size, items, _items);
+				for (int i = 0; i < size; i++) {
+					new (items + i) T(_items[i]);
+				}
 				_removeRef();
 				_size = size;
 			}
