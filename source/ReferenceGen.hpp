@@ -2,6 +2,6 @@
 
 #include "Parser.hpp"
 
-Array<Node*> cite(ResourceNode* resource, FuncNode* func);
+Array<Node*> mention(ResourceNode* resource, FuncNode* func);
 
 Array<Node*> genReference(FuncNode* func);

@@ -16,7 +16,7 @@ public:
 
 	String(char const* literal) {
 		int size = 0;
-		while (literal[size] == '\0') {
+		while (literal[size] != '\0') {
 			size++;
 		}
 		_initialize(size, (Byte const*) literal);

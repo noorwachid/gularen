@@ -1,20 +1,22 @@
-# Citation
+# Reference
 
-## Reference
+## Mention
 ```gularen
-^[12 Rules] ^[Lateral Thinking] ^[Good Omens] ^[My Lady Jane]
+^[12 Rules] ^[Lateral Thinking] ^[Good Omens] ^[My Lady Jane] ^[Polar Bear]
 ```
 ```html
 <p>
-    <a class="in-text" href="#Reference-12-Rules">(Peterson, 2018)</a>
-    <a class="in-text" href="#Reference-Lateral-Thinking">(de Bono, 1970)</a>
-    <a class="in-text" href="#Reference-Good-Omens">(Pratchett & Gaiman, 1990)</a>
-    <a class="in-text" href="#Reference-My-Lady-Jane">(Hand et al., 2016)</a>
+    <a class="mention" href="#Reference-12-Rules">(Peterson, 2018)</a>
+    <a class="mention" href="#Reference-Lateral-Thinking">(de Bono, 1970)</a>
+    <a class="mention" href="#Reference-Good-Omens">(Pratchett & Gaiman, 1990)</a>
+    <a class="mention" href="#Reference-My-Lady-Jane">(Hand et al., 2016)</a>
+    <a class="mention" href="#Reference-Polar-Bear">Figure 1</a>
 </p>
 ```
 
+## Bibliography
 ```gularen
-% reference {
+% bibliography {
     id: "12 Rules"
     type: "Book"
     title: "12 Rules of Life"
@@ -23,27 +25,27 @@
     publisher: "Random House Canada"
 }
 
-% reference {
+% bibliography {
     id: "Lateral Thinking"
-    type: "book"
+    type: "Book"
     title: "Lateral Thinking: Creativity Step by Step"
     author: "Edward de Bono"
     year: "1970"
     publisher: "Harper & Row"
 }
 
-% reference {
+% bibliography {
     id: "Good Omens"
-    type: "book"
+    type: "Book"
     title: "Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch"
     authors: "Terry Pratchett, Neil Gaiman"
     year: "1990"
-    publisher "Gollancz"
+    publisher: "Gollancz"
 }
 
-% reference {
+% bibliography {
     id: "My Lady Jane"
-    type: "book"
+    type: "Book"
     title: "My Lady Jane"
     authors: "Cynthia Hand, Brodi Ashton, Jodi Meadows"
     year: "2016"
@@ -59,20 +61,11 @@
 
 ## Figures
 ```gularen
-See ^[Polar Bear]
-```
-```html
-<p>
-    See <a class="in-text" href="#Reference-Polar-Bear"></a>
-</p>
-```
-
-```gularen
 % figure {
     id: "Polar Bear"
     image: "Polar Bear.png"
     description: "Polar bear can see 5 minutes into the future"
-)
+}
 ```
 ```html
 <figure id="Reference-Polar-Bear">

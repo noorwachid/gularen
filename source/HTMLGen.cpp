@@ -1,9 +1,8 @@
 #include "HTMLGen.hpp"
-#include "CitationGen.hpp"
+#include "ReferenceGen.hpp"
 #include "EmojiGen.hpp"
 #include "Parser.hpp"
 #include "Collection/Conv.hpp"
-#include <stdio.h>
 
 struct HTMLGen {
 	String _source;
@@ -13,6 +12,8 @@ struct HTMLGen {
 	int _activeTableRow = 0;
 	int _activeTableColumn = 0;
 	Array<ResourceNode*> _footnotes;
+	Table<String, FuncNode*> _references;
+	Array<HierarchyNode*> _sections;
 
 	HTMLGen(Node* node) {
 		_node = node;
@@ -21,6 +22,10 @@ struct HTMLGen {
 	}
 
 	String gen() {
+		if (_node == nullptr) {
+			return _source;
+		}
+		_collect(_node);
 		_gen(_node);
 		_genFootnote();
 		return _source;
@@ -52,6 +57,43 @@ struct HTMLGen {
 			}
 		}
 		return value;
+	}
+
+	void _collectArray(Array<Node*> nodes) {
+		for (int i = 0; i < nodes.size(); i++) {
+			_collect(nodes[i]);
+		}
+	}
+
+	void _collect(Node* node) {
+		switch (node->kind) {
+			case NodeKind_document:
+			case NodeKind_section:
+			case NodeKind_subsection:
+			case NodeKind_subsubsection:
+			case NodeKind_quote:
+			case NodeKind_list:
+			case NodeKind_item:
+			case NodeKind_numberedlist:
+			case NodeKind_numbereditem:
+			case NodeKind_checklist:
+			case NodeKind_checkitem:
+				_collectArray(static_cast<HierarchyNode*>(node)->children);
+				break;
+			case NodeKind_title:
+				_sections.append(static_cast<HierarchyNode*>(node));
+				break;
+			case NodeKind_func: {
+				FuncNode* func = static_cast<FuncNode*>(node);
+				if (func->symbol == "bibliography" || func->symbol == "figure") {
+					if (func->arguments.has("id")) {
+						_references.set(func->arguments["id"], func);
+					}
+				}
+				break;
+			}
+			default: break;
+		}
 	}
 
 	void _genArray(Array<Node*> nodes) {
@@ -282,7 +324,17 @@ struct HTMLGen {
 				_genLink(res);
 				break;
 			}
-			case NodeKind_cite: {
+			case NodeKind_mention: {
+				ResourceNode* res = static_cast<ResourceNode*>(node);
+				if (_references.has(res->source)) {
+					Array<Node*> nodes = mention(res, _references[res->source]);
+					_source.append("<a href=\"Reference-");
+					_source.append(_escapeId(res->source));
+					_source.append("\">");
+					_genArray(nodes);
+					_source.append("</a>");
+					break;
+				}
 				break;
 			}
 			case NodeKind_footnote: {
@@ -341,15 +393,12 @@ struct HTMLGen {
 			}
 			case NodeKind_func: {
 				FuncNode* func = static_cast<FuncNode*>(node);
-				if (func->symbol == "reference") {
-					_source.append("<div class=\"reference\" id=\"");
+				if (func->symbol == "bibliography") {
+					_source.append("<div class=\"reference\" id=\"Reference-");
 					_source.append(_escapeId(func->arguments.has("id") ? func->arguments["id"] : ""));
 					_source.append("\">\n");
 					Array<Node*> nodes = genReference(func);
-					for (int i = 0; i < nodes.size(); i++) {
-						_gen(nodes[i]);
-						delete nodes[i];
-					}
+					_genArray(nodes);
 					_source.append("</div>\n");
 				}
 				break;

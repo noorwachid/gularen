@@ -21,7 +21,7 @@ enum NodeKind {
 
 	NodeKind_link,
 	NodeKind_view,
-	NodeKind_cite,
+	NodeKind_mention,
 	NodeKind_footnote,
 
 	NodeKind_list,

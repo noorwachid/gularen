@@ -646,7 +646,7 @@ struct Parser {
 						resource->kind = NodeKind_view;
 						break;
 					case '^':
-						resource->kind = NodeKind_cite;
+						resource->kind = NodeKind_mention;
 						break;
 				}
 				resource->range = _get().range;

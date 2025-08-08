@@ -164,7 +164,7 @@ struct Printer {
 
 			case NodeKind_link: printf("link"); break;
 			case NodeKind_view: printf("view"); break;
-			case NodeKind_cite: printf("cite"); break;
+			case NodeKind_mention: printf("mention"); break;
 			case NodeKind_footnote: printf("footnote"); break;
 
 			case NodeKind_fencedcode: printf("fencedcode"); break;
@@ -275,7 +275,7 @@ struct Printer {
 			}
 			case NodeKind_link:
 			case NodeKind_view:
-			case NodeKind_cite:
+			case NodeKind_mention:
 			case NodeKind_footnote: {
 				ResourceNode* r = static_cast<ResourceNode*>(node);
 				keyString("source", r->source);
