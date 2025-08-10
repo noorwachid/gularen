@@ -1,7 +1,8 @@
 # Footnote
-Footnote description automatically injected in the correct page.
-
-In html footnote should be included before end of section.
+It depends on the publication platform.
+In printed document footnote should be included at the end of page.
+In html footnote should be included at the end of section.
+In epub footnote should be inlined.
 
 ```gularen 
 Here's a simple footnote,^(This is the first footnote) and here's a another one.^(Very important part)

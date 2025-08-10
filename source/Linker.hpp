@@ -30,14 +30,6 @@ struct Linker {
 
 	Array<Node*> makeBibliography(FuncNode* resource);
 
-	Array<Section> _sections;
-
-	void addFootnote(HierarchyNode* footnote);
-
-	Array<HierarchyNode*> getFootnotes();
-
-	void removeFootnotes();
-
 	void _collect(Node* node);
 
 	void _collectArray(Array<Node*> nodes);
@@ -48,6 +40,8 @@ struct Linker {
 
 	int _sectionIndex = -1;
 	int _subsectionIndex = -1;
+
+	Array<Section> _sections;
 
 	Table<String, FuncNode*> _bibliographies;
 };
