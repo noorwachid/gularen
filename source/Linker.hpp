@@ -22,9 +22,9 @@ struct Section {
 };
 
 struct Linker {
-	Linker(Node*);
+	void collect(Node* node);
 
-	Array<Node*> makeMention(ResourceNode* resource);
+	ResourceNode* mention(ResourceNode* resource, int sectionIndex = -1, int subsectionIndex = -1);
 
 	Array<Section> makeOutline();
 
@@ -38,10 +38,16 @@ struct Linker {
 
 	void removeFootnotes();
 
+	void _collect(Node* node);
+
+	void _collectArray(Array<Node*> nodes);
+
+	ResourceNode* _mentionBibliography(ResourceNode* resource);
+
+	ResourceNode* _mentionSection(ResourceNode* resource, int sectionIndex, int subsectionIndex);
+
 	int _sectionIndex = -1;
 	int _subsectionIndex = -1;
 
 	Table<String, FuncNode*> _bibliographies;
-
-	String toText(Node*);
 };
