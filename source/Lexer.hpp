@@ -45,9 +45,9 @@ enum TokenKind {
 	TokenKind_symbol, // cpp [a-z0-9-]+
 
 	TokenKind_pipe, // |
-	TokenKind_bar, // --- or +-- or +-+ or --+
+	TokenKind_bar, // --- or :-- or :-: or --:
 
-	TokenKind_admon, // [NOTE] [HINT] [IMPORTANT] [WARNING] [SEE] [TIP]
+	TokenKind_admon, // NOTE! HINT! IMPORTANT! WARNING! SEE! TIP!
 
 	TokenKind_script, // % 
 	TokenKind_func, // include, outline, reference, figure

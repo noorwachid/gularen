@@ -1,9 +1,8 @@
 #include "HTMLGen.hpp"
 #include "ReferenceGen.hpp"
-#include "EmojiGen.hpp"
+#include "EmojiMaker.hpp"
 #include "Parser.hpp"
 #include "Collection/Conv.hpp"
-#include <stdio.h>
 
 struct HTMLGen {
 	String _source;
@@ -220,7 +219,7 @@ struct HTMLGen {
 			}
 			case NodeKind_emoji: {
 				ContentNode* contentNode = static_cast<ContentNode*>(node);
-				String emoji = genEmoji(contentNode->content);
+				String emoji = EmojiMaker::make(contentNode->content);
 				if (emoji.size() == 0) {
 					_source.append(":");
 					_source.append(contentNode->content);

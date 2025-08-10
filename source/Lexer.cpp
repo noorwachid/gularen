@@ -86,6 +86,16 @@ struct Lexer {
 				_lexemeScript();
 				break;
 
+			case 'A': case 'B': case 'C': case 'D':
+			case 'E': case 'F': case 'G': case 'H':
+			case 'I': case 'J': case 'K': case 'L':
+			case 'M': case 'N': case 'O': case 'P':
+			case 'Q': case 'R': case 'S': case 'T':
+			case 'U': case 'V': case 'W': case 'X':
+			case 'Y': case 'Z': 
+				_lexemeAdmon();
+				break;
+
 			case 'a': case 'b': case 'c': case 'd':
 			case 'e': case 'f': case 'g': case 'h':
 			case 'i': case 'j': case 'k': case 'l':
@@ -93,13 +103,7 @@ struct Lexer {
 			case 'q': case 'r': case 's': case 't':
 			case 'u': case 'v': case 'w': case 'x':
 			case 'y': case 'z': case ' ':
-			case 'A': case 'B': case 'C': case 'D':
-			case 'E': case 'F': case 'G': case 'H':
-			case 'I': case 'J': case 'K': case 'L':
-			case 'M': case 'N': case 'O': case 'P':
-			case 'Q': case 'R': case 'S': case 'T':
-			case 'U': case 'V': case 'W': case 'X':
-			case 'Y': case 'Z': case '.': case ',':
+			case '.': case ',':
 			case ':': case '*': case '_': case '#':
 			case '<':
 			case '"':
@@ -384,6 +388,33 @@ struct Lexer {
 			}
 			break;
 		}
+	}
+
+	void _lexemeAdmon() {
+		Point p = _point;
+		while (_has()) {
+			switch (_get()) {
+				case 'A': case 'B': case 'C': case 'D':
+				case 'E': case 'F': case 'G': case 'H':
+				case 'I': case 'J': case 'K': case 'L':
+				case 'M': case 'N': case 'O': case 'P':
+				case 'Q': case 'R': case 'S': case 'T':
+				case 'U': case 'V': case 'W': case 'X':
+				case 'Y': case 'Z':
+					_advance();
+					break;
+				default:
+					goto end;
+			}
+		}
+		end:
+		String admon = _source.slice(p.index, _point.index - p.index);
+		if (_hasNext(1) && _get() == '!' && (_getNext(1) == ' ' || _getNext(1) == '\n')) {
+			_append(TokenKind_admon, p, _point);
+			_advance();
+			return;
+		}
+		_appendInclusive(TokenKind_text, p, _point);
 	}
 
 	void _lexemeScript() {
@@ -775,23 +806,6 @@ struct Lexer {
 					break;
 				}
 				_advance();
-			}
-
-			if (_hasNext(1) && _getNext(0) == ']' && (_getNext(1) == ' ' || _getNext(1) == '\n')) {
-				String content = _source.slice(refPoint.index, _point.index - refPoint.index);
-				if (content == "NOTE" ||
-					content == "HINT" ||
-					content == "IMPORTANT" ||
-					content == "WARNING" ||
-					content == "SEE" ||
-					content == "TIP") {
-					_advance();
-					if (_is(' ')) {
-						_advance();
-					}
-					_appendInclusive(TokenKind_admon, point, _point);
-					return;
-				}
 			}
 
 			_appendInclusive(TokenKind_openbracket, point, endPoint);
