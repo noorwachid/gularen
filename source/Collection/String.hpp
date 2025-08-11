@@ -74,27 +74,7 @@ public:
 	}
 
 	String slice(int index, int size) const {
-		if (size <= _smallStringSize) {
-			String s;
-			s._size = size;
-			Byte const* oitems = items();
-			for (int i = 0; i < size; i++) {
-				s._stack.items[i] = oitems[index + i];
-			}
-			return s;
-		}
-
-		String s;
-		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * size);
-		header->count = 5;
-		s._heap.items = (Byte*)(header + 1);
-		s._heap.capacity = size;
-		s._size = size;
-		Byte const* oitems = items();
-		for (int i = 0; i < size; i++) {
-			s._heap.items[i] = oitems[index + i];
-		}
-		return s;
+		return String(size, items() + index);
 	}
 
 	void append(String const& other) {

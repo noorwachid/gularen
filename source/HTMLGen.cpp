@@ -471,6 +471,9 @@ struct HTMLGen {
 					_source.append("\">\n");
 					Array<Node*> nodes = _linker.makeBibliography(func);
 					_genArray(nodes);
+					for (int i = 0; i < nodes.size(); i++) {
+						delete nodes[i];
+					}
 					_source.append("</div>\n");
 					break;
 				}
