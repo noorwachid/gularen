@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Collection/Disk.hpp"
+#include <execution>
 
 struct Point {
 	int index;
@@ -378,6 +379,7 @@ struct Parser {
 								_advance();
 							}
 						}
+						goto parseRow;
 					}
 				}
 
@@ -445,6 +447,9 @@ struct Parser {
 			String path = _directory;
 			path.append(_parseQuotedString(_getNext(2).content));
 			_advanceNext(2);
+			#ifdef __EMSCRIPTEN__
+				return nullptr;
+			#endif
 			DocumentNode* doc = parseFile(path);
 			return doc;
 		}
@@ -503,7 +508,7 @@ struct Parser {
 				break;
 			}
 		}
-		return _parseParagraph();
+		return _createContent(NodeKind_text);
 	}
 
 	String _parseCodeSource(Position position, String const& content) {
@@ -559,8 +564,8 @@ struct Parser {
 				case TokenKind_singleleftquote:
 				case TokenKind_singlerightquote:
 				case TokenKind_openbracket:
-				case TokenKind_footnote: {
-				case TokenKind_hashtag:
+				case TokenKind_footnote:
+				case TokenKind_hashtag: {
 					Node* node = _parseLine();
 					if (node == nullptr) {
 						goto end;
@@ -580,6 +585,15 @@ struct Parser {
 		}
 		end:
 		_range(paragraph);
+
+		// trailing newline
+		if (paragraph->children.size() != 0) {
+			if (paragraph->children[paragraph->children.size() - 1]->kind == NodeKind_space) {
+				delete paragraph->children[paragraph->children.size() - 1];
+				paragraph->children.remove(paragraph->children.size() - 1);
+			}
+		}
+
 		if (paragraph->children.size() == 1 && paragraph->children[0]->kind == NodeKind_view) {
 			Node* node = paragraph->children[0];
 			paragraph->children.set(0, nullptr);

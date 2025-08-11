@@ -319,6 +319,7 @@ struct HTMLGen {
 				for (int i = res->source.size() - 1; i >= 0; i--) {
 					if (res->source[i] == '.') {
 						ext = res->source.slice(i, res->source.size() - i);
+						break;
 					}
 				}
 				if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif") {
