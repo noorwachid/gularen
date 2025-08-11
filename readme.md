@@ -2,9 +2,6 @@
 A sweet-spot in markup languages
 
 ## Overview
-<img width="1440" alt="Screenshot 2024-05-04 at 18 20 30" src="https://github.com/noorwachid/gularen/assets/42460975/58b102f8-2c7c-45c3-b330-828bdc8d0787">
-
-## Live Demo
 [Try on web browser](https://noorwach.id/gularen-web/)
 
 ## Installation
