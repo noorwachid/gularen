@@ -312,6 +312,7 @@ struct Parser {
 		AdmonNode* admon = new AdmonNode();
 		admon->kind = NodeKind_admon;
 		admon->range = _get().range;
+		admon->type = _get().content.slice(0, _get().content.size() - 1);
 
 		_advance();
 		if (_is(TokenKind_newline)) {

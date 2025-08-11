@@ -192,7 +192,7 @@ struct Lexer {
 			}
 		}
 		_point = point;
-		_lexemeHyphen();
+		_lexemeLine();
 	}
 
 	void _lexemeNumberPoint() {
@@ -218,7 +218,8 @@ struct Lexer {
 				return;
 			}
 		}
-		_appendInclusive(TokenKind_text, point, _point);
+		_point = point;
+		_lexemeLine();
 	}
 
 	void _lexemeCheckbox() {
@@ -414,7 +415,8 @@ struct Lexer {
 			_advance();
 			return;
 		}
-		_appendInclusive(TokenKind_text, p, _point);
+		_point = p;
+		_lexemeLine();
 	}
 
 	void _lexemeScript() {
