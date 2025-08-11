@@ -1,6 +1,6 @@
 #include "Parser.hpp"
 #include "Collection/Disk.hpp"
-#include <execution>
+#include <stdio.h>
 
 struct Point {
 	int index;
@@ -124,8 +124,11 @@ struct Parser {
 			case TokenKind_singlerightquote:
 			case TokenKind_openbracket:
 			case TokenKind_footnote:
-			default:
 				return _parseParagraph();
+
+			default:
+				_advance();
+				return nullptr;
 		}
 	}
 
@@ -508,7 +511,8 @@ struct Parser {
 				break;
 			}
 		}
-		return _createContent(NodeKind_text);
+		_advance();
+		return nullptr;
 	}
 
 	String _parseCodeSource(Position position, String const& content) {
