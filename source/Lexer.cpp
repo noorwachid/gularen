@@ -582,7 +582,7 @@ struct Lexer {
 					} else {
 						Point p = _point;
 						_advance();
-						_append(TokenKind_text, p, _point);
+						_appendInclusive(TokenKind_text, p, _point);
 					}
 					break;
 				case ')':
@@ -592,7 +592,7 @@ struct Lexer {
 					} else {
 						Point p = _point;
 						_advance();
-						_append(TokenKind_text, p, _point);
+						_appendInclusive(TokenKind_text, p, _point);
 					}
 					break;
 				case ':':
@@ -631,7 +631,7 @@ struct Lexer {
 						_lexemeResource(p, false);
 						break;
 					}
-					_append(TokenKind_text, p, _point);
+					_appendInclusive(TokenKind_text, p, _point);
 					break;
 				}
 				case '^': {
@@ -649,7 +649,7 @@ struct Lexer {
 						_lexemeLabel(p);
 						break;
 					}
-					_append(TokenKind_text, p, _point);
+					_appendInclusive(TokenKind_text, p, _point);
 					break;
 				}
 				case '[': {

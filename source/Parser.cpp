@@ -124,6 +124,7 @@ struct Parser {
 			case TokenKind_singlerightquote:
 			case TokenKind_openbracket:
 			case TokenKind_footnote:
+			case TokenKind_hashtag:
 				return _parseParagraph();
 
 			default:
