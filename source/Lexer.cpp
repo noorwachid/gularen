@@ -114,6 +114,10 @@ struct Lexer {
 				_lexemeLine();
 				break;
 			default:
+				if (_isNonAscii()) {
+					_lexemeLine();
+					break;
+				}
 				_append(TokenKind_text, _point, _point);
 				_advance();
 				break;
@@ -675,9 +679,24 @@ struct Lexer {
 					_lexemeNewline();
 					return;
 				default:
+					if (_isNonAscii()) {
+						_lexemeNonAscii();
+						break;
+					}
 					return;
 			}
 		}
+	}
+
+	bool _isNonAscii() {
+		return (_get() & 0b1000'0000) == 0b1000'0000;
+	}
+	void _lexemeNonAscii() {
+		Point p = _point;
+		while (_has() && ((_get() & 0b1000'0000) == 0b1000'0000)) {
+			_advance();
+		}
+		_appendInclusive(TokenKind_text, p, _point);
 	}
 
 	void _lexemeLineCode() {
