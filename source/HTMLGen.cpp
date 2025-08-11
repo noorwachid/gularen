@@ -378,7 +378,7 @@ struct HTMLGen {
 					_source.append("<div class=\"label\">Important</div>\n");
 				} else if (admon->type == "WARNING") {
 					_source.append("<div class=\"admonition warning\">\n");
-					_source.append("<div class=\"label\">Important</div>\n");
+					_source.append("<div class=\"label\">Warning</div>\n");
 				} else if (admon->type == "SEE") {
 					_source.append("<div class=\"admonition see\">\n");
 					_source.append("<div class=\"label\">See</div>\n");
