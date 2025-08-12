@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Byte.hpp"
 #include "Hash.hpp"
 
 class String {
@@ -19,10 +18,10 @@ public:
 		while (literal[size] != '\0') {
 			size++;
 		}
-		_initialize(size, (Byte const*) literal);
+		_initialize(size, literal);
 	}
 
-	String(int size, Byte const* items) {
+	String(int size, char const* items) {
 		_initialize(size, items);
 	}
 
@@ -38,9 +37,7 @@ public:
 		}
 
 		String s;
-		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * size);
-		header->count = 1;
-		s._heap.items = (Byte*)(header + 1);
+		s._heap.items = s._create(size);
 		s._heap.capacity = size;
 		s._size = size;
 		return s;
@@ -50,8 +47,8 @@ public:
 		if (_size != other._size) {
 			return false;
 		}
-		Byte const* selfItems = items();
-		Byte const* otherItems = other.items();
+		char const* selfItems = items();
+		char const* otherItems = other.items();
 		for (int i = 0; i < _size; i++) {
 			if (selfItems[i] != otherItems[i]) {
 				return false;
@@ -69,7 +66,7 @@ public:
 		_addRef(other);
 	}
 
-	Byte operator[](int index) const {
+	char operator[](int index) const {
 		return _size <= _smallStringSize ? _stack.items[index] : _heap.items[index];
 	}
 
@@ -81,13 +78,14 @@ public:
 		append(other.size(), other.items());
 	}
 
-	void append(int size, Byte const* items) {
+	void append(int size, char const* items) {
 		// fit in stack
 		if (_size + size <= _smallStringSize) {
 			for (int i = 0; i < size; i++) {
 				_stack.items[_size + i] = items[i];
 			}
 			_size += size;
+			_stack.items[_size] = '\0';
 			return;
 		}
 
@@ -99,6 +97,7 @@ public:
 			_heap.items[_size + i] = items[i];
 		}
 		_size += size;
+		_heap.items[_size] = '\0';
 	}
 
 	~String() {
@@ -109,18 +108,18 @@ public:
 		return _size;
 	}
 
-	Byte const* items() const {
+	char const* items() const {
 		return _size <= _smallStringSize ? _stack.items : _heap.items;
 	}
 
 private:
-	void _copy(int size, Byte const* source, Byte* dest) {
+	void _copy(int size, char const* source, char* dest) {
 		for (int i = 0; i < size; i++) {
 			dest[i] = source[i];
 		}
 	}
 
-	void _initialize(int size, Byte const* items) {
+	void _initialize(int size, char const* items) {
 		if (size == 0) {
 			_size = 0;
 			_stack.items[0] = '\0';
@@ -130,23 +129,23 @@ private:
 		if (size <= _smallStringSize) {
 			_size = size;
 			_copy(size, items, _stack.items);
+			_stack.items[_size] = '\0';
 			return;
 		}
 
-		Header* header = (Header*) operator new(sizeof(Header) + sizeof(Byte) * size);
-		header->count = 1;
-		_heap.items = (Byte*)(header + 1);
+		_heap.items = _create(size);
 		_heap.capacity = size;
 		for (int i = 0; i < size; i++) {
 			_heap.items[i] = items[i];
 		}
 		_size = size;
+		_heap.items[_size] = '\0';
 	}
 	void _checkMigration(int size) {
 		if (_size <= _smallStringSize) {
 			int capacity = _size + size;
-			Byte* items = _create(capacity);
-			for (int i = 0; i < _size; i++) {
+			char* items = _create(capacity);
+			for (int i = 0; i < _size + 1; i++) {
 				items[i] = _stack.items[i];
 			}
 			_heap.capacity = capacity;
@@ -157,8 +156,8 @@ private:
 	void _checkOwnership() {
 		if (_header()->count > 1) {
 			int size = _size;
-			Byte* items = _create(size);
-			for (int i = 0; i < _size; i++) {
+			char* items = _create(size);
+			for (int i = 0; i < _size + 1; i++) {
 				items[i] = _heap.items[i];
 			}
 			_removeRef();
@@ -175,8 +174,8 @@ private:
 			int doubledCapacity = _heap.capacity * 2;
 			int capacity = minCapacity > doubledCapacity ? minCapacity : doubledCapacity;
 
-			Byte* items = _create(capacity);
-			for (int i = 0; i < _size; i++) {
+			char* items = _create(capacity);
+			for (int i = 0; i < _size + 1; i++) {
 				items[i] = _heap.items[i];
 			}
 
@@ -222,10 +221,10 @@ private:
 	}
 
 
-	Byte* _create(int capacity) {
-		Header* header = (Header*) operator new(sizeof(Header) + (capacity) * sizeof(Byte));
+	char* _create(int capacity) {
+		Header* header = (Header*) operator new(sizeof(Header) + (capacity * (sizeof(char) + 1)));
 		header->count = 1;
-		return (Byte*)(header + 1);
+		return (char*)(header + 1);
 	}
 
 	Header* _header() {
@@ -234,15 +233,15 @@ private:
 
 private:
 	struct Heap {
-		Byte* items;
+		char* items;
 		int capacity;
 	};
 	struct Stack {
-		Byte items[sizeof(Heap)];
+		char items[sizeof(Heap)];
 	};
 
 	enum {
-		_smallStringSize = sizeof(Heap),
+		_smallStringSize = sizeof(Heap) - 1,
 	};
 
 	int _size;
@@ -257,7 +256,7 @@ struct Hash<String> {
 	static int compute(String const& value) {
 		int prime = 0x811C9DC5;
 		int hash = 0;
-		Byte const* items = value.items();
+		char const* items = value.items();
 
 		for (int i = 0; i < value.size(); i++) {
 			hash *= prime;

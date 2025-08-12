@@ -477,7 +477,7 @@ String doubleToString(double value) {
 	int size = convFromFloat(value, bytes);
 
 	String s = String::allocate(size);
-	Byte* b = (Byte*) s.items();
+	char* b = (char*) s.items();
 	for (int i = 0; i < size; i++) {
 		b[i] = bytes[i];
 	}

@@ -43,7 +43,7 @@ struct HTMLGen {
 
 	String _escape(String const& value) {
 		String escapedValue;
-		Byte const* items = value.items();
+		char const* items = value.items();
 		for (int i = 0; i < value.size(); i++) {
 			switch (items[i]) {
 				case '&':

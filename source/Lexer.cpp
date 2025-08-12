@@ -41,15 +41,15 @@ struct Lexer {
 		return _point.index + offset < _source.size();
 	}
 
-	bool _is(Byte byte) {
+	bool _is(char byte) {
 		return _point.index < _source.size() && _source[_point.index] == byte;
 	}
 
-	Byte _get() {
+	char _get() {
 		return _source[_point.index];
 	}
 
-	Byte _getNext(int offset) {
+	char _getNext(int offset) {
 		return _source[_point.index + offset];
 	}
 

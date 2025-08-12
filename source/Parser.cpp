@@ -369,8 +369,8 @@ struct Parser {
 							if (_is(TokenKind_bar)) {
 								table->isHeadered = true;
 								Alignment alignment = Alignment_none;
-								Byte first = _get().content[0];
-								Byte last = _get().content[_get().content.size() - 1];
+								char first = _get().content[0];
+								char last = _get().content[_get().content.size() - 1];
 								if (first == ':' && last == ':') {
 									alignment = Alignment_center;
 								} else if (last == ':') {

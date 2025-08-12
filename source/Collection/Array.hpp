@@ -1,7 +1,6 @@
 #pragma once
 
 #include <new>
-#include "Byte.hpp"
 
 template <typename T>
 class Array {
@@ -14,6 +13,21 @@ public:
 		_size = 0;
 		_capacity = 0;
 		_items = nullptr;
+	}
+
+	Array(int size, T const& item) {
+		if (size == 0) {
+			_size = 0;
+			_capacity = 0;
+			_items = nullptr;
+			return;
+		}
+		_size = size;
+		_capacity = size;
+		_items = _create(size);
+		for (int i = 0; i < size; i++) {
+			append(item);
+		}
 	}
 
 	Array(Array const& other) {
@@ -59,7 +73,7 @@ public:
 		_checkOwnership();
 		_checkCapacity();
 		_size++;
-		Byte* bytes = (Byte*) _items;
+		char* bytes = (char*) _items;
 		for (int i = (_size * sizeof(T)) - 1; i >= (index * sizeof(T)); i--) {
 			bytes[i] = bytes[i - sizeof(T)];
 		}
@@ -69,7 +83,7 @@ public:
 	void remove(int index) {
 		_checkOwnership();
 		_items[index].~T();
-		Byte* bytes = (Byte*) _items;
+		char* bytes = (char*) _items;
 		for (int i = index * sizeof(T); i < ((_size - 1) * sizeof(T)); i++) {
 			bytes[i] = bytes[i + sizeof(T)];
 		}

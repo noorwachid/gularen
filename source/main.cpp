@@ -12,7 +12,7 @@ void compile(String const& inPath, String const& outPath, bool isEmbedded) {
 		String content = genHTML(node);
 		delete node;
 		if (outPath.size() == 0) {
-			printf("%.*s\n", content.size(), content.items());
+			printf("%s\n", content.items());
 			return;
 		}
 		writeFile(outPath, content);
