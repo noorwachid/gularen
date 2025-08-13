@@ -1,7 +1,6 @@
 #include "Parser.hpp"
 #include "Collection/Disk.hpp"
 #include "Lexer.hpp"
-#include <stdio.h>
 
 struct Point {
 	int index;
@@ -476,14 +475,17 @@ struct Parser {
 		}
 		if (_hasNext(3) && 
 			_getNext(1).kind == TokenKind_func &&
-			_getNext(2).kind == TokenKind_string &&
+			(_getNext(2).kind == TokenKind_string || _getNext(2).kind == TokenKind_unquotedstring) &&
 			(_getNext(3).kind == TokenKind_newline || _getNext(3).kind == TokenKind_newlines)) {
 			FuncNode* func = new FuncNode();
 			func->kind = NodeKind_func;
 			func->range = token.range;
 			func->range.end = _getNext(2).range.end;
 			func->symbol = _getNext(1).content;
-			func->arguments.set("0", _getNext(2).content);
+			func->arguments.set("0", 
+				_getNext(2).kind == TokenKind_string 
+					? _parseQuotedString(_getNext(2).content)
+					: _getNext(2).content);
 			_advanceNext(3);
 			return func;
 		}
@@ -508,9 +510,12 @@ struct Parser {
 				if (_hasNext(3) && 
 					_getNext(0).kind == TokenKind_symbol &&
 					_getNext(1).kind == TokenKind_colon &&
-					_getNext(2).kind == TokenKind_string &&
+					(_getNext(2).kind == TokenKind_string || _getNext(2).kind == TokenKind_unquotedstring) &&
 					_getNext(3).kind == TokenKind_newline) {
-					func->arguments.set(_getNext(0).content, _parseQuotedString(_getNext(2).content));
+					func->arguments.set(_getNext(0).content,
+						_getNext(2).kind == TokenKind_string 
+							? _parseQuotedString(_getNext(2).content)
+							: _getNext(2).content);
 					func->range.end = _getNext(3).range.end;
 					_advanceNext(3);
 					continue;
