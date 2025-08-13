@@ -66,7 +66,7 @@ Let's say `!latex``\pi = 3` then the building is likely collapsed.
 ```
 
 ````gularen
-```!latex
+``` !latex
 \sum_{x=1}^{5} x
 ```
 ````

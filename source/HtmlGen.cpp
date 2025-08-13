@@ -192,7 +192,7 @@ namespace HtmlGen {
 						break;
 				}
 			}
-			return value;
+			return escapedValue;
 		}
 
 		void _genArray(Array<Node*> nodes) {
@@ -484,9 +484,13 @@ namespace HtmlGen {
 				case NodeKind_fencedcode: {
 					CodeNode* code = static_cast<CodeNode*>(node);
 					bool isView = code->lang.size() != 0 && code->lang[0] == '!';
-					_content.append(isView ? "<div class=\"view\">" : "<pre>");
-					_genCode(node);
-					_content.append(isView ? "</div>\n" : "</pre>\n");
+					if (isView) {
+						_genCode(node, true);
+						break;
+					}
+					_content.append("<pre>");
+					_genCode(node, true);
+					_content.append("</pre>\n");
 					break;
 				}
 				case NodeKind_code:
@@ -548,10 +552,17 @@ namespace HtmlGen {
 			}
 		}
 
-		void _genCode(Node* node) {
+		void _genCode(Node* node, bool isBlock = false) {
 			CodeNode* codeNode = static_cast<CodeNode*>(node);
 			if (codeNode->lang.size() != 0) {
 				if (codeNode->lang[0] == '!') {
+					if (isBlock) {
+						_content.append("<div class=\"view language-");
+						_content.append(_escape(codeNode->lang.slice(1, codeNode->lang.size() - 1)));
+						_content.append("\">");
+						_content.append(_escape(codeNode->content));
+						_content.append("</div>");
+					}
 					_content.append("<span class=\"view language-");
 					_content.append(_escape(codeNode->lang.slice(1, codeNode->lang.size() - 1)));
 					_content.append("\">");
