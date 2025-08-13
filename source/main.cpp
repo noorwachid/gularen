@@ -1,65 +1,70 @@
 #include "Collection/Disk.hpp"
 #include "Parser.hpp"
 #include "Printer.hpp"
-#include "HTMLGen.hpp"
+#include "HtmlGen.hpp"
 #include <stdio.h>
 
 static constexpr char const* version = "2.0.1";
 
-void compile(String const& inPath, String const& outPath, bool isEmbedded) {
-	Node* node = parseFile(inPath);
+void compile(String const& path, Table<String, String> const& option) {
+	Node* node = parseFile(path);
 	if (node != nullptr) {
-		String content = genHTML(node);
+		HtmlGen::Option htmlOption;
+
+		for (auto it = option.iterate(); it.hasNext(); it.next()) {
+			if (it.key() == "template") {
+				htmlOption.template_ = it.value();
+			}
+		}
+
+		String content = HtmlGen::gen(node, htmlOption);
 		delete node;
-		if (outPath.size() == 0) {
-			printf("%s\n", content.items());
+
+		if (option.has("out")) {
+			writeFile(option["out"], content);
 			return;
 		}
-		writeFile(outPath, content);
+		printf("%s\n", content.items());
 		return;
 	}
 }
 
 int main(int argc, char** argv) {
-	String inPath;
-	String outPath;
-	bool isEmbedded = false;
-	bool showHelp = false;
-	bool showVersion = false;
-	bool showDebugToken = false;
-	bool showDebugTree = false;
+	String path;
+	Table<String, String> option;
 
 	for (int i = 1; i < argc; i++) {
 		String arg = argv[i];
 		if (arg == "--debug-token") {
-			showDebugToken = true;
+			option.set("debug-token", "1");
 			continue;
 		}
 		if (arg == "--debug-tree") {
-			showDebugTree = true;
+			option.set("debug-tree", "1");
 			continue;
 		}
 		if (arg == "-h" || arg == "--help") {
-			showHelp = true;
+			option.set("help", "1");
 			continue;
 		}
 		if (arg == "-v" || arg == "--version") {
-			showVersion = true;
+			option.set("version", "1");
 			continue;
 		}
-		if (arg == "-e" || arg == "--embedded") {
-			isEmbedded = true;
-			continue;
-		}
-		if (i + 1 < argc && (arg == "-o" || arg == "--output")) {
-			outPath = argv[i + 1];
+		if (i + 1 < argc && (arg == "-t" || arg == "--template")) {
+			option.set("template", argv[i + 1]);
 			i++;
 			continue;
 		}
-		inPath = argv[i];
+		if (i + 1 < argc && (arg == "-o" || arg == "--out")) {
+			option.set("out", argv[i + 1]);
+			i++;
+			continue;
+		}
+		path = argv[i];
 	}
 
-	if (showHelp) {
+	if (option.has("help")) {
 		printf("-h\n");
 		printf("--help\n");
 		printf("	display help page\n");
@@ -68,38 +73,34 @@ int main(int argc, char** argv) {
 		printf("--version\n");
 		printf("	display version\n");
 
-		printf("-e\n");
-		printf("--embedded\n");
-		printf("	render without header\n");
-
 		printf("-o index.html\n");
 		printf("--output index.html\n");
 		printf("	render to file index.html\n");
 		return 0;
 	}
 
-	if (showDebugToken) {
-		String const& content = readFile(inPath);
+	if (option.has("debug-token")) {
+		String const& content = readFile(path);
 		printArrayToken(lexeme(content));
 		return 0;
 	}
 
-	if (showDebugTree) {
-		printNode(parseFile(inPath));
+	if (option.has("debug-tree")) {
+		printNode(parseFile(path));
 		return 0;
 	}
 
-	if (showVersion) {
+	if (option.has("version")) {
 		printf("%s\n", version);
 		return 0;
 	}
 
-	if (inPath.size() == 0) {
+	if (path.size() == 0) {
 		printf("please provide the input path\n");
 		return 0;
 	}
 
-	compile(inPath, outPath, isEmbedded);
+	compile(path, option);
 
 	return 0;
 }

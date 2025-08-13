@@ -12,9 +12,18 @@ A sweet-spot in markup languages
 
 ## Usage
 - `gularen document.gularen`: generate html to `stdout`
-- `gularen -e document.gularen`: generate embedded html (without head and body tag)
-- `gularen -o index.html document.gularen`: generate index.html instead
+- `gularen -o index.html document.gularen`: generate `index.html`
+- `gularen -t resource/template/article.html -o index.html document.gularen`: generate `index.html` with `article.html` template
 - `gularen -h`: for help
+
+## HTML Templating
+See the [example.html](resource/template/exapmle.html) for an example.
+Gularen compiler will look into special comments and replace it with the appropriate content.
+- `<!--%[metadata]-->`: generate meta tags
+- `<!--%[title]-->`: generate title from metadata if exists else from first section heading
+- `<!--%[content]-->`: generate the document content
+- `<!--%[outline]-->`: generate the document outline (table of contents)
+
 
 ## Editor Support
 - [Neovim](https://github.com/noorwachid/nvim-gularen)

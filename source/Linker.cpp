@@ -2,6 +2,7 @@
 #include "BibliographyMaker.hpp"
 #include "Parser.hpp"
 #include "Stripper.hpp"
+#include <stdio.h>
 
 String _stripSubtitleOnly(HierarchyNode* hierarchyNode) {
 	for (int i = 0; i < hierarchyNode->children.size(); i++) {
@@ -23,20 +24,20 @@ ResourceNode* Linker::_mentionSection(ResourceNode* res, int sectionIndex, int s
 	label->kind = NodeKind_text;
 	result->children.append(label);
 
-	if (_sectionIndex > -1 && _sectionIndex < _sections.size()) {
+	if (sectionIndex > -1 && sectionIndex < _sections.size()) {
 		// nearest family search: sibling subsubsection -> parent subsection
-		Section const& section = _sections[_sectionIndex];
-		if (_subsectionIndex > -1 && _subsectionIndex < section.subsections.size()) {
-			Subsection subsection = section.subsections[_subsectionIndex];
+		Section const& section = _sections[sectionIndex];
+		if (subsectionIndex > -1 && subsectionIndex < section.subsections.size()) {
+			Subsection subsection = section.subsections[subsectionIndex];
 			Array<Subsubsection> subsubsections = subsection.subsubsections;
 			for (int i = 0; i < subsubsections.size(); i++) {
 				Subsubsection subsubsection = subsubsections[i];
 				if (subsubsection.title == res->source) {
-					res->source = section.title;
-					res->source.append(" > ");
-					res->source.append(subsection.title);
-					res->source.append(" > ");
-					res->source.append(subsubsection.title);
+					result->source = section.title;
+					result->source.append(" > ");
+					result->source.append(subsection.title);
+					result->source.append(" > ");
+					result->source.append(subsubsection.title);
 					label->content = subsubsection.title;
 					goto linking;
 				}
@@ -45,9 +46,9 @@ ResourceNode* Linker::_mentionSection(ResourceNode* res, int sectionIndex, int s
 		for (int i = 0; i < section.subsections.size(); i++) {
 			Subsection subsection = section.subsections[i];
 			if (subsection.title == res->source) {
-				res->source = section.title;
-				res->source.append(" > ");
-				res->source.append(subsection.title);
+				result->source = section.title;
+				result->source.append(" > ");
+				result->source.append(subsection.title);
 				label->content = subsection.title;
 				goto linking;
 			}
@@ -57,27 +58,27 @@ ResourceNode* Linker::_mentionSection(ResourceNode* res, int sectionIndex, int s
 	for (int i = 0; i < _sections.size(); i++) {
 		Section const& section = _sections[i];
 		if (section.title == res->source) {
-			res->source = section.title;
+			result->source = section.title;
 			label->content = section.title;
 			goto linking;
 		}
 		for (int j = 0; j < section.subsections.size(); j++) {
 			Subsection const& subsection = section.subsections[j];
 			if (subsection.title == res->source) {
-				res->source = section.title;
-				res->source.append("-");
-				res->source.append(subsection.title);
+				result->source = section.title;
+				result->source.append("-");
+				result->source.append(subsection.title);
 				label->content = section.title;
 				goto linking;
 			}
 			for (int k = 0; k < subsection.subsubsections.size(); k++) {
 				Subsubsection const& subsubsection = subsection.subsubsections[k];
 				if (subsubsection.title == res->source) {
-					res->source = section.title;
-					res->source.append("-");
-					res->source.append(subsection.title);
-					res->source.append("-");
-					res->source.append(subsubsection.title);
+					result->source = section.title;
+					result->source.append("-");
+					result->source.append(subsection.title);
+					result->source.append("-");
+					result->source.append(subsubsection.title);
 					label->content = section.title;
 					goto linking;
 				}

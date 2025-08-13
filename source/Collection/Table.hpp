@@ -125,7 +125,7 @@ public:
 		_set(key, value);
 	}
 
-	Iterator iterate() {
+	Iterator iterate() const {
 		return Iterator(_capacity == 0 ? nullptr : _entries[_capacity]);
 	}
 
