@@ -1,4 +1,5 @@
 #include "Printer.hpp"
+#include "Lexer.hpp"
 #include <stdio.h>
 
 void printString(String const& value) {
@@ -74,7 +75,7 @@ void printArrayToken(Array<Token> const& tokens) {
 			case TokenKind_string: printf("string"); break;
 
 			case TokenKind_openbracket: printf("openbracket"); break;
-			case TokenKind_ref: printf("ref"); break;
+			case TokenKind_unquotedstring: printf("unquotedstring"); break;
 			case TokenKind_closebracket: printf("closebracket"); break;
 			case TokenKind_footnote: printf("footnote"); break;
 			case TokenKind_openparen: printf("openparen"); break;
@@ -236,10 +237,7 @@ struct Printer {
 					depth++;
 					for (auto i = document->metadata.iterate(); i.hasNext(); i.next()) {
 						indent();
-						printf("%.*s: %.*s\n",
-							i.key().size(), i.key().items(),
-							i.value().size(), i.value().items()
-						);
+						keyString(i.key().items(), i.value());
 					}
 					depth = oldDepth;
 				}

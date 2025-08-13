@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Collection/Disk.hpp"
+#include "Lexer.hpp"
 #include <stdio.h>
 
 struct Point {
@@ -59,15 +60,20 @@ struct Parser {
 			_getNext(0).kind == TokenKind_script &&
 			_getNext(1).kind == TokenKind_symbol &&
 			_getNext(2).kind == TokenKind_colon &&
-			_getNext(3).kind == TokenKind_string) {
+			(_getNext(3).kind == TokenKind_string || _getNext(3).kind == TokenKind_unquotedstring)) {
 			while (_has()) {
 				parseEntry:
 				if (_hasNext(3) &&
 					_getNext(0).kind == TokenKind_script &&
 					_getNext(1).kind == TokenKind_symbol &&
 					_getNext(2).kind == TokenKind_colon &&
-					_getNext(3).kind == TokenKind_string) {
-					doc->metadata.set(_getNext(1).content, _getNext(3).content);
+					(_getNext(3).kind == TokenKind_string || _getNext(3).kind == TokenKind_unquotedstring)) {
+					doc->metadata.set(
+						_getNext(1).content,
+						_getNext(3).kind == TokenKind_string 
+							? _parseQuotedString(_getNext(3).content)
+							: _getNext(3).content
+					);
 					doc->range.end = _getNext(3).range.end;
 					_advanceNext(3);
 
@@ -670,7 +676,7 @@ struct Parser {
 				}
 				resource->range = _get().range;
 				_advance();
-				if (_is(TokenKind_ref)) {
+				if (_is(TokenKind_unquotedstring)) {
 					resource->source = _get().content;
 					_advance();
 				}

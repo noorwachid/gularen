@@ -1,4 +1,5 @@
 #include "Lexer.hpp"
+#include <stdio.h>
 
 struct Point {
 	int index;
@@ -449,12 +450,14 @@ struct Lexer {
 			if (_hasNext(1) && _getNext(0) == ':' && _getNext(1) == ' ') {
 				Point colonPoint = _point;
 				_advance();
-				if (_is(' ')) {
-					_advance();
-					_appendInclusive(TokenKind_symbol, keyPoint, colonPoint);
-					_appendInclusive(TokenKind_colon, colonPoint, _point);
+				_advance();
+				_appendInclusive(TokenKind_symbol, keyPoint, colonPoint);
+				_appendInclusive(TokenKind_colon, colonPoint, _point);
+				if (_has() && _get() == '"') {
+					_lexemeString();
+					return;
 				}
-				_lexemeString();
+				_lexemeUnquotedString();
 				return;
 			}
 			if (_is(' ')) {
@@ -505,12 +508,21 @@ struct Lexer {
 								}
 								endKey:
 								_appendInclusive(TokenKind_symbol, keyPoint, _point);
-								if (_hasNext(2) && _get() == ':' && _getNext(1) == ' ' && _getNext(2) == '"') {
+								if (_hasNext(1) && _get() == ':' && _getNext(1) == ' ') {
 									Point colonPoint = _point;
 									_advance();
 									_advance();
 									_appendInclusive(TokenKind_colon, colonPoint, _point);
-									_lexemeString();
+
+									if (_has() && _get() == '"') {
+										_lexemeString();
+										if (_is('\n')) {
+											_lexemeNewline();
+										}
+										continue;
+									}
+
+									_lexemeUnquotedString();
 									if (_is('\n')) {
 										_lexemeNewline();
 									}
@@ -521,6 +533,8 @@ struct Lexer {
 						}
 						return;
 					}
+
+					_lexemeUnquotedString();
 					return;
 				}
 				return;
@@ -529,6 +543,14 @@ struct Lexer {
 			return;
 		}
 		_appendInclusive(TokenKind_text, p, _point);
+	}
+
+	void _lexemeUnquotedString() {
+		Point p = _point;
+		while (_has() && _get() != '\n') {
+			_advance();
+		}
+		_appendInclusive(TokenKind_unquotedstring, p, _point);
 	}
 
 	void _lexemeString() {
@@ -830,7 +852,7 @@ struct Lexer {
 			}
 
 			_appendInclusive(TokenKind_openbracket, point, endPoint);
-			_appendInclusive(TokenKind_ref, refPoint, _point);
+			_appendInclusive(TokenKind_unquotedstring, refPoint, _point);
 		}
 		if (_is(']')) {
 			point = _point;

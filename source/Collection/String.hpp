@@ -11,6 +11,7 @@ public:
 public:
 	String() {
 		_size = 0;
+		_stack.items[0] = '\0';
 	}
 
 	String(char const* literal) {
@@ -188,12 +189,14 @@ private:
 	void _addRef(String const& other) {
 		_size = other._size;
 		if (_size == 0) {
+			_stack.items[0] = '\0';
 			return;
 		}
 		if (_size <= _smallStringSize) {
 			for (int i = 0; i < _size; i++) {
 				_stack.items[i] = other._stack.items[i];
 			}
+			_stack.items[_size] = '\0';
 			return;
 		}
 		_heap = other._heap;

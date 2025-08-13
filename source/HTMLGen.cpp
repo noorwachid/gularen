@@ -4,6 +4,7 @@
 #include "Collection/Conv.hpp"
 #include "Linker.hpp"
 #include "Stripper.hpp"
+#include <stdio.h>
 
 struct HTMLGen {
 	String _source;

@@ -30,7 +30,7 @@ enum TokenKind {
 	TokenKind_singleleftquote, // '
 
 	TokenKind_openbracket, // [ or ![ or ^[
-	TokenKind_ref, // xxx
+	TokenKind_unquotedstring, // xxx
 	TokenKind_string, // "xxx"
 	TokenKind_closebracket, // ]
 	TokenKind_footnote, // ^
