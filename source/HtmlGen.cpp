@@ -562,6 +562,7 @@ namespace HtmlGen {
 						_content.append("\">");
 						_content.append(_escape(codeNode->content));
 						_content.append("</div>");
+						return;
 					}
 					_content.append("<span class=\"view language-");
 					_content.append(_escape(codeNode->lang.slice(1, codeNode->lang.size() - 1)));
